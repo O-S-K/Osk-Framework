@@ -34,6 +34,6 @@ public class UIManager : MonoBehaviour
 
     public T GetPopup<T>() where T : Popup
     {
-        return _popupController.GetPopup<T>();
+        return _popupController.Get<T>();
     }
 }

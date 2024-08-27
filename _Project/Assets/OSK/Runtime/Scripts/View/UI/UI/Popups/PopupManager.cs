@@ -36,12 +36,12 @@ namespace OSK
         
         public T Show<T>() where T : Popup
         {
-            var popup = GetPopup<T>();
+            var popup = Get<T>();
             Show(popup);
             return popup;
         }
         
-        public T GetPopup<T>() where T : Popup
+        public T Get<T>() where T : Popup
         {
             foreach (var popup in popups)
             {
@@ -53,7 +53,7 @@ namespace OSK
         }
         
 
-        public void RemovePopup()
+        public void Remove()
         {
             if (_popupHistory.Count <= 0) return;
 
@@ -68,7 +68,7 @@ namespace OSK
             }
         }
 
-        public void RemoveAllPopups()
+        public void RemoveAll()
         {
             while (_popupHistory.Count > 0)
             {
@@ -77,9 +77,9 @@ namespace OSK
             }
         }
 
-        public void RemoveAllAndAddPopup(Popup popup)
+        public void RemoveAllAndAdd(Popup popup)
         {
-            RemoveAllPopups();
+            RemoveAll();
             Show(popup);
         }
     }
