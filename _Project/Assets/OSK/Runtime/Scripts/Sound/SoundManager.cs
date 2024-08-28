@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace OSK.Sound
+namespace OSK
 {
-    public class SoundManager : MonoBehaviour
+    public class SoundManager : GameFrameworkComponent
     {
         [System.Serializable]
         public class SoundInfo
@@ -12,8 +12,8 @@ namespace OSK.Sound
             public string id = "";
             public AudioClip audioClip = null;
             public SoundType type = SoundType.SoundEffect;
-            [Range(0, 1)] public float clipVolume = 1;
-            [Range(0, 1)] public float pitch = 1;
+            public float clipVolume = 1;
+            public float pitch = 1;
         }
 
         private class PlayingSound

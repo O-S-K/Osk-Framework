@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    public class Observer : SingletonMono<Observer>
+    public class Observer: GameFrameworkComponent
     {
         public delegate void CallBackObserver(object data);
         public static Dictionary<string, HashSet<CallBackObserver>> dictObserver = new();

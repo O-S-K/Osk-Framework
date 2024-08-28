@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class StateMachine : MonoBehaviour
+public class StateMachine : GameFrameworkComponent
 {
     public IStateMachine CurrentState { get; set; }
     public IStateMachine PreviousState { get; set; }

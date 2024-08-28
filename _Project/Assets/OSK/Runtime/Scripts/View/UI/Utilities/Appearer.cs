@@ -23,7 +23,7 @@ namespace OSK
 
         public void Show()
         {
-            transform.DOScale(Vector3.one, duration).SetEase(animStartButton);
+            transform.DOScale(Vector3.one, duration).SetEase(animStartButton).SetUpdate(true);
             if (!shown)
             {
                 shown = true;
@@ -38,7 +38,7 @@ namespace OSK
 
         public void Hide()
         {
-            transform.DOScale(Vector3.zero, duration).SetEase(animEndButton);
+            transform.DOScale(Vector3.zero, duration).SetEase(animEndButton).SetUpdate(true);
             if (shown)
             {
                 shown = false;
