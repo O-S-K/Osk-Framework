@@ -39,7 +39,7 @@ public class EntityManager : GameFrameworkComponent
 
     private static Entity CreateNew(Entity entity, int id)
     {
-        var entityGameObject = Instantiate(entity.GameObject);
+        var entityGameObject = Instantiate(entity.gameObject);
         Entity _entity = new Entity(id, entityGameObject);
         return _entity;
     }
@@ -67,7 +67,7 @@ public class EntityManager : GameFrameworkComponent
     {
         foreach (Entity entity in activeEntities)
         {
-            Destroy(entity.GameObject);
+            Destroy(entity.gameObject);
         }
 
         activeEntities.Clear();

@@ -7,7 +7,7 @@ namespace OSK
 {
     // https://github.com/herbou/UnityPlayerPrefsExtra
     // Vectors, Colors, Quaternions, Lists, and Your Pre defined types (Object) [classes or structs].
-    public class PlayerPrefsSystem : GameFrameworkComponent
+    public class PlayerPrefsSystem 
     {
         #region Int -----------------------------------------------------------------------------------------
         

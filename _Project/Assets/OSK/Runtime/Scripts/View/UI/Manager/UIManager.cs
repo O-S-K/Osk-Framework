@@ -8,7 +8,7 @@ public class UIManager : GameFrameworkComponent
 {
     [SerializeField] private ScreenManager _screenManager;
     [SerializeField] private PopupManager _popupController;
-
+    [SerializeField] private Camera _uiCamera;
     private void Awake()
     {
         _screenManager.Initialize();
@@ -26,6 +26,10 @@ public class UIManager : GameFrameworkComponent
         return _screenManager.GetScreen<T>();
     }
     
+    public Camera GetUICamera()
+    {
+        return _uiCamera;
+    }
 
     public T ShowPopup<T>() where T : Popup
     {

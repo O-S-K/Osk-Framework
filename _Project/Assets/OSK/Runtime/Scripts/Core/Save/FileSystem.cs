@@ -6,7 +6,7 @@ using OSK.Utils;
 
 namespace OSK
 {
-    public class FileSystem : GameFrameworkComponent
+    public class FileSystem 
     { 
         private static string getPath(string fileName, bool isSaveToDocument = true)
         {
