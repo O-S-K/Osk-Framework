@@ -7,78 +7,78 @@ namespace OSK
 {
     // https://github.com/herbou/UnityPlayerPrefsExtra
     // Vectors, Colors, Quaternions, Lists, and Your Pre defined types (Object) [classes or structs].
-    public class PlayerPrefsSystem 
+    public class PlayerPrefsSystem
     {
         #region Int -----------------------------------------------------------------------------------------
-        
-        public static int GetInt(string key)
+
+        public int GetInt(string key)
         {
             return PlayerPrefs.GetInt(key, 0);
         }
-        
-        public static int GetInt(string key, int defaultValue)
+
+        public int GetInt(string key, int defaultValue)
         {
             return PlayerPrefs.GetInt(key, defaultValue);
         }
-        
-        public static void SetInt(string key, int value)
+
+        public void SetInt(string key, int value)
         {
             PlayerPrefs.SetInt(key, value);
         }
-        
+
         #endregion
-        
+
         #region Float -----------------------------------------------------------------------------------------
-        
-        public static float GetFloat(string key)
+
+        public float GetFloat(string key)
         {
             return PlayerPrefs.GetFloat(key, 0f);
         }
-        
-        public static float GetFloat(string key, float defaultValue)
+
+        public float GetFloat(string key, float defaultValue)
         {
             return PlayerPrefs.GetFloat(key, defaultValue);
         }
-        
-        public static void SetFloat(string key, float value)
+
+        public void SetFloat(string key, float value)
         {
             PlayerPrefs.SetFloat(key, value);
         }
-        
+
         #endregion
-        
+
         #region String -----------------------------------------------------------------------------------------
-        
-        public static string GetString(string key)
+
+        public string GetString(string key)
         {
             return PlayerPrefs.GetString(key, "");
         }
-        
-        public static string GetString(string key, string defaultValue)
+
+        public string GetString(string key, string defaultValue)
         {
             return PlayerPrefs.GetString(key, defaultValue);
         }
-        
+
         public static void SetString(string key, string value)
         {
             PlayerPrefs.SetString(key, value);
         }
-        
+
         #endregion
-         
+
         #region Bool -----------------------------------------------------------------------------------------
 
-        public static bool GetBool(string key)
+        public bool GetBool(string key)
         {
             return (PlayerPrefs.GetInt(key, 0) == 1);
         }
 
-        public static bool GetBool(string key, bool defaultValue)
+        public bool GetBool(string key, bool defaultValue)
         {
             return (PlayerPrefs.GetInt(key, (defaultValue ? 1 : 0)) == 1);
         }
 
-        public static void SetBool(string key, bool value)
+        public void SetBool(string key, bool value)
         {
             PlayerPrefs.SetInt(key, (value ? 1 : 0));
         }
@@ -87,17 +87,17 @@ namespace OSK
 
         #region Vector 2 -----------------------------------------------------------------------------------------
 
-        public static Vector2 GetVector2(string key)
+        public Vector2 GetVector2(string key)
         {
             return Get<Vector2>(key, Vector2.zero);
         }
 
-        public static Vector2 GetVector2(string key, Vector2 defaultValue)
+        public Vector2 GetVector2(string key, Vector2 defaultValue)
         {
             return Get<Vector2>(key, defaultValue);
         }
 
-        public static void SetVector2(string key, Vector2 value)
+        public void SetVector2(string key, Vector2 value)
         {
             Set(key, value);
         }
@@ -106,17 +106,17 @@ namespace OSK
 
         #region Vector 3 -----------------------------------------------------------------------------------------
 
-        public static Vector3 GetVector3(string key)
+        public Vector3 GetVector3(string key)
         {
             return Get<Vector3>(key, Vector3.zero);
         }
 
-        public static Vector3 GetVector3(string key, Vector3 defaultValue)
+        public Vector3 GetVector3(string key, Vector3 defaultValue)
         {
             return Get<Vector3>(key, defaultValue);
         }
 
-        public static void SetVector3(string key, Vector3 value)
+        public void SetVector3(string key, Vector3 value)
         {
             Set(key, value);
         }
@@ -125,17 +125,17 @@ namespace OSK
 
         #region Vector 4 -----------------------------------------------------------------------------------------
 
-        public static Vector4 GetVector4(string key)
+        public Vector4 GetVector4(string key)
         {
             return Get<Vector4>(key, Vector4.zero);
         }
 
-        public static Vector4 GetVector4(string key, Vector4 defaultValue)
+        public Vector4 GetVector4(string key, Vector4 defaultValue)
         {
             return Get<Vector4>(key, defaultValue);
         }
 
-        public static void SetVector4(string key, Vector4 value)
+        public void SetVector4(string key, Vector4 value)
         {
             Set(key, value);
         }
@@ -144,17 +144,17 @@ namespace OSK
 
         #region Color -----------------------------------------------------------------------------------------
 
-        public static Color GetColor(string key)
+        public Color GetColor(string key)
         {
             return Get<Color>(key, new Color(0f, 0f, 0f, 0f));
         }
 
-        public static Color GetColor(string key, Color defaultValue)
+        public Color GetColor(string key, Color defaultValue)
         {
             return Get<Color>(key, defaultValue);
         }
 
-        public static void SetColor(string key, Color value)
+        public void SetColor(string key, Color value)
         {
             Set(key, value);
         }
@@ -163,17 +163,17 @@ namespace OSK
 
         #region Quaternion -----------------------------------------------------------------------------------------
 
-        public static Quaternion GetQuaternion(string key)
+        public Quaternion GetQuaternion(string key)
         {
             return Get<Quaternion>(key, Quaternion.identity);
         }
 
-        public static Quaternion GetQuaternion(string key, Quaternion defaultValue)
+        public Quaternion GetQuaternion(string key, Quaternion defaultValue)
         {
             return Get<Quaternion>(key, defaultValue);
         }
 
-        public static void SetQuaternion(string key, Quaternion value)
+        public void SetQuaternion(string key, Quaternion value)
         {
             Set(key, value);
         }
@@ -187,27 +187,27 @@ namespace OSK
             public List<T> list = new List<T>();
         }
 
-        public static List<T> GetList<T>(string key)
+        public List<T> GetList<T>(string key)
         {
             return Get<ListWrapper<T>>(key, new ListWrapper<T>()).list;
         }
 
-        public static List<T> GetList<T>(string key, List<T> defaultValue)
+        public List<T> GetList<T>(string key, List<T> defaultValue)
         {
             return Get<ListWrapper<T>>(key, new ListWrapper<T> { list = defaultValue }).list;
         }
-        
-        public static Dictionary<string, T> GetDictionary<T>(string key)
+
+        public Dictionary<string, T> GetDictionary<T>(string key)
         {
             return Get<ListWrapper<T>>(key, new ListWrapper<T>()).list.ToDictionary(x => x.ToString());
         }
 
-        public static void SetList<T>(string key, List<T> value)
+        public void SetList<T>(string key, List<T> value)
         {
             Set(key, new ListWrapper<T> { list = value });
         }
-        
-        public static void SetDictionary<T>(string key, Dictionary<string, T> value)
+
+        public void SetDictionary<T>(string key, Dictionary<string, T> value)
         {
             Set(key, new ListWrapper<T> { list = value.Values.ToList() });
         }
@@ -216,17 +216,17 @@ namespace OSK
 
         #region Object -----------------------------------------------------------------------------------------
 
-        public static T GetObject<T>(string key)
+        public T GetObject<T>(string key)
         {
             return Get<T>(key, default(T));
         }
 
-        public static T GetObject<T>(string key, T defaultValue)
+        public T GetObject<T>(string key, T defaultValue)
         {
             return Get<T>(key, defaultValue);
         }
 
-        public static void SetObject<T>(string key, T value)
+        public void SetObject<T>(string key, T value)
         {
             Set(key, value);
         }
@@ -235,24 +235,24 @@ namespace OSK
 
         #region Enum -----------------------------------------------------------------------------------------
 
-        public static T GetEnum<T>(string key)
+        public T GetEnum<T>(string key)
         {
             return Get<T>(key, default(T));
         }
 
-        public static T GetEnum<T>(string key, T defaultValue)
+        public T GetEnum<T>(string key, T defaultValue)
         {
             return Get<T>(key, defaultValue);
         }
 
-        public static void SetEnum<T>(string key, T value)
+        public void SetEnum<T>(string key, T value)
         {
             Set(key, value);
         }
 
         #endregion
 
-       
+
         //Generic template ---------------------------------------------------------------------------------------
         static T Get<T>(string key, T defaultValue)
         {

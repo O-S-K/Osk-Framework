@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class EntityManager : GameFrameworkComponent
 {
-    private static Queue<Entity> inactiveEntities = new Queue<Entity>();
-    private static List<Entity> activeEntities = new List<Entity>();
+    private Queue<Entity> inactiveEntities = new Queue<Entity>();
+    private List<Entity> activeEntities = new List<Entity>();
 
-    public static Entity Create(Entity entity, int ID)
+    public Entity Create(Entity entity, int ID)
     {
         if (inactiveEntities.Count > 0)
         {
@@ -24,7 +24,7 @@ public class EntityManager : GameFrameworkComponent
         }
     }
 
-    public static Entity Get(Entity entity)
+    public Entity Get(Entity entity)
     {
         foreach (var e in activeEntities)
         {
@@ -37,14 +37,14 @@ public class EntityManager : GameFrameworkComponent
         return null;
     }
 
-    private static Entity CreateNew(Entity entity, int id)
+    private Entity CreateNew(Entity entity, int id)
     {
         var entityGameObject = Instantiate(entity.gameObject);
         Entity _entity = new Entity(id, entityGameObject);
         return _entity;
     }
 
-    public static void Release(Entity entity)
+    public void Release(Entity entity)
     {
         if (activeEntities.Contains(entity))
         {
@@ -58,12 +58,12 @@ public class EntityManager : GameFrameworkComponent
         }
     }
 
-    private static void AddEntityToPool(Entity entity)
+    private void AddEntityToPool(Entity entity)
     {
         inactiveEntities.Enqueue(entity);
     }
 
-    public static void DestroyAllEntities()
+    public void DestroyAllEntities()
     {
         foreach (Entity entity in activeEntities)
         {

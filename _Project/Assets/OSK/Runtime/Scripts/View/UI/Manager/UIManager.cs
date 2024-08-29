@@ -9,8 +9,10 @@ public class UIManager : GameFrameworkComponent
     [SerializeField] private ScreenManager _screenManager;
     [SerializeField] private PopupManager _popupController;
     [SerializeField] private Camera _uiCamera;
-    private void Awake()
+     
+    protected override void Awake()
     {
+        base.Awake();
         _screenManager.Initialize();
         _popupController.Initialize();
     }

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class GameConfigs : GameFrameworkComponent
 {
+    public int targetFrameRate = 60;
+    public int vSyncCount = 0;
+    
     public string languageCodeDefault = "en";
     public Settings settingsDefault;
 }
@@ -15,4 +18,5 @@ public class Settings
     public bool isSoundOnDefault = true;
     public bool isVibrationOnDefault = true;
     public bool isCheckInternetDefault = true;
+    
 }

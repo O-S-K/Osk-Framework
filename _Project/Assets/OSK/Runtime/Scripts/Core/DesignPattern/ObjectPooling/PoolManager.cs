@@ -6,28 +6,32 @@ namespace OSK
 {
     public class PoolManager : GameFrameworkComponent
     {
-        public static Dictionary<Component, ObjectPool<Component>> prefabLookup = new Dictionary<Component, ObjectPool<Component>>();
-        public static Dictionary<Component, ObjectPool<Component>> instanceLookup = new Dictionary<Component, ObjectPool<Component>>();
-        
-        
-        public bool logStatus;
-        private static bool dirty = false;
+        public Dictionary<Component, ObjectPool<Component>> prefabLookup =
+            new Dictionary<Component, ObjectPool<Component>>();
 
-        public static void WarmPool<T>(T prefab, int size) where T : Component
+        public Dictionary<Component, ObjectPool<Component>> instanceLookup =
+            new Dictionary<Component, ObjectPool<Component>>();
+
+
+        public bool logStatus;
+        private bool dirty = false;
+
+        public void WarmPool<T>(T prefab, int size) where T : Component
         {
             if (prefabLookup.ContainsKey(prefab))
             {
                 throw new Exception("Pool for prefab " + prefab.name + " has already been created");
             }
+
             var pool = new ObjectPool<Component>(() => Instantiate(prefab), size);
             prefabLookup[prefab] = pool;
             dirty = true;
             //return pool as T;
         }
 
-        #region Spawns 
+        #region Spawns
 
-        public static T Spawn<T>(T prefab) where T : Component
+        public T Spawn<T>(T prefab) where T : Component
         {
             if (!prefabLookup.ContainsKey(prefab))
             {
@@ -42,7 +46,7 @@ namespace OSK
             return clone;
         }
 
-        public static T Spawn<T>(T prefab, Transform parrent) where T : Component
+        public T Spawn<T>(T prefab, Transform parrent) where T : Component
         {
             if (!prefabLookup.ContainsKey(prefab))
             {
@@ -59,14 +63,15 @@ namespace OSK
             return clone;
         }
 
-        public static void RemoveItemInPool(Component component)
+        public void RemoveItemInPool(Component component)
         {
             var pool = prefabLookup[component];
             instanceLookup.Remove(pool.GetItem());
         }
+
         #endregion
 
-        public static void Despawn(Component clone)
+        public void Despawn(Component clone)
         {
             clone.gameObject.SetActive(false);
 
@@ -81,9 +86,9 @@ namespace OSK
                 Debug.LogWarning("No pool contains the object: " + clone.name);
             }
         }
-        
-        
-        public static void ResetPool()
+
+
+        public void ResetPool()
         {
             prefabLookup.Clear();
             instanceLookup.Clear();
@@ -91,7 +96,7 @@ namespace OSK
         }
 
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
         private void Update()
         {
             if (logStatus && dirty)
@@ -112,5 +117,3 @@ namespace OSK
 #endif
     }
 }
-
-

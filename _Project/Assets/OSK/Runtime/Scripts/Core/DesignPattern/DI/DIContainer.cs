@@ -5,19 +5,19 @@ using UnityEngine;
 
 public class DIContainer : MonoBehaviour
 {
-    private static Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
+    private  Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
 
-    public static void Bind<TInterface, TImplementation>() where TImplementation : TInterface, new()
+    public  void Bind<TInterface, TImplementation>() where TImplementation : TInterface, new()
     {
         bindings[typeof(TInterface)] = () => new TImplementation();
     }
 
-    public static void BindAndProvide<TInterface>(Func<object> provider)
+    public  void BindAndProvide<TInterface>(Func<object> provider)
     {
         bindings[typeof(TInterface)] = provider;
     }
 
-    public static TInterface Resolve<TInterface>()
+    public  TInterface Resolve<TInterface>()
     {
         if (bindings.ContainsKey(typeof(TInterface)))
         {
@@ -37,7 +37,7 @@ public class DIContainer : MonoBehaviour
         }
     }
 
-    public static void Inject(object target)
+    public  void Inject(object target)
     {
         var targetType = target.GetType();
         var fields = targetType.GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);

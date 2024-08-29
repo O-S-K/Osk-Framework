@@ -8,37 +8,30 @@ namespace OSK
 {
     public class SceneManager : GameFrameworkComponent
     {
-        public static SceneManager Instance { get; private set; }
- 
-        public static System.Action OnLoadingStart;
-        public static System.Action OnLoadingLoop;
-        public static System.Action OnLoadingComplete;
-        public static System.Action<string> OnLoadingFailed;
-        
+        public System.Action OnLoadingStart;
+        public System.Action OnLoadingLoop;
+        public System.Action OnLoadingComplete;
+        public System.Action<string> OnLoadingFailed;
         private string currentSceneName;
 
-        private void Awake()
-        {
-            Instance = this;
-        }
 
-        public static void LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode)
+        public void LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode)
         {
-            if(HasScene(sceneName))
+            if (HasScene(sceneName))
             {
                 Debug.Log("Scene already loaded: " + sceneName);
                 OnLoadingFailed?.Invoke("Scene already loaded: " + sceneName);
             }
             else
             {
-                Instance.StartCoroutine(LoadSceneAsyncCoroutine(sceneName, loadSceneMode));
+                StartCoroutine(LoadSceneAsyncCoroutine(sceneName, loadSceneMode));
             }
         }
-        
-        public static void LoadScene(string sceneName, LoadSceneMode loadSceneMode)
+
+        public void LoadScene(string sceneName, LoadSceneMode loadSceneMode)
         {
             OnLoadingStart?.Invoke();
-            if(HasScene(sceneName))
+            if (HasScene(sceneName))
             {
                 Debug.Log("Scene already loaded: " + sceneName);
                 OnLoadingFailed?.Invoke("Scene already loaded: " + sceneName);
@@ -49,8 +42,8 @@ namespace OSK
                 OnLoadingComplete?.Invoke();
             }
         }
-        
-        private static bool HasScene(string sceneName)
+
+        private bool HasScene(string sceneName)
         {
             for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
             {
@@ -64,7 +57,7 @@ namespace OSK
             return false;
         }
 
-        private static IEnumerator LoadSceneAsyncCoroutine(string sceneName, LoadSceneMode loadSceneMode)
+        private IEnumerator LoadSceneAsyncCoroutine(string sceneName, LoadSceneMode loadSceneMode)
         {
             // Trigger start loading event
             OnLoadingStart?.Invoke();
@@ -93,12 +86,13 @@ namespace OSK
                 OnLoadingFailed?.Invoke("Failed to load scene: " + sceneName);
             }
         }
- 
-        public static void UnloadScene(string sceneName)
+
+        public void UnloadScene(string sceneName)
         {
-            Instance.StartCoroutine(UnloadSceneAsyncCoroutine(sceneName));
+            StartCoroutine(UnloadSceneAsyncCoroutine(sceneName));
         }
-        private static IEnumerator UnloadSceneAsyncCoroutine(string sceneName)
+
+        private IEnumerator UnloadSceneAsyncCoroutine(string sceneName)
         {
             AsyncOperation asyncUnload = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
 

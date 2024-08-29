@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class WebRequestManager : GameFrameworkComponent
 {
-
     // GET request
     public void Get(string url, System.Action<string> onSuccess, System.Action<string> onError)
     {

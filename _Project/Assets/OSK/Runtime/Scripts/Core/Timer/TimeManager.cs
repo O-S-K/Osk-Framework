@@ -18,7 +18,7 @@ public class TimeManager : GameFrameworkComponent
     }
 
     // Method to update all timers (called in FixedUpdate)
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         for (int i = timers.Count - 1; i >= 0; i--)
         {
@@ -32,7 +32,7 @@ public class TimeManager : GameFrameworkComponent
             }
         }
     }
-    
+
     // method to pause all timers
     public void PauseAllTimers()
     {
@@ -41,7 +41,7 @@ public class TimeManager : GameFrameworkComponent
             timer.Pause();
         }
     }
-    
+
     // method to resume all timers
     public void ResumeAllTimers()
     {
@@ -68,6 +68,7 @@ public class TimeManager : GameFrameworkComponent
         {
             timer.Dispose();
         }
+
         timers.Clear();
     }
 }

@@ -1,54 +1,108 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public partial class World
+public enum ShutdownType : byte
 {
-    private static Dictionary<Type, GameFrameworkComponent> _componentRegistry = new Dictionary<Type, GameFrameworkComponent>();
+    None = 0,
+    Restart,
+    Quit,
+}
 
-    public static T Get<T>() where T : GameFrameworkComponent
+[DefaultExecutionOrder(-101)] 
+public partial class World : MonoBehaviour
+{
+    public static readonly GameFrameworkLinkedList<GameFrameworkComponent> s_GameFrameworkComponents =
+        new GameFrameworkLinkedList<GameFrameworkComponent>();
+
+    public static T GetFrameworkComponent<T>() where T : GameFrameworkComponent
     {
-        _componentRegistry.TryGetValue(typeof(T), out var component);
-        return component as T;
+        return (T)Get(typeof(T));
     }
 
-    public static T[] Gets<T>() where T : GameFrameworkComponent
+    public static GameFrameworkComponent Get(Type type)
     {
-        var components = new List<T>();
-
-        foreach (var kvp in _componentRegistry)
+        LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+        while (current != null)
         {
-            if (kvp.Value is T)
+            if (current.Value.GetType() == type)
             {
-                components.Add(kvp.Value as T);
+                return current.Value;
+            }
+
+            current = current.Next;
+        }
+
+        return null;
+    }
+
+    public static GameFrameworkComponent Get(string typeName)
+    {
+        LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+        while (current != null)
+        {
+            Type type = current.Value.GetType();
+            if (type.FullName == typeName || type.Name == typeName)
+            {
+                return current.Value;
+            }
+
+            current = current.Next;
+        }
+
+        return null;
+    }
+
+        public static void Shutdown(ShutdownType shutdownType)
+        {
+            Debug.Log($"Shutdown Game Framework ({0})..." + shutdownType);
+
+            s_GameFrameworkComponents.Clear();
+
+            if (shutdownType == ShutdownType.None)
+            {
+                return;
+            }
+
+            if (shutdownType == ShutdownType.Restart)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                return;
+            }
+
+            if (shutdownType == ShutdownType.Quit)
+            {
+                Application.Quit();
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
+                return;
             }
         }
 
-        return components.ToArray();
-    }
-
-    public static void Register<T>(T component) where T : GameFrameworkComponent
+    internal static void Register(GameFrameworkComponent gameFrameworkComponent)
     {
-        var type = typeof(T);
-        if (!_componentRegistry.ContainsKey(type))
+        if (gameFrameworkComponent == null)
         {
-            _componentRegistry.Add(type, component);
+            Debug.Log("Game Framework component is invalid.");
+            return;
         }
-    }
 
-    public static void CleanAll()
-    {
-        foreach (var component in _componentRegistry.Values)
+        Type type = gameFrameworkComponent.GetType();
+
+        LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+        while (current != null)
         {
-            if (component != null)
+            if (current.Value.GetType() == type)
             {
-                Destroy(component.gameObject);
+                Debug.Log($"Game Framework component type '{0}' is already exist." + type.FullName);
+                return;
             }
+
+            current = current.Next;
         }
-        _componentRegistry.Clear();
-    }
-    
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
+
+        s_GameFrameworkComponents.AddLast(gameFrameworkComponent);
     }
 }

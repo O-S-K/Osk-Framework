@@ -7,14 +7,14 @@ using Object = UnityEngine.Object;
 
 namespace OSK
 {
-    public class JsonSystem  
+    public class JsonSystem
     {
         // Todo: Call For Mobile Devices
         // onApplicationPause() => SaveJson
 
         private const string AES_KEY = "0123456789ABCDEF";
 
-        public static void Save<T>(T obj, string name)
+        public void Save<T>(T obj, string name)
         {
             var filePath = FilePath(name);
             object jsonData = obj is Object ? obj : new global::Json.JsonMapper<T>(obj);
@@ -22,7 +22,7 @@ namespace OSK
             File.WriteAllText(filePath, saveJson);
         }
 
-        public static void Load<T>(T obj, string name)
+        public void Load<T>(T obj, string name)
         {
             var filePath = FilePath(name);
             object jsonData = obj is Object ? obj : new global::Json.JsonMapper<T>(obj);
@@ -36,7 +36,7 @@ namespace OSK
             JsonUtility.FromJsonOverwrite(loadJson, jsonData);
         }
 
-        public static void Encrypt<T>(T obj, string name)
+        public void Encrypt<T>(T obj, string name)
         {
             var filePath = FilePath(name);
             object jsonData = obj is Object ? obj : new global::Json.JsonMapper<T>(obj);
@@ -44,7 +44,7 @@ namespace OSK
             File.WriteAllBytes(filePath, Obfuscator.Encrypt(saveBytes, AES_KEY));
         }
 
-        public static void Decrypt<T>(T obj, string name)
+        public void Decrypt<T>(T obj, string name)
         {
             var filePath = FilePath(name);
             object jsonData = obj is Object ? obj : new global::Json.JsonMapper<T>(obj);
@@ -58,7 +58,7 @@ namespace OSK
             JsonUtility.FromJsonOverwrite(Encoding.UTF8.GetString(loadBytes), jsonData);
         }
 
-        private static string FilePath(string name)
+        private string FilePath(string name)
         {
             var filePath = Path.Combine(Application.streamingAssetsPath, $"{name}.json");
             if (!File.Exists(filePath))
@@ -70,7 +70,7 @@ namespace OSK
         }
 
 
-        private static void RefreshEditor()
+        private void RefreshEditor()
         {
 #if UNITY_EDITOR
             UnityEditor.AssetDatabase.Refresh();

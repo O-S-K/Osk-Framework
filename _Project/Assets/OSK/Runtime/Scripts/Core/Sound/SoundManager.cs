@@ -35,8 +35,9 @@ namespace OSK
         public bool IsSoundEffectsOn { get; private set; }
 
 
-        protected void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             MusicInfos = new List<PlayingSound>();
 
             IsMusicOn = true;

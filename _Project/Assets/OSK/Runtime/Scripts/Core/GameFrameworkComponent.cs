@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using OSK;
 using UnityEngine;
 
 public class GameFrameworkComponent : MonoBehaviour
 {
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private void Resister()
+    protected virtual void Awake()
     {
         World.Register(this);
     }
