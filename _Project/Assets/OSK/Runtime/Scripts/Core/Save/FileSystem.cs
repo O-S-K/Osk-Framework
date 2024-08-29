@@ -8,31 +8,31 @@ namespace OSK
 {
     public class FileSystem 
     { 
-        private static string getPath(string fileName, bool isSaveToDocument = true)
+        public string GetPath(string fileName, bool isSaveToDocument = true)
         {
            return PathFile.Path(fileName + ".txt", isSaveToDocument);
         }
 
-        public static bool ExistsFile(string fileName, bool isSaveToDocument = true)
+        public bool ExistsFile(string fileName, bool isSaveToDocument = true)
         {
-            return File.Exists(getPath(fileName, isSaveToDocument));
+            return File.Exists(GetPath(fileName, isSaveToDocument));
         }
          
-        public static void SaveData<T>(string fileName, object data, bool isSaveToDocument = true)
+        public void SaveData<T>(string fileName, object data, bool isSaveToDocument = true)
         {
             try
             {
                 if (data == null) return;
-                var path = getPath(fileName, isSaveToDocument);
+                var path = GetPath(fileName, isSaveToDocument);
                 Logger.Log("Path File" + path);
 
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 using (FileStream file = File.Open(path, FileMode.OpenOrCreate))
                 {
                     binaryFormatter.Serialize(file, (T)data);
-                    // Utils.Utilities.CalculateMD5Hash(file.ToString());
+                    //Utils.Utilities.CalculateMD5Hash(file.ToString());
                     file.Close();
-                    refreshEditor();
+                    RefreshEditor();
                     Logger.Log("[Save File Susscess]: " + fileName + " " + DateTime.Now + "\n" + path);
                 }
             }
@@ -48,12 +48,12 @@ namespace OSK
             }
         }
 
-        public static object LoadData<T>(string fileName, bool isSaveToDocument = true)
+        public T LoadData<T>(string fileName, bool isSaveToDocument = true)
         {
             try
             {
                 var data = default(T);
-                var path = getPath(fileName, isSaveToDocument);
+                var path = GetPath(fileName, isSaveToDocument);
                 if (File.Exists(path))
                 {
                     BinaryFormatter binaryFormatter = new BinaryFormatter();
@@ -70,13 +70,13 @@ namespace OSK
                 else
                 {
                     Logger.LogError("[Load File Error]: " + fileName + " " + "NOT found");
-                    return null;
+                    return default(T);
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError("[Load File Exception]: " + fileName + " " + ex.Message);
-                return null;
+                return default(T);
             }
             finally
             {
@@ -85,9 +85,9 @@ namespace OSK
                 GC.Collect();
             }
         }
-        public static void WriteToFile(string fileName, string json, bool isSaveToDocument = true)
+        public void WriteToFile(string fileName, string json, bool isSaveToDocument = true)
         {
-            var path = getPath(fileName, isSaveToDocument);
+            var path = GetPath(fileName, isSaveToDocument);
             
             Logger.Log("Path Save: " + path);
             FileStream fileStream = new FileStream(path, FileMode.Create);
@@ -96,9 +96,9 @@ namespace OSK
                 writer.Write(json);
             }
         } 
-        public static string ReadFromFile(string fileName, bool isSaveToDocument = true)
+        public string ReadFromFile(string fileName, bool isSaveToDocument = true)
         {
-            var path = getPath(fileName, isSaveToDocument);
+            var path = GetPath(fileName, isSaveToDocument);
             if (File.Exists(path))
             {
                 var reader = new StreamReader(path);
@@ -111,16 +111,16 @@ namespace OSK
             return null;
         }
 
-        public static void DeleteFile(string fileName, bool isSaveToDocument = true)
+        public void DeleteFile(string fileName, bool isSaveToDocument = true)
         {
             try
             {
-                var path = getPath(fileName, isSaveToDocument);
+                var path = GetPath(fileName, isSaveToDocument);
                 if (File.Exists(path))
                 {
                     Logger.Log("[Delete File Susscess]: " + fileName);
                     File.Delete(path);
-                    refreshEditor();
+                    RefreshEditor();
                 }
                 else
                 {
@@ -139,7 +139,7 @@ namespace OSK
             }
         }
 
-        private static void refreshEditor()
+        private void RefreshEditor()
         {
 #if UNITY_EDITOR
             UnityEditor.AssetDatabase.Refresh();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,5 +16,17 @@ public class BotStateExample : MonoBehaviour
         
         World.State.AddListStateToGroup(group, stateGroup.States);
         World.State.InitState(group, new BotIdleStateExample());
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            World.State.ChangeState("BotStateExample", new BotAttackStateExample());
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            World.State.ChangeState("BotStateExample", new BotDieStateExample());
+        }
     }
 }

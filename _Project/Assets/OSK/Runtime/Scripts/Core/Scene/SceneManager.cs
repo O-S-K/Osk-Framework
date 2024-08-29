@@ -9,7 +9,7 @@ namespace OSK
     public class SceneManager : GameFrameworkComponent
     {
         public System.Action OnLoadingStart;
-        public System.Action OnLoadingLoop;
+        public System.Action<float> OnLoadingProgress;
         public System.Action OnLoadingComplete;
         public System.Action<string> OnLoadingFailed;
         private string currentSceneName;
@@ -25,6 +25,17 @@ namespace OSK
             else
             {
                 StartCoroutine(LoadSceneAsyncCoroutine(sceneName, loadSceneMode));
+            }
+        }
+        
+        public void LoadSceneOnTime(string sceneName, float timeCompleted)
+        {
+            StartCoroutine(IELoadSceneOnTime(sceneName, timeCompleted));
+            IEnumerator IELoadSceneOnTime(string sceneName, float timeCompleted)
+            {
+                OnLoadingStart?.Invoke();
+                yield return new WaitForSeconds(timeCompleted);
+                OnLoadingComplete?.Invoke();
             }
         }
 
@@ -69,7 +80,7 @@ namespace OSK
             while (!asyncLoad.isDone)
             {
                 // You can add progress feedback here if needed
-                OnLoadingLoop?.Invoke();
+                OnLoadingProgress?.Invoke(asyncLoad.progress);
                 Debug.Log("Loading progress: " + asyncLoad.progress);
                 yield return null;
             }

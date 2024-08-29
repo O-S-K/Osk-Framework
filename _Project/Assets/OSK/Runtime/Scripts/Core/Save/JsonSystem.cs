@@ -17,9 +17,13 @@ namespace OSK
         public void Save<T>(T obj, string name)
         {
             var filePath = FilePath(name);
+            Debug.Log("path -> " + World.Data.Json.GetPath(name));
+
             object jsonData = obj is Object ? obj : new global::Json.JsonMapper<T>(obj);
             var saveJson = JsonUtility.ToJson(jsonData);
             File.WriteAllText(filePath, saveJson);
+            
+            Debug.Log("SaveJson -> " + saveJson);
         }
 
         public void Load<T>(T obj, string name)
@@ -32,8 +36,21 @@ namespace OSK
                 File.WriteAllText(filePath, saveJson);
             }
 
-            var loadJson = File.ReadAllText(filePath);
-            JsonUtility.FromJsonOverwrite(loadJson, jsonData);
+            JsonUtility.FromJsonOverwrite(File.ReadAllText(filePath), jsonData);
+        }
+        
+        public string GetPath(string name)
+        {
+            return FilePath(name);
+        }
+        
+        public void Delete(string name)
+        {
+            var filePath = FilePath(name);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
         }
 
         public void Encrypt<T>(T obj, string name)

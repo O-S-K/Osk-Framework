@@ -6,11 +6,8 @@ namespace OSK
 {
     public class PoolManager : GameFrameworkComponent
     {
-        public Dictionary<Component, ObjectPool<Component>> prefabLookup =
-            new Dictionary<Component, ObjectPool<Component>>();
-
-        public Dictionary<Component, ObjectPool<Component>> instanceLookup =
-            new Dictionary<Component, ObjectPool<Component>>();
+        public Dictionary<Component, ObjectPool<Component>> prefabLookup = new();
+        public Dictionary<Component, ObjectPool<Component>> instanceLookup = new();
 
 
         public bool logStatus;
@@ -87,9 +84,26 @@ namespace OSK
             }
         }
 
-
-        public void ResetPool()
+        public void DespawnAll()
         {
+            foreach (var keyVal in instanceLookup)
+            {
+                keyVal.Key.gameObject.SetActive(false);
+                keyVal.Value.ReleaseItem(keyVal.Key);
+            }
+
+            instanceLookup.Clear();
+            dirty = true;
+        }
+
+        // bug not destroy all object in pool
+        public void DestroyAll()
+        {
+            foreach (var keyVal in prefabLookup)
+            {
+                Destroy(keyVal.Key.gameObject);
+            }
+
             prefabLookup.Clear();
             instanceLookup.Clear();
             dirty = true;
