@@ -109,6 +109,7 @@ public sealed class Timer
             OnUpdate?.Invoke();
             if (count == 0)
             {
+                Debug.Log("Timer disposed.");
                 Dispose();
             }
         }
