@@ -254,14 +254,37 @@ namespace OSK
 
 
         //Generic template ---------------------------------------------------------------------------------------
-        static T Get<T>(string key, T defaultValue)
+        private T Get<T>(string key, T defaultValue)
         {
             return JsonUtility.FromJson<T>(PlayerPrefs.GetString(key, JsonUtility.ToJson(defaultValue)));
         }
-
-        static void Set<T>(string key, T value)
+        
+        private void Set<T>(string key, T value)
         {
-            PlayerPrefs.SetString(key, JsonUtility.ToJson(value));
+            if (value == null)
+            {
+                Debug.LogError("Value is null!");
+                return;
+            }
+
+            string jsonString = JsonUtility.ToJson(value, true); // prettyPrint để dễ đọc
+            Debug.Log("Pretty JSON String: " + jsonString);
+
+            PlayerPrefs.SetString(key, jsonString);
+            PlayerPrefs.Save();
+        }
+    
+        private T Get<T>(string key)
+        {
+            string jsonString = PlayerPrefs.GetString(key);
+            Debug.Log("Pretty JSON String: " + jsonString);
+
+            return JsonUtility.FromJson<T>(jsonString);
+        }
+
+        public void Delete(string key)
+        {
+            PlayerPrefs.DeleteKey(key);
         }
     }
 }
