@@ -38,6 +38,7 @@ namespace OSK
             var pool = prefabLookup[prefab];
             var clone = pool.GetItem() as T;
             clone.gameObject.SetActive(true);
+            clone.transform.parent = transform;
             instanceLookup.Add(clone, pool);
             dirty = true;
             return clone;
@@ -52,12 +53,16 @@ namespace OSK
 
             var pool = prefabLookup[prefab];
             var clone = pool.GetItem() as T;
-            clone.gameObject.SetActive(true);
-            clone.transform.SetParent(parrent);
+            if (clone != null)
+            {
+                clone.gameObject.SetActive(true);
+                clone.transform.SetParent(parrent);
 
-            instanceLookup.Add(clone, pool);
-            dirty = true;
-            return clone;
+                instanceLookup.Add(clone, pool);
+                dirty = true;
+                return clone;
+            }
+            return null;
         }
 
         public void RemoveItemInPool(Component component)
@@ -96,14 +101,9 @@ namespace OSK
             dirty = true;
         }
 
-        // bug not destroy all object in pool
         public void DestroyAll()
         {
-            foreach (var keyVal in prefabLookup)
-            {
-                Destroy(keyVal.Key.gameObject);
-            }
-
+            transform.DestroyAllChildren();
             prefabLookup.Clear();
             instanceLookup.Clear();
             dirty = true;

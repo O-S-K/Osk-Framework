@@ -8,11 +8,9 @@ namespace OSK
     [RequireComponent(typeof(UITransition))]
     public class Popup : MonoBehaviour
     {
-        [Header("Settings")]
-        [SerializeField] private bool disableWhenNextPopupOpens;
+        [Header("Settings")] [SerializeField] private bool disableWhenNextPopupOpens;
 
-        [Header("Events")]
-        [SerializeField] private UnityEvent _afterInitialized;
+        [Header("Events")] [SerializeField] private UnityEvent _afterInitialized;
         [SerializeField] private UnityEvent _beforeOpened;
         [SerializeField] private UnityEvent _afterOpened;
         [SerializeField] private UnityEvent _beforeClosed;
@@ -21,39 +19,46 @@ namespace OSK
         public bool DisableWhenNextPopupOpens => disableWhenNextPopupOpens;
 
         private UITransition _uiTransition;
+        private PopupManager _popupManager;
+        
+        private bool _isShowing;
+        public bool IsShowing => _isShowing;
 
-        public void Initialize()
+        public virtual void Initialize(PopupManager popupManager)
         {
+            _isShowing = false;
+            _popupManager = popupManager;
             _uiTransition = GetComponent<UITransition>();
-
             _uiTransition.Initialize();
             _afterInitialized.Invoke();
         }
 
-        public void Open(bool playTransition = false)
+        public virtual void Show()
         {
+            _isShowing = true;
             _beforeOpened.Invoke();
             gameObject.SetActive(true);
 
             //_uiAudio.PlayOpeningSound(playAudio);
-            _uiTransition.PlayOpeningTransition(playTransition, () =>
+            _uiTransition.PlayOpeningTransition( () =>
             {
                 _afterOpened.Invoke();
                 //Debug.Log($"{gameObject.name} is opened");
             });
         }
 
-        public void Close(bool playTransition = false)
+        public virtual void Hide()
         {
+            _isShowing = false;
             _beforeClosed.Invoke();
             //_uiAudio.PlayClosingSound(playAudio);
-            _uiTransition.PlayClosingTransition(playTransition, () =>
+            _uiTransition.PlayClosingTransition( () =>
             {
                 gameObject.SetActive(false);
+                _popupManager.RemovePopup(this);
                 _afterClosed.Invoke();
                 //Debug.Log($"{gameObject.name} is closed");
             });
-
         }
     }
 }

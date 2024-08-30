@@ -28,6 +28,7 @@ namespace OSK
                 return;
             }
 
+
             foreach (var item in Screens)
             {
                 item.Initialize();
@@ -57,6 +58,7 @@ namespace OSK
             }
 
             // Show the new screen
+            screen.gameObject.SetActive(true);
             screen.Show();
 
             // Set the new screen as the current screen
