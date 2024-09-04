@@ -20,6 +20,7 @@ public partial class World : MonoBehaviour
     public static  LocalizationManager Localization { get; private set; }
     public static  EntityManager Entity { get; private set; }
     public static  TimeManager Time { get; private set; }
+    public static AbilityManager Ability { get; private set; }
     
     private static void InitComponents()
     {
@@ -40,6 +41,7 @@ public partial class World : MonoBehaviour
         Localization = World.GetFrameworkComponent<LocalizationManager>();
         Entity = World.GetFrameworkComponent<EntityManager>();
         Time = World.GetFrameworkComponent<TimeManager>();
+        Ability = World.GetFrameworkComponent<AbilityManager>();
     }
     
 }

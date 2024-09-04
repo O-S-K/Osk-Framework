@@ -1,7 +1,9 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EComponent : IComponent
-{ 
+public class EComponent : MonoBehaviour, IComponent
+{
+    
 }

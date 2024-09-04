@@ -13,4 +13,5 @@ public class DataManager : GameFrameworkComponent
 
     public PlayerPrefsSystem PlayerPrefs => _playerPrefs ??= new PlayerPrefsSystem();
     private PlayerPrefsSystem _playerPrefs = new PlayerPrefsSystem();
+     
 }

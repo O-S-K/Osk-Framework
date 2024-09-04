@@ -44,7 +44,7 @@ namespace OSK
             return clone;
         }
 
-        public T Spawn<T>(T prefab, Transform parrent) where T : Component
+        public T Spawn<T>(T prefab, Transform parent) where T : Component
         {
             if (!prefabLookup.ContainsKey(prefab))
             {
@@ -56,7 +56,7 @@ namespace OSK
             if (clone != null)
             {
                 clone.gameObject.SetActive(true);
-                clone.transform.SetParent(parrent);
+                clone.transform.SetParent(parent);
 
                 instanceLookup.Add(clone, pool);
                 dirty = true;

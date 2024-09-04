@@ -29,6 +29,7 @@ public class WorldEditor : Editor
           DrawStaticFieldCheck("Localization", World.Localization);
           DrawStaticFieldCheck("Entity", World.Entity);
           DrawStaticFieldCheck("Time", World.Time);
+          DrawStaticFieldCheck("Ability", World.Ability);
      }
 
      private void DrawStaticFieldCheck(string label, object value)

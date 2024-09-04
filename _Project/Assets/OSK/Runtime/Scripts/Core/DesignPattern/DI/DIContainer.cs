@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using CustomInspector;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class DIContainer : MonoBehaviour
 {
+    [ShowInInspector]
     private  Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
 
     public  void Bind<TInterface, TImplementation>() where TImplementation : TInterface, new()

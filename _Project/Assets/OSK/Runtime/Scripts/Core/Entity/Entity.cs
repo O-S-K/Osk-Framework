@@ -1,40 +1,58 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Entity : IEntity
 {
-    public int ID { get; private set; }
-    public GameObject gameObject { get; }
-    public bool IsActive { get; private set; }
+    public int ID { get; set; }
+    public GameObject gameObject { get; set; }
+    public bool IsActive { get; set; }
+    
+    public List<EComponent> components = new List<EComponent>();
 
-    public Entity(int id, GameObject gameObject)
+    public Entity()
     {
-        ID = id;
-        this.gameObject = gameObject;
-        IsActive = true;
     }
+    
+
+    public T Add<T>() where T : EComponent
+    {
+        if(components.Any(c => c.GetType() == typeof(T)))
+        {
+            Debug.LogError("Component " + typeof(T) + " already exists");
+            return default;
+        }
+        var component = gameObject.AddComponent<T>();
+        components.Add(component);
+        return component as T;
+    }
+
+    public T Get<T>() where T : EComponent
+    {
+        return (T)components.FirstOrDefault(c => c.GetType() == typeof(T));
+    }
+
 
     public void Show()
     {
-        this.gameObject.SetActive(true);
+        gameObject.SetActive(true);
         IsActive = true;
     }
 
     public void Hide()
     {
-        this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
         IsActive = false;
     }
 
     public void SetParent(Transform parent)
     {
-        this.gameObject.transform.SetParent(parent);
+        gameObject.transform.SetParent(parent);
     }
 
-    public void SetParrentNull()
+    public void SetParentNull()
     {
-        this.gameObject.transform.SetParent(null);
+        gameObject.transform.SetParent(null);
     }
-
 }

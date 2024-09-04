@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace OSK
 {
@@ -9,14 +8,16 @@ namespace OSK
     public class Popup : MonoBehaviour
     {
         [Header("Settings")] [SerializeField] private bool disableWhenNextPopupOpens;
-
         [Header("Events")] [SerializeField] private UnityEvent _afterInitialized;
         [SerializeField] private UnityEvent _beforeOpened;
         [SerializeField] private UnityEvent _afterOpened;
         [SerializeField] private UnityEvent _beforeClosed;
         [SerializeField] private UnityEvent _afterClosed;
 
-        public bool DisableWhenNextPopupOpens => disableWhenNextPopupOpens;
+        public bool DisableWhenNextPopupOpens 
+        {
+            get => disableWhenNextPopupOpens;
+        }
 
         private UITransition _uiTransition;
         private PopupManager _popupManager;
@@ -31,6 +32,20 @@ namespace OSK
             _uiTransition = GetComponent<UITransition>();
             _uiTransition.Initialize();
             _afterInitialized.Invoke();
+        }
+        
+        public void SetSetSiblingIndex(int index)
+        {
+            transform.SetSiblingIndex(index);
+        }
+        
+        public void SetOderInLayer(int order)
+        {
+            var canvas = GetComponent<Canvas>();
+            if (canvas != null)
+            {
+                canvas.sortingOrder = order;
+            }
         }
 
         public virtual void Show()

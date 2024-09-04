@@ -1,76 +1,78 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using CustomInspector;
 using UnityEngine;
 
 public class EntityManager : GameFrameworkComponent
 {
-    private Queue<Entity> inactiveEntities = new Queue<Entity>();
+    [ShowInInspector, SerializeField] 
     private List<Entity> activeEntities = new List<Entity>();
 
-    public Entity Create(Entity entity, int ID)
+    public Entity Create(string name)
     {
-        if (inactiveEntities.Count > 0)
+        var entity = new Entity();
+        entity.gameObject =  new GameObject("E." + name);
+        activeEntities.Add(entity);
+        return entity;
+    }  
+    
+    public Entity Create(IEntity entity, int id)
+    {
+        if(activeEntities.Any(e => e.ID == id))
         {
-            Entity _entity = inactiveEntities.Dequeue();
-            _entity.Show();
-            activeEntities.Add(_entity);
-            return _entity;
+            Debug.LogError("Entity with ID " + id + " already exists");
+            return null;
         }
-        else
-        {
-            Entity newEntity = CreateNew(entity, ID);
-            activeEntities.Add(newEntity);
-            return newEntity;
-        }
+        
+        var newEntity = new Entity();
+        newEntity.ID = id;
+        newEntity.gameObject = Instantiate(entity.gameObject);
+        activeEntities.Add(newEntity);
+        return newEntity;
     }
-
-    public Entity Get(Entity entity)
+    
+    public Entity Get(int id)
     {
-        foreach (var e in activeEntities)
-        {
-            if (e.ID == entity.ID)
-            {
-                return e;
-            }
-        }
-
-        return null;
+        return activeEntities.FirstOrDefault(e => e.ID == id);
     }
-
-    private Entity CreateNew(Entity entity, int id)
+    
+    public Entity Get<T>() where T : Component
     {
-        var entityGameObject = Instantiate(entity.gameObject);
-        Entity _entity = new Entity(id, entityGameObject);
-        return _entity;
+        return activeEntities.FirstOrDefault(e => e.gameObject.GetComponent<T>() != null);
     }
-
-    public void Release(Entity entity)
+    
+    public Entity GetByID(int id)
     {
-        if (activeEntities.Contains(entity))
-        {
-            entity.Hide();
-            activeEntities.Remove(entity);
-            AddEntityToPool(entity);
-        }
-        else
-        {
-            Debug.LogError("Entity not managed by this manager.");
-        }
+        return activeEntities.FirstOrDefault(e => e.ID == id);
     }
-
-    private void AddEntityToPool(Entity entity)
+    
+    public List<Entity> GetAll()
     {
-        inactiveEntities.Enqueue(entity);
-    }
-
-    public void DestroyAllEntities()
+        return activeEntities;
+    } 
+    
+    public void Destroy(int id)
     {
-        foreach (Entity entity in activeEntities)
+        var entity = activeEntities.FirstOrDefault(e => e.ID == id);
+        if(entity != null)
         {
             Destroy(entity.gameObject);
+            activeEntities.Remove(entity);
         }
-
-        activeEntities.Clear();
-        inactiveEntities.Clear();
+    }
+    
+    public void Destroy(Entity entity)
+    {
+        if(activeEntities.Contains(entity))
+        {
+            Destroy(entity.gameObject);
+            activeEntities.Remove(entity);
+        } 
+    }
+    
+    public void Remove(Entity entity)
+    {
+        activeEntities.Remove(entity);
     }
 }

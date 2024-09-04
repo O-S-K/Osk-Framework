@@ -56,7 +56,7 @@ public partial class World : MonoBehaviour
 
         public static void Shutdown(ShutdownType shutdownType)
         {
-            Debug.Log($"Shutdown Game Framework ({0})..." + shutdownType);
+            Debug.Log($"Shutdown Game Framework ({shutdownType})...");
 
             s_GameFrameworkComponents.Clear();
 
@@ -96,7 +96,7 @@ public partial class World : MonoBehaviour
         {
             if (current.Value.GetType() == type)
             {
-                Debug.Log($"Game Framework component type '{0}' is already exist." + type.FullName);
+                Debug.Log($"Game Framework component type {type.FullName} is already exist.");
                 return;
             }
 

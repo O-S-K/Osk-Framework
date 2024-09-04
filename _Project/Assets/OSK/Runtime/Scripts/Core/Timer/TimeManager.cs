@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using CustomInspector;
 using UnityEngine;
 
 public class TimeManager : GameFrameworkComponent
 {
     // List to keep track of all active timers
+    [ShowInInspector]
     private List<Timer> timers = new List<Timer>();
 
 
@@ -16,6 +18,7 @@ public class TimeManager : GameFrameworkComponent
         timers.Add(newTimer);
         return newTimer;
     }
+    
 
     // Method to update all timers (called in FixedUpdate)
     private void FixedUpdate()

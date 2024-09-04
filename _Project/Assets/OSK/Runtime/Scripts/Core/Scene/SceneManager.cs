@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using CustomInspector;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +13,8 @@ namespace OSK
         public System.Action<float> OnLoadingProgress;
         public System.Action OnLoadingComplete;
         public System.Action<string> OnLoadingFailed;
+        
+        [ReadOnly, SerializeField]
         private string currentSceneName;
 
 
@@ -27,10 +30,11 @@ namespace OSK
                 StartCoroutine(LoadSceneAsyncCoroutine(sceneName, loadSceneMode));
             }
         }
-        
+
         public void LoadSceneOnTime(string sceneName, float timeCompleted)
         {
             StartCoroutine(IELoadSceneOnTime(sceneName, timeCompleted));
+
             IEnumerator IELoadSceneOnTime(string sceneName, float timeCompleted)
             {
                 OnLoadingStart?.Invoke();
