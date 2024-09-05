@@ -7,7 +7,7 @@ public  class ServiceLocator
 {
     private static readonly ConcurrentDictionary<Type, MonoBehaviour> _services = new();
 
-    public static void RegisterService<T>(T service) where T : MonoBehaviour
+    public static void Register<T>(T service) where T : MonoBehaviour
     {
         var type = typeof(T);
         if (_services.ContainsKey(type))
@@ -21,17 +21,17 @@ public  class ServiceLocator
         }
     }
 
-    public static T GetService<T>() where T : MonoBehaviour
+    public static T Get<T>() where T : MonoBehaviour
     {
         var type = typeof(T);
         if (_services.TryGetValue(type, out var service))
         {
             return (T)service;
         }
-        throw new Exception($"Service of type {type} not found");
+        throw new Exception( $"Service of type {type} not found");
     }
 
-    public static void UnregisterService<T>() where T : MonoBehaviour
+    public static void Unregister<T>() where T : MonoBehaviour
     {
         var type = typeof(T);
         _services.TryRemove(type, out _);
