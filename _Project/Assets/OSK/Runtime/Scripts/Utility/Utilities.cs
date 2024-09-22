@@ -40,7 +40,7 @@ namespace OSK.Utils
                 sb.Append(hash[i].ToString("x2"));
             }
 
-            Logger.Log("CalculateMD5Hash" +  sb.ToString());
+            Debug.Log("CalculateMD5Hash" +  sb.ToString());
             return sb.ToString();
         }
 

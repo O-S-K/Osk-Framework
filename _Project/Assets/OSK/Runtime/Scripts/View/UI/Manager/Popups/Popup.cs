@@ -1,4 +1,5 @@
 using System;
+using CustomInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,23 +8,32 @@ namespace OSK
     [RequireComponent(typeof(UITransition))]
     public class Popup : MonoBehaviour
     {
-        [Header("Settings")] [SerializeField] private bool disableWhenNextPopupOpens;
-        [Header("Events")] [SerializeField] private UnityEvent _afterInitialized;
-        [SerializeField] private UnityEvent _beforeOpened;
-        [SerializeField] private UnityEvent _afterOpened;
-        [SerializeField] private UnityEvent _beforeClosed;
-        [SerializeField] private UnityEvent _afterClosed;
+        [Header("Settings")] 
+        [SerializeField] private bool disableWhenNextPopupOpens;
+        
+        [Header("Events")] 
+        [SerializeField] private bool showEvent;
+        [ShowIf(nameof(showEvent)), SerializeField] private UnityEvent _afterInitialized;
+        [ShowIf(nameof(showEvent)), SerializeField] private UnityEvent _beforeOpened;
+        [ShowIf(nameof(showEvent)), SerializeField] private UnityEvent _afterOpened;
+        [ShowIf(nameof(showEvent)), SerializeField] private UnityEvent _beforeClosed;
+        [ShowIf(nameof(showEvent)), SerializeField] private UnityEvent _afterClosed;
 
         public bool DisableWhenNextPopupOpens 
         {
             get => disableWhenNextPopupOpens;
         }
-
+      
         private UITransition _uiTransition;
         private PopupManager _popupManager;
         
         private bool _isShowing;
         public bool IsShowing => _isShowing;
+
+        // private void OnValidate()
+        // {
+        //     name = GetType().Name;
+        // }
 
         public virtual void Initialize(PopupManager popupManager)
         {

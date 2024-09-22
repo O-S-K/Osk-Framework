@@ -10,20 +10,19 @@ public enum ShutdownType : byte
     Quit,
 }
 
-[DefaultExecutionOrder(-101)] 
+[DefaultExecutionOrder(-101)]
 public partial class World : MonoBehaviour
 {
-    public static readonly GameFrameworkLinkedList<GameFrameworkComponent> s_GameFrameworkComponents =
-        new GameFrameworkLinkedList<GameFrameworkComponent>();
+    public static readonly GameFrameworkLinkedList<GameFrameworkComponent> SGameFrameworkComponents = new();
 
     public static T GetFrameworkComponent<T>() where T : GameFrameworkComponent
     {
         return (T)Get(typeof(T));
     }
-
-    public static GameFrameworkComponent Get(Type type)
+ 
+    private static GameFrameworkComponent Get(Type type)
     {
-        LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+        var current = SGameFrameworkComponents.First;
         while (current != null)
         {
             if (current.Value.GetType() == type)
@@ -39,7 +38,7 @@ public partial class World : MonoBehaviour
 
     public static GameFrameworkComponent Get(string typeName)
     {
-        LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+        var current = SGameFrameworkComponents.First;
         while (current != null)
         {
             Type type = current.Value.GetType();
@@ -54,32 +53,32 @@ public partial class World : MonoBehaviour
         return null;
     }
 
-        public static void Shutdown(ShutdownType shutdownType)
+    public static void Shutdown(ShutdownType shutdownType)
+    {
+        Debug.Log($"Shutdown Game Framework ({shutdownType})...");
+
+        SGameFrameworkComponents.Clear();
+
+        if (shutdownType == ShutdownType.None)
         {
-            Debug.Log($"Shutdown Game Framework ({shutdownType})...");
-
-            s_GameFrameworkComponents.Clear();
-
-            if (shutdownType == ShutdownType.None)
-            {
-                return;
-            }
-
-            if (shutdownType == ShutdownType.Restart)
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                return;
-            }
-
-            if (shutdownType == ShutdownType.Quit)
-            {
-                Application.Quit();
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#endif
-                return;
-            }
+            return;
         }
+
+        if (shutdownType == ShutdownType.Restart)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            return;
+        }
+
+        if (shutdownType == ShutdownType.Quit)
+        {
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            return;
+        }
+    }
 
     internal static void Register(GameFrameworkComponent gameFrameworkComponent)
     {
@@ -91,7 +90,7 @@ public partial class World : MonoBehaviour
 
         Type type = gameFrameworkComponent.GetType();
 
-        LinkedListNode<GameFrameworkComponent> current = s_GameFrameworkComponents.First;
+        var current = SGameFrameworkComponents.First;
         while (current != null)
         {
             if (current.Value.GetType() == type)
@@ -103,6 +102,6 @@ public partial class World : MonoBehaviour
             current = current.Next;
         }
 
-        s_GameFrameworkComponents.AddLast(gameFrameworkComponent);
+        SGameFrameworkComponents.AddLast(gameFrameworkComponent);
     }
 }

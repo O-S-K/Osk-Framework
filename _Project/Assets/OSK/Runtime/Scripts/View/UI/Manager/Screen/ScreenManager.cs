@@ -2,13 +2,16 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using CustomInspector;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
     public class ScreenManager : MonoBehaviour
     {
-        public List<UIScreen> Screens = null;
-        public UIScreen currentScreen;
+        public ListUIScreenSO ListUIScreenSO;
+        [ShowInInspector, ReadOnly] public List<UIScreen> listScreens = new List<UIScreen>();
+        [ShowInInspector, ReadOnly] public UIScreen currentScreen;
 
         private bool isAnimating;
 
@@ -22,18 +25,28 @@ namespace OSK
 
         public void Initialize()
         {
-            if (Screens == null)
+            if(ListUIScreenSO == null)
             {
-                Debug.LogError($"[ScreenController] Screens is null");
+                Debug.LogError("[ScreenController] ListUIScreenSO is null");
                 return;
             }
-
-
-            foreach (var item in Screens)
+            
+            if(ListUIScreenSO.UIScreens == null)
             {
-                item.Initialize();
-                item.Hide();
-            } 
+                Debug.LogError("[ScreenController] ListUIScreenSO.UIScreens is null");
+                return;
+            }
+            
+            listScreens.Clear();
+            for (int i = 0; i < ListUIScreenSO.UIScreens.Count; i++)
+            {
+                var s = Instantiate(ListUIScreenSO.UIScreens[i], transform);
+                s.Initialize();
+                s.Hide();
+                s.transform.localPosition = Vector3.zero;
+                s.transform.localScale = Vector3.one;
+                listScreens.Add(s);
+            }
         }
 
 
@@ -69,15 +82,15 @@ namespace OSK
 
         public void RefreshUI()
         {
-            if (Screens != null)
-                foreach (var item in Screens)
+            if (listScreens != null)
+                foreach (var item in listScreens)
                     item.RefreshUI();
         }
 
 
         public T GetScreen<T>() where T : UIScreen
         {
-            foreach (var item in Screens)
+            foreach (var item in listScreens)
                 if (item is T)
                     return item as T;
             Debug.LogError($"[ScreenTransitionController] No Screen exists in List Screens");

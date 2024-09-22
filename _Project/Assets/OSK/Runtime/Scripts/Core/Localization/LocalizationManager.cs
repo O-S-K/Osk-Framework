@@ -5,22 +5,27 @@ using ExcelDataReader;
 using UnityEngine;
 
 /*
- * 
-Key	English         	French	                            Vietnamese
+ *
+ *  // gen for AI: https://x.com/LoloelRolo/status/1221259358585217030
+
+Key	                 	French	                            Vietnamese
 welcome_message	        Welcome to the game!	            Chào mưn bạn đến với trò chơi!
 exit_prompt	            Are you sure you want to exit?	    Bạn có chắc chắn muốn thoát không?
 
- ExcelLocalizationManager.Instance.SetLanguage("English"); // Or "Vietnamese", etc.
- .text = ExcelLocalizationManager.Instance.GetLocalizedString("welcome_message");
+ World.Localization.SetLanguage("English"); // Or "Vietnamese", etc.
+ .text = World.Localization.GetLocalizedString("welcome_message");
 */
 
  
 public class LocalizationManager : GameFrameworkComponent
 {
+    [SerializeField] private string pathToExcelFile;
+    [SerializeField] private string nameTable;
+
     private Dictionary<string, string> _localizedText;
     private string _currentLanguage;
 
-    public void LoadLocalizationData(string filePath, string languageCode)
+    public void LoadLocalizationData(string filePath, string nameTable, string languageCode)
     {
         _localizedText = new Dictionary<string, string>();
 
@@ -30,9 +35,7 @@ public class LocalizationManager : GameFrameworkComponent
             using (var reader = ExcelReaderFactory.CreateReader(stream))
             {
                 var result = reader.AsDataSet();
-
-                // Assuming the first sheet contains the localization data
-                var sheet = result.Tables[0];
+                var sheet = result.Tables[nameTable];
 
                 // First row contains column headers (language codes)
                 int languageColumnIndex = -1;
@@ -77,8 +80,8 @@ public class LocalizationManager : GameFrameworkComponent
 
     public void SetLanguage(string languageCode)
     {
-        // Reload the localization data for the new language
-        LoadLocalizationData("path/to/your/excel/file.xlsx", languageCode);
+        // path/to/your/excel/file.xlsx
+        LoadLocalizationData(pathToExcelFile, nameTable, languageCode);
         _currentLanguage = languageCode;
     }
 

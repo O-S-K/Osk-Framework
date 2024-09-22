@@ -1,79 +1,111 @@
 using System;
 using System.Collections.Generic;
+using CustomInspector;
 using UnityEngine;
 
 namespace OSK
 {
+    [System.Serializable]
+    public class PooleData
+    {
+        public Component prefab;
+        public int size;
+        public int maxCapacity;
+    }
+    
+    [System.Serializable]
+    public class PoolGroup
+    {
+        public string groupName;
+        public PooleData[] pooleDatas;
+    }
+
     public class PoolManager : GameFrameworkComponent
     {
-        public Dictionary<Component, ObjectPool<Component>> prefabLookup = new();
+        // Dictionary to store pools, keyed by group name and prefab
+        public Dictionary<string, Dictionary<Component, ObjectPool<Component>>> groupPrefabLookup = new();
         public Dictionary<Component, ObjectPool<Component>> instanceLookup = new();
 
+        [HideInInspector] public bool dirty = false;
+        private Dictionary<string, GameObject> groupObjects = new();
 
-        public bool logStatus;
-        private bool dirty = false;
 
-        public void WarmPool<T>(T prefab, int size) where T : Component
+        /// <summary>
+        /// Warms the pool for a specific prefab within a group.
+        /// </summary>
+        public void WarmPool<T>(string group, T prefab, int size) where T : Component
         {
-            if (prefabLookup.ContainsKey(prefab))
+            if (IsGroupAndPrefabExist(group, prefab))
             {
-                throw new Exception("Pool for prefab " + prefab.name + " has already been created");
+                throw new Exception($"Pool for prefab '{prefab.name}' in group '{group}' has already been created.");
             }
 
-            var pool = new ObjectPool<Component>(() => Instantiate(prefab), size);
-            prefabLookup[prefab] = pool;
+            var groupObject = GetOrCreateGroup(group);
+            
+            // Create a new pool and assign it to the correct group
+            var pool = new ObjectPool<Component>(() => Instantiate(prefab, groupObject.transform), size);
+            pool.Group = group;
+
+            if (!groupPrefabLookup.ContainsKey(group))
+            {
+                groupPrefabLookup[group] = new Dictionary<Component, ObjectPool<Component>>();
+            }
+
+            groupPrefabLookup[group][prefab] = pool;
             dirty = true;
-            //return pool as T;
         }
 
-        #region Spawns
-
-        public T Spawn<T>(T prefab) where T : Component
+        /// <summary>
+        /// Creates or retrieves an instance of a prefab within a group.
+        /// </summary>
+        public T Create<T>(string groupName, T prefab, int size = 1) where T : Component
         {
-            if (!prefabLookup.ContainsKey(prefab))
+            // Ensure the group exists
+            var groupObject = GetOrCreateGroup(groupName);
+
+            // Check if the prefab has an associated pool in the group, if not, create it
+            if (!IsGroupAndPrefabExist(groupName, prefab))
             {
-                WarmPool(prefab, 1);
+                WarmPool(groupName, prefab, size);
             }
 
-            var pool = prefabLookup[prefab];
+            // Retrieve the prefab's pool and instantiate
+            var pool = groupPrefabLookup[groupName][prefab];
             var clone = pool.GetItem() as T;
             clone.gameObject.SetActive(true);
-            clone.transform.parent = transform;
+            clone.transform.parent = groupObject.transform;  // Ensure the object is correctly parented to the group
             instanceLookup.Add(clone, pool);
             dirty = true;
             return clone;
         }
 
-        public T Spawn<T>(T prefab, Transform parent) where T : Component
+        
+        /// <summary>
+        /// Creates or retrieves the group GameObject for pooling objects.
+        /// </summary>
+        public GameObject GetOrCreateGroup(string groupName)
         {
-            if (!prefabLookup.ContainsKey(prefab))
+            if (groupObjects.ContainsKey(groupName))
             {
-                WarmPool(prefab, 1);
+                return groupObjects[groupName];
             }
 
-            var pool = prefabLookup[prefab];
-            var clone = pool.GetItem() as T;
-            if (clone != null)
-            {
-                clone.gameObject.SetActive(true);
-                clone.transform.SetParent(parent);
-
-                instanceLookup.Add(clone, pool);
-                dirty = true;
-                return clone;
-            }
-            return null;
+            // Create a new group if it doesn't exist
+            var group = new GameObject(groupName);
+            group.transform.SetParent(transform);  // Parent the group under the PoolManager
+            groupObjects[groupName] = group;
+            return group;
         }
 
-        public void RemoveItemInPool(Component component)
+        /// <summary>
+        /// Checks if both the group and prefab exist in the pool.
+        /// </summary>
+        public bool IsGroupAndPrefabExist(string groupName, Component prefab)
         {
-            var pool = prefabLookup[component];
-            instanceLookup.Remove(pool.GetItem());
+            return groupPrefabLookup.ContainsKey(groupName) && groupPrefabLookup[groupName].ContainsKey(prefab);
         }
 
-        #endregion
-
-        public void Despawn(Component clone)
+        public void Release(Component clone)
         {
             clone.gameObject.SetActive(false);
 
@@ -88,8 +120,23 @@ namespace OSK
                 Debug.LogWarning("No pool contains the object: " + clone.name);
             }
         }
+        
+        public void ReleaseAllObjectInGroup(string groupName)
+        {
+            if (groupPrefabLookup.ContainsKey(groupName))
+            {
+                foreach (var keyVal in groupPrefabLookup[groupName])
+                {
+                    keyVal.Key.gameObject.SetActive(false);
+                    keyVal.Value.ReleaseItem(keyVal.Key);
+                    instanceLookup.Clear();
+                    dirty = true;
+                }
+ 
+            }
+        }
 
-        public void DespawnAll()
+        public void ReleaseAllObjectActive()
         {
             foreach (var keyVal in instanceLookup)
             {
@@ -101,33 +148,27 @@ namespace OSK
             dirty = true;
         }
 
-        public void DestroyAll()
+        public void DestroyGroup(string groupName)
         {
-            transform.DestroyAllChildren();
-            prefabLookup.Clear();
-            instanceLookup.Clear();
+            if (groupObjects.ContainsKey(groupName))
+            {
+                Destroy(groupObjects[groupName]);
+                groupObjects.Remove(groupName);
+                groupPrefabLookup.Remove(groupName);
+                dirty = true;
+            }
+        }
+        
+        public void DestroyAllGroups()
+        {
+            foreach (var group in groupObjects)
+            {
+                Destroy(group.Value);
+            }
+
+            groupPrefabLookup.Clear();
+            groupObjects.Clear();
             dirty = true;
         }
-
-
-#if UNITY_EDITOR
-        private void Update()
-        {
-            if (logStatus && dirty)
-            {
-                PrintStatus();
-                dirty = false;
-            }
-        }
-
-        private void PrintStatus()
-        {
-            foreach (KeyValuePair<Component, ObjectPool<Component>> keyVal in prefabLookup)
-            {
-                Debug.Log(string.Format("Object Pool for Prefab: {0} In Use: {1} Total {2}", keyVal.Key.name,
-                    keyVal.Value.CountUsedItems, keyVal.Value.Count));
-            }
-        }
-#endif
     }
 }

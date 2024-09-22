@@ -5,73 +5,162 @@ using UnityEngine;
 
 public class TimeManager : GameFrameworkComponent
 {
-    // List to keep track of all active timers
-    [ShowInInspector]
-    private List<Timer> timers = new List<Timer>();
+    // Lists to keep track of all active timers
+    [ShowInInspector, ReadOnly] private List<Timer> updateTimers = new List<Timer>();
+    [ShowInInspector, ReadOnly] private List<Timer> fixedUpdateTimers = new List<Timer>();
 
+    // update every frame for a duration
 
-    // Method to create a new timer
-    public Timer Create(GameObject owner, float duration, Action onDispose = null)
+    public Timer Create(MonoBehaviour owner, float duration, bool useFixedUpdate = false, Action onDispose = null)
+    {
+        return Create(owner.gameObject, duration, useFixedUpdate, onDispose);
+    }
+    public Timer Create(GameObject owner, float duration, bool useFixedUpdate = false, Action onDispose = null)
     {
         Timer newTimer = new Timer();
         newTimer.Start(owner, duration, onDispose);
-        timers.Add(newTimer);
+        
+        if (useFixedUpdate)
+        {
+            fixedUpdateTimers.Add(newTimer);
+        }
+        else
+        {
+            updateTimers.Add(newTimer);
+        }
         return newTimer;
     }
     
+    // update every frame
+    public Timer Create(MonoBehaviour owner, bool useFixedUpdate = false)
+    {
+         return Create(owner.gameObject, useFixedUpdate);
+    }
+    public Timer Create(GameObject owner, bool useFixedUpdate = false)
+    {
+        Timer newTimer = new Timer();
+        newTimer.Start(owner, 0); 
+        newTimer.Loops(-1); 
+
+        if (useFixedUpdate)
+        {
+            fixedUpdateTimers.Add(newTimer);
+        }
+        else
+        {
+            updateTimers.Add(newTimer);
+        }
+
+        return newTimer;
+    }
+
+    // Method to update all timers (called in Update)
+    private void Update()
+    {
+        for (int i = updateTimers.Count - 1; i >= 0; i--)
+        {
+            Timer timer = updateTimers[i];
+            timer.Update();
+
+            // Remove the timer if it has been disposed
+            if (timer == null || timer.Equals(null))
+            {
+                updateTimers.RemoveAt(i);
+            }
+        }
+    }
 
     // Method to update all timers (called in FixedUpdate)
     private void FixedUpdate()
     {
-        for (int i = timers.Count - 1; i >= 0; i--)
+        for (int i = fixedUpdateTimers.Count - 1; i >= 0; i--)
         {
-            Timer timer = timers[i];
+            Timer timer = fixedUpdateTimers[i];
             timer.FixedUpdate();
 
             // Remove the timer if it has been disposed
             if (timer == null || timer.Equals(null))
             {
-                timers.RemoveAt(i);
+                fixedUpdateTimers.RemoveAt(i);
             }
         }
     }
 
-    // method to pause all timers
+    // Method to pause all timers
+    public void PauseTimer(Timer timer)
+    {
+        timer.Pause();
+    }
+    
+    [Button]
     public void PauseAllTimers()
     {
-        foreach (Timer timer in timers)
+        foreach (Timer timer in updateTimers)
+        {
+            timer.Pause();
+        }
+        foreach (Timer timer in fixedUpdateTimers)
         {
             timer.Pause();
         }
     }
 
-    // method to resume all timers
+    // Method to resume all timers
+    public void ResumeTimer(Timer timer)
+    {
+        timer.Resume();
+    }
+    
+    [Button]
     public void ResumeAllTimers()
     {
-        foreach (Timer timer in timers)
+        foreach (Timer timer in updateTimers)
+        {
+            timer.Resume();
+        }
+        foreach (Timer timer in fixedUpdateTimers)
         {
             timer.Resume();
         }
     }
+    
+    
 
     // Method to remove a specific timer
     public void RemoveTimer(Timer timer)
     {
-        if (timers.Contains(timer))
+        if (updateTimers.Contains(timer))
         {
             timer.Dispose();
-            timers.Remove(timer);
+            updateTimers.Remove(timer);
+        }
+        else if (fixedUpdateTimers.Contains(timer))
+        {
+            timer.Dispose();
+            fixedUpdateTimers.Remove(timer);
         }
     }
 
+    public void UpdateListTimer()
+    {
+        updateTimers.RemoveAll(timer => timer.count == 0 || timer.owner == null);
+        fixedUpdateTimers.RemoveAll(timer => timer.count == 0 || timer.owner == null);
+    }
+
     // Method to clear all timers
+    [Button]
     public void ClearAllTimers()
     {
-        foreach (Timer timer in timers)
+        foreach (Timer timer in updateTimers)
         {
             timer.Dispose();
         }
+        updateTimers.Clear();
 
-        timers.Clear();
+        foreach (Timer timer in fixedUpdateTimers)
+        {
+            timer.Dispose();
+        }
+        fixedUpdateTimers.Clear();
     }
 }

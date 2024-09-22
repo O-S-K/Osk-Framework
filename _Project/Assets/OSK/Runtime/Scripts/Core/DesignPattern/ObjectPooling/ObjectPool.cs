@@ -20,6 +20,8 @@ namespace OSK
             get => _lookupDic.Count;
         }
 
+        public string Group;
+
         public ObjectPool(Func<T> factoryFunc, int initialSize)
         {
             this._factoryFunc = factoryFunc;
@@ -66,6 +68,16 @@ namespace OSK
 
             _lookupDic.Add(container.Item, container);
             return container.Item;
+        }
+        
+        public List<T> GetAllItems()
+        {
+            List<T> items = new List<T>();
+            foreach (var container in _listPool)
+            {
+                items.Add(container.Item);
+            }
+            return items;
         }
 
 

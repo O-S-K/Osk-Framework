@@ -1,38 +1,60 @@
 ﻿using System;
+using CustomInspector;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
+    public enum TransitionType
+    {
+        None,
+        Fade,
+        Scale,
+        SlideRight,
+        SlideLeft,
+        SlideUp,
+        SlideDown
+    }
+
+    [System.Serializable]
+    public class TweenSettings
+    {
+        public TransitionType transition;
+
+        [HideIf(nameof(transition), TransitionType.None)]
+        public float time = 0.25f;
+
+        [HideIf(nameof(transition), TransitionType.None), HideIf(nameof(useCustomCurve), true)]
+        public bool useEase = false;
+
+        [ShowIf(nameof(useEase))] public Ease ease = Ease.OutQuad;
+
+        [ShowIf(nameof(transition), TransitionType.Scale)]
+        public int initScale = 0;
+
+
+        [HideIf(nameof(transition), TransitionType.None), HideIf(nameof(useEase), true)]
+        public bool useCustomCurve = false;
+
+        [ShowIf(nameof(useCustomCurve))] 
+        public AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    }
+
     [RequireComponent(typeof(CanvasGroup), typeof(RectTransform))]
     public class UITransition : MonoBehaviour
     {
-        public enum TransitionType
-        {
-            None,
-            Fade,
-            Zoom,
-            SlideRight,
-            SlideLeft,
-            SlideUp,
-            SlideDown
-        }
+        [Header("Content UI")] [SerializeField]
+        private RectTransform contentUI;
 
-        [System.Serializable]
-        public class TweenSettings
-        {
-            public float duration = 0.5f;
-            public Ease ease = Ease.OutQuad;
-        }
-
-        [SerializeField] private TransitionType _openingTransition;
-        [SerializeField] private TransitionType _closingTransition;
-        
         [SerializeField] private TweenSettings _openingTweenSettings;
         [SerializeField] private TweenSettings _closingTweenSettings;
 
         private CanvasGroup _canvasGroup;
         private RectTransform _rectTransform;
+
+        // Property to return either contentUI or _rectTransform
+        private RectTransform TargetRectTransform => contentUI != null ? contentUI : _rectTransform;
 
         public void Initialize()
         {
@@ -44,7 +66,7 @@ namespace OSK
         {
             ResetTransitionState();
 
-            if (_openingTransition == TransitionType.None)
+            if (_openingTweenSettings.transition == TransitionType.None)
             {
                 onComplete();
                 return;
@@ -52,121 +74,129 @@ namespace OSK
 
             Tween tween = null;
 
-            switch (_openingTransition)
+            switch (_openingTweenSettings.transition)
             {
                 case TransitionType.Fade:
                     _canvasGroup.alpha = 0;
-                    tween = _canvasGroup.DOFade(1, _openingTweenSettings.duration)
-                        .SetEase(_openingTweenSettings.ease);
+                    ApplyTween(_canvasGroup.DOFade(1, _openingTweenSettings.time));
                     break;
 
-                case TransitionType.Zoom:
-                    _rectTransform.localScale = Vector3.zero;
-                    tween = _rectTransform.DOScale(Vector3.one, _openingTweenSettings.duration)
-                        .SetEase(_openingTweenSettings.ease);
+                case TransitionType.Scale:
+                    TargetRectTransform.localScale = Vector3.one * _openingTweenSettings.initScale;
+                    ApplyTween(TargetRectTransform.DOScale(Vector3.one, _openingTweenSettings.time));
                     break;
 
                 case TransitionType.SlideRight:
-                    _rectTransform.anchoredPosition = new Vector2(-_rectTransform.rect.width, 0);
-                    tween = _rectTransform.DOAnchorPosX(0, _openingTweenSettings.duration)
-                        .SetEase(_openingTweenSettings.ease);
+                    SetAnchoredPosition(new Vector2(-TargetRectTransform.rect.width, 0));
+                    ApplyTween(TargetRectTransform.DOAnchorPosX(0, _openingTweenSettings.time));
                     break;
 
                 case TransitionType.SlideLeft:
-                    _rectTransform.anchoredPosition = new Vector2(_rectTransform.rect.width, 0);
-                    tween = _rectTransform.DOAnchorPosX(0, _openingTweenSettings.duration)
-                        .SetEase(_openingTweenSettings.ease);
+                    SetAnchoredPosition(new Vector2(TargetRectTransform.rect.width, 0));
+                    ApplyTween(TargetRectTransform.DOAnchorPosX(0, _openingTweenSettings.time));
                     break;
 
                 case TransitionType.SlideUp:
-                    _rectTransform.anchoredPosition = new Vector2(0, -_rectTransform.rect.height);
-                    tween = _rectTransform.DOAnchorPosY(0, _openingTweenSettings.duration)
-                        .SetEase(_openingTweenSettings.ease);
+                    SetAnchoredPosition(new Vector2(0, -TargetRectTransform.rect.height));
+                    ApplyTween(TargetRectTransform.DOAnchorPosY(0, _openingTweenSettings.time));
                     break;
 
                 case TransitionType.SlideDown:
-                    _rectTransform.anchoredPosition = new Vector2(0, _rectTransform.rect.height);
-                    tween = _rectTransform.DOAnchorPosY(0, _openingTweenSettings.duration)
-                        .SetEase(_openingTweenSettings.ease);
+                    SetAnchoredPosition(new Vector2(0, TargetRectTransform.rect.height));
+                    ApplyTween(TargetRectTransform.DOAnchorPosY(0, _openingTweenSettings.time));
                     break;
             }
 
-            tween.OnComplete(() =>
+            tween?.OnComplete(() =>
             {
                 ResetTransitionState();
                 onComplete();
             });
         }
 
+        private void SetAnchoredPosition(Vector2 position)
+        {
+            TargetRectTransform.anchoredPosition = position;
+        }
+
+        private void ApplyTween(Tween tween)
+        {
+            if (_openingTweenSettings.useEase)
+            {
+                tween.SetEase(_openingTweenSettings.ease);
+            }
+            else if (_openingTweenSettings.useCustomCurve)
+            {
+                tween.SetEase(_openingTweenSettings.curve);
+            }
+            else
+            {
+                tween.SetEase(Ease.Linear);
+            }
+        }
+
         public void PlayClosingTransition(Action onComplete)
         {
             ResetTransitionState();
 
-            if (_closingTransition == TransitionType.None)
+            if (_closingTweenSettings.transition == TransitionType.None)
             {
                 onComplete();
                 return;
             }
 
-            bool isCompleted = false;
+            Tween tween = null;
 
-            switch (_closingTransition)
+            switch (_closingTweenSettings.transition)
             {
                 case TransitionType.Fade:
-                    _canvasGroup.DOFade(0, _closingTweenSettings.duration)
-                        .SetEase(_closingTweenSettings.ease).OnComplete(() =>
-                        {
-                            ResetTransitionState();
-                            onComplete();
-                        });
+                    tween = _canvasGroup.DOFade(0, _closingTweenSettings.time);
                     break;
-                case TransitionType.Zoom:
-                    _rectTransform.DOScale(Vector3.zero, _closingTweenSettings.duration)
-                        .SetEase(_closingTweenSettings.ease).OnComplete(() =>
-                        {
-                            ResetTransitionState();
-                            onComplete();
-                        });
+
+                case TransitionType.Scale:
+                    tween = TargetRectTransform.DOScale(Vector3.zero, _closingTweenSettings.time);
                     break;
+
                 case TransitionType.SlideRight:
-                    _rectTransform.DOAnchorPosX(_rectTransform.rect.width, _closingTweenSettings.duration)
-                        .SetEase(_closingTweenSettings.ease).OnComplete(() =>
-                        {
-                            ResetTransitionState();
-                            onComplete();
-                        });
+                    tween = TargetRectTransform.DOAnchorPosX(TargetRectTransform.rect.width,
+                        _closingTweenSettings.time);
                     break;
+
                 case TransitionType.SlideLeft:
-                    _rectTransform.DOAnchorPosX(-_rectTransform.rect.width, _closingTweenSettings.duration)
-                        .SetEase(_closingTweenSettings.ease).OnComplete(() =>
-                        {
-                            ResetTransitionState();
-                            onComplete();
-                        });
+                    tween = TargetRectTransform.DOAnchorPosX(-TargetRectTransform.rect.width,
+                        _closingTweenSettings.time);
                     break;
+
                 case TransitionType.SlideUp:
-                    _rectTransform.DOAnchorPosY(_rectTransform.rect.height, _closingTweenSettings.duration)
-                        .SetEase(_closingTweenSettings.ease).OnComplete(() => isCompleted = true);
+                    tween = TargetRectTransform.DOAnchorPosY(TargetRectTransform.rect.height,
+                        _closingTweenSettings.time);
                     break;
+
                 case TransitionType.SlideDown:
-                    _rectTransform.DOAnchorPosY(-_rectTransform.rect.height, _closingTweenSettings.duration)
-                        .SetEase(_closingTweenSettings.ease).OnComplete(() =>
-                        {
-                            ResetTransitionState();
-                            onComplete();
-                        });
+                    tween = TargetRectTransform.DOAnchorPosY(-TargetRectTransform.rect.height,
+                        _closingTweenSettings.time);
                     break;
+            }
+
+            if (tween != null)
+            {
+                ApplyTween(tween);
+                tween.OnComplete(() =>
+                {
+                    ResetTransitionState();
+                    onComplete();
+                });
             }
         }
 
         private void ResetTransitionState()
         {
-            DOTween.Kill(_rectTransform);
+            DOTween.Kill(TargetRectTransform);
             DOTween.Kill(_canvasGroup);
 
             _canvasGroup.alpha = 1;
-            _rectTransform.localScale = Vector3.one;
-            _rectTransform.anchoredPosition = Vector2.zero;
+            TargetRectTransform.localScale = Vector3.one;
+            TargetRectTransform.anchoredPosition = Vector2.zero;
         }
     }
 }

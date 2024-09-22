@@ -33,9 +33,9 @@ public class UIManager : GameFrameworkComponent
         return _screenManager.GetScreen<T>();
     }
     
-    public T ShowPopupFormRes<T>(string path) where T : Popup
+    public T ShowPopup<T>(string path, bool isHidePrevPopup = true) where T : Popup
     {
-        return _popupController.Create<T>(path);
+        return _popupController.Create<T>(path, isHidePrevPopup);
     }
     
     public void DeletePopup<T>(T popup) where T : Popup
@@ -43,9 +43,9 @@ public class UIManager : GameFrameworkComponent
         _popupController.Delete<T>(popup);
     }
 
-    public T ShowPopup<T>() where T : Popup
+    public T ShowPopup<T>(bool isHidePrevPopup = true) where T : Popup
     {
-        return _popupController.Show<T>();
+        return _popupController.Show<T>(isHidePrevPopup);
     }
 
     public T GetPopup<T>() where T : Popup

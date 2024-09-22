@@ -24,7 +24,7 @@ namespace OSK
             {
                 if (data == null) return;
                 var path = GetPath(fileName, isSaveToDocument);
-                Logger.Log("Path File" + path);
+                Debug.Log("Path File" + path);
 
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 using (FileStream file = File.Open(path, FileMode.OpenOrCreate))
@@ -33,12 +33,12 @@ namespace OSK
                     //Utils.Utilities.CalculateMD5Hash(file.ToString());
                     file.Close();
                     RefreshEditor();
-                    Logger.Log("[Save File Susscess]: " + fileName + " " + DateTime.Now + "\n" + path);
+                    Debug.Log("[Save File Susscess]: " + fileName + " " + DateTime.Now + "\n" + path);
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("[Save File Exception]: " + fileName + " " + ex.Message);
+                Debug.LogError("[Save File Exception]: " + fileName + " " + ex.Message);
             }
             finally
             {
@@ -61,21 +61,21 @@ namespace OSK
                     {
                         data = (T)binaryFormatter.Deserialize(file);
                         file.Close();
-                        Logger.Log("[Load File Susscess]: " + fileName + ".txt");
-                        Logger.Log("Path File" + path);
+                        Debug.Log("[Load File Susscess]: " + fileName + ".txt");
+                        Debug.Log("Path File" + path);
                     }
 
                     return data;
                 }
                 else
                 {
-                    Logger.LogError("[Load File Error]: " + fileName + " " + "NOT found");
+                    Debug.LogError("[Load File Error]: " + fileName + " " + "NOT found");
                     return default(T);
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("[Load File Exception]: " + fileName + " " + ex.Message);
+                Debug.LogError("[Load File Exception]: " + fileName + " " + ex.Message);
                 return default(T);
             }
             finally
@@ -89,7 +89,7 @@ namespace OSK
         {
             var path = GetPath(fileName, isSaveToDocument);
             
-            Logger.Log("Path Save: " + path);
+            Debug.Log("Path Save: " + path);
             FileStream fileStream = new FileStream(path, FileMode.Create);
             using (StreamWriter writer = new StreamWriter(fileStream))
             {
@@ -106,7 +106,7 @@ namespace OSK
             }
             else
             {
-                Logger.LogError("File Not Found !");
+                Debug.LogError("File Not Found !");
             }
             return null;
         }
@@ -118,18 +118,18 @@ namespace OSK
                 var path = GetPath(fileName, isSaveToDocument);
                 if (File.Exists(path))
                 {
-                    Logger.Log("[Delete File Susscess]: " + fileName);
+                    Debug.Log("[Delete File Susscess]: " + fileName);
                     File.Delete(path);
                     RefreshEditor();
                 }
                 else
                 {
-                    Logger.LogError("[Delete File Error]: " + fileName + " " + "NOT found");
+                    Debug.LogError("[Delete File Error]: " + fileName + " " + "NOT found");
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError("[Delete File Exception]: " + fileName + " " + ex.Message);
+                Debug.LogError("[Delete File Exception]: " + fileName + " " + ex.Message);
             }
             finally
             {

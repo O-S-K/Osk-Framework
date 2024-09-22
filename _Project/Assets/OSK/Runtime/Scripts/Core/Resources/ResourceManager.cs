@@ -8,7 +8,6 @@ public class ResourceManager : GameFrameworkComponent
     private Dictionary<string, int> _referenceCount = new Dictionary<string, int>();
     private Dictionary<string, AssetBundle> _assetBundleCache = new Dictionary<string, AssetBundle>();
 
-   
     // Load from Resources folder
     public T Load<T>(string path) where T : Object
     {
@@ -17,7 +16,6 @@ public class ResourceManager : GameFrameworkComponent
             _referenceCount[path]++;
             return (T)_resourceCache[path];
         }
-
         T resource = Resources.Load<T>(path);
         if (resource != null)
         {
@@ -30,6 +28,22 @@ public class ResourceManager : GameFrameworkComponent
         }
 
         return resource;
+    }
+    
+    public T Spawn<T>(string path) where T : Object
+    {
+        T resource = Load<T>(path);
+        if (resource == null)
+        {
+            Debug.LogError("Failed to spawn resource at path: " + path);
+            return null;
+        }
+        return Instantiate(resource) as T;
+    }
+    
+    public bool PathExists(string path)
+    {
+        return Resources.Load(path) != null;
     }
 
     // Load from AssetBundle

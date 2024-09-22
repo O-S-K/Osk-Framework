@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 638d791060df5c3449e31428da83708d, type: 3}
+  m_Name: New Fireball Ability Example
+  m_EditorClassIdentifier: 
+  abilityName: Fireball
+  cooldownTime: 1
+  duration: 1
+  isOnCooldown: 0
+  fireballPrefab: {fileID: 759144484113157739, guid: 0ce311cbb71d5e244b01b2108d677b27, type: 3}
+  fireballSpeed: 5
+  damage: 11

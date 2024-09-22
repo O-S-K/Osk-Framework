@@ -32,6 +32,10 @@ public class Entity : IEntity
     {
         return (T)components.FirstOrDefault(c => c.GetType() == typeof(T));
     }
+    
+    public virtual void OnTick()
+    {
+    }
 
 
     public void Show()

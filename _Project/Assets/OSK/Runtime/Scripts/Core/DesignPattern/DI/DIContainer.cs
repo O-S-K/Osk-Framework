@@ -1,25 +1,22 @@
 using System;
-using System.Collections.Generic;
-using CustomInspector;
-using Unity.VisualScripting;
 using UnityEngine;
+using CustomInspector;
+using System.Collections.Generic;
 
 public class DIContainer : MonoBehaviour
 {
-    [ShowInInspector]
-    private  Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
-
-    public  void Bind<TInterface, TImplementation>() where TImplementation : TInterface, new()
+    [ShowInInspector, ReadOnly] private Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
+    public void Bind<TInterface, TImplementation>() where TImplementation : TInterface, new()
     {
         bindings[typeof(TInterface)] = () => new TImplementation();
     }
 
-    public  void BindAndProvide<TInterface>(Func<object> provider)
+    public void BindAndProvide<TInterface>(Func<object> provider)
     {
         bindings[typeof(TInterface)] = provider;
     }
 
-    public  TInterface Resolve<TInterface>()
+    public TInterface Resolve<TInterface>()
     {
         if (bindings.ContainsKey(typeof(TInterface)))
         {
@@ -39,16 +36,18 @@ public class DIContainer : MonoBehaviour
         }
     }
 
-    public  void Inject(object target)
+    public void Inject(object target)
     {
         var targetType = target.GetType();
-        var fields = targetType.GetFields(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        var fields = targetType.GetFields(System.Reflection.BindingFlags.NonPublic |
+                                          System.Reflection.BindingFlags.Public |
+                                          System.Reflection.BindingFlags.Instance);
 
         foreach (var field in fields)
         {
             if (bindings.ContainsKey(field.FieldType))
             {
-                var value = bindings [field.FieldType]();
+                var value = bindings[field.FieldType]();
                 field.SetValue(target, value);
             }
         }

@@ -1,47 +1,47 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using CustomInspector;
 using UnityEngine;
 
 namespace OSK
 {
+    public class PlayingSound
+    {
+        public SoundInfo soundInfo = null;
+        public AudioSource audioSource = null;
+    }
+
     public class SoundManager : GameFrameworkComponent
     {
-        [System.Serializable]
-        public class SoundInfo
-        {
-            public string id = "";
-            public AudioClip audioClip = null;
-            public SoundType type = SoundType.SoundEffect;
-            public float clipVolume = 1;
-            public float pitch = 1;
-        }
+        [ShowInInspector, ReadOnly] private List<SoundInfo> soundInfos;
+        [ShowInInspector, ReadOnly] private List<PlayingSound> MusicInfos;
 
-        private class PlayingSound
-        {
-            public SoundInfo soundInfo = null;
-            public AudioSource audioSource = null;
-        }
+        public SoundData soundData;
+        private AudioSource soundObject;
 
-        public enum SoundType
-        {
-            SoundEffect,
-            Music
-        }
+        private bool isMusicOn;
+        private bool isSoundEffectsOn;
 
-        public List<SoundInfo> soundInfos = null;
-        private List<PlayingSound> MusicInfos;
-
-        public bool IsMusicOn { get; private set; }
-        public bool IsSoundEffectsOn { get; private set; }
-
-
+        
         protected override void Awake()
         {
             base.Awake();
+
+            soundObject = new GameObject().AddComponent<AudioSource>();
+            soundObject.transform.parent = transform;
             MusicInfos = new List<PlayingSound>();
 
-            IsMusicOn = true;
-            IsSoundEffectsOn = true;
+            isMusicOn = true;
+            isSoundEffectsOn = true;
+
+            if (soundData != null)
+            {
+                soundInfos = soundData.ListSoundInfos;
+            }
+            else
+            {
+                Debug.LogWarning("SoundData is not assigned in SoundManager.");
+            }
         }
 
 
@@ -57,7 +57,7 @@ namespace OSK
                 // If the Audio Source is no longer playing then return it to the pool so it can be re-used
                 if (!audioSource.isPlaying)
                 {
-                    Destroy(audioSource.gameObject);
+                    World.Pool.Release(audioSource);
                     MusicInfos.RemoveAt(i);
                     i--;
                 }
@@ -69,13 +69,79 @@ namespace OSK
         /// </summary>
         public void Play(string id, bool loop)
         {
-            Play(id, loop, 0);
+            Play(id, loop, 0, 0);
+        }
+
+        /// <summary>
+        ///  Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
+        /// </summary>
+        public void Play(string id, bool loop, float playDelay)
+        {
+            Play(id, loop, playDelay, 0);
+        }
+
+        /// <summary>
+        ///  Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
+        /// </summary>
+        public void Play(string id, bool loop, int priority)
+        {
+            Play(id, loop, 0, priority);
+        }
+
+        /// <summary>
+        ///  Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
+        /// </summary>
+        public void PlayAudioClip(AudioClip audioClip, float volume = 1, bool loop = false, float playDelay = 0,
+            int priority = 0)
+        {
+            if ((loop && !isMusicOn) || (!isSoundEffectsOn))
+            {
+                return;
+            }
+
+            AudioSource audioSource = CreateAudioSource(audioClip.name);
+
+            audioSource.clip = audioClip;
+            audioSource.loop = loop;
+            audioSource.time = 0;
+            audioSource.volume = volume;
+            audioSource.priority = priority;
+
+            if (playDelay > 0)
+            {
+                audioSource.PlayDelayed(playDelay);
+            }
+            else
+            {
+                audioSource.Play();
+            }
+
+            MusicInfos.Add(new PlayingSound
+                { audioSource = audioSource, soundInfo = new SoundInfo { audioClip = audioClip } });
+        }
+
+
+        /// <summary>
+        ///  Releases the audio source after the given delay
+        /// </summary>
+        public void ReleaseDelayedAudioSource(AudioSource audioSource, float delay)
+        {
+            StartCoroutine(ReleaseAudioSource(audioSource, delay));
+        }
+
+        /// <summary>
+        ///  Releases the audio source after the given delay
+        /// </summary>
+        private IEnumerator ReleaseAudioSource(AudioSource audioSource, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            World.Pool.Release(audioSource);
         }
 
         /// <summary>
         /// Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
         /// </summary>
-        public void Play(string id, bool loop, float playDelay)
+        public void Play(string id, bool loop, float playDelay, int priority)
         {
             SoundInfo soundInfo = GetSoundInfo(id);
 
@@ -86,8 +152,8 @@ namespace OSK
                 return;
             }
 
-            if ((soundInfo.type == SoundType.Music && !IsMusicOn) ||
-                (soundInfo.type == SoundType.SoundEffect && !IsSoundEffectsOn))
+            if ((soundInfo.type == SoundType.Music && !isMusicOn) ||
+                (soundInfo.type == SoundType.SoundEffect && !isSoundEffectsOn))
             {
                 return;
             }
@@ -98,7 +164,7 @@ namespace OSK
             audioSource.loop = loop;
             audioSource.time = 0;
             audioSource.volume = soundInfo.clipVolume;
-            audioSource.pitch = soundInfo.pitch;
+            audioSource.priority = priority;
 
             if (playDelay > 0)
             {
@@ -142,21 +208,21 @@ namespace OSK
             {
                 case SoundType.SoundEffect:
 
-                    if (isOn == IsSoundEffectsOn)
+                    if (isOn == isSoundEffectsOn)
                     {
                         return;
                     }
 
-                    IsSoundEffectsOn = isOn;
+                    isSoundEffectsOn = isOn;
                     break;
                 case SoundType.Music:
 
-                    if (isOn == IsMusicOn)
+                    if (isOn == isMusicOn)
                     {
                         return;
                     }
 
-                    IsMusicOn = isOn;
+                    isMusicOn = isOn;
                     break;
             }
 
@@ -166,7 +232,7 @@ namespace OSK
                 Stop(type);
             }
         }
- 
+
 
         /// <summary>
         /// Stops all sounds with the given id
@@ -221,9 +287,21 @@ namespace OSK
 
         private AudioSource CreateAudioSource(string id)
         {
-            GameObject obj = new GameObject("sound_" + id);
-            obj.transform.SetParent(transform);
-            return obj.AddComponent<AudioSource>();
+            var audio = World.Pool.Create("AudioSource", soundObject);
+            audio.transform.position = Camera.main.transform.position;
+            audio.name = id;
+            return audio;
+        }
+
+        public void DestroyAll()
+        {
+            foreach (var playingSound in MusicInfos)
+            {
+                Destroy(playingSound.audioSource.gameObject);
+            }
+
+            MusicInfos.Clear();
+            World.Pool.DestroyGroup("AudioSource");
         }
     }
 }

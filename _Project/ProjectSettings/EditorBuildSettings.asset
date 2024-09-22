@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Gameplay.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/OSK/Editor/Packages/Mobile Console/Assets/LogConsole.unity
+    guid: 6d2ee6336ff704f55b20f3b62801afd5
   m_configObjects: {}

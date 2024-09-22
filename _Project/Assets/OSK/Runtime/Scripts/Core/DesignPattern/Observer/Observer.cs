@@ -1,55 +1,60 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace OSK
 {
-    public class Observer: GameFrameworkComponent
+    public class Observer : GameFrameworkComponent
     {
+        public Dictionary<string, HashSet<CallBackObserver>> dictObserver = new();
         public delegate void CallBackObserver(object data);
-        public  Dictionary<string, HashSet<CallBackObserver>> dictObserver = new();
 
-        public  void Add(string topicName, CallBackObserver callbackObserver)
+        public void Add(string topicName, CallBackObserver callbackObserver)
         {
-            HashSet<CallBackObserver> listObserver = CreateListObserverForTopic(topicName);
-            listObserver.Add(callbackObserver);
+            var listObserver = CreateListObserverForTopic(topicName);
+            if (!listObserver.Contains(callbackObserver))
+            {
+                listObserver.Add(callbackObserver);
+            }
         }
 
-        public  void Remove(string topicName, CallBackObserver callbackObserver)
+        public void Remove(string topicName, CallBackObserver callbackObserver)
         {
-            HashSet<CallBackObserver> listObserver = CreateListObserverForTopic(topicName);
-            listObserver.Remove(callbackObserver);
+            var listObserver = CreateListObserverForTopic(topicName);
+            if (listObserver.Contains(callbackObserver))
+            {
+                listObserver.Remove(callbackObserver);
+            }
         }
 
-        public  void RemoveAllListeners()
+        public void RemoveAllListeners()
         {
-            List<string> keys = new List<string>(dictObserver.Keys);
+            var keys = new List<string>(dictObserver.Keys);
             foreach (string key in keys)
             {
                 dictObserver.Remove(key);
             }
         }
 
-        public  void Notify<OData>(string topicName, OData Data)
+        public void Notify<OData>(string topicName, OData Data)
         {
-            HashSet<CallBackObserver> listObserver = CreateListObserverForTopic(topicName);
-            foreach (CallBackObserver observer in listObserver)
+            var listObserver = CreateListObserverForTopic(topicName);
+            foreach (var observer in listObserver)
             {
                 observer(Data);
             }
         }
 
-        public  void Notify(string topicName)
+        public void Notify(string topicName)
         {
-            HashSet<CallBackObserver> listObserver = CreateListObserverForTopic(topicName);
-            foreach (CallBackObserver observer in listObserver)
+            var listObserver = CreateListObserverForTopic(topicName);
+            foreach (var observer in listObserver)
             {
                 observer(null);
             }
         }
 
-        protected  HashSet<CallBackObserver> CreateListObserverForTopic(string topicName)
+        private HashSet<CallBackObserver> CreateListObserverForTopic(string topicName)
         {
             if (!dictObserver.ContainsKey(topicName))
             {

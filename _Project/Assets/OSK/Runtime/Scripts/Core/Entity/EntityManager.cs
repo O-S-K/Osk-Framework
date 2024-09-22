@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class EntityManager : GameFrameworkComponent
 {
-    [ShowInInspector, SerializeField] 
+    [ShowInInspector, ReadOnly] 
     private List<Entity> activeEntities = new List<Entity>();
 
     public Entity Create(string name)
@@ -16,7 +16,6 @@ public class EntityManager : GameFrameworkComponent
         activeEntities.Add(entity);
         return entity;
     }  
-    
     public Entity Create(IEntity entity, int id)
     {
         if(activeEntities.Any(e => e.ID == id))
@@ -31,22 +30,19 @@ public class EntityManager : GameFrameworkComponent
         activeEntities.Add(newEntity);
         return newEntity;
     }
-    
+  
     public Entity Get(int id)
     {
         return activeEntities.FirstOrDefault(e => e.ID == id);
     }
-    
     public Entity Get<T>() where T : Component
     {
         return activeEntities.FirstOrDefault(e => e.gameObject.GetComponent<T>() != null);
     }
-    
     public Entity GetByID(int id)
     {
         return activeEntities.FirstOrDefault(e => e.ID == id);
     }
-    
     public List<Entity> GetAll()
     {
         return activeEntities;
@@ -61,7 +57,6 @@ public class EntityManager : GameFrameworkComponent
             activeEntities.Remove(entity);
         }
     }
-    
     public void Destroy(Entity entity)
     {
         if(activeEntities.Contains(entity))

@@ -6,27 +6,34 @@ namespace OSK
 {
     public class Logger : GameFrameworkComponent
     {
-        private static Dictionary<string, DateTime> _timesDictionary = new();
-        
-        private static bool isLogEnabled = true;
+        private Dictionary<string, DateTime> _timesDictionary = new();
 
-        public static void Log(object log, LogColor color = LogColor.White, int size = 12)
+        public bool isLogEnabled = true;
+
+        public void Log(object log, LogColor color = LogColor.White, int size = 12)
         {
-            if(!isLogEnabled)
+            if (!isLogEnabled)
                 return;
             Debug.Log(($"<><> {log}").Color(color).Size(size));
         }
 
-        public static void LogError(string log)
+        public void LogWarning(string log)
         {
-            if(!isLogEnabled)
+            if (!isLogEnabled)
+                return;
+            Debug.LogWarning($"<><> Warning!\t{log}");
+        }
+
+        public void LogError(string log)
+        {
+            if (!isLogEnabled)
                 return;
             Debug.LogError($"<><> Error!\t{log}");
         }
 
-        public static void SetTime(string name)
+        public void SetTime(string name)
         {
-            if(!isLogEnabled)
+            if (!isLogEnabled)
                 return;
             Log($"Task starts: {name}", LogColor.Orange);
             if (_timesDictionary.ContainsKey(name))
@@ -38,9 +45,9 @@ namespace OSK
             _timesDictionary.Add(name, DateTime.Now);
         }
 
-        public static void ShowTimeDifference(string name)
+        public void ShowTimeDifference(string name)
         {
-            if(!isLogEnabled)
+            if (!isLogEnabled)
                 return;
             if (!_timesDictionary.ContainsKey(name))
             {
@@ -60,7 +67,6 @@ namespace OSK
         public static string Size(this string str, int size) => $"<size={size}>{str}</size>";
     }
 
-
     public enum LogColor
     {
         Red,
@@ -70,5 +76,5 @@ namespace OSK
         Black,
         White,
         Green
-    } 
+    }
 }
