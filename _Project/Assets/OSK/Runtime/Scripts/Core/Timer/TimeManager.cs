@@ -13,8 +13,9 @@ public class TimeManager : GameFrameworkComponent
 
     public Timer Create(MonoBehaviour owner, float duration, bool useFixedUpdate = false, Action onDispose = null)
     {
-        return Create(owner.gameObject, duration, useFixedUpdate, onDispose);
+       return Create(owner.gameObject, duration, useFixedUpdate, onDispose);
     }
+
     public Timer Create(GameObject owner, float duration, bool useFixedUpdate = false, Action onDispose = null)
     {
         Timer newTimer = new Timer();
@@ -31,10 +32,24 @@ public class TimeManager : GameFrameworkComponent
         return newTimer;
     }
     
+    
     // update every frame
     public Timer Create(MonoBehaviour owner, bool useFixedUpdate = false)
     {
-         return Create(owner.gameObject, useFixedUpdate);
+        Timer newTimer = new Timer();
+        newTimer.Start(owner.gameObject, 0); 
+        newTimer.Loops(-1); 
+
+        if (useFixedUpdate)
+        {
+            fixedUpdateTimers.Add(newTimer);
+        }
+        else
+        {
+            updateTimers.Add(newTimer);
+        }
+
+        return newTimer;
     }
     public Timer Create(GameObject owner, bool useFixedUpdate = false)
     {
@@ -53,6 +68,7 @@ public class TimeManager : GameFrameworkComponent
 
         return newTimer;
     }
+    
 
     // Method to update all timers (called in Update)
     private void Update()

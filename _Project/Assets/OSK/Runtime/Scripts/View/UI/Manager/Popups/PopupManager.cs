@@ -97,10 +97,26 @@ namespace OSK
             return null;
         }
         
-        private void Show(Popup popup, bool isHidePrevPopup)
+        public T ShowAny<T>() where T : Popup
         {
-            if (popup == null) return;
-            if (_popupHistory.Count > 0 && _popupHistory.Peek() == popup) return;
+            foreach (var popup in ListPopups)
+            {
+                if (popup is T)
+                {
+                    popup.Show();
+                    return (T)popup;
+                }
+            }
+            return null;
+        }
+        
+        
+        public Popup Show(Popup popup, bool isHidePrevPopup)
+        {
+            if (popup == null) 
+                return null;
+            if (_popupHistory.Count > 0 && _popupHistory.Peek() == popup) 
+                return null;
 
             if (_popupHistory.Count > 0)
             {
@@ -111,6 +127,7 @@ namespace OSK
 
             _popupHistory.Push(popup);
             popup.Show();
+            return popup;
         }
 
         public T Get<T>() where T : Popup
@@ -120,13 +137,12 @@ namespace OSK
                 if (popup is T)
                     return (T)popup;
             }
-
             return null;
         }
         
 
-        public void Remove()
-        {
+        public void Remove(bool isHidePrevPopup = false)
+        {  
             if (_popupHistory.Count <= 0) return;
 
             var currentPopup = _popupHistory.Pop();
@@ -135,7 +151,7 @@ namespace OSK
             if (_popupHistory.Count > 0)
             {
                 var prevPopup = _popupHistory.Peek();
-                if (prevPopup.DisableWhenNextPopupOpens)
+                if (isHidePrevPopup)
                     prevPopup.Show();
             }
         }

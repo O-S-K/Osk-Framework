@@ -17,7 +17,7 @@ public class GameCommandExample : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            World.Command.Undo("playermove");
+            World.Command.Undo("playermove"); 
         }
     }
 }

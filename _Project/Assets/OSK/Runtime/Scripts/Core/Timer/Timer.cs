@@ -59,11 +59,11 @@ public sealed class Timer
 
     public void Dispose()
     {
-        World.Time.UpdateListTimer();
         owner = null;
         OnTick = null;
         OnExit?.Invoke();
         OnExit = null;
+        World.Time.UpdateListTimer();
     }
 
     internal void Start(GameObject owner, float duration, Action OnStart = null, Action OnExit = null)
@@ -121,38 +121,30 @@ public sealed class Timer
     // Handle timer logic shared between FixedUpdate and Update
     private void HandleTimer(float currentTime)
     {
-        try
-        {
-            if (owner == null)
-            {
-                Dispose();
-                return;
-            }
-
-            if (isPaused)
-            {
-                return;
-            }
-
-            if (currentTime <= interval)
-            {
-                return;
-            }
-
-            count--;
-            interval = currentTime + duration;
-            OnTick?.Invoke();
-
-            if (count == 0)
-            {
-                Debug.Log("Timer disposed.");
-                Dispose();
-            }
-        }
-        catch (Exception e)
+        if (owner == null)
         {
             Dispose();
-            Debug.LogError("Timer encountered an error: " + e.Message);
+            return;
+        }
+
+        if (isPaused)
+        {
+            return;
+        }
+
+        if (currentTime <= interval)
+        {
+            return;
+        }
+
+        count--;
+        interval = currentTime + duration;
+        OnTick?.Invoke();
+
+        if (count == 0)
+        {
+            Debug.Log("Timer disposed.");
+            Dispose();
         }
     }
 }

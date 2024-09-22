@@ -9,19 +9,19 @@ public class UIManager : GameFrameworkComponent
     [SerializeField] private ScreenManager _screenManager;
     [SerializeField] private PopupManager _popupController;
     [SerializeField] private Camera _uiCamera;
-    
+
     protected override void Awake()
     {
         base.Awake();
         _screenManager.Initialize();
         _popupController.Initialize();
     }
-     
+
     public Camera GetUICamera()
     {
         return _uiCamera;
     }
-    
+
 
     public T ShowScreen<T>() where T : UIScreen
     {
@@ -32,12 +32,12 @@ public class UIManager : GameFrameworkComponent
     {
         return _screenManager.GetScreen<T>();
     }
-    
+
     public T ShowPopup<T>(string path, bool isHidePrevPopup = true) where T : Popup
     {
         return _popupController.Create<T>(path, isHidePrevPopup);
     }
-    
+
     public void DeletePopup<T>(T popup) where T : Popup
     {
         _popupController.Delete<T>(popup);
@@ -51,5 +51,10 @@ public class UIManager : GameFrameworkComponent
     public T GetPopup<T>() where T : Popup
     {
         return _popupController.Get<T>();
+    }
+
+    public T ShowPopupAny<T>() where T : Popup
+    {
+        return _popupController.ShowAny<T>();
     }
 }

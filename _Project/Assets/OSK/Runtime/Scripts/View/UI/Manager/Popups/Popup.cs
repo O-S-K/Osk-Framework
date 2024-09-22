@@ -19,15 +19,10 @@ namespace OSK
         [ShowIf(nameof(showEvent)), SerializeField] private UnityEvent _beforeClosed;
         [ShowIf(nameof(showEvent)), SerializeField] private UnityEvent _afterClosed;
 
-        public bool DisableWhenNextPopupOpens 
-        {
-            get => disableWhenNextPopupOpens;
-        }
-      
         private UITransition _uiTransition;
         private PopupManager _popupManager;
         
-        private bool _isShowing;
+        [ShowInInspector, ReadOnly] private bool _isShowing;
         public bool IsShowing => _isShowing;
 
         // private void OnValidate()
@@ -62,13 +57,13 @@ namespace OSK
         {
             _isShowing = true;
             _beforeOpened.Invoke();
+            
+            gameObject.SetActive(false);
             gameObject.SetActive(true);
-
-            //_uiAudio.PlayOpeningSound(playAudio);
+            
             _uiTransition.PlayOpeningTransition( () =>
             {
                 _afterOpened.Invoke();
-                //Debug.Log($"{gameObject.name} is opened");
             });
         }
 
@@ -76,13 +71,11 @@ namespace OSK
         {
             _isShowing = false;
             _beforeClosed.Invoke();
-            //_uiAudio.PlayClosingSound(playAudio);
             _uiTransition.PlayClosingTransition( () =>
             {
                 gameObject.SetActive(false);
                 _popupManager.RemovePopup(this);
                 _afterClosed.Invoke();
-                //Debug.Log($"{gameObject.name} is closed");
             });
         }
     }
