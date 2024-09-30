@@ -4,34 +4,34 @@ using UnityEngine;
 
 namespace OSK
 {
-    public class Logger : GameFrameworkComponent
+    public class Logger
     {
-        private Dictionary<string, DateTime> _timesDictionary = new();
+        private static Dictionary<string, DateTime> _timesDictionary = new();
 
-        public bool isLogEnabled = true;
+        public static bool isLogEnabled = true;
 
-        public void Log(object log, LogColor color = LogColor.White, int size = 12)
+        public static void Log(object log, LogColor color = LogColor.White, int size = 12)
         {
             if (!isLogEnabled)
                 return;
             Debug.Log(($"<><> {log}").Color(color).Size(size));
         }
 
-        public void LogWarning(string log)
+        public  static void LogWarning(string log)
         {
             if (!isLogEnabled)
                 return;
             Debug.LogWarning($"<><> Warning!\t{log}");
         }
 
-        public void LogError(string log)
+        public static void LogError(string log)
         {
             if (!isLogEnabled)
                 return;
             Debug.LogError($"<><> Error!\t{log}");
         }
 
-        public void SetTime(string name)
+        public static void SetTime(string name)
         {
             if (!isLogEnabled)
                 return;
@@ -45,7 +45,7 @@ namespace OSK
             _timesDictionary.Add(name, DateTime.Now);
         }
 
-        public void ShowTimeDifference(string name)
+        public static void ShowTimeDifference(string name)
         {
             if (!isLogEnabled)
                 return;

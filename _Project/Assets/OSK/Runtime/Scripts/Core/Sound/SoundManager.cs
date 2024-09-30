@@ -9,6 +9,7 @@ namespace OSK
     {
         public SoundInfo soundInfo = null;
         public AudioSource audioSource = null;
+        public bool isPaused = false;
     }
 
     public class SoundManager : GameFrameworkComponent
@@ -55,7 +56,7 @@ namespace OSK
                 AudioSource audioSource = MusicInfos[i].audioSource;
 
                 // If the Audio Source is no longer playing then return it to the pool so it can be re-used
-                if (!audioSource.isPlaying)
+                if (!audioSource.isPlaying && !MusicInfos[i].isPaused)
                 {
                     World.Pool.Release(audioSource);
                     MusicInfos.RemoveAt(i);
@@ -147,7 +148,7 @@ namespace OSK
         /// <summary>
         /// Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
         /// </summary>
-        public void Play(string id, bool loop, float playDelay, int priority , float pitch = 1)
+        public void Play(string id, bool loop, float playDelay, int priority, float pitch = 1)
         {
             SoundInfo soundInfo = GetSoundInfo(id);
 
@@ -240,6 +241,10 @@ namespace OSK
             }
         }
 
+
+        /// <summary>
+        ///  Sets the SoundType on/off
+        /// </summary>
         public void SetSoundAllOnOff(bool isOn)
         {
             isMusic = isOn;
@@ -273,15 +278,29 @@ namespace OSK
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Pauses all sounds
+        /// </summary>
         public void PauseAll()
         {
-            Camera.main.GetComponent<AudioListener>().enabled = false;
+            foreach (var playingSound in MusicInfos)
+            {
+                playingSound.audioSource.Pause();
+                playingSound.isPaused = true;
+            }
         }
-        
+
+        /// <summary>
+        ///  Resumes all paused sounds
+        /// </summary>
         public void ResumeAll()
         {
-            Camera.main.GetComponent<AudioListener>().enabled = true;
+            foreach (var playingSound in MusicInfos)
+            {
+                playingSound.audioSource.UnPause();
+                playingSound.isPaused = false;
+            }
         }
 
         /// <summary>

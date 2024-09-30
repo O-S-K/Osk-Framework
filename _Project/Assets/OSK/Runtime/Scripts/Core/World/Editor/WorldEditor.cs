@@ -21,7 +21,6 @@ public class WorldEditor : Editor
         DrawStaticFieldCheck("Scene", World.Scene);
         DrawStaticFieldCheck("Res", World.Res);
         DrawStaticFieldCheck("Data", World.Save);
-        DrawStaticFieldCheck("Log", World.Log);
         DrawStaticFieldCheck("Network", World.Network);
         DrawStaticFieldCheck("WebRequest", World.WebRequest);
         DrawStaticFieldCheck("Configs", World.Configs);

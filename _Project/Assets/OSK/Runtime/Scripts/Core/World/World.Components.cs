@@ -21,8 +21,6 @@ public partial class World : MonoBehaviour
     public static EntityManager Entity { get; private set; }
     public static TimeManager Time { get; private set; }
     public static AbilityManager Ability { get; private set; }
-
-    public static OSK.Logger Log { get; private set; }
     public static Performance Performance { get; private set; }
 
     private static void InitComponents()
@@ -35,7 +33,6 @@ public partial class World : MonoBehaviour
         Scene = World.GetFrameworkComponent<SceneManager>();
         Res = World.GetFrameworkComponent<ResourceManager>();
         Save = World.GetFrameworkComponent<SaveManager>();
-        Log = World.GetFrameworkComponent<OSK.Logger>();
         Network = World.GetFrameworkComponent<NetworkManager>();
         WebRequest = World.GetFrameworkComponent<WebRequestManager>();
         Configs = World.GetFrameworkComponent<GameConfigs>();
