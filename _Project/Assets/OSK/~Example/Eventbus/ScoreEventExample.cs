@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScoreEventExample : GameEvent
+public class ScoreGameEventExample : GameEvent
 {
     public int Score { get; private set; }
 
-    public ScoreEventExample(int score)
+    public ScoreGameEventExample(int score)
     {
         Score = score;
     }

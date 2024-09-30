@@ -9,17 +9,28 @@ public class UIManager : GameFrameworkComponent
     [SerializeField] private ScreenManager _screenManager;
     [SerializeField] private PopupManager _popupController;
     [SerializeField] private Camera _uiCamera;
+    [SerializeField] private Canvas _canvas;
+    [SerializeField] private UIMoveEffect _uiMoveEffect;
+    
+    public UIMoveEffect ParticleUI => _uiMoveEffect;
 
+    
     protected override void Awake()
     {
         base.Awake();
         _screenManager.Initialize();
         _popupController.Initialize();
     }
+    
 
     public Camera GetUICamera()
     {
         return _uiCamera;
+    }
+    
+    public Canvas GetCanvas()
+    {
+        return _canvas;
     }
 
 
@@ -46,6 +57,11 @@ public class UIManager : GameFrameworkComponent
     public T ShowPopup<T>(bool isHidePrevPopup = true) where T : Popup
     {
         return _popupController.Show<T>(isHidePrevPopup);
+    }
+    
+    public T ShowOverlayPopup<T>(string path) where T : Popup
+    {
+        return _popupController.ShowOverlay<T>(path);
     }
 
     public T GetPopup<T>() where T : Popup

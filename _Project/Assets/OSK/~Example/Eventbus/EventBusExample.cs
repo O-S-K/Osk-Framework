@@ -7,18 +7,18 @@ public class EventBusExample : MonoBehaviour
     private int score = 0;
     private void Start()
     {
-       World.EventBus.Subscribe<ScoreEventExample>(OnUpdateScore);
+       World.EventBus.Subscribe<ScoreGameEventExample>(OnUpdateScore);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            World.EventBus.Publish(new ScoreEventExample(1));
+            World.EventBus.Publish(new ScoreGameEventExample(1));
         }
     }
 
-    private void OnUpdateScore(ScoreEventExample data)
+    private void OnUpdateScore(ScoreGameEventExample data)
     {
         score += data.Score;
         Debug.Log("Score Updated! ->  " + score);
@@ -26,6 +26,6 @@ public class EventBusExample : MonoBehaviour
 
     private void OnDestroy()
     {
-        World.EventBus.Unsubscribe<ScoreEventExample>(OnUpdateScore);
+        World.EventBus.Unsubscribe<ScoreGameEventExample>(OnUpdateScore);
     }
 }

@@ -16,7 +16,6 @@ using System.Runtime.InteropServices;
 
 public static class Vibration
 {
-
 #if UNITY_IOS
     [DllImport ( "__Internal" )]
     private static extern bool _HasVibrator ();
@@ -55,12 +54,12 @@ public static class Vibration
 #endif
 
     private static bool initialized = false;
-    public static void Init ()
+
+    public static void Init()
     {
-        if ( initialized ) return;
+        if (initialized) return; 
 
 #if UNITY_ANDROID
-
         if ( Application.isMobilePlatform ) {
 
             unityPlayer = new AndroidJavaClass ( "com.unity3d.player.UnityPlayer" );
@@ -81,6 +80,8 @@ public static class Vibration
 
     public static void VibrateIOS(ImpactFeedbackStyle style)
     {
+        if(!GetVibration())
+            return;
 #if UNITY_IOS
         _impactOccurred(style.ToString());
 #endif
@@ -88,28 +89,46 @@ public static class Vibration
 
     public static void VibrateIOS(NotificationFeedbackStyle style)
     {
+        if(!GetVibration())
+            return;
+        
 #if UNITY_IOS
         _notificationOccurred(style.ToString());
 #endif
     }
 
     public static void VibrateIOS_SelectionChanged()
-    
     {
+        if(!GetVibration())
+            return;
+        
 #if UNITY_IOS
         _selectionChanged();
 #endif
-    }    
+    }
 
 
+    public static void SetOnOffVibration(bool isOn)
+    {
+        PlayerPrefs.SetInt("Vibration", isOn ? 1 : 0);
+    }
+    
+    public static bool GetVibration()
+    {
+       return PlayerPrefs.GetInt("Vibration", 1) == 1;
+    }
 
 
     ///<summary>
     /// Tiny pop vibration
     ///</summary>
-    public static void VibratePop ()
+    public static void VibratePop()
     {
-        if ( Application.isMobilePlatform ) {
+        if(!GetVibration())
+            return;
+        
+        if (Application.isMobilePlatform)
+        { 
 #if UNITY_IOS
         _VibratePop ();
 #elif UNITY_ANDROID
@@ -117,12 +136,17 @@ public static class Vibration
 #endif
         }
     }
+
     ///<summary>
     /// Small peek vibration
     ///</summary>
-    public static void VibratePeek ()
+    public static void VibratePeek()
     {
-        if ( Application.isMobilePlatform ) {
+        if(!GetVibration())
+            return;
+        
+        if (Application.isMobilePlatform)
+        {
 #if UNITY_IOS
         _VibratePeek ();
 #elif UNITY_ANDROID
@@ -130,12 +154,17 @@ public static class Vibration
 #endif
         }
     }
+
     ///<summary>
     /// 3 small vibrations
     ///</summary>
-    public static void VibrateNope ()
+    public static void VibrateNope()
     {
-        if ( Application.isMobilePlatform ) {
+        if(!GetVibration())
+            return;
+        
+        if (Application.isMobilePlatform)
+        {
 #if UNITY_IOS
         _VibrateNope ();
 #elif UNITY_ANDROID
@@ -153,10 +182,13 @@ public static class Vibration
     ///</summary>
     public static void VibrateAndroid ( long milliseconds )
     {
+        if(!GetVibration())
+            return;
 
         if ( Application.isMobilePlatform ) {
             if ( AndroidVersion >= 26 ) {
-                AndroidJavaObject createOneShot = vibrationEffect.CallStatic<AndroidJavaObject> ( "createOneShot", milliseconds, -1 );
+                AndroidJavaObject createOneShot =
+ vibrationEffect.CallStatic<AndroidJavaObject> ( "createOneShot", milliseconds, -1 );
                 vibrator.Call ( "vibrate", createOneShot );
 
             } else {
@@ -171,10 +203,14 @@ public static class Vibration
     ///</summary>
     public static void VibrateAndroid ( long[] pattern, int repeat )
     {
+        if(!GetVibration())
+            return;
+        
         if ( Application.isMobilePlatform ) {
             if ( AndroidVersion >= 26 ) {
                 long[] amplitudes;
-                AndroidJavaObject createWaveform = vibrationEffect.CallStatic<AndroidJavaObject> ( "createWaveform", pattern, repeat );
+                AndroidJavaObject createWaveform =
+ vibrationEffect.CallStatic<AndroidJavaObject> ( "createWaveform", pattern, repeat );
                 vibrator.Call ( "vibrate", createWaveform );
 
             } else {
@@ -183,28 +219,32 @@ public static class Vibration
         }
     }
 #endif
-    
+
     ///<summary>
     ///Only on Android
     ///</summary>
-    public static void CancelAndroid ()
+    public static void CancelAndroid()
     {
-        if ( Application.isMobilePlatform ) {
+        if (Application.isMobilePlatform)
+        {
+            if(!GetVibration())
+                return;
+
 #if UNITY_ANDROID
             vibrator.Call ( "cancel" );
 #endif
         }
     }
 
-    public static bool HasVibrator ()
+    public static bool HasVibrator()
     {
-        if ( Application.isMobilePlatform ) {
-
+        if (Application.isMobilePlatform)
+        {
 #if UNITY_ANDROID
-
             AndroidJavaClass contextClass = new AndroidJavaClass ( "android.content.Context" );
             string Context_VIBRATOR_SERVICE = contextClass.GetStatic<string> ( "VIBRATOR_SERVICE" );
-            AndroidJavaObject systemService = context.Call<AndroidJavaObject> ( "getSystemService", Context_VIBRATOR_SERVICE );
+            AndroidJavaObject systemService =
+ context.Call<AndroidJavaObject> ( "getSystemService", Context_VIBRATOR_SERVICE );
             if ( systemService.Call<bool> ( "hasVibrator" ) ) {
                 return true;
             } else {
@@ -214,18 +254,19 @@ public static class Vibration
 #elif UNITY_IOS
         return _HasVibrator ();
 #else
-        return false;
+            return false;
 #endif
-        } else {
+        }
+        else
+        {
             return false;
         }
     }
 
 
-    public static void Vibrate ()
+    public static void Vibrate()
     {
 #if UNITY_ANDROID || UNITY_IOS
-        
         if ( Application.isMobilePlatform ) {
             Handheld.Vibrate ();
         }
@@ -233,14 +274,18 @@ public static class Vibration
 #endif
     }
 
-    public static int AndroidVersion {
-        get {
+    public static int AndroidVersion
+    {
+        get
+        {
             int iVersionNumber = 0;
-            if ( Application.platform == RuntimePlatform.Android ) {
+            if (Application.platform == RuntimePlatform.Android)
+            {
                 string androidVersion = SystemInfo.operatingSystem;
-                int sdkPos = androidVersion.IndexOf ( "API-" );
-                iVersionNumber = int.Parse ( androidVersion.Substring ( sdkPos + 4, 2 ).ToString () );
+                int sdkPos = androidVersion.IndexOf("API-");
+                iVersionNumber = int.Parse(androidVersion.Substring(sdkPos + 4, 2).ToString());
             }
+
             return iVersionNumber;
         }
     }

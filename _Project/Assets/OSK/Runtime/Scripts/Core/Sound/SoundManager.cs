@@ -19,10 +19,10 @@ namespace OSK
         public SoundData soundData;
         private AudioSource soundObject;
 
-        private bool isMusicOn;
-        private bool isSoundEffectsOn;
+        public bool isMusic { get; private set; }
+        public bool isSoundEffects { get; private set; }
 
-        
+
         protected override void Awake()
         {
             base.Awake();
@@ -31,8 +31,8 @@ namespace OSK
             soundObject.transform.parent = transform;
             MusicInfos = new List<PlayingSound>();
 
-            isMusicOn = true;
-            isSoundEffectsOn = true;
+            isMusic = true;
+            isSoundEffects = true;
 
             if (soundData != null)
             {
@@ -88,13 +88,18 @@ namespace OSK
             Play(id, loop, 0, priority);
         }
 
+        public void Play(string id, float pitch)
+        {
+            Play(id, false, 0, 0, pitch);
+        }
+
         /// <summary>
         ///  Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
         /// </summary>
         public void PlayAudioClip(AudioClip audioClip, float volume = 1, bool loop = false, float playDelay = 0,
-            int priority = 0)
+            int priority = 0, float pitch = 1)
         {
-            if ((loop && !isMusicOn) || (!isSoundEffectsOn))
+            if ((loop && !isMusic) || (!isSoundEffects))
             {
                 return;
             }
@@ -106,6 +111,7 @@ namespace OSK
             audioSource.time = 0;
             audioSource.volume = volume;
             audioSource.priority = priority;
+            audioSource.pitch = pitch;
 
             if (playDelay > 0)
             {
@@ -141,7 +147,7 @@ namespace OSK
         /// <summary>
         /// Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
         /// </summary>
-        public void Play(string id, bool loop, float playDelay, int priority)
+        public void Play(string id, bool loop, float playDelay, int priority , float pitch = 1)
         {
             SoundInfo soundInfo = GetSoundInfo(id);
 
@@ -152,8 +158,8 @@ namespace OSK
                 return;
             }
 
-            if ((soundInfo.type == SoundType.Music && !isMusicOn) ||
-                (soundInfo.type == SoundType.SoundEffect && !isSoundEffectsOn))
+            if ((soundInfo.type == SoundType.Music && !isMusic) ||
+                (soundInfo.type == SoundType.SoundEffect && !isSoundEffects))
             {
                 return;
             }
@@ -165,6 +171,7 @@ namespace OSK
             audioSource.time = 0;
             audioSource.volume = soundInfo.clipVolume;
             audioSource.priority = priority;
+            audioSource.pitch = pitch;
 
             if (playDelay > 0)
             {
@@ -208,21 +215,21 @@ namespace OSK
             {
                 case SoundType.SoundEffect:
 
-                    if (isOn == isSoundEffectsOn)
+                    if (isOn == isSoundEffects)
                     {
                         return;
                     }
 
-                    isSoundEffectsOn = isOn;
+                    isSoundEffects = isOn;
                     break;
                 case SoundType.Music:
 
-                    if (isOn == isMusicOn)
+                    if (isOn == isMusic)
                     {
                         return;
                     }
 
-                    isMusicOn = isOn;
+                    isMusic = isOn;
                     break;
             }
 
@@ -233,6 +240,20 @@ namespace OSK
             }
         }
 
+        public void SetSoundAllOnOff(bool isOn)
+        {
+            isMusic = isOn;
+            isSoundEffects = isOn;
+
+            if (!isOn)
+            {
+                PauseAll();
+            }
+            else
+            {
+                ResumeAll();
+            }
+        }
 
         /// <summary>
         /// Stops all sounds with the given id
@@ -251,6 +272,16 @@ namespace OSK
                     i--;
                 }
             }
+        }
+        
+        public void PauseAll()
+        {
+            Camera.main.GetComponent<AudioListener>().enabled = false;
+        }
+        
+        public void ResumeAll()
+        {
+            Camera.main.GetComponent<AudioListener>().enabled = true;
         }
 
         /// <summary>

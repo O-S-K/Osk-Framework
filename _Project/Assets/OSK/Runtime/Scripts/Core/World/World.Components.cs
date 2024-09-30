@@ -11,7 +11,7 @@ public partial class World : MonoBehaviour
     public static CommandManager Command { get; private set; }
     public static SceneManager Scene { get; private set; }
     public static ResourceManager Res { get; private set; }
-    public static DataManager Data { get; private set; }
+    public static SaveManager Save { get; private set; }
     public static NetworkManager Network { get; private set; }
     public static WebRequestManager WebRequest { get; private set; }
     public static GameConfigs Configs { get; private set; }
@@ -34,7 +34,7 @@ public partial class World : MonoBehaviour
         Command = World.GetFrameworkComponent<CommandManager>();
         Scene = World.GetFrameworkComponent<SceneManager>();
         Res = World.GetFrameworkComponent<ResourceManager>();
-        Data = World.GetFrameworkComponent<DataManager>();
+        Save = World.GetFrameworkComponent<SaveManager>();
         Log = World.GetFrameworkComponent<OSK.Logger>();
         Network = World.GetFrameworkComponent<NetworkManager>();
         WebRequest = World.GetFrameworkComponent<WebRequestManager>();

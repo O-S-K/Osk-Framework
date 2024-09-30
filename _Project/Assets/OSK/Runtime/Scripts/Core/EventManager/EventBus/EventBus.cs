@@ -38,19 +38,24 @@ public class EventBus : GameFrameworkComponent
 
         if (_subscribers.ContainsKey(eventType))
         {
-            _subscribers[eventType].Remove(e => callback((T)e));
+            // check null
+            _subscribers[eventType].Remove(e =>
+            {
+                if (e != null)
+                    callback((T)e);
+            });
         }
     }
 
-    public void Publish(GameEvent gameEvent)
+    public void Publish(GameEvent gameGameEvent)
     {
-        Type eventType = gameEvent.GetType();
+        Type eventType = gameGameEvent.GetType();
 
         if (_subscribers.ContainsKey(eventType))
         {
             foreach (var subscriber in _subscribers[eventType])
             {
-                subscriber.Invoke(gameEvent);
+                subscriber?.Invoke(gameGameEvent);
             }
         }
     }

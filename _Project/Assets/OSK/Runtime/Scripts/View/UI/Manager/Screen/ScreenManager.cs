@@ -48,8 +48,7 @@ namespace OSK
                 listScreens.Add(s);
             }
         }
-
-
+ 
         public T Show<T>() where T : UIScreen
         {
             // Get the screen we want to show
@@ -86,8 +85,7 @@ namespace OSK
                 foreach (var item in listScreens)
                     item.RefreshUI();
         }
-
-
+        
         public T GetScreen<T>() where T : UIScreen
         {
             foreach (var item in listScreens)
@@ -96,5 +94,19 @@ namespace OSK
             Debug.LogError($"[ScreenTransitionController] No Screen exists in List Screens");
             return null;
         }
+        
+        #if UNITY_EDITOR
+        public UIScreen screenSpawn;
+
+        [Button]
+        private void SpawnScreen()
+        {
+                var s = Instantiate(screenSpawn, transform);
+                s.Initialize();
+                s.Hide();
+                s.transform.localPosition = Vector3.zero;
+                s.transform.localScale = Vector3.one;
+        }
+        #endif 
     }
 }

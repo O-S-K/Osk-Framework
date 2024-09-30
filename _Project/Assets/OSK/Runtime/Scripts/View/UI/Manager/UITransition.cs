@@ -2,7 +2,6 @@
 using CustomInspector;
 using DG.Tweening;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace OSK
 {
@@ -31,16 +30,17 @@ namespace OSK
         [ShowIf(nameof(useEase))] public Ease ease = Ease.OutQuad;
 
         [ShowIf(nameof(transition), TransitionType.Scale)]
-        public int initScale = 0;
+        public float initScale = 0;
 
 
         [HideIf(nameof(transition), TransitionType.None), HideIf(nameof(useEase), true)]
         public bool useCustomCurve = false;
 
-        [ShowIf(nameof(useCustomCurve))] 
-        public AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+        [ShowIf(nameof(useCustomCurve))] public AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     }
 
+    
+    
     [RequireComponent(typeof(CanvasGroup), typeof(RectTransform))]
     public class UITransition : MonoBehaviour
     {
@@ -49,9 +49,21 @@ namespace OSK
 
         [SerializeField] private TweenSettings _openingTweenSettings;
         [SerializeField] private TweenSettings _closingTweenSettings;
+        [Space(10)]
 
         private CanvasGroup _canvasGroup;
         private RectTransform _rectTransform;
+
+        
+        [Button]
+        private void AddImageBlackFade()
+        {
+            var image = gameObject.GetOrAdd<UnityEngine.UI.Image>();
+            image.color = new Color(0, 0, 0, 0.9f);
+            image.rectTransform.anchorMin = Vector2.zero;
+            image.rectTransform.anchorMax = Vector2.one;
+            image.rectTransform.sizeDelta = Vector2.zero;
+        }
 
         // Property to return either contentUI or _rectTransform
         private RectTransform TargetRectTransform => contentUI != null ? contentUI : _rectTransform;
@@ -78,32 +90,32 @@ namespace OSK
             {
                 case TransitionType.Fade:
                     _canvasGroup.alpha = 0;
-                    ApplyTween(_canvasGroup.DOFade(1, _openingTweenSettings.time));
+                    ApplyTween(_canvasGroup.DOFade(1, _openingTweenSettings.time), true);
                     break;
 
                 case TransitionType.Scale:
                     TargetRectTransform.localScale = Vector3.one * _openingTweenSettings.initScale;
-                    ApplyTween(TargetRectTransform.DOScale(Vector3.one, _openingTweenSettings.time));
+                    ApplyTween(TargetRectTransform.DOScale(Vector3.one, _openingTweenSettings.time), true);
                     break;
 
                 case TransitionType.SlideRight:
                     SetAnchoredPosition(new Vector2(-TargetRectTransform.rect.width, 0));
-                    ApplyTween(TargetRectTransform.DOAnchorPosX(0, _openingTweenSettings.time));
+                    ApplyTween(TargetRectTransform.DOAnchorPosX(0, _openingTweenSettings.time), true);
                     break;
 
                 case TransitionType.SlideLeft:
                     SetAnchoredPosition(new Vector2(TargetRectTransform.rect.width, 0));
-                    ApplyTween(TargetRectTransform.DOAnchorPosX(0, _openingTweenSettings.time));
+                    ApplyTween(TargetRectTransform.DOAnchorPosX(0, _openingTweenSettings.time), true);
                     break;
 
                 case TransitionType.SlideUp:
                     SetAnchoredPosition(new Vector2(0, -TargetRectTransform.rect.height));
-                    ApplyTween(TargetRectTransform.DOAnchorPosY(0, _openingTweenSettings.time));
+                    ApplyTween(TargetRectTransform.DOAnchorPosY(0, _openingTweenSettings.time), true);
                     break;
 
                 case TransitionType.SlideDown:
                     SetAnchoredPosition(new Vector2(0, TargetRectTransform.rect.height));
-                    ApplyTween(TargetRectTransform.DOAnchorPosY(0, _openingTweenSettings.time));
+                    ApplyTween(TargetRectTransform.DOAnchorPosY(0, _openingTweenSettings.time), true);
                     break;
             }
 
@@ -119,19 +131,37 @@ namespace OSK
             TargetRectTransform.anchoredPosition = position;
         }
 
-        private void ApplyTween(Tween tween)
+        private void ApplyTween(Tween tween, bool isOpen)
         {
-            if (_openingTweenSettings.useEase)
+            if (isOpen)
             {
-                tween.SetEase(_openingTweenSettings.ease);
-            }
-            else if (_openingTweenSettings.useCustomCurve)
-            {
-                tween.SetEase(_openingTweenSettings.curve);
+                if (_openingTweenSettings.useEase)
+                {
+                    tween.SetEase(_openingTweenSettings.ease);
+                }
+                else if (_openingTweenSettings.useCustomCurve)
+                {
+                    tween.SetEase(_openingTweenSettings.curve);
+                }
+                else
+                {
+                    tween.SetEase(Ease.Linear);
+                }
             }
             else
             {
-                tween.SetEase(Ease.Linear);
+                if (_closingTweenSettings.useEase)
+                {
+                    tween.SetEase(_closingTweenSettings.ease);
+                }
+                else if (_closingTweenSettings.useCustomCurve)
+                {
+                    tween.SetEase(_closingTweenSettings.curve);
+                }
+                else
+                {
+                    tween.SetEase(Ease.Linear);
+                }
             }
         }
 
@@ -180,7 +210,7 @@ namespace OSK
 
             if (tween != null)
             {
-                ApplyTween(tween);
+                ApplyTween(tween, false);
                 tween.OnComplete(() =>
                 {
                     ResetTransitionState();

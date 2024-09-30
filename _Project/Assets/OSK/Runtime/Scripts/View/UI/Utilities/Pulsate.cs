@@ -16,12 +16,15 @@ public class Pulsate : MonoBehaviour
     private Vector3 originalScale;
 
     private OSK.Appearer appearer;
+    private ButtonEffect buttonEffect;
 
     private void OnEnable()
     {
-        if (GetComponent<OSK.Appearer>() != null)
+        appearer = GetComponent<OSK.Appearer>();
+        buttonEffect = GetComponent<ButtonEffect>();
+
+        if (appearer != null)
         {
-            appearer = GetComponent<OSK.Appearer>();
             currentDelay = delay + appearer.duration + appearer.appearAfter;
             originalScale = Vector3.one;
         }
@@ -34,6 +37,11 @@ public class Pulsate : MonoBehaviour
 
     private void Update()
     {
+        if (buttonEffect != null && buttonEffect.IsPressed)
+        {
+            return;
+        }
+
         if (currentDelay > 0)
         {
             currentDelay -= Time.deltaTime;

@@ -30,6 +30,21 @@ public static class Extensions
         g.color = color;
         return g;
     }
+    
+    public static  void SetTopSibling(this Transform transform)
+    {
+        transform.SetSiblingIndex(transform.parent.childCount - 1);
+    }
+    
+    public static void SetSiblingIndex(this Transform transform, int index)
+    {
+        transform.SetSiblingIndex(index);
+    }
+    
+    public static void SetBottomSibling(this Transform transform)
+    {
+        transform.SetSiblingIndex(0);
+    }
 
     public static void SetTextFade(this Text text, float value)
     {
@@ -68,10 +83,18 @@ public static class Extensions
         color.a = alpha;
         return color;
     }
+    
+    
     public static void SetAlpha(UnityEngine.UI.Graphic graphic, float alpha)
     {
         Color color = graphic.color;
         color.a = alpha;
+        graphic.color = color;
+    }
+    
+    public static void SetColorHex(this UnityEngine.UI.Graphic graphic, string hex)
+    {
+        Color color = ColorUtility.TryParseHtmlString(hex, out color) ? color : Color.white;
         graphic.color = color;
     }
 

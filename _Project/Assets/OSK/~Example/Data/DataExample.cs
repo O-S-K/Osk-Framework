@@ -12,10 +12,10 @@ public class DataExample : MonoBehaviour
     private void TestSave()
     {
         var test = new DataPlayerExample(123123, "TessadasdtName");
-        World.Data.PlayerPrefs.SetObject("Test", test);
+        World.Save.PlayerPrefs.SetObject("Test", test);
         Debug.Log("Test Saved");
         
-        var test2 = World.Data.PlayerPrefs.GetObject<DataPlayerExample>("Test");
+        var test2 = World.Save.PlayerPrefs.GetObject<DataPlayerExample>("Test");
         Debug.Log("Test Loaded -> " + test2.Name + " " + test2.Score);
     }
 
@@ -24,18 +24,18 @@ public class DataExample : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.S))
         {
              var player = new DataPlayerExample(100, "Player 1");
-             World.Data.Json.Save<DataPlayerExample>(player, "Player");
-             World.Data.File.SaveData<DataPlayerExample>("player", player);
+             World.Save.Json.Save<DataPlayerExample>(player, "Player");
+             World.Save.File.SaveData<DataPlayerExample>( "player", player);
 
             var p = new DataPlayerExample(100, "Player 1");
-            World.Data.PlayerPrefs.SetObject("Player", p);
+            World.Save.PlayerPrefs.SetObject("Player", p);
         }
 
         if (Input.GetKeyDown(KeyCode.L))
         {
             // World.Data.Json.Load<DataPlayer>(player, "Player");
             // var p = World.Data.File.LoadData<DataPlayer>("player");
-            var p = World.Data.PlayerPrefs.GetObject<DataPlayerExample>("Player");
+            var p = World.Save.PlayerPrefs.GetObject<DataPlayerExample>("Player");
             Debug.Log("Player Name -> " + p.Name);
             Debug.Log("Player Score -> " + p.Score);
         }
@@ -44,7 +44,7 @@ public class DataExample : MonoBehaviour
         {
             //World.Data.Json.Delete("Player");
             // World.Data.File.DeleteFile("player");
-            World.Data.PlayerPrefs.Delete("Player");
+            World.Save.PlayerPrefs.Delete("Player");
         }
     }
 }

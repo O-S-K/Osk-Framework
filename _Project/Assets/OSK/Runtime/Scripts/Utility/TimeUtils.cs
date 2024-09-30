@@ -58,6 +58,28 @@ namespace OSK.Utils
             float _mos = _years * 12;
             return _mos;
         }
+        
+        public static string MinutesToHours(float value)
+        {
+            TimeSpan timeSpan = TimeSpan.FromSeconds(value);
+            string timerFormatted;
+            if (timeSpan.Days == 0)
+            {
+                timerFormatted = string.Format("{0:D1}h {1:D1}m", timeSpan.Hours, timeSpan.Minutes);
+            }
+            else
+            {
+                if (timeSpan.Hours == 0)
+                {
+                    timerFormatted = string.Format("{0:D1}m {1:D1}s", timeSpan.Minutes, timeSpan.Seconds);
+                }
+                else
+                {
+                    timerFormatted = string.Format("{0:D1}d {1:D1}h", timeSpan.Days, timeSpan.Hours);
+                }
+            }
+            return timerFormatted;
+        }
 
 
         public static string SecondsToHours(float value)
@@ -71,6 +93,7 @@ namespace OSK.Utils
             else timerFormatted = string.Format("{0:D1}d {1:D1}h {2:D1}m {3:D1}s", timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
             return timerFormatted;
         }
+         
 
         public static string SecondsToMinutes(float value)
         {

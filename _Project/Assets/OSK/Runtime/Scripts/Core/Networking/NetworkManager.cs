@@ -4,11 +4,12 @@ using UnityEngine;
 public class NetworkManager : GameFrameworkComponent
 {
     public InternetChecker InternetChecker { get; private set; }
-
+    public bool IsOnline;
     private async void Start()
     {
         InternetChecker = gameObject.GetOrAdd<InternetChecker>();
-        var isOnline = await InternetChecker.CheckNetwork();
-        Debug.Log($"Is online: {isOnline}");
+        IsOnline = await InternetChecker.CheckNetwork();
+
+        Debug.Log($"Is online: {IsOnline}");
     }
 }

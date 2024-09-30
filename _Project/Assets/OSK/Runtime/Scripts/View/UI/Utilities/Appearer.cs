@@ -5,25 +5,32 @@ namespace OSK
 {
     public class Appearer : MonoBehaviour
     {
+        [Header("Appearer")]
+        public Transform rootAppear;
+        public float scaleInit = 0f;
+        
+        [Header("Animation")]
         public Ease animStartButton = Ease.OutBack;
         public Ease animEndButton = Ease.InBack;
         public float duration = 0.3f;
 
+        [Header("Delay")]
         public float appearAfter;
         public float hideDelay;
 
         private bool shown;
+        private Transform root => rootAppear ? rootAppear : transform;
 
         private void OnEnable()
         {
-            transform.localScale = Vector3.zero;
+            root.localScale = Vector3.one * scaleInit;
             if (appearAfter >= 0)
                 Invoke(nameof(Show), appearAfter);
         }
 
         public void Show()
         {
-            transform.DOScale(Vector3.one, duration).SetEase(animStartButton).SetUpdate(true);
+            root.DOScale(Vector3.one, duration).SetEase(animStartButton).SetUpdate(true);
             if (!shown)
             {
                 shown = true;
@@ -38,7 +45,7 @@ namespace OSK
 
         public void Hide()
         {
-            transform.DOScale(Vector3.zero, duration).SetEase(animEndButton).SetUpdate(true);
+            root.DOScale(Vector3.zero, duration).SetEase(animEndButton).SetUpdate(true);
             if (shown)
             {
                 shown = false;

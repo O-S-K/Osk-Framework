@@ -7,8 +7,6 @@ namespace OSK.Utils
 {
     public static class CanvasUtils
     {
-        
-        
         //  if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject())
         public static bool IsPointerOverUI()
         {

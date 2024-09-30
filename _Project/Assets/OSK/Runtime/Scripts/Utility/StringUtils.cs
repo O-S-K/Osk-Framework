@@ -111,7 +111,7 @@ namespace OSK.Utils
             }
         }
 
-        public static string ConvertNamesLargeNumbers(long number)
+        public static string NumericToCurrency(float number)
         {
             // url: https://en.wikipedia.org/wiki/Names_of_large_numbers
             if (number >= 1000000000)
