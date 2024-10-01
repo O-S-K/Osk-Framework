@@ -103,8 +103,7 @@ namespace OSK
             if ((loop && !isMusic) || (!isSoundEffects))
             {
                 return;
-            }
-
+            } 
             AudioSource audioSource = CreateAudioSource(audioClip.name);
 
             audioSource.clip = audioClip;

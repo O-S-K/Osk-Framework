@@ -103,12 +103,16 @@ public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
             var coinClone = Instantiate(iconClones[indexIcon], startPoint, Quaternion.identity, coinParent.transform);
             coinClone.transform.localPosition.WithZ(0);
             coinClone.gameObject.SetActive(true);
-            StartCoroutine(DropCoins(coinClone, startPoint));
+
+            if (gameObject.activeInHierarchy)
+                StartCoroutine(DropCoins(coinClone, startPoint));
 
             float randomTime = Random.Range(0.01f, 0.05f);
             timeDlaySpawn += randomTime;
             yield return new WaitForSeconds(randomTime);
-            StartCoroutine(MoveCoinToTarget(coinClone.transform));
+
+            if (gameObject.activeInHierarchy)
+                StartCoroutine(MoveCoinToTarget(coinClone.transform));
         }
 
         yield return new WaitForSeconds(delaySetOnCompleted);
@@ -136,7 +140,7 @@ public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
     {
         float timer = 0f;
         yield return new WaitForSeconds(delayMove + Random.Range(0.01f, 0.05f));
-        
+
         while (timer < timeFly)
         {
             float t = timer / speedFly;
@@ -154,6 +158,7 @@ public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
         if (imageTransform != null && imageTransform.gameObject.activeInHierarchy)
         {
             World.Sound.Play("coin_add", false);
+            World.Native.Vibrate(EffectHaptic.Heavy);
             imageTransform.position = target.position;
         }
     }

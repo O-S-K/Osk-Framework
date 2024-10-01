@@ -31,6 +31,7 @@ public class WorldEditor : Editor
         DrawStaticFieldCheck("Time", World.Time);
         DrawStaticFieldCheck("Ability", World.Ability);
         DrawStaticFieldCheck("Performance", World.Performance);
+        DrawStaticFieldCheck("Native", World.Native);
     }
 
     private void DrawStaticFieldCheck(string label, object value)

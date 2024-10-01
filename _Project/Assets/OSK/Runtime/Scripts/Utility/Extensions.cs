@@ -148,6 +148,14 @@ public static class Extensions
         }
     }
     
+    public static void DeActiveAllGameObject(this GameObject[] gameObjects)
+    {
+        for (int i = 0; i < gameObjects.Length; i++)
+        {
+            gameObjects[i].SetActive(false);
+        }
+    }
+    
     // example : transform.position =  transform.position.With(y: 5);
     public static Vector3 With(this Vector3 vector3, float? x = null, float? y = null, float? z = null)
     {

@@ -22,6 +22,7 @@ public partial class World : MonoBehaviour
     public static TimeManager Time { get; private set; }
     public static AbilityManager Ability { get; private set; }
     public static Performance Performance { get; private set; }
+    public static NativeManager Native { get; private set; }
 
     private static void InitComponents()
     {
@@ -43,6 +44,7 @@ public partial class World : MonoBehaviour
         Time = World.GetFrameworkComponent<TimeManager>();
         Ability = World.GetFrameworkComponent<AbilityManager>();
         Performance = World.GetFrameworkComponent<Performance>();
+        Native = World.GetFrameworkComponent<NativeManager>();
         Debug.Log("Init Components Done!");
     }
 }
