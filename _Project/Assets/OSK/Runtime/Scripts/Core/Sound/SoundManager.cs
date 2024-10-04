@@ -14,14 +14,13 @@ namespace OSK
 
     public class SoundManager : GameFrameworkComponent
     {
-        [ShowInInspector, ReadOnly] private List<SoundInfo> soundInfos;
-        [ShowInInspector, ReadOnly] private List<PlayingSound> MusicInfos;
-
-        public SoundData soundData;
+        [SerializeField, ReadOnly] public List<SoundInfo> soundInfos;
+        [SerializeField, ReadOnly] public List<PlayingSound> musicInfos;
         private AudioSource soundObject;
 
         public bool isMusic { get; private set; }
         public bool isSoundEffects { get; private set; }
+        private string keyPoolSound = "AudioSource";
 
 
         protected override void Awake()
@@ -30,36 +29,47 @@ namespace OSK
 
             soundObject = new GameObject().AddComponent<AudioSource>();
             soundObject.transform.parent = transform;
-            MusicInfos = new List<PlayingSound>();
+            musicInfos = new List<PlayingSound>();
 
             isMusic = true;
             isSoundEffects = true;
+        }
 
+        private void Start()
+        {
+            SoundData soundData = Main.Save.SOData.Get<SoundData>();
             if (soundData != null)
             {
+                if (soundData.ListSoundInfos.Count == 0)
+                    OSK.Logg.LogWarning("SoundData is empty in SoundManager.");
                 soundInfos = soundData.ListSoundInfos;
             }
             else
             {
-                Debug.LogWarning("SoundData is not assigned in SoundManager.");
+                OSK.Logg.LogWarning("SoundData is not assigned in SoundManager.");
             }
         }
 
 
         private void Update()
         {
-            if (MusicInfos == null)
+            CheckForStoppedMusic();
+        }
+
+        private void CheckForStoppedMusic()
+        {
+            if (musicInfos == null)
                 return;
 
-            for (int i = 0; i < MusicInfos.Count; i++)
+            for (int i = 0; i < musicInfos.Count; i++)
             {
-                AudioSource audioSource = MusicInfos[i].audioSource;
+                AudioSource audioSource = musicInfos[i].audioSource;
 
                 // If the Audio Source is no longer playing then return it to the pool so it can be re-used
-                if (!audioSource.isPlaying && !MusicInfos[i].isPaused)
+                if (audioSource != null && !audioSource.isPlaying && !musicInfos[i].isPaused)
                 {
-                    World.Pool.Release(audioSource);
-                    MusicInfos.RemoveAt(i);
+                    Main.Pool.Despawn(audioSource);
+                    musicInfos.RemoveAt(i);
                     i--;
                 }
             }
@@ -103,7 +113,8 @@ namespace OSK
             if ((loop && !isMusic) || (!isSoundEffects))
             {
                 return;
-            } 
+            }
+
             AudioSource audioSource = CreateAudioSource(audioClip.name);
 
             audioSource.clip = audioClip;
@@ -122,7 +133,7 @@ namespace OSK
                 audioSource.Play();
             }
 
-            MusicInfos.Add(new PlayingSound
+            musicInfos.Add(new PlayingSound
                 { audioSource = audioSource, soundInfo = new SoundInfo { audioClip = audioClip } });
         }
 
@@ -141,7 +152,7 @@ namespace OSK
         private IEnumerator ReleaseAudioSource(AudioSource audioSource, float delay)
         {
             yield return new WaitForSeconds(delay);
-            World.Pool.Release(audioSource);
+            Main.Pool.Despawn(audioSource);
         }
 
         /// <summary>
@@ -153,7 +164,7 @@ namespace OSK
 
             if (soundInfo == null)
             {
-                Debug.LogError("[SoundManager] There is no Sound Info with the given id: " + id);
+                OSK.Logg.LogError("[Sound] There is no Sound Info with the given id: " + id);
 
                 return;
             }
@@ -187,7 +198,7 @@ namespace OSK
             playingSound.soundInfo = soundInfo;
             playingSound.audioSource = audioSource;
 
-            MusicInfos.Add(playingSound);
+            musicInfos.Add(playingSound);
         }
 
         /// <summary>
@@ -195,7 +206,16 @@ namespace OSK
         /// </summary>
         public void Stop(string id)
         {
-            StopAllSounds(id, MusicInfos);
+            for (int i = 0; i < musicInfos.Count; i++)
+            {
+                if (musicInfos[i].soundInfo.id == id)
+                {
+                    musicInfos[i].audioSource.Stop();
+                    Main.Pool.Despawn(musicInfos[i].audioSource);
+                    musicInfos.RemoveAt(i);
+                    i--;
+                }
+            }
         }
 
         /// <summary>
@@ -203,48 +223,47 @@ namespace OSK
         /// </summary>
         public void Stop(SoundType type)
         {
-            StopAllSounds(type, MusicInfos);
+            for (int i = 0; i < musicInfos.Count; i++)
+            {
+                if (musicInfos[i].soundInfo.type == type)
+                {
+                    musicInfos[i].audioSource.Stop();
+                    Main.Pool.Despawn(musicInfos[i].audioSource);
+                    musicInfos.RemoveAt(i);
+                    i--;
+                }
+            }
         }
 
         /// <summary>
         /// Sets the SoundType on/off
         /// </summary>
-        public void SetSoundTypeOnOff(SoundType type, bool isOn)
+        public void SetStatusSoundType(SoundType type, bool isOn)
         {
             switch (type)
             {
-                case SoundType.SoundEffect:
-
-                    if (isOn == isSoundEffects)
-                    {
-                        return;
-                    }
-
-                    isSoundEffects = isOn;
-                    break;
                 case SoundType.Music:
-
-                    if (isOn == isMusic)
-                    {
-                        return;
-                    }
-
                     isMusic = isOn;
+                    if(isMusic)
+                        Resume(SoundType.Music);
+                    else
+                        Pause(SoundType.Music);
                     break;
-            }
-
-            // If it was turned off then stop all sounds that are currently playing
-            if (!isOn)
-            {
-                Stop(type);
-            }
+                case SoundType.SoundEffect:
+                    isSoundEffects = isOn;
+                    if(isSoundEffects)
+                        Resume(SoundType.SoundEffect);
+                    else
+                        Pause(SoundType.SoundEffect);
+                    break;
+            } 
         }
 
 
         /// <summary>
-        ///  Sets the SoundType on/off
+        ///   Sets the status of all sounds on/off
         /// </summary>
-        public void SetSoundAllOnOff(bool isOn)
+        public void SetStatusAllSound(bool isOn)
         {
             isMusic = isOn;
             isSoundEffects = isOn;
@@ -257,36 +276,32 @@ namespace OSK
             {
                 ResumeAll();
             }
-        }
-
-        /// <summary>
-        /// Stops all sounds with the given id
-        /// </summary>
-        private void StopAllSounds(string id, List<PlayingSound> playingSounds)
-        {
-            for (int i = 0; i < playingSounds.Count; i++)
-            {
-                PlayingSound playingSound = playingSounds[i];
-
-                if (id == playingSound.soundInfo.id)
-                {
-                    playingSound.audioSource.Stop();
-                    Destroy(playingSound.audioSource.gameObject);
-                    playingSounds.RemoveAt(i);
-                    i--;
-                }
-            }
-        }
+        } 
 
         /// <summary>
         /// Pauses all sounds
         /// </summary>
         public void PauseAll()
         {
-            foreach (var playingSound in MusicInfos)
+            foreach (var playingSound in musicInfos)
             {
                 playingSound.audioSource.Pause();
                 playingSound.isPaused = true;
+            }
+        }
+        
+        /// <summary>
+        /// Pauses SoundType sounds
+        /// </summary>
+        public void Pause(SoundType type)
+        {
+            foreach (var playingSound in musicInfos)
+            {
+                if (playingSound.soundInfo.type == type)
+                {
+                    playingSound.audioSource.Pause();
+                    playingSound.isPaused = true;
+                }
             }
         }
 
@@ -295,32 +310,28 @@ namespace OSK
         /// </summary>
         public void ResumeAll()
         {
-            foreach (var playingSound in MusicInfos)
+            foreach (var playingSound in musicInfos)
             {
                 playingSound.audioSource.UnPause();
                 playingSound.isPaused = false;
             }
         }
-
+        
         /// <summary>
-        /// Stops all sounds with the given type
+        /// Resumes SoundType sounds
         /// </summary>
-        private void StopAllSounds(SoundType type, List<PlayingSound> playingSounds)
+        public void Resume(SoundType type)
         {
-            for (int i = 0; i < playingSounds.Count; i++)
+            foreach (var playingSound in musicInfos)
             {
-                PlayingSound playingSound = playingSounds[i];
-
-                if (type == playingSound.soundInfo.type)
+                if (playingSound.soundInfo.type == type)
                 {
-                    playingSound.audioSource.Stop();
-                    Destroy(playingSound.audioSource.gameObject);
-                    playingSounds.RemoveAt(i);
-                    i--;
+                    playingSound.audioSource.UnPause();
+                    playingSound.isPaused = false;
                 }
             }
         }
-
+ 
         private SoundInfo GetSoundInfo(string id)
         {
             for (int i = 0; i < soundInfos.Count; i++)
@@ -336,21 +347,21 @@ namespace OSK
 
         private AudioSource CreateAudioSource(string id)
         {
-            var audio = World.Pool.Create("AudioSource", soundObject);
-            audio.transform.position = Camera.main.transform.position;
-            audio.name = id;
-            return audio;
+            var audioSource = Main.Pool.Spawn(keyPoolSound, soundObject);
+            audioSource.transform.position = Camera.main.transform.position;
+            audioSource.name = id;
+            return audioSource;
         }
 
         public void DestroyAll()
         {
-            foreach (var playingSound in MusicInfos)
+            foreach (var playingSound in musicInfos)
             {
                 Destroy(playingSound.audioSource.gameObject);
             }
 
-            MusicInfos.Clear();
-            World.Pool.DestroyGroup("AudioSource");
+            musicInfos.Clear();
+            Main.Pool.DestroyGroup(keyPoolSound);
         }
     }
 }

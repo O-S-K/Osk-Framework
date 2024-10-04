@@ -10,7 +10,7 @@ public class StatCalculator
         if (!stats.ContainsKey(name))
         {
             stats.Add(name, new Stats(name, baseValue));
-            Debug.Log($"Stat {name} added with base value: {baseValue}");
+            OSK.Logg.Log($"Stat {name} added with base value: {baseValue}");
         }
     }
 
@@ -19,7 +19,7 @@ public class StatCalculator
         if (stats.ContainsKey(statName))
         {
             stats[statName].AddModifier(modifier);
-            Debug.Log($"{modifier.modifierType} modifier of {modifier.Value} applied to {statName}. New value: {GetFinalStatValue(statName)}");
+            OSK.Logg.Log($"{modifier.modifierType} modifier of {modifier.Value} applied to {statName}. New value: {GetFinalStatValue(statName)}");
         }
     }
 
@@ -28,7 +28,7 @@ public class StatCalculator
         if (stats.ContainsKey(statName))
         {
             stats[statName].RemoveModifier(modifier);
-            Debug.Log($"{modifier.modifierType} modifier of {modifier.Value} removed from {statName}. New value: {GetFinalStatValue(statName)}");
+            OSK.Logg.Log($"{modifier.modifierType} modifier of {modifier.Value} removed from {statName}. New value: {GetFinalStatValue(statName)}");
         }
     }
 
@@ -46,7 +46,7 @@ public class StatCalculator
         if (stats.ContainsKey(statName))
         {
             stats[statName].UpdateBaseValue(value);
-            Debug.Log($"Stat {statName} updated to value: {value}");
+            OSK.Logg.Log($"Stat {statName} updated to value: {value}");
         }
     }
 }

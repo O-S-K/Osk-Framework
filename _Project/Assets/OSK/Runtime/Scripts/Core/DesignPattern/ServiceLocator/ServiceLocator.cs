@@ -17,7 +17,7 @@ public  class ServiceLocator
         else
         {
             _services[type] = service;
-            Debug.Log("Service registered: " + type);
+            OSK.Logg.Log("Service registered: " + type);
         }
     }
 
@@ -35,6 +35,6 @@ public  class ServiceLocator
     {
         var type = typeof(T);
         _services.TryRemove(type, out _);
-        Debug.Log("Service unregistered: " + type);
+        OSK.Logg.Log("Service unregistered: " + type);
     }
 }

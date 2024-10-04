@@ -7,6 +7,6 @@ public class UIFlowExample : MonoBehaviour
 {
     private void Start()
     {
-        World.UI.ShowScreen<HomeUIExample>();
+        Main.UI.ShowScreen<HomeUIExample>();
     } 
 }

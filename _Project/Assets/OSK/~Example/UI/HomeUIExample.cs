@@ -12,6 +12,6 @@ public class HomeUIExample : UIScreen
     
     public void StartIngame()
     {
-        World.UI.ShowScreen<IngameUIExample>();
+        Main.UI.ShowScreen<IngameUIExample>();
     }
 }

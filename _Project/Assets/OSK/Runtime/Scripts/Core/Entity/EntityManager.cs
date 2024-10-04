@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,12 @@ public class EntityManager : GameFrameworkComponent
         activeEntities.Add(entity);
         return entity;
     }  
+    
     public Entity Create(IEntity entity, int id)
     {
         if(activeEntities.Any(e => e.ID == id))
         {
-            Debug.LogError("Entity with ID " + id + " already exists");
+            OSK.Logg.LogError("Entity with ID " + id + " already exists");
             return null;
         }
         
@@ -30,15 +32,32 @@ public class EntityManager : GameFrameworkComponent
         activeEntities.Add(newEntity);
         return newEntity;
     }
+    
+    public T Create<T>(string name, Action onCreate = null) where T : Component
+    {
+        var entity = new Entity();
+        entity.gameObject = new GameObject("E." + name);
+        entity.gameObject.AddComponent<T>();
+        activeEntities.Add(entity);
+        onCreate?.Invoke();
+        return entity.gameObject.GetComponent<T>();
+    }
   
     public Entity Get(int id)
     {
         return activeEntities.FirstOrDefault(e => e.ID == id);
     }
+    
     public Entity Get<T>() where T : Component
     {
         return activeEntities.FirstOrDefault(e => e.gameObject.GetComponent<T>() != null);
     }
+    
+    public T Get<T>(string name) where T : Component
+    {
+        return activeEntities.FirstOrDefault(e => e.gameObject.GetComponent<T>() != null).gameObject.GetComponent<T>();
+    }
+    
     public Entity GetByID(int id)
     {
         return activeEntities.FirstOrDefault(e => e.ID == id);
@@ -68,6 +87,9 @@ public class EntityManager : GameFrameworkComponent
     
     public void Remove(Entity entity)
     {
-        activeEntities.Remove(entity);
+        if(activeEntities.Contains(entity))
+        {
+            activeEntities.Remove(entity);
+        }
     }
 }

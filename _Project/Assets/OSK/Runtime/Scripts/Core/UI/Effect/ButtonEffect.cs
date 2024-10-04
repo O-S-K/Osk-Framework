@@ -54,7 +54,7 @@ public class ButtonEffect : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
             return;
             
         //if (playSoundOnClick)
-            World.Sound.Play("ui_click", false);
+            Main.Sound.Play("ui_click", false);
 
         if (_isScaler)
             root.DOScale(defaultSize * hoverScale, duration).SetEase(ease);

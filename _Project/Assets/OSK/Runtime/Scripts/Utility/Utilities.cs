@@ -9,7 +9,6 @@ namespace OSK.Utils
         public delegate TResult MapFunc<out TResult, TArg>(TArg arg);
         public delegate bool FilterFunc<TArg>(TArg arg);
 
-
         public static List<TOut> Map<TIn, TOut>(List<TIn> list, MapFunc<TOut, TIn> func)
         {
             List<TOut> newList = new List<TOut>(list.Count);
@@ -21,7 +20,6 @@ namespace OSK.Utils
 
             return newList;
         }
- 
 
         public static char CharToLower(char c)
         {

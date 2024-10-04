@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using System.Collections;
+using DG.Tweening;
+using OSK.Utils;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
@@ -22,9 +24,6 @@ public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
     public int numberOfCoins = 10;
     public float delayMove = 0.15f;
 
-    public float timeDestroyed = 1.25f;
-    public float delaySetOnCompleted = 1;
-
     public System.Action onCompleted;
     private GameObject coinParent;
 
@@ -37,13 +36,15 @@ public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
     {
         if (canvas == null)
         {
-            canvas = World.UI.GetCanvas();
+            canvas = Main.UI.GetCanvas;
         }
 
         for (int i = 0; i < iconClones.Length; i++)
         {
             iconClones[i].SetActive(false);
         }
+
+        coinParent = new GameObject("iconMoveParent");
     }
 
     // private void Update()
@@ -90,24 +91,27 @@ public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
 
     private IEnumerator DelaySpawnCoins(Vector3 startPoint)
     {
-        coinParent = new GameObject("iconMoveParent");
-        coinParent.transform.parent = canvas.transform;
-        coinParent.transform.localPosition = Vector3.zero;
-        coinParent.transform.localScale = Vector3.one;
-        Destroy(coinParent, timeDestroyed);
+        var cp = Main.Pool.Spawn("CoinParent", coinParent);
+        cp.transform.parent = canvas.transform;
+        cp.transform.localPosition = Vector3.zero;
+        cp.transform.localScale = Vector3.one;
+        this.DoDelay(delayMove + numberOfCoins / 10, () => { Main.Pool.Despawn(cp); });
 
         float timeDlaySpawn = 0;
 
         for (int i = 0; i < numberOfCoins; i++)
         {
-            var coinClone = Instantiate(iconClones[indexIcon], startPoint, Quaternion.identity, coinParent.transform);
+            var coinClone = Main.Pool.Spawn("icon", iconClones[indexIcon]);
+            coinClone.transform.position = startPoint;
+            coinClone.transform.parent = cp.transform;
+            coinClone.transform.localScale = Vector3.one;
             coinClone.transform.localPosition.WithZ(0);
             coinClone.gameObject.SetActive(true);
 
             if (gameObject.activeInHierarchy)
                 StartCoroutine(DropCoins(coinClone, startPoint));
 
-            float randomTime = Random.Range(0.01f, 0.05f);
+            float randomTime = Random.Range(0.01f, 0.03f);
             timeDlaySpawn += randomTime;
             yield return new WaitForSeconds(randomTime);
 
@@ -115,54 +119,74 @@ public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
                 StartCoroutine(MoveCoinToTarget(coinClone.transform));
         }
 
-        yield return new WaitForSeconds(delaySetOnCompleted);
         onCompleted?.Invoke();
     }
 
+    public bool isDrop = true;
 
     private IEnumerator DropCoins(GameObject image, Vector3 startPoint)
     {
         float timer = 0f;
         Vector3 randomOffset = new Vector2(Random.Range(randomX.x, randomX.y), Random.Range(randomY.x, randomY.y));
         Vector3 spawnPos = startPoint + randomOffset;
-        while (timer < timeDrop)
+
+        if (isDrop)
         {
-            float t = timer / speedDrop;
-            image.transform.position =
-                Vector3.MoveTowards(image.transform.position, new Vector3(spawnPos.x, spawnPos.y, 0), t);
-            timer += Time.deltaTime;
-            yield return null;
+            while (timer < timeDrop)
+            {
+                float t = timer / speedDrop;
+                image.transform.position =
+                    Vector3.MoveTowards(image.transform.position, new Vector3(spawnPos.x, spawnPos.y, 0), t);
+                timer += Time.deltaTime;
+                yield return null;
+            }
         }
+        else
+        {
+            image.transform.position = spawnPos;
+        }
+
         // AudioManager.Instance.PlayOneShot("coin_collect_appear", 1, 1);   
     }
+
+    public bool isUseJump = true;
+    public float jumpPower = 3;
+    public int numjump = 1;
+    public Ease ease = Ease.Linear;
 
     private IEnumerator MoveCoinToTarget(Transform imageTransform)
     {
         float timer = 0f;
-        yield return new WaitForSeconds(delayMove + Random.Range(0.01f, 0.05f));
+        yield return new WaitForSeconds(delayMove + Random.Range(0.01f, 0.02f));
 
-        while (timer < timeFly)
+        if (isUseJump)
         {
-            float t = timer / speedFly;
-            if (imageTransform != null && imageTransform.gameObject.activeInHierarchy)
-            {
-                imageTransform.position = Vector3.MoveTowards(imageTransform.position,
-                    new Vector3(target.position.x, target.position.y, 0), t);
-            }
-
-            timer += Time.deltaTime;
-            yield return null;
+            imageTransform.transform.DOJump(target.position, jumpPower, numjump, timeFly)
+                .SetEase(ease).OnComplete(() =>
+                {
+                    OnCompletedMove(imageTransform.gameObject);
+                });
+        }
+        else
+        {
+            imageTransform.DOMove(target.position, timeFly)
+                .SetEase(ease).OnComplete(() =>
+                {
+                    OnCompletedMove(imageTransform.gameObject);
+                });
         }
 
+        yield return null;
+    }
 
-        if (imageTransform != null && imageTransform.gameObject.activeInHierarchy)
-        {
-            World.Sound.Play("coin_add", false);
-            World.Native.Vibrate(EffectHaptic.Heavy);
-            imageTransform.position = target.position;
-        }
+    private void OnCompletedMove(GameObject go)
+    {
+        Main.Pool.Despawn(go);
+        Main.Sound.Play("coin_add", false);
+        Main.Native.Vibrate(EffectHaptic.Heavy);
     }
 }
+
 
 public class SpawnImageBuilder
 {
@@ -200,9 +224,8 @@ public class SpawnImageBuilder
         return this;
     }
 
-    public SpawnImageBuilder SetOnCompleted(float delay, System.Action onCompleted)
+    public SpawnImageBuilder SetOnCompleted(System.Action onCompleted)
     {
-        _img.delaySetOnCompleted = delay;
         _img.onCompleted = onCompleted;
         return this;
     }
@@ -255,9 +278,9 @@ public class SpawnImageBuilder
         return this;
     }
 
-    public SpawnImageBuilder SetTimeDestroyed(float timeDestroyed)
+    public SpawnImageBuilder SetUseJump(bool isUseJump)
     {
-        _img.timeDestroyed = timeDestroyed;
+        _img.isUseJump = isUseJump;
         return this;
     }
 

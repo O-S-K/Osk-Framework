@@ -10,7 +10,6 @@ public class TimeManager : GameFrameworkComponent
     [ShowInInspector, ReadOnly] private List<Timer> fixedUpdateTimers = new List<Timer>();
 
     // update every frame for a duration
-
     public Timer Create(MonoBehaviour owner, float duration, bool useFixedUpdate = false, Action onDispose = null)
     {
        return Create(owner.gameObject, duration, useFixedUpdate, onDispose);

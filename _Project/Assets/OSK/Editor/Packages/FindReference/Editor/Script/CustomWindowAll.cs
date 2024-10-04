@@ -15,7 +15,7 @@ namespace custom.find.reference
 	// optimize lag duplicate khi use
 	public class CustomWindowAll : CustomWindowBase, IHasCustomMenu
 	{
-		[MenuItem("Tools Editor/Custom Find Reference &2")]
+		[MenuItem("OSK-FrameWorld/Tools/Custom Find Reference &2")]
 		private static void ShowWindow()
 		{
 			var _window = CreateInstance<CustomWindowAll>();

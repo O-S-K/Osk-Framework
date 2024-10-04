@@ -16,7 +16,7 @@ public class TimeExample : MonoBehaviour
         //     Debug.Log("Hello World");
         // });
         //
-        myTimer = World.Time.Create(gameObject, 1f).Loops(5).Invoke(() => Debug.Log("Tick"));
+        myTimer = Main.Time.Create(gameObject, 1f).Loops(5).Invoke(() => Debug.Log("Tick"));
         // myTimer = World.Time.Create(gameObject, 1f).Unscale().Invoke(() => Debug.Log("Tick"));
 
     }
@@ -24,7 +24,7 @@ public class TimeExample : MonoBehaviour
     [Button("Clear Timers")]
     private void ClearTimers()
     {
-        World.Time.ClearAllTimers();
+        Main.Time.ClearAllTimers();
         Debug.Log("All timers cleared.");
     }
     
@@ -45,7 +45,7 @@ public class TimeExample : MonoBehaviour
     [Button("Remove Timer")]
     private void RemoveTimer()
     {
-        World.Time.RemoveTimer(myTimer);
+        Main.Time.RemoveTimer(myTimer);
         Debug.Log("Timer removed.");
     }
 }

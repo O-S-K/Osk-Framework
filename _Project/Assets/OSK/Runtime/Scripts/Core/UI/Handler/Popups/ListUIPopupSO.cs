@@ -7,7 +7,7 @@ using OSK;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ListUIPopupSO", menuName = "OSK/UI/ListUIPopupSO")]
-public class ListUIPopupSO : ScriptableObject
+public class ListUIPopupSO : ScriptableID
 {
     [TableList, SerializeField] private List<Popup> _popups = new List<Popup>();
     public List<Popup> Popups => _popups;
@@ -21,7 +21,7 @@ public class ListUIPopupSO : ScriptableObject
         {
             if (popupTypes.Contains(popup.GetType()))
             {
-                Debug.LogError($"Popup Type {popup.GetType()} exists in the list. Please remove it.");
+                OSK.Logg.LogError($"Popup Type {popup.GetType()} exists in the list. Please remove it.");
             }
             else
             {
@@ -40,7 +40,7 @@ public class ListUIPopupSO : ScriptableObject
         {
             if (popupTypes.Contains(popup.GetType()))
             {
-                Debug.LogError($"Popup Type {popup.GetType()} exists in the list. Please remove it.");
+                OSK.Logg.LogError($"Popup Type {popup.GetType()} exists in the list. Please remove it.");
             }
             else
             {

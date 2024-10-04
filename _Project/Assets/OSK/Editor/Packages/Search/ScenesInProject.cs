@@ -233,7 +233,7 @@ namespace DevLocker.Tools.AssetManagement
 		private const string SettingsPathScenes = "Library/ScenesInProject.Scenes.txt";
 		private const string SettingsPathPinnedScenes = "Library/ScenesInProject.PinnedScenes.txt";
 
-		[MenuItem("Tools Editor/Asset Management/Scenes In Project", false, 68)]
+		[MenuItem("OSK-FrameWorld/Tools/Asset Management/Scenes In Project", false, 68)]
 		private static void Init()
 		{
 			var window = (ScenesInProject)GetWindow(typeof(ScenesInProject), false, "Scenes In Project");

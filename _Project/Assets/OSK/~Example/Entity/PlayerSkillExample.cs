@@ -9,7 +9,7 @@ public class PlayerSkillExample : EComponent
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            World.Ability.ActivateAbility<FireballAbilityExample>();
+            Main.Ability.ActivateAbility<FireballAbilityExample>();
         }
     }
 }

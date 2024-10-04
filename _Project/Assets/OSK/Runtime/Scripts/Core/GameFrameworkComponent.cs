@@ -8,6 +8,6 @@ public class GameFrameworkComponent : MonoBehaviour
 {
     protected virtual void Awake()
     {
-        World.Register(this);
+        Main.Register(this);
     }
 }

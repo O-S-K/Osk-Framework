@@ -10,6 +10,6 @@ public class NetworkManager : GameFrameworkComponent
         InternetChecker = gameObject.GetOrAdd<InternetChecker>();
         IsOnline = await InternetChecker.CheckNetwork();
 
-        Debug.Log($"Is online: {IsOnline}");
+        OSK.Logg.Log($"Is online: {IsOnline}");
     }
 }

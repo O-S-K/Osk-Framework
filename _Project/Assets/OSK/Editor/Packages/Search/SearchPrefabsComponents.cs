@@ -15,7 +15,7 @@ namespace DevLocker.Tools.AssetManagement
 	/// </summary>
 	public class SearchPrefabsComponents : EditorWindow
 	{
-		[MenuItem("Tools Editor/Asset Management/Search Prefabs Components", false, 60)]
+		[MenuItem("OSK-FrameWorld/Tools/Asset Management/Search Prefabs Components", false, 60)]
 		static void Init()
 		{
 			GetWindow<SearchPrefabsComponents>("Search Prefabs Components");

@@ -8,17 +8,11 @@ namespace OSK.Utils
     public static class TimeUtils
     {
         private static float secPerYear;
-
-        private static MonoBehaviour behaviour;
         public delegate void Task();
 
-        public static void Schedule(MonoBehaviour _behaviour, float delay, Task task, bool unscaleTime = false)
+        public static void DoDelay(this MonoBehaviour _behaviour, float delay, Task task, bool unscaleTime = false)
         {
-            behaviour = _behaviour;
-            if (unscaleTime)
-                behaviour.StartCoroutine(DoTaskUnscale(task, delay));
-            else
-                behaviour.StartCoroutine(DoTask(task, delay));
+            _behaviour.StartCoroutine(unscaleTime ? DoTaskUnscale(task, delay) : DoTask(task, delay));
         }
 
         private static IEnumerator DoTask(Task task, float delay)
@@ -61,24 +55,19 @@ namespace OSK.Utils
         
         public static string MinutesToHours(float value)
         {
-            TimeSpan timeSpan = TimeSpan.FromSeconds(value);
-            string timerFormatted;
-            if (timeSpan.Days == 0)
-            {
-                timerFormatted = string.Format("{0:D1}h {1:D1}m", timeSpan.Hours, timeSpan.Minutes);
-            }
+            int days = (int)value / 86400;
+            int hours = (int)(value % 86400) / 3600;
+            int minutes = (int)(value % 3600) / 60;
+            int seconds = (int)value % 60;
+            string formattedTime;
+
+            if (days > 0)
+                formattedTime = string.Format("{0:D1}d {1:D1}h", days, hours);
+            else if (hours > 0)
+                formattedTime = string.Format("{0:D1}h {1:D1}m", hours, minutes);
             else
-            {
-                if (timeSpan.Hours == 0)
-                {
-                    timerFormatted = string.Format("{0:D1}m {1:D1}s", timeSpan.Minutes, timeSpan.Seconds);
-                }
-                else
-                {
-                    timerFormatted = string.Format("{0:D1}d {1:D1}h", timeSpan.Days, timeSpan.Hours);
-                }
-            }
-            return timerFormatted;
+                formattedTime = string.Format("{0:D1}m {1:D1}s", minutes, seconds);
+            return formattedTime;
         }
 
 
@@ -94,27 +83,6 @@ namespace OSK.Utils
             return timerFormatted;
         }
          
-
-        public static string SecondsToMinutes(float value)
-        {
-            TimeSpan timeSpan = TimeSpan.FromSeconds(value);
-            string timerFormatted;
-            string _minutes = ":";
-            string _seconds = "";
-
-            if (timeSpan.Minutes == 0)
-            {
-                timerFormatted = string.Format("{0:00}" + _seconds, timeSpan.Seconds);
-            }
-            else if (timeSpan.Seconds == 0)
-            {
-                timerFormatted = string.Format("{0:00}" + _minutes, timeSpan.Minutes);
-            }
-            else timerFormatted = string.Format("{0:00}" + _minutes + "{1:00}" + _seconds, timeSpan.Minutes, timeSpan.Seconds);
-            return timerFormatted;  
-        }
-
-
         public static double GetCurrentTime()
         {
             TimeSpan span = DateTime.Now.Subtract(new DateTime(1970, 1, 1, 0, 0, 0));
@@ -133,11 +101,11 @@ namespace OSK.Utils
             return span.TotalMilliseconds;
         }
 
-        public static int GetSecondElalsed(DateTime prevDate)
+        public static int GetSecondElapsed(DateTime prevDate)
         {
             DateTime now = DateTime.Now;
-            TimeSpan timeDiffernce = now.Subtract(prevDate);
-            return timeDiffernce.Seconds;
+            TimeSpan timeDifference = now - prevDate;
+            return timeDifference.Seconds;
         }
  
 
@@ -148,7 +116,6 @@ namespace OSK.Utils
 
         public static string FormatSeconds(float elapsed)
         {
-            //#1
             int d = (int)(elapsed * 100.0f);
             int minutes = d / (60 * 100);
             int seconds = (d % (60 * 100)) / 100;

@@ -20,7 +20,7 @@ namespace OSK
         {
             if (HasScene(sceneName))
             {
-                Debug.Log("Scene already loaded: " + sceneName);
+                OSK.Logg.Log("Scene already loaded: " + sceneName);
                 OnLoadingFailed?.Invoke("Scene already loaded: " + sceneName);
             }
             else
@@ -46,7 +46,7 @@ namespace OSK
             OnLoadingStart?.Invoke();
             if (HasScene(sceneName))
             {
-                Debug.Log("Scene already loaded: " + sceneName);
+                OSK.Logg.Log("Scene already loaded: " + sceneName);
                 OnLoadingFailed?.Invoke("Scene already loaded: " + sceneName);
             }
             else
@@ -83,7 +83,7 @@ namespace OSK
             {
                 // You can add progress feedback here if needed
                 OnLoadingProgress?.Invoke(asyncLoad.progress);
-                Debug.Log("Loading progress: " + asyncLoad.progress);
+                OSK.Logg.Log("Loading progress: " + asyncLoad.progress);
                 yield return null;
             }
 
@@ -113,12 +113,12 @@ namespace OSK
             while (!asyncUnload.isDone)
             {
                 // You can add progress feedback here if needed
-                Debug.Log("Unloading progress: " + asyncUnload.progress);
+                OSK.Logg.Log("Unloading progress: " + asyncUnload.progress);
                 yield return null;
             }
 
             // Scene successfully unloaded
-            Debug.Log("Scene unloaded: " + sceneName);
+            OSK.Logg.Log("Scene unloaded: " + sceneName);
         }
     }
 }

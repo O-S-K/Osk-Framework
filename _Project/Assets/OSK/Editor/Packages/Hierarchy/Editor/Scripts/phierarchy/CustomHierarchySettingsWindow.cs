@@ -13,7 +13,7 @@ namespace customtools.customhierarchy.phierarchy
 	public class CustomHierarchySettingsWindow : EditorWindow 
 	{	
         // STATIC
-		[MenuItem ("Tools Editor/Custom Hierarchy &3")]
+		[MenuItem ("OSK-FrameWorld/Tools/Custom Hierarchy &3")]
 		public static void ShowWindow () 
 		{ 
 			EditorWindow window = EditorWindow.GetWindow(typeof(CustomHierarchySettingsWindow));           

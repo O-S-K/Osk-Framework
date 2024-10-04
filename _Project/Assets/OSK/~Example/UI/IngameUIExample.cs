@@ -17,13 +17,13 @@ public class IngameUIExample  : UIScreen
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //World.UI.ShowPopup<WinPopupExample>();
-            World.UI.ShowPopup<WinPopupExample>("Popups/PopupWin");
+            Main.UI.ShowPopup<WinPopupExample>("Popups/PopupWin");
         }
     }
 
     public void BackHome()
     {
-        World.UI.ShowScreen<HomeUIExample>();
+        Main.UI.ShowScreen<HomeUIExample>();
     }
 }
 

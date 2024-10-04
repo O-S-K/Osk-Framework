@@ -9,46 +9,34 @@ namespace OSK
 {
     public class PopupManager : MonoBehaviour
     {
-        [SerializeField] private ListUIPopupSO listUIPopupSO;
         [ShowInInspector, ReadOnly] [SerializeField] private List<Popup> ListPopups;
         [ShowInInspector, ReadOnly] private Stack<Popup> _popupHistory = new Stack<Popup>();
-
-        // private void Update()
-        // {
-        //     for (int i = 0; i < _popupHistory.Count; i++)
-        //     {
-        //         if (!_popupHistory.ElementAt(i).IsShowing)
-        //         {
-        //             _popupHistory.Pop();
-        //         }
-        //     }
-        // }
-
+        
         public void Initialize()
         {
-            if (listUIPopupSO == null)
+            var listUIPopupSo = Main.Save.SOData.Get<ListUIPopupSO>().Popups;
+            if (listUIPopupSo == null)
             {
-                Debug.LogError("[PopupManager] ListUIPopupSO is null");
+                OSK.Logg.LogError("[Popup] ListUIPopupSO.Popups is null");
                 return;
             }
-            
-            if (listUIPopupSO.Popups == null)
-            {
-                Debug.LogError("[PopupManager] ListUIPopupSO.Popups is null");
-                return;
-            }
-            
+            PreloadPopups();
+        }
+
+        private void PreloadPopups()
+        {
             ListPopups.Clear();
-            for (int i = 0; i < listUIPopupSO.Popups.Count; i++)
+            var listUIPopupSo = Main.Save.SOData.Get<ListUIPopupSO>().Popups;
+            for (int i = 0; i < listUIPopupSo.Count; i++)
             {
-                var popup = Instantiate(listUIPopupSO.Popups[i], transform);
+                var popup = Instantiate(listUIPopupSo[i], transform);
                 popup.Initialize(this);
                 popup.transform.localPosition = Vector3.zero;
                 popup.transform.localScale = Vector3.one;
                 ListPopups.Add(popup);
             } 
         }
-
+        
         public T Create<T>(string path, bool isHidePrevPopup) where T : Popup
         {
             if (IsExist<T>())
@@ -79,6 +67,7 @@ namespace OSK
             Destroy(popup.gameObject);
         }
         
+        
         public T Show<T>(bool isHidePrevPopup) where T : Popup
         {
             foreach (var popup in ListPopups)
@@ -88,7 +77,7 @@ namespace OSK
                     if (popup.IsShowing && popup.gameObject.activeInHierarchy)
                     {
                         _popupHistory.Push(popup);
-                        Debug.Log("Popup is already showing");
+                        OSK.Logg.Log("Popup is already showing");
                         break;
                     }
                     Show(popup, isHidePrevPopup);
@@ -96,6 +85,11 @@ namespace OSK
                 }
             }
             return null;
+        }
+        
+        public List<Popup> GetAllPopups()
+        {
+            return ListPopups;
         }
         
         public T ShowAny<T>() where T : Popup
@@ -135,6 +129,16 @@ namespace OSK
             return null;
         }
         
+        public Popup Get(Popup popup)
+        {
+            foreach (var p in ListPopups)
+            {
+                if (p == popup)
+                    return p;
+            }
+            return null;
+        }
+        
 
         public void Remove(bool isHidePrevPopup = false)
         {  
@@ -149,6 +153,15 @@ namespace OSK
                 var prevPopup = _popupHistory.Peek();
                 if (isHidePrevPopup)
                     prevPopup.Show();
+            }
+        }
+        
+        public void Hide(Popup popup)
+        {
+            if (_popupHistory.Count <= 0) return;
+            if (_popupHistory.Peek() == popup)
+            {
+                Remove();
             }
         }
         
@@ -182,7 +195,7 @@ namespace OSK
             var popup = Instantiate(Resources.Load<T>(path), transform);
             
             if(popup == null)
-                throw new Exception($"[PopupManager] Can't find popup with path: {path}");
+                throw new Exception($"[Popup] Can't find popup with path: {path}");
             popup.Initialize(this);
             return popup;
         }

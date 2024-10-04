@@ -98,8 +98,8 @@ namespace CustomPlayerPref.PlayerPrefsEditor
         SearchField searchField;
 #endif
 
-        [MenuItem("Tools Editor/Custom PlayerPrefs &5")]
-        private static void Init()
+        [MenuItem("OSK-FrameWorld/Tools/Custom PlayerPrefs &5")]
+        public static void Init()
         {
             // Get existing open window or if none, make a new one:
             PlayerPrefsEditor editor = (PlayerPrefsEditor) GetWindow(typeof(PlayerPrefsEditor), false, "Prefs Editor");

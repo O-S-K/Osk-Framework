@@ -8,14 +8,14 @@ public class ObserverExample : MonoBehaviour
     private int score = 0;
     private void Start()
     {
-        World.Observer.Add("UpdateScore", OnUpdateScore);
+        Main.Observer.Add("UpdateScore", OnUpdateScore);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            World.Observer.Notify("UpdateScore", 1);
+            Main.Observer.Notify("UpdateScore", 1);
         }
     }
 
@@ -27,6 +27,6 @@ public class ObserverExample : MonoBehaviour
 
     private void OnDestroy()
     {
-        World.Observer.Remove("UpdateScore", OnUpdateScore);
+        Main.Observer.Remove("UpdateScore", OnUpdateScore);
     }
 }

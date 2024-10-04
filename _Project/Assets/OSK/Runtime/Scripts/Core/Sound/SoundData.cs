@@ -1,11 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using CustomInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "SoundData", menuName = "OSK/Sound/SoundData")]
-public class SoundData : ScriptableObject
+public class SoundData : ScriptableID
 {
     [TableList, SerializeField] private List<SoundInfo> _listSoundInfos = new List<SoundInfo>();
     public List<SoundInfo> ListSoundInfos => _listSoundInfos;
@@ -17,7 +15,7 @@ public class SoundData : ScriptableObject
     {
         if (_listSoundInfos == null || _listSoundInfos.Count == 0)
         {
-            Debug.LogWarning("List Sound Infos is empty.");
+            OSK.Logg.LogWarning("List Sound Infos is empty.");
             return;
         }
 
@@ -30,7 +28,7 @@ public class SoundData : ScriptableObject
     {
         if (_listSoundInfos == null || _listSoundInfos.Count == 0)
         {
-            Debug.LogWarning("List Sound Infos is empty.");
+            OSK.Logg.LogWarning("List Sound Infos is empty.");
             return;
         }
         for (int i = 0; i < _listSoundInfos.Count; i++)
@@ -52,7 +50,7 @@ public class SoundData : ScriptableObject
         {
             if (audioClipNames.Contains(soundInfo.audioClip.name))
             {
-                Debug.LogError($"Audio Clip Name {soundInfo.audioClip.name} exists in the list. Please remove it.");
+                OSK.Logg.LogError($"Audio Clip Name {soundInfo.audioClip.name} exists in the list. Please remove it.");
             }
             else
             {

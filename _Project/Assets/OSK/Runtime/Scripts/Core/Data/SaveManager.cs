@@ -17,12 +17,4 @@ public class SaveManager : GameFrameworkComponent
     
     private ScriptableObjectManager _scriptableObjectManager;
     public ScriptableObjectManager SOData => _scriptableObjectManager ??= new ScriptableObjectManager();
-
-    private void Update()
-    {
-        if(SOData.Count > 0)
-        {
-            Debug.Log("Scriptable Object Data Count: " + SOData.Count);
-        }
-    }
 }

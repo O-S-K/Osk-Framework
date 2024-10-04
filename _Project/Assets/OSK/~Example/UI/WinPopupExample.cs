@@ -10,12 +10,12 @@ public class WinPopupExample : Popup
     {
         if (Input.GetKeyDown(KeyCode.B))
         {
-            World.UI.ShowPopup<PopupResExample>();
+            Main.UI.ShowPopup<PopupResExample>();
         }
         
         if (Input.GetKeyDown(KeyCode.D))
         {
-            World.UI.DeletePopup(this);
+            Main.UI.DeletePopup(this);
         }
     }
  

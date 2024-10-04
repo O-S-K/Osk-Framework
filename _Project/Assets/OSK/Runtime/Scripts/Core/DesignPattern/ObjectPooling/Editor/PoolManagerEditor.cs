@@ -37,43 +37,63 @@ public class PoolManagerEditor : Editor
 
     private void DisplayGroupedPools()
     {
-        Dictionary<string, int> prefabCountLookup = new Dictionary<string, int>();
+        // Dictionary to hold prefab counts grouped by their respective groups
+        Dictionary<string, Dictionary<string, int>> groupPrefabCounts = new Dictionary<string, Dictionary<string, int>>();
 
-        // Gather prefab counts by name
+        // Gather prefab counts by group and name
         foreach (var groupEntry in poolManager.groupPrefabLookup)
         {
-            Dictionary<Component, ObjectPool<Component>> prefabPools = groupEntry.Value;
+            string groupName = groupEntry.Key;
+            Dictionary<Object, ObjectPool<Object>> prefabPools = groupEntry.Value;
+
+            // Initialize the dictionary for this group if it doesn't exist
+            if (!groupPrefabCounts.ContainsKey(groupName))
+            {
+                groupPrefabCounts[groupName] = new Dictionary<string, int>();
+            }
 
             foreach (var prefabEntry in prefabPools)
             {
-                Component prefab = prefabEntry.Key;
-                ObjectPool<Component> pool = prefabEntry.Value;
+                Object prefab = prefabEntry.Key;
+                ObjectPool<Object> pool = prefabEntry.Value;
                 int count = pool.Count;
 
-                if (prefabCountLookup.ContainsKey(prefab.name))
+                if (groupPrefabCounts[groupName].ContainsKey(prefab.name))
                 {
-                    prefabCountLookup[prefab.name] += count;
+                    groupPrefabCounts[groupName][prefab.name] += count;
                 }
                 else
                 {
-                    prefabCountLookup[prefab.name] = count;
+                    groupPrefabCounts[groupName][prefab.name] = count;
                 }
             }
         }
 
-        // Display grouped pools with total counts
+        // Display grouped pools with total counts for each group
         EditorGUILayout.Space();
-        foreach (var groupEntry in poolManager.groupPrefabLookup)
+        if (groupPrefabCounts.Count == 0)
+            return;
+
+        foreach (var groupEntry in groupPrefabCounts)
         {
             string groupName = groupEntry.Key;
             EditorGUILayout.LabelField($"Group: {groupName}", EditorStyles.boldLabel);
 
-            foreach (var prefabEntry in prefabCountLookup)
+            foreach (var prefabEntry in groupEntry.Value)
             {
                 string prefabName = prefabEntry.Key;
                 int totalCount = prefabEntry.Value;
 
+                EditorGUILayout.BeginHorizontal(); // Start a horizontal layout for buttons
                 EditorGUILayout.LabelField($"Prefab: {prefabName} - Total Count: {totalCount}");
+
+                // Add "Clean" button
+                if (GUILayout.Button("Clean", GUILayout.Width(60)))
+                {
+                    poolManager.DestroyGroup(groupName);
+                }
+
+                EditorGUILayout.EndHorizontal(); // End horizontal layout
             }
         }
     }

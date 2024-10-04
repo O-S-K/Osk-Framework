@@ -9,7 +9,7 @@ public class SkillAbilityExample : MonoBehaviour
 
     private void Start()
     {
-        World.Ability.AddAbility(ab);
+        Main.Ability.AddAbility(ab);
     }
      
 
@@ -17,11 +17,11 @@ public class SkillAbilityExample : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            World.Ability.ActivateAbility<FireballAbilityExample>();
+            Main.Ability.ActivateAbility<FireballAbilityExample>();
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            World.Ability.DeactivateAbility<FireballAbilityExample>();
+            Main.Ability.DeactivateAbility<FireballAbilityExample>();
         }
 
     }

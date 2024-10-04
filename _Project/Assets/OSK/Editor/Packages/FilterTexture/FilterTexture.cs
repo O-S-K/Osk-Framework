@@ -12,7 +12,7 @@ public class FilterTexture : EditorWindow
     SerializedObject serializedObject;
     Vector2 scrollPos;
 
-    [MenuItem("Tools Editor/Filter Textures And Remove Unused Textures")]
+    [MenuItem("OSK-FrameWorld/Tools/Filter Textures And Remove Unused Textures")]
     public static void ShowWindow()
     {
         GetWindow(typeof(FilterTexture));

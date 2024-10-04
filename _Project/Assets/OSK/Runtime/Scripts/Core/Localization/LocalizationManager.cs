@@ -50,7 +50,7 @@ public class LocalizationManager : GameFrameworkComponent
 
                 if (languageColumnIndex == -1)
                 {
-                    Debug.LogError("Language code not found in the Excel file.");
+                    OSK.Logg.LogError("Language code not found in the Excel file.");
                     return;
                 }
 
@@ -73,7 +73,7 @@ public class LocalizationManager : GameFrameworkComponent
         }
         else
         {
-            Debug.LogWarning($"Localization key '{key}' not found.");
+            OSK.Logg.LogWarning($"Localization key '{key}' not found.");
             return key; // Fallback to key
         }
     }

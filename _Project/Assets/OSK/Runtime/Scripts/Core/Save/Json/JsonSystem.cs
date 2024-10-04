@@ -16,14 +16,27 @@ namespace OSK
 
         public void Save<T>(T obj, string name)
         {
-            var filePath = FilePath(name);
-            Debug.Log("path -> " + World.Save.Json.GetPath(name));
-
+            var filePath = FilePath(name); 
             object jsonData = obj is Object ? obj : new global::Json.JsonMapper<T>(obj);
             var saveJson = JsonUtility.ToJson(jsonData);
             File.WriteAllText(filePath, saveJson);
             
-            Debug.Log("SaveJson -> " + saveJson);
+            OSK.Logg.Log("SaveJson -> " + saveJson);
+        }
+        
+        public List<string> GetSavedFiles(string name)
+        {
+            List<string> savedFiles = new List<string>();
+
+            if (Directory.Exists(FilePath(name)))
+            {
+                var files = Directory.GetFiles(FilePath(name), "*.json");
+                foreach (var file in files)
+                {
+                    savedFiles.Add(Path.GetFileName(file));
+                }
+            }
+            return savedFiles;
         }
 
         public void Load<T>(T obj, string name)

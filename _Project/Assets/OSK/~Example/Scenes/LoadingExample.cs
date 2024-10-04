@@ -11,20 +11,20 @@ public class LoadingExample : MonoBehaviour
     private void Start()
     {
         // scene loading example
-        World.Scene.OnLoadingStart += OnLoadingStart;
-        World.Scene.OnLoadingProgress += OnLoadingProgress;
-        World.Scene.OnLoadingComplete += OnLoadingComplete;
+        Main.Scene.OnLoadingStart += OnLoadingStart;
+        Main.Scene.OnLoadingProgress += OnLoadingProgress;
+        Main.Scene.OnLoadingComplete += OnLoadingComplete;
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.N))
         {
-            World.Scene.LoadSceneAsync("Gameplay", LoadSceneMode.Single);
+            Main.Scene.LoadSceneAsync("Gameplay", LoadSceneMode.Single);
         }
         if (Input.GetKeyDown(KeyCode.M))
         {
-            World.Scene.UnloadScene("Gameplay");
+            Main.Scene.UnloadScene("Gameplay");
         }
     }
 

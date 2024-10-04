@@ -12,12 +12,12 @@ public class GameCommandExample : MonoBehaviour
         {
             Vector3 newPosition = _player.transform.position + Vector3.one * Random.value;
             ICommand moveCommand = new MoveCommand(_player, newPosition);
-            World.Command.Create("playermove", moveCommand);
+            Main.Command.Create("playermove", moveCommand);
         }
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            World.Command.Undo("playermove"); 
+            Main.Command.Undo("playermove"); 
         }
     }
 }

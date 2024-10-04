@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEditor;
-using UnityEngine;
 
 [CustomEditor(typeof(EventBus))]
 public class EventBusEditor : Editor
@@ -24,20 +24,21 @@ public class EventBusEditor : Editor
 
     private void DisplayEventListeners()
     {
-        var eventField = typeof(EventBus).GetField("_subscribers", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        var eventField = typeof(EventBus).GetField("_subscribers", BindingFlags.NonPublic | BindingFlags.Instance);
         if (eventField != null)
         {
-            var subscribers = eventField.GetValue(eventBus) as Dictionary<System.Type, List<Action<GameEvent>>>;
+            var subscribers = eventField.GetValue(eventBus) as Dictionary<Type, List<Action<GameEvent>>>;
 
             if (subscribers != null && subscribers.Count > 0)
             {
+                EditorGUILayout.LabelField($"Event List: {subscribers.Count}", EditorStyles.boldLabel);
                 foreach (var subscriber in subscribers)
                 {
-                    EditorGUILayout.LabelField($"Event Type: {subscriber.Key.Name}", EditorStyles.boldLabel);
-                    foreach (var callback in subscriber.Value)
-                    {
-                        EditorGUILayout.LabelField($"- Callback: {callback.Method.Name}", EditorStyles.label);
-                    }
+                    EditorGUILayout.LabelField($".     {subscriber.Key.Name}", EditorStyles.boldLabel);
+                    // foreach (var callback in subscriber.Value)
+                    // {
+                    //     EditorGUILayout.LabelField($"- Callback: {callback.Method.Name}", EditorStyles.label);
+                    // }
                 }
             }
             else

@@ -13,6 +13,6 @@ public class BulletPoolExample : MonoBehaviour
     
     private void Release()
     {
-        World.Pool.Release(this);
+        Main.Pool.Despawn(this);
     }
 }

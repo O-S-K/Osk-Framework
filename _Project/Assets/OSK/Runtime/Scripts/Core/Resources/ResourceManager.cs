@@ -24,7 +24,7 @@ public class ResourceManager : GameFrameworkComponent
         }
         else
         {
-            Debug.LogError("Resource not found at path: " + path);
+            OSK.Logg.LogError("Resource not found at path: " + path);
         }
 
         return resource;
@@ -35,7 +35,7 @@ public class ResourceManager : GameFrameworkComponent
         T resource = Load<T>(path);
         if (resource == null)
         {
-            Debug.LogError("Failed to spawn resource at path: " + path);
+            OSK.Logg.LogError("Failed to spawn resource at path: " + path);
             return null;
         }
         return Instantiate(resource) as T;
@@ -58,7 +58,7 @@ public class ResourceManager : GameFrameworkComponent
             bundle = bundleRequest.assetBundle;
             if (bundle == null)
             {
-                Debug.LogError("Failed to load AssetBundle from path: " + bundlePath);
+                OSK.Logg.LogError("Failed to load AssetBundle from path: " + bundlePath);
                 onLoaded?.Invoke(null);
                 yield break;
             }

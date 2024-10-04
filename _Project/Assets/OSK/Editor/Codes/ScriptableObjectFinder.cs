@@ -9,7 +9,7 @@ public class ScriptableObjectFinder : EditorWindow
     private string path = "Assets/Resources";  // Đặt mặc định là thư mục Resources
     private string[] scriptableObjectPaths;
 
-    [MenuItem("Tools Editor/Find All SO In Resources")]
+    [MenuItem("OSK-FrameWorld/Tools/Find All SO In Resources")]
     public static void ShowWindow()
     {
         GetWindow<ScriptableObjectFinder>("ScriptableObject Finder");

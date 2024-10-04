@@ -83,9 +83,8 @@ namespace OSK
 
         public void ReleaseItem(T item)
         {
-            if (_lookupDic.ContainsKey(item))
+            if (_lookupDic.TryGetValue(item, out var container))
             {
-                var container = _lookupDic[item];
                 container.Release();
                 _lookupDic.Remove(item);
             }

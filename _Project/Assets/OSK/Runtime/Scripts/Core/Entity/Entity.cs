@@ -20,7 +20,7 @@ public class Entity : IEntity
     {
         if(components.Any(c => c.GetType() == typeof(T)))
         {
-            Debug.LogError("Component " + typeof(T) + " already exists");
+            OSK.Logg.LogError("Component " + typeof(T) + " already exists");
             return default;
         }
         var component = gameObject.AddComponent<T>();

@@ -6,13 +6,13 @@ using System.IO;
 
 public class SaveEditor : Editor
 {
-    [MenuItem("Tools Editor/Save/Open Persistent Data Path" )]
+    [MenuItem("OSK-FrameWorld/Tools/Save/Open Persistent Data Path" )]
     private static void OpenPersistentDataPath()
     {
         EditorUtility.RevealInFinder(Application.persistentDataPath);
     }
 
-    [MenuItem("Tools Editor/Save/Clear Persistent Data Path")]
+    [MenuItem("OSK-FrameWorld/Tools/Save/Clear Persistent Data Path")]
     private static void ClearPersistentDataPath()
     {
         if (EditorUtility.DisplayDialog("Clear Persistent Data Path", "Are you sure you wish to clear the persistent data path?\n This action cannot be reversed.", "Clear", "Cancel"))
@@ -26,7 +26,7 @@ public class SaveEditor : Editor
         }
     }
 
-    [MenuItem("Tools Editor/Save/Clear PlayerPrefs", false, 200)]
+    [MenuItem("OSK-FrameWorld/Tools/Save/Clear PlayerPrefs", false, 200)]
     private static void ClearPlayerPrefs()
     {
         if (EditorUtility.DisplayDialog("Clear PlayerPrefs", "Are you sure you wish to clear PlayerPrefs?\nThis action cannot be reversed.", "Clear", "Cancel"))

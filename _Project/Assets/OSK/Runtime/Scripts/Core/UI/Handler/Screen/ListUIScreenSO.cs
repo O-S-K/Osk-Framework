@@ -7,7 +7,7 @@ using OSK;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ListUIScreenSO", menuName = "OSK/UI/ListUIScreenSO")]
-public class ListUIScreenSO : ScriptableObject
+public class ListUIScreenSO : ScriptableID
 {
     [TableList, SerializeField] private List<UIScreen> _uiScreens = new List<UIScreen>();
     public List<UIScreen> UIScreens => _uiScreens;
@@ -22,7 +22,7 @@ public class ListUIScreenSO : ScriptableObject
         {
             if (uiScreenTypes.Contains(uiScreen.GetType()))
             {
-                Debug.LogError($"UI Screen Type {uiScreen.GetType()} exists in the list. Please remove it.");
+                OSK.Logg.LogError($"UI Screen Type {uiScreen.GetType()} exists in the list. Please remove it.");
             }
             else
             {
@@ -41,7 +41,7 @@ public class ListUIScreenSO : ScriptableObject
         {
             if (uiScreenTypes.Contains(uiScreen.GetType()))
             {
-                Debug.LogError($"UI Screen Type {uiScreen.GetType()} exists in the list. Please remove it.");
+                OSK.Logg.LogError($"UI Screen Type {uiScreen.GetType()} exists in the list. Please remove it.");
             }
             else
             {

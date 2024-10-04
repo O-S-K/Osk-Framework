@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RemoveComponentMissingScripts : Editor
 {
-    [MenuItem("Tools Editor/Remove Missing Scripts In Obect")]
+    [MenuItem("OSK-FrameWorld/Tools/Remove Missing Scripts In Obect")]
     public static void RemoveMissingScriptsInObect()
     {
         var allObject = Resources.FindObjectsOfTypeAll<GameObject>();
@@ -17,5 +17,4 @@ public class RemoveComponentMissingScripts : Editor
         AssetDatabase.Refresh();
         UnityEngine.Debug.Log($"<b><color=#ffa500ff>Removed {count} missing scripts</color></b>");
     }
-
 }

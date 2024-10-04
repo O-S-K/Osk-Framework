@@ -63,7 +63,7 @@ public sealed class Timer
         OnTick = null;
         OnExit?.Invoke();
         OnExit = null;
-        World.Time.UpdateListTimer();
+        Main.Time.UpdateListTimer();
     }
 
     internal void Start(GameObject owner, float duration, Action OnStart = null, Action OnExit = null)

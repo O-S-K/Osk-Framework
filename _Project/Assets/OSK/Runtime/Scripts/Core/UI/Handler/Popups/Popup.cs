@@ -2,6 +2,7 @@ using System;
 using CustomInspector;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
@@ -9,6 +10,7 @@ namespace OSK
     public class Popup : MonoBehaviour
     {
         public int STT = 0;
+        public bool isOverlay = false;
 
         [Header("Settings")] 
         [SerializeField] private bool disableWhenNextPopupOpens;
@@ -35,6 +37,8 @@ namespace OSK
         public virtual void Initialize(PopupManager popupManager)
         {
             gameObject.SetActive(false);
+            if(isOverlay)
+                transform.SetTopSibling();
             _isShowing = false;
             _popupManager = popupManager;
             _uiTransition = GetComponent<UITransition>();

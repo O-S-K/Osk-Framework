@@ -8,6 +8,6 @@ public class PopupResExample : Popup
     public override void Show()
     {
         base.Show();
-        World.Time.Create(gameObject, 1, false, () => { Hide(); });
+        Main.Time.Create(gameObject, 1, false, () => { Hide(); });
     }
 }
