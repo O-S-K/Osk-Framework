@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public partial class Main
 {
     public bool isDestroyingOnLoad = false;
@@ -11,10 +12,10 @@ public partial class Main
     {
         if (isDestroyingOnLoad)
             DontDestroyOnLoad(gameObject);
+        InitComponents();
     }
 
     private void Start()
     {
-        InitComponents();
     }
 }

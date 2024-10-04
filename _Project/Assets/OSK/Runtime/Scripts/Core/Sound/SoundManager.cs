@@ -16,6 +16,7 @@ namespace OSK
     {
         [SerializeField, ReadOnly] public List<SoundInfo> soundInfos;
         [SerializeField, ReadOnly] public List<PlayingSound> musicInfos;
+        [SerializeField] private SoundData soundDataSO;
         private AudioSource soundObject;
 
         public bool isMusic { get; private set; }
@@ -33,11 +34,9 @@ namespace OSK
 
             isMusic = true;
             isSoundEffects = true;
-        }
-
-        private void Start()
-        {
-            SoundData soundData = Main.Save.SOData.Get<SoundData>();
+            
+            SoundData soundData = soundDataSO;
+            //SoundData soundData = Main.Save.SOData.Get<SoundData>();
             if (soundData != null)
             {
                 if (soundData.ListSoundInfos.Count == 0)
@@ -49,7 +48,6 @@ namespace OSK
                 OSK.Logg.LogWarning("SoundData is not assigned in SoundManager.");
             }
         }
-
 
         private void Update()
         {

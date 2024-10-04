@@ -50,8 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   listScreens: []
   currentScreen: {fileID: 0}
-  _listUIScreenSO: {fileID: 11400000, guid: 57f79cb667f85d442a833e5f6286ae85, type: 2}
-  screenSpawn: {fileID: 0}
+  _listUIPopupSo: {fileID: 11400000, guid: 57f79cb667f85d442a833e5f6286ae85, type: 2}
 --- !u!1 &2604913220301700251
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ListPopups: []
-  _listUIPopupSO: {fileID: 11400000, guid: a5af9ad8262be1d4682b1ce1058cc6b7, type: 2}
+  _listUIPopupSo: {fileID: 11400000, guid: a5af9ad8262be1d4682b1ce1058cc6b7, type: 2}
 --- !u!1 &6633980017457705876
 GameObject:
   m_ObjectHideFlags: 0

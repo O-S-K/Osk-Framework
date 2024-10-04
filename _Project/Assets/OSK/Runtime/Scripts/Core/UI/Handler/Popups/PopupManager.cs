@@ -11,22 +11,23 @@ namespace OSK
     {
         [ShowInInspector, ReadOnly] [SerializeField] private List<Popup> ListPopups;
         [ShowInInspector, ReadOnly] private Stack<Popup> _popupHistory = new Stack<Popup>();
+        [SerializeField] private ListUIPopupSO _listUIPopupSo;
         
         public void Initialize()
         {
-            var listUIPopupSo = Main.Save.SOData.Get<ListUIPopupSO>().Popups;
-            if (listUIPopupSo == null)
-            {
-                OSK.Logg.LogError("[Popup] ListUIPopupSO.Popups is null");
-                return;
-            }
             PreloadPopups();
         }
 
         private void PreloadPopups()
         {
             ListPopups.Clear();
-            var listUIPopupSo = Main.Save.SOData.Get<ListUIPopupSO>().Popups;
+            var listUIPopupSo = _listUIPopupSo.Popups;
+            if (listUIPopupSo == null)
+            {
+                OSK.Logg.LogError("[Popup] ListUIPopupSO.Popups is null");
+                return;
+            }
+            
             for (int i = 0; i < listUIPopupSo.Count; i++)
             {
                 var popup = Instantiate(listUIPopupSo[i], transform);

@@ -15,12 +15,15 @@ public class UIManager : GameFrameworkComponent
     protected override void Awake()
     {
         base.Awake();
+        
         if(_hud == null)
             _hud = FindObjectOfType<HUD>();
+        _hud.GetScreenManager.Initialize();
+        _hud.GetPopupManager.Initialize();
     }
+
   
     #region Screens
-
     public T ShowScreen<T>() where T : UIScreen
     {
         return _hud.GetScreenManager.Show<T>();

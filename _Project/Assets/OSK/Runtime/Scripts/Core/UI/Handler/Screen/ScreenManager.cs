@@ -11,6 +11,7 @@ namespace OSK
     {
         [SerializeField, ReadOnly] public List<UIScreen> listScreens = new List<UIScreen>();
         [SerializeField, ReadOnly] public UIScreen currentScreen;
+        [SerializeField] private ListUIScreenSO _listUIPopupSo;
         private bool isAnimating;
 
         public UIScreen CurrentScreen
@@ -23,13 +24,6 @@ namespace OSK
 
         public void Initialize()
         {
-            var listUIScreenSo = Main.Save.SOData.Get<ListUIScreenSO>().UIScreens;
-            if (listUIScreenSo == null)
-            {
-                OSK.Logg.LogError("[Screen] ListUIScreenSO.UIScreens is null");
-                return;
-            }
-
             PreloadScreens();
         }
 
@@ -37,7 +31,13 @@ namespace OSK
         {
             listScreens.Clear();
 
-            var listUIScreenSo = Main.Save.SOData.Get<ListUIScreenSO>().UIScreens;
+            var listUIScreenSo = _listUIPopupSo.UIScreens;
+            if (listUIScreenSo == null)
+            {
+                OSK.Logg.LogError("[Screen] ListUIScreenSO.UIScreens is null");
+                return;
+            }
+            
             for (int i = 0; i < listUIScreenSo.Count; i++)
             {
                 var screenUI = Instantiate(listUIScreenSo[i], transform);
