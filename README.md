@@ -58,23 +58,23 @@ This framework is designed to manage various aspects of a Unity project through 
 18. **UI**  
     Manages user interface components like popups, screens, and HUD elements. Provides functions for dynamic UI transitions and input handling.
 
-19. **World**  
+19. **Main**  
     The main manager that oversees the entire game system. Provides access to core functionalities like the Object Pool, Observer, Event System, and more.
 
 ### **How to Use**
 
 1. **Drag Prefab to Scene**  
-   To initialize the framework in your project, drag the `World` prefab into your scene.
+   To initialize the framework in your project, drag the `Main` prefab into your scene.
 
 2. **Create ScriptableObject (SO) Data**  
    - **Screens and Popups**: Create ScriptableObjects to define different screens (e.g., MainMenu, GameOver) and popups (e.g., Settings, Notifications).
    - **Sound and Music**: Create SO for sound effects and music tracks, linking them to corresponding events in your game.
 
-3. **Using the World Functionality**  
-   The `World` object is the central hub for accessing various systems.  
-   - **Object Pooling**: Use `World.Pool.Create<T>()` to instantiate objects using the pooling system, ensuring optimal performance.
-   - **Observer**: Use `World.Observer.Add("ScoreUpdate", callback)` to subscribe to game events and manage the flow of information between game components.
+3. **Using the Main Functionality**  
+   The `Main` object is the central hub for accessing various systems.  
+   - **Object Pooling**: Use `Main.Pool.Create<T>()` to instantiate objects using the pooling system, ensuring optimal performance.
+   - **Observer**: Use `Main.Observer.Add("ScoreUpdate", callback)` to subscribe to game events and manage the flow of information between game components.
    
-   You can also use `World.Command`, `World.Timer`, and other `World` systems for advanced game management.
+   You can also use `Main.Command`, `Main.Timer`, and other `Main` systems for advanced game management.
 
 This framework provides a structured, reusable foundation for managing various game systems efficiently. The flexibility and modularity of the framework ensure that it can be tailored to different game genres and requirements.
