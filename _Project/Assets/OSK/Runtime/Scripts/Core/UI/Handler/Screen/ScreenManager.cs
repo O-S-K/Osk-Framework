@@ -14,11 +14,8 @@ namespace OSK
         [SerializeField] private ListUIScreenSO _listUIPopupSo;
         private bool isAnimating;
 
-        public UIScreen CurrentScreen
-        {
-            get { return currentScreen; }
-        }
-
+        public ListUIScreenSO ListUIPopupSo => _listUIPopupSo;
+        public UIScreen CurrentScreen => currentScreen;
         public System.Action<UIScreen, UIScreen> OnSwitchingScreens;
         public System.Action<UIScreen> OnShowingScreen;
 
@@ -26,6 +23,7 @@ namespace OSK
         {
             PreloadScreens();
         }
+        
 
         private void PreloadScreens()
         {

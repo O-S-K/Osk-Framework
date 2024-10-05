@@ -103,8 +103,8 @@ public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
         {
             var coinClone = Main.Pool.Spawn("icon", iconClones[indexIcon]);
             coinClone.transform.position = startPoint;
-            coinClone.transform.parent = cp.transform;
             coinClone.transform.localScale = Vector3.one;
+            coinClone.transform.SetParent(cp.transform, false);
             coinClone.transform.localPosition.WithZ(0);
             coinClone.gameObject.SetActive(true);
 
@@ -162,18 +162,12 @@ public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
         if (isUseJump)
         {
             imageTransform.transform.DOJump(target.position, jumpPower, numjump, timeFly)
-                .SetEase(ease).OnComplete(() =>
-                {
-                    OnCompletedMove(imageTransform.gameObject);
-                });
+                .SetEase(ease).OnComplete(() => { OnCompletedMove(imageTransform.gameObject); });
         }
         else
         {
             imageTransform.DOMove(target.position, timeFly)
-                .SetEase(ease).OnComplete(() =>
-                {
-                    OnCompletedMove(imageTransform.gameObject);
-                });
+                .SetEase(ease).OnComplete(() => { OnCompletedMove(imageTransform.gameObject); });
         }
 
         yield return null;

@@ -12,6 +12,9 @@ namespace OSK
         [ShowInInspector, ReadOnly] [SerializeField] private List<Popup> ListPopups;
         [ShowInInspector, ReadOnly] private Stack<Popup> _popupHistory = new Stack<Popup>();
         [SerializeField] private ListUIPopupSO _listUIPopupSo;
+        public ListUIPopupSO ListUIPopupSo => _listUIPopupSo;
+        
+        
         
         public void Initialize()
         {

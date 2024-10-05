@@ -20,6 +20,19 @@ namespace OSK
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
+            
+            // spam all the screens and popups
+            if (GUILayout.Button("Show All Views"))
+            {
+                SpawnAllViews();
+            }
+            EditorGUILayout.Space();
+            if(GUILayout.Button("Clear All Views"))
+            {
+                CleanAllViews();
+            }
+            EditorGUILayout.Space();
+
 
             // Draw background for the screens section
             DrawBackground(Color.red);
@@ -35,6 +48,30 @@ namespace OSK
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(target);
+            }
+        }
+
+        private void CleanAllViews()
+        {
+            
+        }
+
+        private void SpawnAllViews()
+        {
+            List<UIScreen> screens = uiManager.GetScreenManager.ListUIPopupSo.UIScreens;
+            foreach (var screen in screens)
+            {
+                GameObject s = PrefabUtility.InstantiatePrefab(screen.gameObject) as GameObject;
+                s.transform.SetParent( uiManager.GetScreenManager.transform);
+                s.transform.localPosition = Vector3.zero;
+            }
+                
+            List<Popup> popups = uiManager.GetPopupManager.ListUIPopupSo.Popups;
+            foreach (var popup in popups)
+            {
+                GameObject p = PrefabUtility.InstantiatePrefab(popup.gameObject) as GameObject;
+                p.transform.SetParent(uiManager.GetPopupManager.transform);
+                p.transform.localPosition = Vector3.zero;
             }
         }
 

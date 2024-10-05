@@ -49,12 +49,12 @@ namespace OSK
             if (instance is Component component)
             {
                 component.gameObject.SetActive(true);
-                component.transform.parent = GetOrCreateGroup(groupName).transform;
+                component.transform.SetParent(GetOrCreateGroup(groupName).transform);
             }
             else if (instance is GameObject go)
             {
                 go.SetActive(true);
-                go.transform.parent = GetOrCreateGroup(groupName).transform;
+                go.transform.SetParent(GetOrCreateGroup(groupName).transform);
             }
 
             if (!instanceLookup.TryAdd(instance, pool))

@@ -1,8 +1,9 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.IO;
-using ExcelDataReader;
+using System.Text;
+using CustomInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /*
  *
@@ -12,81 +13,168 @@ Key	                 	French	                            Vietnamese
 welcome_message	        Welcome to the game!	            Chào mưn bạn đến với trò chơi!
 exit_prompt	            Are you sure you want to exit?	    Bạn có chắc chắn muốn thoát không?
 
- World.Localization.SetLanguage("English"); // Or "Vietnamese", etc.
+ Main.Localization.SetLanguage("English"); // Or "Vietnamese", etc.
  .text = World.Localization.GetLocalizedString("welcome_message");
 */
 
- 
-public class LocalizationManager : GameFrameworkComponent
+namespace OSK
 {
-    [SerializeField] private string pathToExcelFile;
-    [SerializeField] private string nameTable;
-
-    private Dictionary<string, string> _localizedText;
-    private string _currentLanguage;
-
-    public void LoadLocalizationData(string filePath, string nameTable, string languageCode)
+    public class LocalizationManager : GameFrameworkComponent
     {
-        _localizedText = new Dictionary<string, string>();
-
-        // Load the Excel file
-        using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read))
+        private Dictionary<string, string> _localizedText = new Dictionary<string, string>();
+        public string currentLanguage = "English";
+        public string excelFilePath = "Assets/Localization.xlsx";
+        public string outputCsvPath = "Assets/_Project/Resources/Localization/Localization";
+        public string pathLoadFileCsv = "Localization/Localization";
+        private bool isSetDefaultLanguage = false;
+        
+        
+        public void SetLanguageAppSystem()
         {
-            using (var reader = ExcelReaderFactory.CreateReader(stream))
+            SetLanguage(Application.systemLanguage.ToString());
+        }
+
+        public void SetLanguage(string languageCode)
+        {
+            isSetDefaultLanguage = true;
+            LoadLocalizationData(languageCode);
+            currentLanguage = languageCode;
+            Logg.Log($"Set language to: {languageCode}", Color.green, 15);
+
+            // debug all keys
+            foreach (var key in _localizedText.Keys)
             {
-                var result = reader.AsDataSet();
-                var sheet = result.Tables[nameTable];
-
-                // First row contains column headers (language codes)
-                int languageColumnIndex = -1;
-                for (int i = 0; i < sheet.Columns.Count; i++)
-                {
-                    if (sheet.Rows[0][i].ToString().Equals(languageCode, System.StringComparison.OrdinalIgnoreCase))
-                    {
-                        languageColumnIndex = i;
-                        break;
-                    }
-                }
-
-                if (languageColumnIndex == -1)
-                {
-                    OSK.Logg.LogError("Language code not found in the Excel file.");
-                    return;
-                }
-
-                for (int i = 1; i < sheet.Rows.Count; i++)
-                {
-                    string key = sheet.Rows[i][0].ToString();
-                    string value = sheet.Rows[i][languageColumnIndex].ToString();
-
-                    _localizedText[key] = value;
-                }
+                Logg.Log($"Key: {key}, Value: {_localizedText[key]}", Color.cyan, 15);
             }
         }
-    }
 
-    public string GetLocalizedString(string key)
-    {
-        if (_localizedText.ContainsKey(key))
+        public void SwitchLanguage(SystemLanguage language)
         {
-            return _localizedText[key];
+            SetLanguage(language.ToString());
+            UpdateAllText();
         }
-        else
+
+        public void SwitchLanguage(string language)
         {
-            OSK.Logg.LogWarning($"Localization key '{key}' not found.");
-            return key; // Fallback to key
+            SetLanguage(language);
+            UpdateAllText();
         }
-    }
 
-    public void SetLanguage(string languageCode)
-    {
-        // path/to/your/excel/file.xlsx
-        LoadLocalizationData(pathToExcelFile, nameTable, languageCode);
-        _currentLanguage = languageCode;
-    }
+        private void UpdateAllText()
+        {
+            var texts = FindObjectsOfType<LocalizedText>();
+            foreach (var text in texts)
+            {
+                text.UpdateText();
+            }
+        }
 
-    public string GetCurrentLanguage()
-    {
-        return _currentLanguage;
+        public string GetCurrentLanguage()
+        {
+            return currentLanguage;
+        }
+
+
+        private void LoadLocalizationData(string languageCode)
+        {
+            TextAsset textFile = Resources.Load<TextAsset>(pathLoadFileCsv);
+            if (textFile == null)
+            {
+                Logg.LogError("Not found localization file: " + pathLoadFileCsv);
+                return;
+            }
+
+            // Parse CSV lines while removing empty lines
+            string[] lines = textFile.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Clear the previous localization data
+            _localizedText.Clear();
+
+            // Find the index of the language code in the CSV header
+            string[] headers = lines[0].Split(',');
+            int languageColumnIndex = Array.IndexOf(headers, languageCode);
+
+            if (languageColumnIndex == -1)
+            {
+                Logg.LogError($"Language '{languageCode}' not found in localization file.");
+                return;
+            }
+
+            // Start from the second line to skip the header
+            for (int i = 1; i < lines.Length; i++)
+            {
+                // Handle CSV values with commas or line breaks inside quotes
+                string[] columns = ParseCsvLine(lines[i]);
+
+                // Check if the column exists and ensure the first column (key) is present
+                if (columns.Length > languageColumnIndex && !string.IsNullOrWhiteSpace(columns[0]))
+                {
+                    string key = columns[0].Trim();
+                    string value = columns[languageColumnIndex].Trim();
+
+                    // Store the key-value pair in the dictionary
+                    _localizedText[key] = value;
+                }
+                else
+                {
+                    Logg.LogWarning($"Invalid or missing data at line {i + 1} in localization file.");
+                }
+            }
+            Logg.Log($"Load localization data for language: {languageCode}", Color.green, 15);
+        }
+
+        // Helper function to parse a CSV line while handling commas inside quotes
+        private string[] ParseCsvLine(string line)
+        {
+            List<string> result = new List<string>();
+            bool inQuotes = false;
+            StringBuilder currentColumn = new StringBuilder();
+
+            foreach (char c in line)
+            {
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes; // Toggle quotes state
+                }
+                else if (c == ',' && !inQuotes)
+                {
+                    // End of a column
+                    result.Add(currentColumn.ToString());
+                    currentColumn.Clear();
+                }
+                else
+                {
+                    currentColumn.Append(c); // Append character to current column
+                }
+            }
+
+            // Add the last column
+            result.Add(currentColumn.ToString());
+            return result.ToArray();
+        }
+
+        private void SetLanguageDefault()
+        {   
+            SetLanguage("English");
+        }
+
+        public string GetKey(string key)
+        {
+            if (isSetDefaultLanguage == false)
+            {
+                Logg.LogError("Please set default language first.");
+                return "";
+            }
+
+            if (_localizedText.TryGetValue(key, out var key1))
+            {
+                return key1;
+            }
+            else
+            {
+                Logg.LogError($"Key '{key}' not found in localization file.");
+                return "";
+            }
+        }
     }
 }

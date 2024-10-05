@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using OSK;
+using UnityEngine;
 
 public class StateGroup
 {
@@ -21,7 +22,7 @@ public class StateGroup
         
         CurrentState = newState;
         CurrentState.Enter(); 
-        Logg.Log($"StateGroup: {Name.Color(LogColor.Yellow)} CurrentState: {CurrentState.StateName.Color(LogColor.Orange)}");
+        Logg.Log($"StateGroup: {Name.Color(Color.green)} CurrentState: {CurrentState.StateName.Color(Color.cyan)}");
     }
 
     public void ExitState()
