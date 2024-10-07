@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace OSK
 {
-public class AbilityManager : GameFrameworkComponent
+public class AbilityManager : MonoBehaviour
 {
     [ShowInInspector, ReadOnly] 
     private List<Ability> abilities = new List<Ability>();

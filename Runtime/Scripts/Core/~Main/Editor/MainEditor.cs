@@ -31,7 +31,6 @@ namespace OSK
             DrawStaticFieldCheck("Localization", Main.Localization);
             DrawStaticFieldCheck("Entity", Main.Entity);
             DrawStaticFieldCheck("Time", Main.Time);
-            DrawStaticFieldCheck("Ability", Main.Ability);
             DrawStaticFieldCheck("Native", Main.Native);
         }
 
