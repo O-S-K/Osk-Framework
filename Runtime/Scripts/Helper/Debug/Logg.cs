@@ -12,6 +12,23 @@ namespace OSK
 #else
         public static bool isLogEnabled = false;
 #endif
+        
+        
+        private string _label;
+        private long _startTime;
+        private PerforInfo info;
+        
+        public void StartTest(string label)
+        {
+            info = new PerforInfo(label, _startTime);
+            info.StartTest(label);
+        }
+        
+        public void StopTest()
+        {
+            info.StopTest();
+        }
+        
         // Log
         public static void Log(object log, ColorCustom color = default, int size = 12)
         {

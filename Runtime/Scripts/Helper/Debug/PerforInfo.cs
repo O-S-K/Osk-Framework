@@ -29,24 +29,5 @@ namespace OSK
             double elapsedTime = (endTime - startTime) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
             //OSK.Logger.Log($"{startTime} took {elapsedTime:F2} ms");
         }
-    }
-    
-    public class Performance : GameFrameworkComponent
-    {
-        private string _label;
-        private long _startTime;
-        private PerforInfo info;
-        
-        public void StartTest(string label)
-        {
-            info = new PerforInfo(label, _startTime);
-            info.StartTest(label);
-        }
-        
-        public void StopTest()
-        {
-            info.StopTest();
-        }
-
-    }
+    } 
 }

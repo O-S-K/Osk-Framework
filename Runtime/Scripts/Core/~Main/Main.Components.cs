@@ -24,7 +24,6 @@ namespace OSK
         public static EntityManager Entity { get; private set; }
         public static TimeManager Time { get; private set; }
         public static AbilityManager Ability { get; private set; }
-        public static Performance Performance { get; private set; }
         public static NativeManager Native { get; private set; }
 
         private static void InitComponents()
@@ -49,7 +48,6 @@ namespace OSK
             Sound = Main.GetFrameworkComponent<SoundManager>();
             Entity = Main.GetFrameworkComponent<EntityManager>();
             Ability = Main.GetFrameworkComponent<AbilityManager>();
-            Performance = Main.GetFrameworkComponent<Performance>();
             Native = Main.GetFrameworkComponent<NativeManager>();
             OSK.Logg.Log("Init Components Done!");
         }
