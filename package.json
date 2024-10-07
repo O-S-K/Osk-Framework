@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "displayName": "OSK-Famework",
   "description": "This framework provides a structured, reusable foundation for managing various game systems efficiently. The flexibility and modularity of the framework ensure that it can be tailored to different game genres and requirements.",
+  "author": "QuyLe", 
   "unity": "2022.3",
   "dependencies": { 
   }
