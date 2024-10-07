@@ -10,7 +10,7 @@ public class NamespaceTool : EditorWindow
     private string folderPath = "Assets/Scripts"; // Đường dẫn tới thư mục chứa script
     private string indent = "    "; // 4 dấu cách để thụt vào
 
-    [MenuItem("Tools/Namespace Tool")]
+    [MenuItem("OSK-Framework/Tools/Namespace Tool")]
     public static void ShowWindow()
     {
         GetWindow<NamespaceTool>("Namespace Tool");
