@@ -44,7 +44,7 @@ namespace OSK
             // debug all keys
             foreach (var key in _localizedText.Keys)
             {
-                Logg.Log($"Key: {key}, Value: {_localizedText[key]}", ColorCustom.Cyan, 15);
+                Logg.LogFormat("Key: {0} - Value: {1}", key, _localizedText[key], ColorCustom.Green);
             }
         }
 

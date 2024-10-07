@@ -17,5 +17,11 @@ namespace OSK
         public UIMoveEffect ParticleUI => _uiMoveEffect;
         public Canvas GetCanvas => _canvas;
         public Camera GetUICamera => _uiCamera;
+
+        private void Awake()
+        {
+            GetScreenManager.Initialize();
+            GetPopupManager.Initialize();
+        }
     }
 }

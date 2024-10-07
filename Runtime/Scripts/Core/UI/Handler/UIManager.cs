@@ -17,11 +17,13 @@ public class UIManager : GameFrameworkComponent
     protected override void Awake()
     {
         base.Awake();
-        
-        if(_hud == null)
+
+        if (_hud == null)
+        {
             _hud = FindObjectOfType<HUD>();
-        _hud.GetScreenManager.Initialize();
-        _hud.GetPopupManager.Initialize();
+            if(_hud == null)
+                Debug.LogError("HUD is not found in the scene");
+        }
     }
 
   
