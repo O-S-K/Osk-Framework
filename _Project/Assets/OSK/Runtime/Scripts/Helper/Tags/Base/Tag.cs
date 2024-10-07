@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-[CreateAssetMenu(menuName = "OSK/Tag")]
- public class Tag : ScriptableObject
+namespace OSK
 {
+    [CreateAssetMenu(menuName = "OSK/Tag")]
+    public class Tag : ScriptableObject
+    {
+    }
 }

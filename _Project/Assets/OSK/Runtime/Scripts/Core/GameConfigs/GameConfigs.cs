@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class GameConfigs : GameFrameworkComponent
 {
     public int targetFrameRate = 60;
@@ -20,4 +22,5 @@ public class Settings
     public bool isVibrationOnDefault = true;
     public bool isCheckInternetDefault = true;
     
+}
 }

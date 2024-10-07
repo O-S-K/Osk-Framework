@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using CustomInspector;
 using UnityEngine;
 
+namespace OSK
+{
 public class AbilityManager : GameFrameworkComponent
 {
     [ShowInInspector, ReadOnly] 
@@ -113,4 +115,5 @@ public class AbilityManager : GameFrameworkComponent
             abilities.Remove(ability);
         }
     }
+}
 }

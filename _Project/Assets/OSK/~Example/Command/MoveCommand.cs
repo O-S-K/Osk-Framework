@@ -1,4 +1,5 @@
 using UnityEngine;
+using OSK;
 
 public class MoveCommand : ICommand
 {
@@ -15,12 +16,12 @@ public class MoveCommand : ICommand
 
     public void Execute()
     {
-        _previousPosition = _player.transform.position;  
-        _player.MoveTo(_newPosition); 
+        _previousPosition = _player.transform.position;
+        _player.MoveTo(_newPosition);
     }
 
     public void Undo()
     {
-        _player.MoveTo(_previousPosition);  
+        _player.MoveTo(_previousPosition);
     }
 }

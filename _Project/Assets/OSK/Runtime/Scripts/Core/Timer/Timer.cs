@@ -2,149 +2,158 @@ using System;
 using CustomInspector;
 using UnityEngine;
 
-public sealed class Timer
+namespace OSK
 {
-    public int count;
-    public bool unscale;
-    public bool isPaused;
-    public float interval;
-    public float duration;
-    public float pausedTime;
-    public GameObject owner;
-
-    internal Action OnStart;
-    internal Action OnTick;
-    internal Action OnExit;
-
-    internal Action OnPause;
-    internal Action OnResume;
-
-    // Use the correct time depending on unscale value
-    private float fixedSeconds => unscale ? Time.fixedUnscaledTime : Time.fixedTime;
-    private float frameSeconds => unscale ? Time.unscaledTime : Time.time;
-
-    public Timer Invoke(Action OnUpdate)
+    public sealed class Timer
     {
-        this.OnTick = OnUpdate;
-        return this;
-    }
+        public int count;
+        public bool unscale;
+        public bool isPaused;
+        public float interval;
+        public float duration;
+        public float pausedTime;
+        public GameObject owner;
 
-    public Timer Set(float duration)
-    {
-        this.duration = duration;
-        interval = frameSeconds + duration; // Initialize based on Update logic
-        return this;
-    }
+        internal Action OnStart;
+        internal Action OnTick;
+        internal Action OnExit;
 
-    public Timer Add(float interval)
-    {
-        this.interval += interval;
-        return this;
-    }
+        internal Action OnPause;
+        internal Action OnResume;
 
-    // Use -1 for infinite loops
-    public Timer Loops(int count = 0)
-    {
-        this.count = count;
-        return this;
-    }
+        // Use the correct time depending on unscale value
+        private float fixedSeconds => unscale ? Time.fixedUnscaledTime : Time.fixedTime;
+        private float frameSeconds => unscale ? Time.unscaledTime : Time.time;
 
-
-    public Timer Unscale(bool unScale = true)
-    {
-        this.unscale = unScale;
-        interval = frameSeconds + duration;
-        return this;
-    }
-
-    public void Dispose()
-    {
-        owner = null;
-        OnTick = null;
-        OnExit?.Invoke();
-        OnExit = null;
-        Main.Time.UpdateListTimer();
-    }
-
-    internal void Start(GameObject owner, float duration, Action OnStart = null, Action OnExit = null)
-    {
-        count = 1;
-        unscale = false;
-        isPaused = false;
-        this.owner = owner;
-        this.duration = duration;
-        interval = frameSeconds + duration; // Set initial interval for Update loop
-        this.OnStart = OnStart;
-        this.OnExit = OnExit;
-    }
-
-    internal void Start(GameObject owner, float duration)
-    {
-        count = 1;
-        unscale = false;
-        isPaused = false;
-        this.owner = owner;
-        this.duration = duration;
-        interval = frameSeconds + duration; // Set initial interval for Update loop
-    }
-
-    public void Pause()
-    {
-        if (!isPaused)
+        public Timer Invoke(Action OnUpdate)
         {
-            OnPause?.Invoke();
-            isPaused = true;
-            pausedTime = frameSeconds; // Pause based on current time (Update logic)
+            this.OnTick = OnUpdate;
+            return this;
         }
-    }
 
-    public void Resume()
-    {
-        if (isPaused)
+        public Timer Set(float duration)
         {
-            OnResume?.Invoke();
+            this.duration = duration;
+            interval = frameSeconds + duration; // Initialize based on Update logic
+            return this;
+        }
+         
+        public Timer AddSpeedMultiplier(float multiplier)
+        {
+            this.duration /= multiplier;
+            return this;
+        }
+
+        public Timer Add(float interval)
+        {
+            this.interval += interval;
+            return this;
+        }
+
+        // Use -1 for infinite loops
+        public Timer Loops(int count = 0)
+        {
+            this.count = count;
+            return this;
+        }
+
+
+        public Timer Unscale(bool unScale = true)
+        {
+            this.unscale = unScale;
+            interval = frameSeconds + duration;
+            return this;
+        }
+
+        public void Dispose()
+        {
+            owner = null;
+            OnTick = null;
+            OnExit?.Invoke();
+            OnExit = null;
+            Main.Time.UpdateListTimer();
+        }
+
+        internal void Start(GameObject owner, float duration, Action OnStart = null, Action OnExit = null)
+        {
+            count = 1;
+            unscale = false;
             isPaused = false;
-            interval += frameSeconds - pausedTime; // Adjust interval to account for paused time
-        }
-    }
-
-    internal void FixedUpdate()
-    {
-        HandleTimer(fixedSeconds);
-    }
-
-    internal void Update()
-    {
-        HandleTimer(frameSeconds);
-    }
-
-    // Handle timer logic shared between FixedUpdate and Update
-    private void HandleTimer(float currentTime)
-    {
-        if (owner == null)
-        {
-            Dispose();
-            return;
+            this.owner = owner;
+            this.duration = duration;
+            interval = frameSeconds + duration; // Set initial interval for Update loop
+            this.OnStart = OnStart;
+            this.OnExit = OnExit;
         }
 
-        if (isPaused)
+        internal void Start(GameObject owner, float duration)
         {
-            return;
+            count = 1;
+            unscale = false;
+            isPaused = false;
+            this.owner = owner;
+            this.duration = duration;
+            interval = frameSeconds + duration; // Set initial interval for Update loop
         }
 
-        if (currentTime <= interval)
+        public void Pause()
         {
-            return;
+            if (!isPaused)
+            {
+                OnPause?.Invoke();
+                isPaused = true;
+                pausedTime = frameSeconds; // Pause based on current time (Update logic)
+            }
         }
 
-        count--;
-        interval = currentTime + duration;
-        OnTick?.Invoke();
-
-        if (count == 0)
+        public void Resume()
         {
-            Debug.Log("Timer disposed.");
-            Dispose();
+            if (isPaused)
+            {
+                OnResume?.Invoke();
+                isPaused = false;
+                interval += frameSeconds - pausedTime; // Adjust interval to account for paused time
+            }
+        }
+
+        internal void FixedUpdate()
+        {
+            HandleTimer(fixedSeconds);
+        }
+
+        internal void Update()
+        {
+            HandleTimer(frameSeconds);
+        }
+
+        // Handle timer logic shared between FixedUpdate and Update
+        private void HandleTimer(float currentTime)
+        {
+            if (owner == null)
+            {
+                Dispose();
+                return;
+            }
+
+            if (isPaused)
+            {
+                return;
+            }
+
+            if (currentTime <= interval)
+            {
+                return;
+            }
+
+            count--;
+            interval = currentTime + duration;
+            OnTick?.Invoke();
+
+            if (count == 0)
+            {
+                Logg.Log("Timer disposed.");
+                Dispose();
+            }
         }
     }
 }

@@ -3,47 +3,50 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 
-[CustomEditor(typeof(EventBus))]
-public class EventBusEditor : Editor
+namespace OSK
 {
-    private EventBus eventBus;
-
-    private void OnEnable()
+    [CustomEditor(typeof(EventBus))]
+    public class EventBusEditor : Editor
     {
-        eventBus = (EventBus)target;
-    }
+        private EventBus eventBus;
 
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Registered Event Listeners", EditorStyles.boldLabel);
-        DisplayEventListeners();
-    }
-
-    private void DisplayEventListeners()
-    {
-        var eventField = typeof(EventBus).GetField("_subscribers", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (eventField != null)
+        private void OnEnable()
         {
-            var subscribers = eventField.GetValue(eventBus) as Dictionary<Type, List<Action<GameEvent>>>;
+            eventBus = (EventBus)target;
+        }
 
-            if (subscribers != null && subscribers.Count > 0)
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Registered Event Listeners", EditorStyles.boldLabel);
+            DisplayEventListeners();
+        }
+
+        private void DisplayEventListeners()
+        {
+            var eventField = typeof(EventBus).GetField("_subscribers", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (eventField != null)
             {
-                EditorGUILayout.LabelField($"Event List: {subscribers.Count}", EditorStyles.boldLabel);
-                foreach (var subscriber in subscribers)
+                var subscribers = eventField.GetValue(eventBus) as Dictionary<Type, List<Action<GameEvent>>>;
+
+                if (subscribers != null && subscribers.Count > 0)
                 {
-                    EditorGUILayout.LabelField($".     {subscriber.Key.Name}", EditorStyles.boldLabel);
-                    // foreach (var callback in subscriber.Value)
-                    // {
-                    //     EditorGUILayout.LabelField($"- Callback: {callback.Method.Name}", EditorStyles.label);
-                    // }
+                    EditorGUILayout.LabelField($"Event List: {subscribers.Count}", EditorStyles.boldLabel);
+                    foreach (var subscriber in subscribers)
+                    {
+                        EditorGUILayout.LabelField($".     {subscriber.Key.Name}", EditorStyles.boldLabel);
+                        // foreach (var callback in subscriber.Value)
+                        // {
+                        //     EditorGUILayout.LabelField($"- Callback: {callback.Method.Name}", EditorStyles.label);
+                        // }
+                    }
                 }
-            }
-            else
-            {
-                EditorGUILayout.LabelField("No registered listeners", EditorStyles.label);
+                else
+                {
+                    EditorGUILayout.LabelField("No registered listeners", EditorStyles.label);
+                }
             }
         }
     }

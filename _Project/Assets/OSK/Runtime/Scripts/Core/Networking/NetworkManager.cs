@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using UnityEngine;
 
+namespace OSK
+{
 public class NetworkManager : GameFrameworkComponent
 {
     public InternetChecker InternetChecker { get; private set; }
@@ -12,4 +14,5 @@ public class NetworkManager : GameFrameworkComponent
 
         OSK.Logg.Log($"Is online: {IsOnline}");
     }
+}
 }

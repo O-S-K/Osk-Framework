@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
  
+namespace OSK
+{
 public class BackgroundScroller : MonoBehaviour {
     [SerializeField] private RawImage patternImg;
     [SerializeField] private float x = .02f;
@@ -9,4 +11,5 @@ public class BackgroundScroller : MonoBehaviour {
     {
         patternImg.uvRect = new Rect(patternImg.uvRect.position + new Vector2(x,y) * Time.deltaTime,patternImg.uvRect.size);
     }
+}
 }

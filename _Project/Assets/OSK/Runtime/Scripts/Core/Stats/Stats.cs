@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 
+namespace OSK
+{
 public class Stats
 {
     public string Name { get; private set; }
@@ -41,4 +43,5 @@ public class Stats
     {
         BaseValue = value;
     }
+}
 }

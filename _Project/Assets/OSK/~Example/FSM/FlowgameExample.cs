@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using OSK;
 
 public class FlowgameExample : MonoBehaviour
 {
@@ -17,10 +18,10 @@ public class FlowgameExample : MonoBehaviour
         stateGroup.States.Add(new IngameStateExample());
         stateGroup.States.Add(new PauseStateExample());
 
-        Main.State.AddListStateToGroup(group, stateGroup.States);
+        Main.State.AddListToGroup(group, stateGroup.States);
         
         // Set initial state
-        Main.State.InitState(group, new MenuStateExample());
+        Main.State.Init(group, new MenuStateExample());
     }
 
 

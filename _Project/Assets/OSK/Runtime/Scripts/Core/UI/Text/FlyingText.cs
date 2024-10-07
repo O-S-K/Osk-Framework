@@ -1,7 +1,9 @@
-﻿ 
+ 
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace OSK
+{
 public class FlyingText : MonoBehaviour
 {
     private Text messess;
@@ -49,4 +51,5 @@ public class FlyingText : MonoBehaviour
             Destroy(gameObject);
         }
     }
+}
 }

@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using UnityEngine;
 
+namespace OSK
+{
 public class TextUtils
 {
     public TextUtils()
@@ -33,4 +35,6 @@ public class TextUtils
         var hex = ColorUtility.ToHtmlStringRGB(color);
         return "<size=" + size + ">" + "<color=#" + hex + ">" + text + "</color></size>";
     }
+}
+
 }

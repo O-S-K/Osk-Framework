@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace OSK.Utils
+namespace OSK
 {
     public static class CanvasUtils
     {

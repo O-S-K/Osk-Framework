@@ -2,6 +2,8 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
+namespace OSK
+{
 public class StreakAnimation : MonoBehaviour
 {
 	[SerializeField]
@@ -55,4 +57,6 @@ public class StreakAnimation : MonoBehaviour
 			_rt.localScale = Vector3.one * _endScale;
 		}
 	}
+}
+
 }

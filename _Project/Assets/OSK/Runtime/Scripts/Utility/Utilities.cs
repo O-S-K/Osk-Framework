@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace OSK.Utils
+namespace OSK
 {
     public static class Utilities
     { 
@@ -21,7 +21,7 @@ namespace OSK.Utils
             return newList;
         }
 
-        public static char CharToLower(char c)
+        public static char CharToLower(this char c)
         {
             return (c >= 'A' && c <= 'Z') ? (char)(c + ('a' - 'A')) : c;
         }

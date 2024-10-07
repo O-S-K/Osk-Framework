@@ -1,6 +1,8 @@
 using TMPro;
 using UnityEngine;
 
+namespace OSK
+{
 public class TextFading : MonoBehaviour
 {
 	private TextMeshProUGUI _text;
@@ -27,4 +29,6 @@ public class TextFading : MonoBehaviour
 	{
 		return -4f * x * x + 4f * x;
 	}
+}
+
 }

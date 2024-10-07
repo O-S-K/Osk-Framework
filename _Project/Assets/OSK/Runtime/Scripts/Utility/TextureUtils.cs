@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class TextureUtils : MonoBehaviour
 {
     
@@ -27,4 +29,6 @@ public class TextureUtils : MonoBehaviour
         }
         return ListTexture;
     }
+}
+
 }

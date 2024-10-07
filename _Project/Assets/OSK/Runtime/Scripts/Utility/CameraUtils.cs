@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace OSK.Utils
+namespace OSK
 {
     public class CameraUtils : MonoBehaviour
     {

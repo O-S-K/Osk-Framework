@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class Pulsate : MonoBehaviour
 {
     public float amount = 0.1f;
@@ -53,4 +55,5 @@ public class Pulsate : MonoBehaviour
             transform.localScale = originalScale + ratio * (amount * amt);
         }
     }
+}
 }

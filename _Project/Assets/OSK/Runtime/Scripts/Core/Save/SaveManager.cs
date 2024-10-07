@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using OSK;
 using UnityEngine;
 
+namespace OSK
+{
 public class SaveManager : GameFrameworkComponent
 {
     public JsonSystem Json => _json ??= new JsonSystem();
@@ -17,4 +19,5 @@ public class SaveManager : GameFrameworkComponent
     
     private ScriptableObjectManager _scriptableObjectManager;
     public ScriptableObjectManager SOData => _scriptableObjectManager ??= new ScriptableObjectManager();
+}
 }

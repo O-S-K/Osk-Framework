@@ -6,7 +6,7 @@ using OSK;
 using UnityEngine;
 
 
-public class DataExample : MonoBehaviour
+public class SaveLoadDataExample : MonoBehaviour
 {
     [Button("Check")]
     private void TestSave()

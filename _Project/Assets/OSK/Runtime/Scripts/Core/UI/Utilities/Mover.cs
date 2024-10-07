@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
 
+namespace OSK
+{
 public class Mover : MonoBehaviour
 {
     public float speed = 1f;
@@ -20,4 +22,5 @@ public class Mover : MonoBehaviour
         sinVal = noNegatives ? Mathf.Abs(sinVal) : sinVal;
         transform.localPosition = originalPosition + direction * sinVal;
     }
+}
 }

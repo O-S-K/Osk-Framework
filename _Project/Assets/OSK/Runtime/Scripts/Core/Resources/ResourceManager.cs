@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class ResourceManager : GameFrameworkComponent
 {
     private Dictionary<string, Object> _resourceCache = new Dictionary<string, Object>();
@@ -122,4 +124,6 @@ public class ResourceManager : GameFrameworkComponent
         _referenceCount.Clear();
         _assetBundleCache.Clear();
     }
+}
+
 }

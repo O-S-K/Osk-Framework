@@ -2,53 +2,55 @@ using UnityEngine;
 using UnityEditor;
 using OSK;
 
-
-[CustomEditor(typeof(Observer))]
-public class ObserverEditor : Editor
+namespace OSK
 {
-    private Observer observer;
-
-    private void OnEnable()
+    [CustomEditor(typeof(Observer))]
+    public class ObserverEditor : Editor
     {
-        observer = (Observer)target;
-    }
+        private Observer observer;
 
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Active Observers", EditorStyles.boldLabel);
-        DisplayActiveObservers();
-    }
-
-    private void DisplayActiveObservers()
-    {
-        if (observer == null) return;
-
-        foreach (var topic in observer.dictObserver)
+        private void OnEnable()
         {
-            EditorGUILayout.LabelField(topic.Key, EditorStyles.boldLabel);
-            EditorGUI.indentLevel++;
+            observer = (Observer)target;
+        }
 
-            foreach (var callback in topic.Value)
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Active Observers", EditorStyles.boldLabel);
+            DisplayActiveObservers();
+        }
+
+        private void DisplayActiveObservers()
+        {
+            if (observer == null) return;
+
+            foreach (var topic in observer.dictObserver)
             {
-                // Retrieve the instance of the object that registered the callback
-                var targetObject = callback.Target;
+                EditorGUILayout.LabelField(topic.Key, EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
 
-                // Display the method name and the name of the script
-                if (targetObject != null)
+                foreach (var callback in topic.Value)
                 {
-                    string scriptName = targetObject.GetType().Name;
-                    EditorGUILayout.LabelField($"- {callback.Method.Name} (from {scriptName})", EditorStyles.label);
+                    // Retrieve the instance of the object that registered the callback
+                    var targetObject = callback.Target;
+
+                    // Display the method name and the name of the script
+                    if (targetObject != null)
+                    {
+                        string scriptName = targetObject.GetType().Name;
+                        EditorGUILayout.LabelField($"- {callback.Method.Name} (from {scriptName})", EditorStyles.label);
+                    }
+                    else
+                    {
+                        EditorGUILayout.LabelField($"- {callback.Method.Name} (target is null)", EditorStyles.label);
+                    }
                 }
-                else
-                {
-                    EditorGUILayout.LabelField($"- {callback.Method.Name} (target is null)", EditorStyles.label);
-                }
+
+                EditorGUI.indentLevel--;
             }
-
-            EditorGUI.indentLevel--;
         }
     }
 }

@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace OSK
+{
 public class StepPitch : MonoBehaviour
 {
     [SerializeField] private AudioSource _audioSource;
@@ -23,4 +25,6 @@ public class StepPitch : MonoBehaviour
             _progress += _step;
         }
     }
+}
+
 }

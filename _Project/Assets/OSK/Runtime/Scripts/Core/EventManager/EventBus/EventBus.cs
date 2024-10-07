@@ -12,6 +12,8 @@ destroy:    EventBus.Unsubscribe<ScoreEventExample>(OnUpdateScore);
  */
 
 
+namespace OSK
+{
 public class GameEvent
 {
 }
@@ -59,4 +61,5 @@ public class EventBus : GameFrameworkComponent
             }
         }
     }
+}
 }

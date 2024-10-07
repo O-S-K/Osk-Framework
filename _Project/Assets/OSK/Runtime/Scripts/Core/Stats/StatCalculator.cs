@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class StatCalculator
 {
     private Dictionary<string, Stats> stats =  new Dictionary<string, Stats>();
@@ -49,4 +51,5 @@ public class StatCalculator
             OSK.Logg.Log($"Stat {statName} updated to value: {value}");
         }
     }
+}
 }

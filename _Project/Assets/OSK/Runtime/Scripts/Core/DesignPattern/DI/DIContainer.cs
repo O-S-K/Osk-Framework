@@ -3,6 +3,8 @@ using UnityEngine;
 using CustomInspector;
 using System.Collections.Generic;
 
+namespace OSK
+{
 public class DIContainer : MonoBehaviour
 {
     [ShowInInspector, ReadOnly] private Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
@@ -52,4 +54,5 @@ public class DIContainer : MonoBehaviour
             }
         }
     }
+}
 }

@@ -3,6 +3,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 
+namespace OSK
+{
     internal static class Obfuscator
     {
         public static byte[] Encrypt(byte[] data, string key)
@@ -79,3 +81,4 @@ using System.Security.Cryptography;
             return rs.ToArray();
         }
     }
+}

@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using CustomInspector;
 using UnityEngine;
+using CustomInspector;
+using System.Collections;
 using UnityEngine.SceneManagement;
 
 namespace OSK
@@ -53,6 +51,18 @@ namespace OSK
             {
                 UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName, loadSceneMode);
                 OnLoadingComplete?.Invoke();
+            }
+        }
+        
+        public void LoadAllScenes()
+        {
+            for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
+            {
+                Scene scene = UnityEngine.SceneManagement.SceneManager.GetSceneAt(i);
+                if (!scene.isLoaded)
+                {
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(scene.name);
+                }
             }
         }
 

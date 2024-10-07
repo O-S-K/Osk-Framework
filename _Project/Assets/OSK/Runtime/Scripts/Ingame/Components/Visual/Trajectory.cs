@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace OSK
+{
 public class Trajectory : MonoBehaviour
 {
 	[SerializeField]
@@ -85,4 +87,6 @@ public class Trajectory : MonoBehaviour
 	{
 		dotsParent.SetActive(value: false);
 	}
+}
+
 }

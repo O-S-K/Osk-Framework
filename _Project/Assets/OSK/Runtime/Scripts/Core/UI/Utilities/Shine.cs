@@ -1,7 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class Shine : MonoBehaviour
 {
     private Material spriteMaterial = null;
@@ -71,4 +73,5 @@ public class Shine : MonoBehaviour
 
         yield break;
     }
+}
 }

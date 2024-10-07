@@ -39,12 +39,12 @@ namespace OSK
             isSetDefaultLanguage = true;
             LoadLocalizationData(languageCode);
             currentLanguage = languageCode;
-            Logg.Log($"Set language to: {languageCode}", Color.green, 15);
+            Logg.Log($"Set language to: {languageCode}", ColorCustom.Green, 15);
 
             // debug all keys
             foreach (var key in _localizedText.Keys)
             {
-                Logg.Log($"Key: {key}, Value: {_localizedText[key]}", Color.cyan, 15);
+                Logg.Log($"Key: {key}, Value: {_localizedText[key]}", ColorCustom.Cyan, 15);
             }
         }
 
@@ -120,7 +120,7 @@ namespace OSK
                     Logg.LogWarning($"Invalid or missing data at line {i + 1} in localization file.");
                 }
             }
-            Logg.Log($"Load localization data for language: {languageCode}", Color.green, 15);
+            Logg.Log($"Load localization data for language: {languageCode}", ColorCustom.Green, 15);
         }
 
         // Helper function to parse a CSV line while handling commas inside quotes

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
+namespace OSK
+{
 public class InternetChecker : MonoBehaviour
 {
     private readonly List<string> _theListOfIPs = new() { "4.2.2.4", "www.unity.com" };
@@ -60,4 +62,6 @@ public class InternetChecker : MonoBehaviour
             task.SetResult(true);
         }
     } 
+}
+
 }

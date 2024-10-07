@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CustomInspector;
 using DG.Tweening;
 using UnityEngine;

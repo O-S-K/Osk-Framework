@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+namespace OSK
+{
 public enum ShutdownType : byte
 {
     None = 0,
@@ -64,7 +66,7 @@ public partial class Main : MonoBehaviour
 
         if (shutdownType == ShutdownType.Restart)
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
             return;
         }
 
@@ -102,4 +104,5 @@ public partial class Main : MonoBehaviour
 
         SGameFrameworkComponents.AddLast(gameFrameworkComponent);
     }
+}
 }

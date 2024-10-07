@@ -1,8 +1,7 @@
 using UnityEngine;
 using System;
-using Random = UnityEngine.Random;
 
-namespace OSK.Utils
+namespace OSK
 {
     public static class MathUtils
     {
@@ -16,7 +15,52 @@ namespace OSK.Utils
         {
             return Convert.ToInt64(value);
         }
+        
+        
+        public static float WrapAngle(this float angle)
+        {
+            angle %= 360;
+            if (angle > 180)
+                return angle - 360;
 
+            return angle;
+        }
+ 
+        public static void RotationAxisY(this Transform transform)
+        {
+            Vector3 rotation = transform.eulerAngles;
+            rotation.x = 0;
+            rotation.z = 0;
+            transform.eulerAngles = rotation;
+        }
+
+        
+        public static Vector3 DirectionTo(this Vector3 source, Vector3 destination)
+        {
+            return Vector3.Normalize(destination - source);
+        }
+
+        public static Vector3 GetDirection(Vector3 start, Vector3 end)
+        {
+            Vector3 direction = end - start;
+            direction.Normalize();
+            return direction;
+        }
+         
+        public static Vector2 ReverseVector(Vector2 start, Vector2 end)
+        {
+            Vector2 reverseVector = (start - end) * -1;
+            reverseVector.Normalize();
+            return reverseVector;
+        }
+
+        public static Vector3 ReverseVector(Vector3 start, Vector3 end)
+        {
+            Vector3 reverseVector = (start - end) * -1;
+            reverseVector.Normalize();
+            return reverseVector;
+        }
+        
         public static Vector3 GetVectorFromAngle(float angle)
         {
             float angleRad = angle * (Mathf.PI / 180f);

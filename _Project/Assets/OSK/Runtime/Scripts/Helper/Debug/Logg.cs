@@ -13,12 +13,12 @@ namespace OSK
         public static bool isLogEnabled = false;
 #endif
         // Log
-        public static void Log(object log, Color color = default, int size = 12)
+        public static void Log(object log, ColorCustom color = default, int size = 12)
         {
             if (!isLogEnabled)
                 return;
-            
-            Debug.Log(($"[OSK] {log}").Color(color).Size(size)); 
+
+            Debug.Log(($"[OSK] {log}").Color(color).Size(size));
         }
 
         // Log warning
@@ -26,7 +26,15 @@ namespace OSK
         {
             if (!isLogEnabled)
                 return;
-            Debug.Log(($"[OSK] Warning {log}").Color(Color.yellow).Size(14));
+            Debug.Log(($"[OSK] Warning {log}").Color(ColorCustom.Yellow).Size(14));
+        }
+
+        // Log format
+        public static void LogFormat(string format, params object[] args)
+        {
+            if (!isLogEnabled)
+                return;
+            Debug.Log(($"[OSK] {string.Format(format, args)}").Color(ColorCustom.Green).Size(12));
         }
 
         // Log error
@@ -34,7 +42,7 @@ namespace OSK
         {
             if (!isLogEnabled)
                 return;
-            Debug.Log(($"[OSK] Error {log}").Color(Color.red).Size(14).Bold());
+            Debug.Log(($"[OSK] Error {log}").Color(ColorCustom.Red).Size(14).Bold());
         }
 
         // Log exception
@@ -42,7 +50,7 @@ namespace OSK
         {
             if (!isLogEnabled)
                 return;
-            Debug.Log(($"[OSK] Exception {ex.Message}").Color(Color.red).Size(14).Bold());
+            Debug.Log(($"[OSK] Exception {ex.Message}").Color(ColorCustom.Red).Size(14).Bold());
         }
 
         // Set time for a task
@@ -50,7 +58,7 @@ namespace OSK
         {
             if (!isLogEnabled)
                 return;
-            Log($"Task starts: {name}", Color.cyan);
+            Log($"Task starts: {name}", ColorCustom.Cyan);
             if (_timesDictionary.ContainsKey(name))
             {
                 _timesDictionary[name] = DateTime.Now;
@@ -71,14 +79,15 @@ namespace OSK
                 return;
             }
 
-            Log($"Task finished: {name} - Time {(DateTime.Now - _timesDictionary[name]).TotalSeconds}", Color.cyan);
+            Log($"Task finished: {name} - Time {(DateTime.Now - _timesDictionary[name]).TotalSeconds}", ColorCustom.Cyan);
         }
     }
 
     public static class ExLog
     {
         public static string Bold(this string str) => "<b>" + str + "</b>";
-        public static string Color(this string str, Color clr) => $"<color=#{ColorUtility.ToHtmlStringRGBA(clr)}>{str}</color>";
+
+        public static string Color(this string str, ColorCustom clr) =>  str.GetColorHTML(clr);
         public static string Italic(this string str) => "<i>" + str + "</i>";
         public static string Size(this string str, int size) => $"<size={size}>{str}</size>";
     }

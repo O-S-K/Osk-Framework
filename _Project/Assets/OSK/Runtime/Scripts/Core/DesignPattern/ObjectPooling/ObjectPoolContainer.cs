@@ -1,4 +1,4 @@
-﻿
+
 namespace OSK
 {
     public class ObjectPoolContainer<T>

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace OSK.Utils
+namespace OSK
 {
     public static class RandomUtils 
     {

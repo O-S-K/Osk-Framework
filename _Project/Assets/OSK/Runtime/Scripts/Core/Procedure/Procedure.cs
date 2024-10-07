@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class Procedure : MonoBehaviour
 {
      /*
@@ -12,4 +14,6 @@ public class Procedure : MonoBehaviour
       * Check version
       * Check update
       */ 
+}
+
 }

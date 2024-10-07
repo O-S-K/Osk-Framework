@@ -1,43 +1,44 @@
 using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-public abstract class Ability : ScriptableObject
+namespace OSK
 {
-    public string abilityName;
-    public float cooldownTime;
-    public float duration;
-    public bool isOnCooldown;     
-    public event Action OnAbilityCooldownStarted;
-    public event Action OnAbilityCooldownEnded;
-
-    public bool IsActive
+    public abstract class Ability : ScriptableObject
     {
-        get => isActivated;
-    }
+        public string abilityName;
+        public float cooldownTime;
+        public float duration;
+        public bool isOnCooldown;
+        public event Action OnAbilityCooldownStarted;
+        public event Action OnAbilityCooldownEnded;
 
-    protected bool isActivated;
+        public bool IsActive
+        {
+            get => isActivated;
+        }
 
-    public virtual void Activate(GameObject user)
-    {
-        isActivated = true;
-    }
+        protected bool isActivated;
 
-    public virtual void Deactivate(GameObject user)
-    {
-        isActivated = false;
-    }
+        public virtual void Activate(GameObject user)
+        {
+            isActivated = true;
+        }
 
-    public abstract void UpdateAbility(GameObject user);
- 
-    public virtual void StartCooldown()
-    {
-        OnAbilityCooldownStarted?.Invoke();
-    }
-    
-    public virtual  void EndCooldown()
-    {
-        OnAbilityCooldownEnded?.Invoke();
+        public virtual void Deactivate(GameObject user)
+        {
+            isActivated = false;
+        }
+
+        public abstract void UpdateAbility(GameObject user);
+
+        public virtual void StartCooldown()
+        {
+            OnAbilityCooldownStarted?.Invoke();
+        }
+
+        public virtual void EndCooldown()
+        {
+            OnAbilityCooldownEnded?.Invoke();
+        }
     }
 }

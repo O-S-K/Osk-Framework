@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using OSK;
 
 [CreateAssetMenu(menuName = "FireballAbilityExample/Fireball")]
 public class FireballAbilityExample : Ability, IComponent

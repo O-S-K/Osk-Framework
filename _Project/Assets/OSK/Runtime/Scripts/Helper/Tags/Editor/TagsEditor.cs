@@ -1,49 +1,52 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-[CustomEditor(typeof(Tags))]
-[CanEditMultipleObjects]
-internal class TagsEditor : Editor
+namespace OSK
 {
-    private SerializedProperty tagsProperty;
-    private ReorderableList tagsList;
-
-    [InitializeOnLoadMethod]
-    private static void DisableGizmo()
+    [CustomEditor(typeof(Tags))]
+    [CanEditMultipleObjects]
+    internal class TagsEditor : Editor
     {
-        EditorGizmosUtility.ToggleGizmos(typeof(Tags), false);
-    }
+        private SerializedProperty tagsProperty;
+        private ReorderableList tagsList;
 
-    private void OnEnable()
-    {
-        tagsProperty = serializedObject.FindProperty("tags");
-
-        tagsList = new ReorderableList(serializedObject, tagsProperty)
+        [InitializeOnLoadMethod]
+        private static void DisableGizmo()
         {
-            headerHeight = 0
-        };
+            EditorGizmosUtility.ToggleGizmos(typeof(Tags), false);
+        }
 
-        tagsList.drawElementCallback += (rect, index, active, focused) =>
+        private void OnEnable()
         {
-	        rect.height = EditorGUIUtility.singleLineHeight;
-	        rect.y += EditorGUIUtility.standardVerticalSpacing / 2;
+            tagsProperty = serializedObject.FindProperty("tags");
 
-            var tag = tagsProperty.GetArrayElementAtIndex(index);
-            EditorGUI.PropertyField(rect, tag, GUIContent.none);
-        };
+            tagsList = new ReorderableList(serializedObject, tagsProperty)
+            {
+                headerHeight = 0
+            };
+
+            tagsList.drawElementCallback += (rect, index, active, focused) =>
+            {
+                rect.height = EditorGUIUtility.singleLineHeight;
+                rect.y += EditorGUIUtility.standardVerticalSpacing / 2;
+
+                var tag = tagsProperty.GetArrayElementAtIndex(index);
+                EditorGUI.PropertyField(rect, tag, GUIContent.none);
+            };
+        }
+
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+
+            GUILayout.Space(-5);
+            tagsList.DoLayoutList();
+
+            serializedObject.ApplyModifiedProperties();
+        }
     }
-
-    public override void OnInspectorGUI()
-    {
-        serializedObject.Update();
-
-        GUILayout.Space(-5);
-        tagsList.DoLayoutList();
-
-        serializedObject.ApplyModifiedProperties();
-    }
-}
 #endif
+}

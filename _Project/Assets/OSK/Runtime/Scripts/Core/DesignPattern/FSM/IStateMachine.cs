@@ -1,3 +1,5 @@
+namespace OSK
+{
 public interface IStateMachine
 {
     string StateName { get; }
@@ -6,4 +8,6 @@ public interface IStateMachine
     void FixedTick();
     void Exit();
     
+}
+
 }

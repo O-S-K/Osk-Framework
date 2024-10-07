@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace OSK
+{
 public class UICircularLayoutGroupUI : LayoutGroup
 {
     [SerializeField] [Range(25f, 70f)] float childRadius = 30f;
@@ -69,4 +71,6 @@ public class UICircularLayoutGroupUI : LayoutGroup
             SetChildAlongAxis(child, (int)axis, paddedPos, childRadius * 2f);
         }
     }
+}
+
 }

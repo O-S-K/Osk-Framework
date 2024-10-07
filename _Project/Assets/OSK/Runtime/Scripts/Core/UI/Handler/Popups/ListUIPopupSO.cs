@@ -6,50 +6,52 @@ using CustomInspector;
 using OSK;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ListUIPopupSO", menuName = "OSK/UI/ListUIPopupSO")]
-public class ListUIPopupSO : ScriptableID
+namespace OSK
 {
-    [TableList, SerializeField] private List<Popup> _popups = new List<Popup>();
-    public List<Popup> Popups => _popups;
+    [CreateAssetMenu(fileName = "ListUIPopupSO", menuName = "OSK/UI/ListUIPopupSO")]
+    public class ListUIPopupSO : ScriptableID
+    {
+        [TableList, SerializeField] private List<Popup> _popups = new List<Popup>();
+        public List<Popup> Popups => _popups;
 
-    #if UNITY_EDITOR
-    private void OnValidate()
-    {
-        // check unique ui screen  type
-        var popupTypes = new List<Type>();
-        foreach (var popup in _popups)
+#if UNITY_EDITOR
+        private void OnValidate()
         {
-            if (popupTypes.Contains(popup.GetType()))
+            // check unique ui screen  type
+            var popupTypes = new List<Type>();
+            foreach (var popup in _popups)
             {
-                OSK.Logg.LogError($"Popup Type {popup.GetType()} exists in the list. Please remove it.");
-            }
-            else
-            {
-                popupTypes.Add(popup.GetType());
+                if (popupTypes.Contains(popup.GetType()))
+                {
+                    OSK.Logg.LogError($"Popup Type {popup.GetType()} exists in the list. Please remove it.");
+                }
+                else
+                {
+                    popupTypes.Add(popup.GetType());
+                }
             }
         }
-    }
-    
-    [Button("Add All Popup Form Resources")]
-    public void AddAllPopupFormResources()
-    {
-        _popups.Clear();
-        var popupTypes = new List<Type>();
-        var popupTypesInResources = Resources.LoadAll<Popup>("").ToList();
-        foreach (var popup in popupTypesInResources)
+
+        [Button("Add All Popup Form Resources")]
+        public void AddAllPopupFormResources()
         {
-            if (popupTypes.Contains(popup.GetType()))
+            _popups.Clear();
+            var popupTypes = new List<Type>();
+            var popupTypesInResources = Resources.LoadAll<Popup>("").ToList();
+            foreach (var popup in popupTypesInResources)
             {
-                OSK.Logg.LogError($"Popup Type {popup.GetType()} exists in the list. Please remove it.");
-            }
-            else
-            {
-                popupTypes.Add(popup.GetType());
-                _popups.Add(popup);
+                if (popupTypes.Contains(popup.GetType()))
+                {
+                    OSK.Logg.LogError($"Popup Type {popup.GetType()} exists in the list. Please remove it.");
+                }
+                else
+                {
+                    popupTypes.Add(popup.GetType());
+                    _popups.Add(popup);
+                }
             }
         }
+
+#endif
     }
-    
-    #endif
-    
 }

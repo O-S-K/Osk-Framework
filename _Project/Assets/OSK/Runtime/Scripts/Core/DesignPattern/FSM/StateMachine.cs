@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class StateMachine : GameFrameworkComponent
 {
     private Dictionary<string, StateGroup> stateGroups = new Dictionary<string, StateGroup>();
@@ -18,7 +20,7 @@ public class StateMachine : GameFrameworkComponent
         pause = isPause;
     }
 
-    public void InitState(string groupName, IStateMachine newState)
+    public void Init(string groupName, IStateMachine newState)
     {
         if (stateGroups.TryGetValue(groupName, out var group))
         {
@@ -135,7 +137,7 @@ public class StateMachine : GameFrameworkComponent
         return groupName;
     }
     
-    public void AddListStateToGroup(string groupName, List<IStateMachine> states)
+    public void AddListToGroup(string groupName, List<IStateMachine> states)
     {
         if (stateGroups.ContainsKey(groupName))
         {
@@ -197,4 +199,5 @@ public class StateMachine : GameFrameworkComponent
             OSK.Logg.LogError($"Group '{groupName}' not found.");
         }
     }
+}
 }

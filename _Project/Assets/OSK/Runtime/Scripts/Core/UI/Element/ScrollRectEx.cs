@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using System;
 using UnityEngine.EventSystems;
 
+namespace OSK
+{
 public class ScrollRectEx : ScrollRect
 {
 
@@ -76,4 +78,5 @@ public class ScrollRectEx : ScrollRect
             base.OnEndDrag(eventData);
         routeToParent = false;
     }
+}
 }

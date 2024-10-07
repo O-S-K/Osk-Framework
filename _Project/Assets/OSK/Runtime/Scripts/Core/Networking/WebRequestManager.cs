@@ -3,6 +3,8 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
+namespace OSK
+{
 public class WebRequestManager : GameFrameworkComponent
 {
     // GET request
@@ -56,4 +58,6 @@ public class WebRequestManager : GameFrameworkComponent
             onSuccess?.Invoke(webRequest.downloadHandler.text);
         }
     }
+}
+
 }

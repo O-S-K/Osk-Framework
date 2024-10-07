@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace OSK
+{
 public class Painter : MonoBehaviour
 {
     [SerializeField] private Color color = Color.black;
@@ -129,4 +131,5 @@ public class Painter : MonoBehaviour
         connect = holding;
         prev = p;
     }
+}
 }

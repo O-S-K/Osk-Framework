@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using OSK;
 using UnityEngine;
 
+namespace OSK
+{
 public class UIManager : GameFrameworkComponent
 {
     private HUD _hud;
@@ -110,4 +112,5 @@ public class UIManager : GameFrameworkComponent
     }
 
     #endregion
+}
 }

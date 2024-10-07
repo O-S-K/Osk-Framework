@@ -1,7 +1,9 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class Pendulum : MonoBehaviour
 {
 	public float speed = 1.5f;
@@ -20,4 +22,6 @@ public class Pendulum : MonoBehaviour
 		float angle = limit * Mathf.Sin(Time.time + random * speed);
 		transform.localRotation = Quaternion.Euler(0, 0, angle);
 	}
+}
+
 }

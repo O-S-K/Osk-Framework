@@ -2,56 +2,63 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-[CustomEditor(typeof(StateMachine))]
-public class StateMachineEditor : Editor
+namespace OSK
 {
-    private StateMachine stateMachine;
-
-    private void OnEnable()
+    [CustomEditor(typeof(StateMachine))]
+    public class StateMachineEditor : Editor
     {
-        stateMachine = (StateMachine)target;
-    }
+        private StateMachine stateMachine;
 
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("State Machine Groups", EditorStyles.boldLabel);
-        DisplayStateGroups();
-    }
-
-    private void DisplayStateGroups()
-    {
-        if (stateMachine == null) return;
-
-        foreach (var group in stateMachine.GetGroups())
+        private void OnEnable()
         {
-            EditorGUILayout.LabelField(group.Name, EditorStyles.boldLabel);
-            EditorGUI.indentLevel++; 
-            foreach (var state in group.States)
+            stateMachine = (StateMachine)target;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("State Machine Groups", EditorStyles.boldLabel);
+            DisplayStateGroups();
+        }
+
+        private void DisplayStateGroups()
+        {
+            if (stateMachine == null) return;
+
+            foreach (var group in stateMachine.GetGroups())
             {
-                GUIStyle stateStyle = new GUIStyle(GUI.skin.label)
+                EditorGUILayout.LabelField(group.Name, EditorStyles.boldLabel);
+                EditorGUI.indentLevel++;
+                foreach (var state in group.States)
                 {
-                    padding = new RectOffset(10, 0, 0, 0),
-                    fontStyle = FontStyle.Normal,
-                    normal = { textColor = state.StateName == group.CurrentState.StateName ? Color.green : Color.white }
-                };
+                    GUIStyle stateStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        padding = new RectOffset(10, 0, 0, 0),
+                        fontStyle = FontStyle.Normal,
+                        normal =
+                        {
+                            textColor = state.StateName == group.CurrentState.StateName ? Color.green : Color.white
+                        }
+                    };
 
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"- {state.StateName}", stateStyle);
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"- {state.StateName}", stateStyle);
 
-                // Add button to switch state
-                if (GUILayout.Button("Switch", GUILayout.Width(60)))
-                {
-                    group.SetCurrentState(state);
-                    // Optionally, mark the object as dirty if needed
-                    EditorUtility.SetDirty(stateMachine);
+                    // Add button to switch state
+                    if (GUILayout.Button("Switch", GUILayout.Width(60)))
+                    {
+                        group.SetCurrentState(state);
+                        // Optionally, mark the object as dirty if needed
+                        EditorUtility.SetDirty(stateMachine);
+                    }
+
+                    EditorGUILayout.EndHorizontal();
                 }
 
-                EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
             }
-            EditorGUI.indentLevel--;
         }
     }
 }

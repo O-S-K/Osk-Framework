@@ -356,6 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d216cdb3942dff344b006f028052e5e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentLanguage: English
   excelFilePath: Assets/Localization.xlsx
   outputCsvPath: Assets/_Project/Resources/Localization/
   pathLoadFileCsv: Localization/Localization
@@ -947,6 +948,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 675793573835289834}
+  - component: {fileID: 3103970328517762635}
   - component: {fileID: 6127339822436596873}
   m_Layer: 0
   m_Name: Data
@@ -970,6 +972,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6288512043441239631}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3103970328517762635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8555936199393860264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ca89e7249d6d9c4f9593f144b94ef72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6127339822436596873
 MonoBehaviour:
   m_ObjectHideFlags: 0

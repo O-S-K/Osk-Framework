@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CustomInspector;
 using UnityEngine;
+using OSK;
 
 public class CharacterExample : MonoBehaviour
 {

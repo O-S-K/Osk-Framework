@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using System.Text.RegularExpressions;
 
-namespace OSK.Utils
+namespace OSK
 {
     public static class StringUtils
     {
@@ -65,7 +65,7 @@ namespace OSK.Utils
         //     string[] numbers = cleaned.Split(',');
         //     return numbers;
         // }
-  
+
         public static string RandomString(string characters, int length)
         {
             char[] stringChars = new char[length];
@@ -130,11 +130,11 @@ namespace OSK.Utils
             }
 
             return number.ToString();
-        } 
-        
-        public static string ShortenString( string input, int length)
+        }
+
+        public static string ShortenString(string input, int length)
         {
-            return (input.Length > length) ? input.Substring (0, length) + "..." : input;
-        } 
+            return (input.Length > length) ? input.Substring(0, length) + "..." : input;
+        }
     }
 }

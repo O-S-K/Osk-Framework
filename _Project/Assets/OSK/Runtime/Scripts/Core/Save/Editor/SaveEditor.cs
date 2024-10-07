@@ -4,6 +4,8 @@ using UnityEditor;
 using UnityEngine; 
 using System.IO;
 
+namespace OSK
+{
 public class SaveEditor : Editor
 {
     [MenuItem("OSK-FrameWorld/Tools/Save/Open Persistent Data Path" )]
@@ -32,4 +34,6 @@ public class SaveEditor : Editor
         if (EditorUtility.DisplayDialog("Clear PlayerPrefs", "Are you sure you wish to clear PlayerPrefs?\nThis action cannot be reversed.", "Clear", "Cancel"))
             PlayerPrefs.DeleteAll();
     }
+}
+
 }

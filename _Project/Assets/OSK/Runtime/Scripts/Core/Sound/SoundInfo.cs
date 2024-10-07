@@ -1,19 +1,21 @@
 using UnityEngine;
 
-[System.Serializable]
-public class SoundInfo 
+namespace OSK
 {
-    public string id = "";
-    public AudioClip audioClip = null;
-    public SoundType type = SoundType.SoundEffect;
-    
-    [Range(0, 1)] 
-    public float clipVolume = 1;
-}
+    [System.Serializable]
+    public class SoundInfo
+    {
+        public string id = "";
+        public AudioClip audioClip = null;
+        public SoundType type = SoundType.SoundEffect;
+
+        [Range(0, 1)] public float clipVolume = 1;
+    }
 
 
-public enum SoundType
-{
-    SoundEffect,
-    Music
+    public enum SoundType
+    {
+        SoundEffect,
+        Music
+    }
 }

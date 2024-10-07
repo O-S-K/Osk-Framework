@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace OSK
+{
 public class CooldownAbility : MonoBehaviour
 {
     private Dictionary<Ability, float> cooldownTimers = new Dictionary<Ability, float>();
@@ -25,4 +27,6 @@ public class CooldownAbility : MonoBehaviour
         cooldownTimers.Remove(ability);
         ability.isOnCooldown = false;
     }
+}
+
 }

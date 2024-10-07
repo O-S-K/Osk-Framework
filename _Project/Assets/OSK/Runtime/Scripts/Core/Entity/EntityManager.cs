@@ -5,6 +5,8 @@ using System.Linq;
 using CustomInspector;
 using UnityEngine;
 
+namespace OSK
+{
 public class EntityManager : GameFrameworkComponent
 {
     [ShowInInspector, ReadOnly] 
@@ -92,4 +94,5 @@ public class EntityManager : GameFrameworkComponent
             activeEntities.Remove(entity);
         }
     }
+}
 }

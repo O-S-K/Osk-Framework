@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using CustomInspector;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 using UnityEngine.UI;
 
+namespace OSK
+{
 public class ButtonEffect : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler,
     IPointerExitHandler
 {
@@ -94,4 +96,5 @@ public class ButtonEffect : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
         // if (_isScaler)
         //     root.DOScale(defaultSize, duration).SetEase(ease);
     }
+}
 }

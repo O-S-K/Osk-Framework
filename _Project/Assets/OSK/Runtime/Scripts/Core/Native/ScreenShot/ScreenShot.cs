@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+namespace OSK
+{
 public class ScreenShot : MonoBehaviour
 {
     public void TakeScreenShot()
@@ -45,4 +47,5 @@ public class ScreenShot : MonoBehaviour
             yield return null;
         }
     }
+}
 }

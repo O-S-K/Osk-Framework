@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace OSK
+{
 public class ScrollMaterialUI : MonoBehaviour
 {
     // Speed of scrolling in the X (horizontal) and Y (vertical) directions
@@ -27,4 +29,6 @@ public class ScrollMaterialUI : MonoBehaviour
         // Apply the offset to the material's main texture
         rend.material.SetTextureOffset("_MainTex", new Vector2(offsetX, offsetY));
     }
+}
+
 }

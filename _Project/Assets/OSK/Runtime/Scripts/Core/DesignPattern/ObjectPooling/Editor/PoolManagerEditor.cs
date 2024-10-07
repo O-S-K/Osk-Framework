@@ -3,97 +3,101 @@ using UnityEditor;
 using UnityEngine;
 using OSK;
 
-[CustomEditor(typeof(PoolManager))]
-public class PoolManagerEditor : Editor
+namespace OSK
 {
-    private PoolManager poolManager;
-
-    private void OnEnable()
+    [CustomEditor(typeof(PoolManager))]
+    public class PoolManagerEditor : Editor
     {
-        poolManager = (PoolManager)target;
-    }
+        private PoolManager poolManager;
 
-    public override void OnInspectorGUI()
-    {
-        DrawDefaultInspector();
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Object Pool Hierarchy", EditorStyles.boldLabel);
-
-        if (poolManager.groupPrefabLookup.Count > 0)
+        private void OnEnable()
         {
-            DisplayGroupedPools();
-        }
-        else
-        {
-            EditorGUILayout.LabelField("No pools are currently initialized.");
+            poolManager = (PoolManager)target;
         }
 
-        if (GUI.changed)
+        public override void OnInspectorGUI()
         {
-            EditorUtility.SetDirty(target);
-        }
-    }
+            DrawDefaultInspector();
 
-    private void DisplayGroupedPools()
-    {
-        // Dictionary to hold prefab counts grouped by their respective groups
-        Dictionary<string, Dictionary<string, int>> groupPrefabCounts = new Dictionary<string, Dictionary<string, int>>();
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Object Pool Hierarchy", EditorStyles.boldLabel);
 
-        // Gather prefab counts by group and name
-        foreach (var groupEntry in poolManager.groupPrefabLookup)
-        {
-            string groupName = groupEntry.Key;
-            Dictionary<Object, ObjectPool<Object>> prefabPools = groupEntry.Value;
-
-            // Initialize the dictionary for this group if it doesn't exist
-            if (!groupPrefabCounts.ContainsKey(groupName))
+            if (poolManager.groupPrefabLookup.Count > 0)
             {
-                groupPrefabCounts[groupName] = new Dictionary<string, int>();
+                DisplayGroupedPools();
+            }
+            else
+            {
+                EditorGUILayout.LabelField("No pools are currently initialized.");
             }
 
-            foreach (var prefabEntry in prefabPools)
+            if (GUI.changed)
             {
-                Object prefab = prefabEntry.Key;
-                ObjectPool<Object> pool = prefabEntry.Value;
-                int count = pool.Count;
-
-                if (groupPrefabCounts[groupName].ContainsKey(prefab.name))
-                {
-                    groupPrefabCounts[groupName][prefab.name] += count;
-                }
-                else
-                {
-                    groupPrefabCounts[groupName][prefab.name] = count;
-                }
+                EditorUtility.SetDirty(target);
             }
         }
 
-        // Display grouped pools with total counts for each group
-        EditorGUILayout.Space();
-        if (groupPrefabCounts.Count == 0)
-            return;
-
-        foreach (var groupEntry in groupPrefabCounts)
+        private void DisplayGroupedPools()
         {
-            string groupName = groupEntry.Key;
-            EditorGUILayout.LabelField($"Group: {groupName}", EditorStyles.boldLabel);
+            // Dictionary to hold prefab counts grouped by their respective groups
+            Dictionary<string, Dictionary<string, int>> groupPrefabCounts =
+                new Dictionary<string, Dictionary<string, int>>();
 
-            foreach (var prefabEntry in groupEntry.Value)
+            // Gather prefab counts by group and name
+            foreach (var groupEntry in poolManager.groupPrefabLookup)
             {
-                string prefabName = prefabEntry.Key;
-                int totalCount = prefabEntry.Value;
+                string groupName = groupEntry.Key;
+                Dictionary<Object, ObjectPool<Object>> prefabPools = groupEntry.Value;
 
-                EditorGUILayout.BeginHorizontal(); // Start a horizontal layout for buttons
-                EditorGUILayout.LabelField($"Prefab: {prefabName} - Total Count: {totalCount}");
-
-                // Add "Clean" button
-                if (GUILayout.Button("Clean", GUILayout.Width(60)))
+                // Initialize the dictionary for this group if it doesn't exist
+                if (!groupPrefabCounts.ContainsKey(groupName))
                 {
-                    poolManager.DestroyGroup(groupName);
+                    groupPrefabCounts[groupName] = new Dictionary<string, int>();
                 }
 
-                EditorGUILayout.EndHorizontal(); // End horizontal layout
+                foreach (var prefabEntry in prefabPools)
+                {
+                    Object prefab = prefabEntry.Key;
+                    ObjectPool<Object> pool = prefabEntry.Value;
+                    int count = pool.Count;
+
+                    if (groupPrefabCounts[groupName].ContainsKey(prefab.name))
+                    {
+                        groupPrefabCounts[groupName][prefab.name] += count;
+                    }
+                    else
+                    {
+                        groupPrefabCounts[groupName][prefab.name] = count;
+                    }
+                }
+            }
+
+            // Display grouped pools with total counts for each group
+            EditorGUILayout.Space();
+            if (groupPrefabCounts.Count == 0)
+                return;
+
+            foreach (var groupEntry in groupPrefabCounts)
+            {
+                string groupName = groupEntry.Key;
+                EditorGUILayout.LabelField($"Group: {groupName}", EditorStyles.boldLabel);
+
+                foreach (var prefabEntry in groupEntry.Value)
+                {
+                    string prefabName = prefabEntry.Key;
+                    int totalCount = prefabEntry.Value;
+
+                    EditorGUILayout.BeginHorizontal(); // Start a horizontal layout for buttons
+                    EditorGUILayout.LabelField($"Prefab: {prefabName} - Total Count: {totalCount}");
+
+                    // Add "Clean" button
+                    if (GUILayout.Button("Clean", GUILayout.Width(60)))
+                    {
+                        poolManager.DestroyGroup(groupName);
+                    }
+
+                    EditorGUILayout.EndHorizontal(); // End horizontal layout
+                }
             }
         }
     }

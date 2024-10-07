@@ -2,10 +2,10 @@ using System;
 using UnityEngine;
 using System.Collections;
 using DG.Tweening;
-using OSK.Utils;
-using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
+namespace OSK
+{
 public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
 {
     public Canvas canvas;
@@ -207,7 +207,7 @@ public class SpawnImageBuilder
 
     public SpawnImageBuilder SetStartPosition(Transform transform, RectTransform rectTransformCanvas)
     {
-        var convertPos = OSK.Utils.CanvasUtils.WorldToCanvasPosition(rectTransformCanvas, Camera.main, transform);
+        var convertPos = OSK.CanvasUtils.WorldToCanvasPosition(rectTransformCanvas, Camera.main, transform);
         _img.startPosition = convertPos;
         return this;
     }
@@ -288,4 +288,5 @@ public class SpawnImageBuilder
     {
         _img.SpawnImageWithPosition();
     }
+}
 }

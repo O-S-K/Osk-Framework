@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace OSK
+{
 public class CanvasScaleHandler : MonoBehaviour
 {
     [SerializeField] private Camera camera;
@@ -28,4 +30,6 @@ public class CanvasScaleHandler : MonoBehaviour
     {
         canvasScaler.matchWidthOrHeight = ratio > .65f ? 1 : 0;
     }
+}
+
 }

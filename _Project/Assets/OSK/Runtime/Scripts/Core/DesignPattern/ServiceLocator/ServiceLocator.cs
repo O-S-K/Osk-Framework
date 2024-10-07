@@ -3,6 +3,8 @@ using UnityEngine;
 using System.Collections.Concurrent;
 
 
+namespace OSK
+{
 public  class ServiceLocator 
 {
     private static readonly ConcurrentDictionary<Type, MonoBehaviour> _services = new();
@@ -37,4 +39,5 @@ public  class ServiceLocator
         _services.TryRemove(type, out _);
         OSK.Logg.Log("Service unregistered: " + type);
     }
+}
 }

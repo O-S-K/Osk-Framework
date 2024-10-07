@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+namespace OSK
+{
 public class Entity : IEntity
 {
     public int ID { get; set; }
@@ -59,4 +61,5 @@ public class Entity : IEntity
     {
         gameObject.transform.SetParent(null);
     }
+}
 }

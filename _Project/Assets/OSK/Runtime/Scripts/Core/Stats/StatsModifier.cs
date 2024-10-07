@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace OSK
+{
 public class StatsModifier
 {
     public ModifierType modifierType;
@@ -11,4 +13,6 @@ public class StatsModifier
         this.Value = value;
     }
     
+}
+
 }

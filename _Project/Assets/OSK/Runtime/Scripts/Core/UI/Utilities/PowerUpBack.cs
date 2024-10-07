@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace OSK
+{
 public class PowerUpBack : MonoBehaviour
 {
 	public float RotationSpeed = 4f;
@@ -36,4 +38,6 @@ public class PowerUpBack : MonoBehaviour
 		// }
 		BeatEffectRatio = 1f * num;
 	}
+}
+
 }

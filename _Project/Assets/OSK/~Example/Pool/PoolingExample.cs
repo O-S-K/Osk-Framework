@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using OSK.Utils;
 using UnityEngine;
+using OSK;
 
 public class PoolingExample : MonoBehaviour
 {

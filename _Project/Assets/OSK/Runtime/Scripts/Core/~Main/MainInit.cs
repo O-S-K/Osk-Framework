@@ -4,18 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public partial class Main
+namespace OSK
 {
-    public bool isDestroyingOnLoad = false;
-
-    private void Awake()
+    public partial class Main
     {
-        if (isDestroyingOnLoad)
-            DontDestroyOnLoad(gameObject);
-        InitComponents();
-    }
+        public bool isDestroyingOnLoad = false;
 
-    private void Start()
-    {
+        private void Awake()
+        {
+            if (isDestroyingOnLoad)
+                DontDestroyOnLoad(gameObject);
+            InitComponents();
+        } 
     }
 }

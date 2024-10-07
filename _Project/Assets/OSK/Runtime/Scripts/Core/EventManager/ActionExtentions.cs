@@ -1,6 +1,8 @@
 using System;
 
-public static class ActionExtentions
+namespace OSK
+{
+ public static class ActionExtentions
 {
     public static void SafeInvoke(this Action invocationTarget)
     {
@@ -101,4 +103,5 @@ public static class ActionExtentions
             }
         }
     }
+}
 }

@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using OSK;
 using UnityEngine;
 
-[DefaultExecutionOrder(-998)]
-public class GameFrameworkComponent : MonoBehaviour
+namespace OSK
 {
-    protected virtual void Awake()
+    [DefaultExecutionOrder(-998)]
+    public class GameFrameworkComponent : MonoBehaviour
     {
-        Main.Register(this);
+        protected virtual void Awake()
+        {
+            Main.Register(this);
+        }
     }
 }

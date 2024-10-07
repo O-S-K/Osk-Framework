@@ -3,26 +3,28 @@ using System.Collections.Generic;
 using OSK;
 using UnityEngine;
 
+namespace OSK
+{
 public class ScriptableObjectManager
 {
     public static List<ScriptableID> scriptableIDs = new List<ScriptableID>();
  
     // public ScriptableObjectManager()
     // {
-    //     var scriptableIDs = Resources.LoadAll<ScriptableID>("");
-    //     foreach (var scriptableID in scriptableIDs)
+    //     var listSoFormRes = Resources.LoadAll<ScriptableID>("");
+    //     foreach (var scriptableID in listSoFormRes)
     //     {
-    //         this.scriptableIDs.Add(scriptableID);
+    //         scriptableIDs.Add(scriptableID);
     //     }
     // }  
     
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
+    //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSplashScreen)]
     public static void LoadScriptableIDs()
     {
-        var scriptableIDs = Resources.LoadAll<ScriptableID>("");
-        foreach (var scriptableID in scriptableIDs)
+        var listSoFormRes = Resources.LoadAll<ScriptableID>("");
+        foreach (var scriptableID in listSoFormRes)
         {
-            ScriptableObjectManager.scriptableIDs.Add(scriptableID);
+            scriptableIDs.Add(scriptableID);
         }
     }
     
@@ -37,4 +39,5 @@ public class ScriptableObjectManager
         }
         return null;
     }
+}
 }

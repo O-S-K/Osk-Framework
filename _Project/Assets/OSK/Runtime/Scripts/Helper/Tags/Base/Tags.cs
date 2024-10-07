@@ -1,28 +1,32 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[AddComponentMenu("GameObject/Tags")]
-[HelpURL("")]
-public class Tags : MonoBehaviour
+
+namespace OSK
 {
-    [SerializeField] private List<Tag> tags;
-
-    private void Awake()
+    [AddComponentMenu("GameObject/Tags")]
+    [HelpURL("")]
+    public class Tags : MonoBehaviour
     {
-	    foreach (var tag in tags)
-		    gameObject.RegisterGameObjectWithTag(tag);
-    }
+        [SerializeField] private List<Tag> tags;
 
-    public List<Tag> GetTags()
-    {
-        return tags;
-    }
+        private void Awake()
+        {
+            foreach (var tag in tags)
+                gameObject.RegisterGameObjectWithTag(tag);
+        }
 
-    public void SetTags(params Tag[] tags)
-    {
-        this.tags = tags.ToList();
+        public List<Tag> GetTags()
+        {
+            return tags;
+        }
+
+        public void SetTags(params Tag[] tags)
+        {
+            this.tags = tags.ToList();
+        }
     }
 }
