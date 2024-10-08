@@ -55,6 +55,9 @@ This framework is designed to manage various aspects of a Unity project through 
 17. **UI**  
     Manages user interface components like popups, screens, and HUD elements. Provides functions for dynamic UI transitions and input handling.
 
+#### **System** 
+- Ability, Inventory, Quest, Daily, Spin, and more.
+
 ### **How to Use**
 
 1. **Drag Prefab to Scene**  
