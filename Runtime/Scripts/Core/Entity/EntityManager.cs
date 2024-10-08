@@ -9,7 +9,7 @@ namespace OSK
 {
 public class EntityManager : GameFrameworkComponent
 {
-    [ShowInInspector, ReadOnly] 
+    [ShowInInspector, ReadOnly]  
     private List<Entity> activeEntities = new List<Entity>();
 
     public Entity Create(string name)

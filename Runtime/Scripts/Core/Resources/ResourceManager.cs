@@ -5,7 +5,7 @@ using UnityEngine;
 namespace OSK
 {
 public class ResourceManager : GameFrameworkComponent
-{
+{ 
     private Dictionary<string, Object> _resourceCache = new Dictionary<string, Object>();
     private Dictionary<string, int> _referenceCount = new Dictionary<string, int>();
     private Dictionary<string, AssetBundle> _assetBundleCache = new Dictionary<string, AssetBundle>();

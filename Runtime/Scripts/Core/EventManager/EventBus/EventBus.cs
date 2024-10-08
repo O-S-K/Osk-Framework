@@ -14,52 +14,53 @@ destroy:    EventBus.Unsubscribe<ScoreEventExample>(OnUpdateScore);
 
 namespace OSK
 {
-public class GameEvent
-{
-}
-
-public class EventBus : GameFrameworkComponent
-{
-    private Dictionary<Type, List<Action<GameEvent>>> _subscribers = new Dictionary<Type, List<Action<GameEvent>>>();
-
-    public void Subscribe<T>(Action<T> callback) where T : GameEvent
+    public class GameEvent
     {
-        Type eventType = typeof(T);
-
-        if (!_subscribers.ContainsKey(eventType))
-        {
-            _subscribers[eventType] = new List<Action<GameEvent>>();
-        }
-
-        _subscribers[eventType].Add(e => callback((T)e));
     }
 
-    public void Unsubscribe<T>(Action<T> callback) where T : GameEvent
+    public class EventBus : GameFrameworkComponent
     {
-        Type eventType = typeof(T);
+        private Dictionary<Type, List<Action<GameEvent>>>
+            _subscribers = new Dictionary<Type, List<Action<GameEvent>>>();
 
-        if (_subscribers.ContainsKey(eventType))
+        public void Subscribe<T>(Action<T> callback) where T : GameEvent
         {
-            // check null
-            _subscribers[eventType].Remove(e =>
+            Type eventType = typeof(T);
+
+            if (!_subscribers.ContainsKey(eventType))
             {
-                if (e != null)
-                    callback((T)e);
-            });
+                _subscribers[eventType] = new List<Action<GameEvent>>();
+            }
+
+            _subscribers[eventType].Add(e => callback((T)e));
         }
-    }
 
-    public void Publish(GameEvent gameGameEvent)
-    {
-        Type eventType = gameGameEvent.GetType();
-
-        if (_subscribers.ContainsKey(eventType))
+        public void Unsubscribe<T>(Action<T> callback) where T : GameEvent
         {
-            foreach (var subscriber in _subscribers[eventType])
+            Type eventType = typeof(T);
+
+            if (_subscribers.ContainsKey(eventType))
             {
-                subscriber?.Invoke(gameGameEvent);
+                // check null
+                _subscribers[eventType].Remove(e =>
+                {
+                    if (e != null)
+                        callback((T)e);
+                });
+            }
+        }
+
+        public void Publish(GameEvent gameGameEvent)
+        {
+            Type eventType = gameGameEvent.GetType();
+
+            if (_subscribers.ContainsKey(eventType))
+            {
+                foreach (var subscriber in _subscribers[eventType])
+                {
+                    subscriber?.Invoke(gameGameEvent);
+                }
             }
         }
     }
-}
 }

@@ -7,10 +7,10 @@ namespace OSK
 {
     public class SceneManager : GameFrameworkComponent
     {
-        public System.Action OnLoadingStart;
-        public System.Action<float> OnLoadingProgress;
-        public System.Action OnLoadingComplete;
-        public System.Action<string> OnLoadingFailed;
+        public System.Action OnLoadingStart { get; set; }
+        public System.Action<float> OnLoadingProgress { get; set; }
+        public System.Action OnLoadingComplete { get; set; }
+        public System.Action<string> OnLoadingFailed { get; set; }
         [ReadOnly, SerializeField] private string currentSceneName;
 
 

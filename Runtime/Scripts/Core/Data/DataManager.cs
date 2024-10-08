@@ -8,7 +8,7 @@ using UnityEngine;
 namespace OSK
 {
     public class DataManager : GameFrameworkComponent
-    {
+    {  
         // Data store
         [SerializeField] private SerializeFieldDictionary<Type, object> _dataStore = new();
 

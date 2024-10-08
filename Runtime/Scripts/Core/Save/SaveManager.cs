@@ -7,7 +7,7 @@ using UnityEngine;
 namespace OSK
 {
 public class SaveManager : GameFrameworkComponent
-{
+{ 
     public JsonSystem Json => _json ??= new JsonSystem();
     private JsonSystem _json = new JsonSystem();
 

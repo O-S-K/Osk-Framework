@@ -14,8 +14,8 @@ namespace OSK
 
     public class SoundManager : GameFrameworkComponent
     {
-        [SerializeField, ReadOnly] public List<SoundInfo> soundInfos;
-        [SerializeField, ReadOnly] public List<PlayingSound> musicInfos;
+        [SerializeField, ReadOnly] public List<SoundInfo> soundInfos = new List<SoundInfo>();
+        [SerializeField, ReadOnly] public List<PlayingSound> musicInfos = new List<PlayingSound>();
         [SerializeField] private SoundData soundDataSO;
         private AudioSource soundObject;
 

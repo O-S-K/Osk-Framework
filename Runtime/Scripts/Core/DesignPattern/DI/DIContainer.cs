@@ -5,54 +5,56 @@ using System.Collections.Generic;
 
 namespace OSK
 {
-public class DIContainer : MonoBehaviour
-{
-    [ShowInInspector, ReadOnly] private Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
-    public void Bind<TInterface, TImplementation>() where TImplementation : TInterface, new()
+    public class DIContainer : MonoBehaviour
     {
-        bindings[typeof(TInterface)] = () => new TImplementation();
-    }
+        [ShowInInspector, ReadOnly]
+        private Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
 
-    public void BindAndProvide<TInterface>(Func<object> provider)
-    {
-        bindings[typeof(TInterface)] = provider;
-    }
-
-    public TInterface Resolve<TInterface>()
-    {
-        if (bindings.ContainsKey(typeof(TInterface)))
+        public void Bind<TInterface, TImplementation>() where TImplementation : TInterface, new()
         {
-            var instanceProvider = bindings[typeof(TInterface)];
-            if (instanceProvider != null)
+            bindings[typeof(TInterface)] = () => new TImplementation();
+        }
+
+        public void BindAndProvide<TInterface>(Func<object> provider)
+        {
+            bindings[typeof(TInterface)] = provider;
+        }
+
+        public TInterface Resolve<TInterface>()
+        {
+            if (bindings.ContainsKey(typeof(TInterface)))
             {
-                return (TInterface)instanceProvider();
+                var instanceProvider = bindings[typeof(TInterface)];
+                if (instanceProvider != null)
+                {
+                    return (TInterface)instanceProvider();
+                }
+                else
+                {
+                    throw new Exception($"No binding found for {typeof(TInterface)}");
+                }
             }
             else
             {
                 throw new Exception($"No binding found for {typeof(TInterface)}");
             }
         }
-        else
-        {
-            throw new Exception($"No binding found for {typeof(TInterface)}");
-        }
-    }
 
-    public void Inject(object target)
-    {
-        var targetType = target.GetType();
-        var fields = targetType.GetFields(System.Reflection.BindingFlags.NonPublic |
-                                          System.Reflection.BindingFlags.Public |
-                                          System.Reflection.BindingFlags.Instance);
-
-        foreach (var field in fields)
+        public void Inject(object target)
         {
-            if (bindings.ContainsKey(field.FieldType))
+            var targetType = target.GetType();
+            var fields = targetType.GetFields(System.Reflection.BindingFlags.NonPublic |
+                                              System.Reflection.BindingFlags.Public |
+                                              System.Reflection.BindingFlags.Instance);
+
+            foreach (var field in fields)
             {
-                var value = bindings[field.FieldType]();
-                field.SetValue(target, value);
+                if (bindings.ContainsKey(field.FieldType))
+                {
+                    var value = bindings[field.FieldType]();
+                    field.SetValue(target, value);
+                }
             }
         }
     }
-}
 }
