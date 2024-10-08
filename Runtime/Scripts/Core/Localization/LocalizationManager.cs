@@ -42,10 +42,10 @@ namespace OSK
             Logg.Log($"Set language to: {languageCode}", ColorCustom.Green, 15);
 
             // debug all keys
-            foreach (var key in _localizedText.Keys)
-            {
-                Logg.LogFormat("Key: {0} - Value: {1}", key, _localizedText[key], ColorCustom.Green);
-            }
+            // foreach (var key in _localizedText.Keys)
+            // {
+            //     Logg.LogFormat("Key: {0} - Value: {1}", key, _localizedText[key], ColorCustom.Green);
+            // }
         }
 
         public void SwitchLanguage(SystemLanguage language)
@@ -60,6 +60,7 @@ namespace OSK
             UpdateAllText();
         }
 
+        [Button]
         private void UpdateAllText()
         {
             var texts = FindObjectsOfType<LocalizedText>();

@@ -32,6 +32,27 @@ public class ResourceManager : GameFrameworkComponent
         return resource;
     }
     
+    public T LoadSO<T>(string path) where T : ScriptableObject
+    {
+        if (_resourceCache.ContainsKey(path))
+        {
+            _referenceCount[path]++;
+            return (T)_resourceCache[path];
+        }
+        T resource = Resources.Load<T>(path);
+        if (resource != null)
+        {
+            _resourceCache[path] = resource;
+            _referenceCount[path] = 1;
+        }
+        else
+        {
+            OSK.Logg.LogError("Resource not found at path: " + path);
+        }
+
+        return resource;
+    } 
+    
     public T Spawn<T>(string path) where T : Object
     {
         T resource = Load<T>(path);
@@ -43,7 +64,7 @@ public class ResourceManager : GameFrameworkComponent
         return Instantiate(resource) as T;
     }
     
-    public bool PathExists(string path)
+    public bool IsPathExists(string path)
     {
         return Resources.Load(path) != null;
     }

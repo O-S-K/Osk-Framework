@@ -34,7 +34,7 @@ namespace OSK
 
             isMusic = true;
             isSoundEffects = true;
-            
+
             SoundData soundData = soundDataSO;
             //SoundData soundData = Main.Save.SOData.Get<SoundData>();
             if (soundData != null)
@@ -97,9 +97,45 @@ namespace OSK
             Play(id, loop, 0, priority);
         }
 
+        /// <summary>
+        ///  Plays the sound with the give id
+        /// </summary>
         public void Play(string id, float pitch)
         {
             Play(id, false, 0, 0, pitch);
+        }
+
+        /// <summary>
+        /// SetVolume of all sounds
+        /// </summary>
+        public void SetVolume(float volume)
+        {
+            if (soundInfos == null || soundInfos.Count == 0)
+                return;
+
+            for (int i = 0; i < soundInfos.Count; i++)
+            {
+                soundInfos[i].clipVolume = volume;
+                return;
+            }
+        }
+        
+        /// <summary>
+        /// Sets the volume of the sound with SoundType
+        /// </summary>
+        public void SetVolume(SoundType type, float volume)
+        {
+            if (soundInfos == null || soundInfos.Count == 0)
+                return;
+
+            foreach (var s in soundInfos)
+            {
+                if (s.type == type)
+                {
+                    s.clipVolume = volume;
+                    return;
+                }
+            }
         }
 
         /// <summary>
@@ -242,19 +278,19 @@ namespace OSK
             {
                 case SoundType.Music:
                     isMusic = isOn;
-                    if(isMusic)
+                    if (isMusic)
                         Resume(SoundType.Music);
                     else
                         Pause(SoundType.Music);
                     break;
                 case SoundType.SoundEffect:
                     isSoundEffects = isOn;
-                    if(isSoundEffects)
+                    if (isSoundEffects)
                         Resume(SoundType.SoundEffect);
                     else
                         Pause(SoundType.SoundEffect);
                     break;
-            } 
+            }
         }
 
 
@@ -274,7 +310,7 @@ namespace OSK
             {
                 ResumeAll();
             }
-        } 
+        }
 
         /// <summary>
         /// Pauses all sounds
@@ -287,7 +323,7 @@ namespace OSK
                 playingSound.isPaused = true;
             }
         }
-        
+
         /// <summary>
         /// Pauses SoundType sounds
         /// </summary>
@@ -314,7 +350,7 @@ namespace OSK
                 playingSound.isPaused = false;
             }
         }
-        
+
         /// <summary>
         /// Resumes SoundType sounds
         /// </summary>
@@ -329,7 +365,7 @@ namespace OSK
                 }
             }
         }
- 
+
         private SoundInfo GetSoundInfo(string id)
         {
             for (int i = 0; i < soundInfos.Count; i++)

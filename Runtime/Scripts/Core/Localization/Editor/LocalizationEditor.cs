@@ -26,10 +26,10 @@ namespace OSK
             EditorGUILayout.Space(30);
             EditorGUILayout.LabelField("Localization Editor", EditorStyles.boldLabel);
 
-            if (GUILayout.Button("Convert Excel to CSV"))
-            {
-                ConvertExcelToCsv();
-            }
+            // if (GUILayout.Button("Convert Excel to CSV"))
+            // {
+            //     ConvertExcelToCsv();
+            // }
             if (GUILayout.Button("Open Excel File"))
             {
                 OpenExcelFile();
