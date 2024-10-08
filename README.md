@@ -4,8 +4,8 @@ This framework is designed to manage various aspects of a Unity project through 
 
 #### **Modules**
 
-1. **Ability**  
-   Manages character abilities and power-ups. It allows for creating, modifying, and applying abilities in the game using ScriptableObjects.
+1. **Main**  
+    The main manager that oversees the entire game system. Provides access to core functionalities like the Object Pool, Observer, Event System, and more.
 
 2. **Data**  
    Handles persistent data storage and retrieval. Supports player preferences, game saves, and general data management.
@@ -49,17 +49,11 @@ This framework is designed to manage various aspects of a Unity project through 
 15. **Sound**  
     Manages game audio, including background music, sound effects, and environmental sounds. Easily integrate and manage audio using ScriptableObjects.
 
-16. **Stats**  
-    Manages player and entity stats, such as health, attack, defense, and speed. Allows for stat calculation and modification through modifiers like flat and percentage-based boosts.
-
-17. **Timer**  
+16. **Timer**  
     Provides a flexible system for managing timers, countdowns, and in-game time-based events. Supports features like pausing, resuming, and looping timers.
 
-18. **UI**  
+17. **UI**  
     Manages user interface components like popups, screens, and HUD elements. Provides functions for dynamic UI transitions and input handling.
-
-19. **Main**  
-    The main manager that oversees the entire game system. Provides access to core functionalities like the Object Pool, Observer, Event System, and more.
 
 ### **How to Use**
 
