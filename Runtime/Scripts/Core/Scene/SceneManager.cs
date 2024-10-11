@@ -110,6 +110,60 @@ namespace OSK
             }
         }
 
+private IEnumerator LoadSceneAsyncFake(string sceneName, LoadSceneMode loadSceneMode)
+{
+    // Trigger start loading event
+    OnLoadingStart?.Invoke();
+
+    AsyncOperation asyncLoad =
+        UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
+    
+    // Prevent the scene from activating immediately
+    asyncLoad.allowSceneActivation = false;
+
+    // Fake progress
+    float fakeProgress = 0f;
+
+    // While the operation is not done
+    while (!asyncLoad.isDone)
+    {
+        // Increase fake progress over time (example: 1% per frame)
+        if (fakeProgress < 0.9f) // You can adjust the limit as needed
+        {
+            fakeProgress += Time.deltaTime * 0.1f; // Speed of progress increment
+        }
+        else if (asyncLoad.progress >= 0.9f)
+        {
+            // When real asyncLoad.progress is almost done, finish fake progress
+            fakeProgress = 1f;
+        }
+
+        // Update progress feedback with the fake progress value
+        OnLoadingProgress?.Invoke(fakeProgress);
+        OSK.Logg.Log("Fake loading progress: " + fakeProgress);
+
+        yield return null;
+
+        // Once the scene is ready and fake progress reaches 1, activate it
+        if (fakeProgress >= 1f && asyncLoad.progress >= 0.9f)
+        {
+            asyncLoad.allowSceneActivation = true;
+        }
+    }
+
+    // Check if scene loaded successfully
+    if (asyncLoad.isDone)
+    {
+        // Trigger complete loading event
+        OnLoadingComplete?.Invoke();
+    }
+    else
+    {
+        // Trigger failed loading event
+        OnLoadingFailed?.Invoke("Failed to load scene: " + sceneName);
+    }
+}
+
         public void UnloadScene(string sceneName)
         {
             StartCoroutine(UnloadSceneAsyncCoroutine(sceneName));
