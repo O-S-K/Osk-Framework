@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace OSK
@@ -12,23 +13,23 @@ namespace OSK
 #else
         public static bool isLogEnabled = false;
 #endif
-        
-        
+
+
         private string _label;
         private long _startTime;
         private PerforInfo info;
-        
+
         public void StartTest(string label)
         {
             info = new PerforInfo(label, _startTime);
             info.StartTest(label);
         }
-        
+
         public void StopTest()
         {
             info.StopTest();
         }
-        
+
         // Log
         public static void Log(object log, ColorCustom color = default, int size = 12)
         {
@@ -70,6 +71,22 @@ namespace OSK
             Debug.Log(($"[OSK] Exception {ex.Message}").Color(ColorCustom.Red).Size(14).Bold());
         }
 
+        // Log object
+        public static void LogObject(object obj)
+        {
+            if (!isLogEnabled)
+                return;
+            Debug.Log($"[OSK] " + JsonConvert.SerializeObject(obj).Color(ColorCustom.Cyan).Size(12));
+        }
+        
+        // Log format time
+        public static void LogFormatTime(string format, params object[] args)
+        {
+            if (!isLogEnabled)
+                return;
+            Debug.Log(($"[OSK] {string.Format(format, args)}").Color(ColorCustom.Green).Size(12));
+        }
+
         // Set time for a task
         public static void SetTime(string name)
         {
@@ -96,7 +113,8 @@ namespace OSK
                 return;
             }
 
-            Log($"Task finished: {name} - Time {(DateTime.Now - _timesDictionary[name]).TotalSeconds}", ColorCustom.Cyan);
+            Log($"Task finished: {name} - Time {(DateTime.Now - _timesDictionary[name]).TotalSeconds}",
+                ColorCustom.Cyan);
         }
     }
 
@@ -104,7 +122,7 @@ namespace OSK
     {
         public static string Bold(this string str) => "<b>" + str + "</b>";
 
-        public static string Color(this string str, ColorCustom clr) =>  str.GetColorHTML(clr);
+        public static string Color(this string str, ColorCustom clr) => str.GetColorHTML(clr);
         public static string Italic(this string str) => "<i>" + str + "</i>";
         public static string Size(this string str, int size) => $"<size={size}>{str}</size>";
     }

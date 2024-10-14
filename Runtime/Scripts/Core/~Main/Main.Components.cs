@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    public partial class Main : MonoBehaviour
+    public partial class Main
     {
         public static Observer Observer { get; private set; }
         public static EventBus EventBus { get; private set; }
@@ -25,20 +25,30 @@ namespace OSK
         public static TimeManager Time { get; private set; }
         public static NativeManager Native { get; private set; }
 
-        private static void InitComponents()
+
+        public bool isDestroyingOnLoad = false;
+
+        public void Awake()
+        {
+            if (isDestroyingOnLoad)
+                DontDestroyOnLoad(gameObject);
+            InitComponents();
+        }
+
+        public static void InitComponents()
         {
             Save = Main.GetFrameworkComponent<SaveManager>();
             Data = Main.GetFrameworkComponent<DataManager>();
             Configs = Main.GetFrameworkComponent<GameConfigs>();
             Localization = Main.GetFrameworkComponent<LocalizationManager>();
             Time = Main.GetFrameworkComponent<TimeManager>();
-            
+
             Pool = Main.GetFrameworkComponent<PoolManager>();
             Observer = Main.GetFrameworkComponent<Observer>();
             EventBus = Main.GetFrameworkComponent<EventBus>();
             State = Main.GetFrameworkComponent<StateMachine>();
             Command = Main.GetFrameworkComponent<CommandManager>();
-            
+
             Scene = Main.GetFrameworkComponent<SceneManager>();
             Res = Main.GetFrameworkComponent<ResourceManager>();
             Network = Main.GetFrameworkComponent<NetworkManager>();

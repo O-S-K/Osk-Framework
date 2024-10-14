@@ -11,7 +11,8 @@ namespace OSK
         public System.Action<float> OnLoadingProgress { get; set; }
         public System.Action OnLoadingComplete { get; set; }
         public System.Action<string> OnLoadingFailed { get; set; }
-        [ReadOnly, SerializeField] private string currentSceneName;
+        
+        [ReadOnly, SerializeField] private string currentSceneName = "";
 
 
         public void LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode)

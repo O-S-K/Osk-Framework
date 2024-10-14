@@ -33,7 +33,13 @@ namespace OSK
 
             return newTimer;
         }
-
+        
+        public DateTime GetRealTimeWorld()
+        {
+            WorldTimeAPI worldTimeAPI = new WorldTimeAPI();
+            return worldTimeAPI.GetCurrentDateTime();
+        }
+         
 
         // update every frame
         public Timer Create(MonoBehaviour owner, bool useFixedUpdate = false)

@@ -5,22 +5,22 @@ using System.Collections.Generic;
 
 namespace OSK
 {
-    public class DIContainer : MonoBehaviour
+    public  class DIContainer
     {
         [ShowInInspector, ReadOnly]
-        private Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
+        private static Dictionary<Type, Func<object>> bindings = new Dictionary<Type, Func<object>>();
 
-        public void Bind<TInterface, TImplementation>() where TImplementation : TInterface, new()
+        public static void Bind<TInterface, TImplementation>() where TImplementation : TInterface, new()
         {
             bindings[typeof(TInterface)] = () => new TImplementation();
         }
 
-        public void BindAndProvide<TInterface>(Func<object> provider)
+        public static void BindAndProvide<TInterface>(Func<object> provider)
         {
             bindings[typeof(TInterface)] = provider;
         }
 
-        public TInterface Resolve<TInterface>()
+        public static TInterface Resolve<TInterface>()
         {
             if (bindings.ContainsKey(typeof(TInterface)))
             {
@@ -40,7 +40,7 @@ namespace OSK
             }
         }
 
-        public void Inject(object target)
+        public static void Inject(object target)
         {
             var targetType = target.GetType();
             var fields = targetType.GetFields(System.Reflection.BindingFlags.NonPublic |

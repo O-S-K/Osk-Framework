@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using CustomInspector;
-using Newtonsoft.Json;
+using System.Collections.Generic; 
 using UnityEngine;
 
 namespace OSK
@@ -119,41 +116,6 @@ namespace OSK
                 List<T> list = (List<T>)value;
                 list.RemoveAll(query);
             }
-        }
-
-        public void SaveToFile<T>(string filePath)
-        {
-            Type type = typeof(T);
-            if (_dataStore.TryGetValue(type, out var value))
-            {
-                List<T> list = (List<T>)value;
-                string json = JsonConvert.SerializeObject(list, Formatting.Indented);
-                File.WriteAllText(filePath, json);
-                Logg.Log($"Data of type {type} saved to {filePath}.");
-            }
-            else
-            {
-                Logg.LogWarning($"No data found of type {type} to save.");
-            }
-        }
-
-        public void LoadFromFile<T>(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                string json = File.ReadAllText(filePath);
-                List<T> dataList = JsonConvert.DeserializeObject<List<T>>(json);
-                if (dataList != null)
-                {
-                    Type type = typeof(T);
-                    _dataStore[type] = dataList;
-                    Logg.Log($"Data of type {type} loaded from {filePath}.");
-                }
-            }
-            else
-            {
-                Logg.LogError($"File {filePath} does not exist.");
-            }
-        }
+        } 
     }
 }

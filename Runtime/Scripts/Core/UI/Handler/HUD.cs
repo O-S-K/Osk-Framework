@@ -4,6 +4,7 @@ using UnityEngine.Serialization;
 
 namespace OSK
 {
+    [DefaultExecutionOrder(-101)]
     public class HUD : MonoBehaviour
     {
         [SerializeField] private ScreenManager _screenManager;

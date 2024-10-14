@@ -4,105 +4,106 @@ using UnityEngine.SceneManagement;
 
 namespace OSK
 {
-public enum ShutdownType : byte
-{
-    None = 0,
-    Restart,
-    Quit,
-}
-
-[DefaultExecutionOrder(-999)]
-public partial class Main : MonoBehaviour
-{
-    public static readonly GameFrameworkLinkedList<GameFrameworkComponent> SGameFrameworkComponents = new();
-
-    public static T GetFrameworkComponent<T>() where T : GameFrameworkComponent
+    public enum ShutdownType : byte
     {
-        return (T)Get(typeof(T));
+        None = 0,
+        Restart,
+        Quit,
     }
- 
-    private static GameFrameworkComponent Get(Type type)
+
+    [DefaultExecutionOrder(-999)]
+    public partial class Main : MonoBehaviour
     {
-        var current = SGameFrameworkComponents.First;
-        while (current != null)
+        public static readonly GameFrameworkLinkedList<GameFrameworkComponent> SGameFrameworkComponents = new();
+
+        public static T GetFrameworkComponent<T>() where T : GameFrameworkComponent
         {
-            if (current.Value.GetType() == type)
+            return (T)Get(typeof(T));
+        }
+
+        private static GameFrameworkComponent Get(Type type)
+        {
+            var current = SGameFrameworkComponents.First;
+            while (current != null)
             {
-                return current.Value;
+                if (current.Value.GetType() == type)
+                {
+                    return current.Value;
+                }
+
+                current = current.Next;
             }
 
-            current = current.Next;
+            return null;
         }
 
-        return null;
-    }
-
-    public static GameFrameworkComponent Get(string typeName)
-    {
-        var current = SGameFrameworkComponents.First;
-        while (current != null)
+        public static GameFrameworkComponent Get(string typeName)
         {
-            Type type = current.Value.GetType();
-            if (type.FullName == typeName || type.Name == typeName)
+            var current = SGameFrameworkComponents.First;
+            while (current != null)
             {
-                return current.Value;
+                Type type = current.Value.GetType();
+                if (type.FullName == typeName || type.Name == typeName)
+                {
+                    return current.Value;
+                }
+
+                current = current.Next;
             }
 
-            current = current.Next;
+            return null;
         }
 
-        return null;
-    }
-
-    public static void Shutdown(ShutdownType shutdownType)
-    {
-        OSK.Logg.Log($"Shutdown Game Framework ({shutdownType})..."); 
-        SGameFrameworkComponents.Clear();
-
-        if (shutdownType == ShutdownType.None)
+        public static void Shutdown(ShutdownType shutdownType)
         {
-            return;
-        }
+            OSK.Logg.Log($"Shutdown Game Framework ({shutdownType})...");
+            SGameFrameworkComponents.Clear();
 
-        if (shutdownType == ShutdownType.Restart)
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
-            return;
-        }
-
-        if (shutdownType == ShutdownType.Quit)
-        {
-            Application.Quit();
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#endif
-            return;
-        }
-    }
-
-    internal static void Register(GameFrameworkComponent gameFrameworkComponent)
-    {
-        if (gameFrameworkComponent == null)
-        {
-            OSK.Logg.Log("Game Framework component is invalid.");
-            return;
-        }
-
-        Type type = gameFrameworkComponent.GetType();
-
-        var current = SGameFrameworkComponents.First;
-        while (current != null)
-        {
-            if (current.Value.GetType() == type)
+            if (shutdownType == ShutdownType.None)
             {
-                OSK.Logg.Log($"Game Framework component type {type.FullName} is already exist.");
                 return;
             }
 
-            current = current.Next;
+            if (shutdownType == ShutdownType.Restart)
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager
+                    .GetActiveScene().buildIndex);
+                return;
+            }
+
+            if (shutdownType == ShutdownType.Quit)
+            {
+                Application.Quit();
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
+                return;
+            }
         }
 
-        SGameFrameworkComponents.AddLast(gameFrameworkComponent);
+        internal static void Register(GameFrameworkComponent gameFrameworkComponent)
+        {
+            if (gameFrameworkComponent == null)
+            {
+                OSK.Logg.Log("Game Framework component is invalid.");
+                return;
+            }
+
+            Type type = gameFrameworkComponent.GetType();
+
+            var current = SGameFrameworkComponents.First;
+            while (current != null)
+            {
+                if (current.Value.GetType() == type)
+                {
+                    OSK.Logg.Log($"Game Framework component type {type.FullName} is already exist.");
+                    return;
+                }
+
+                current = current.Next;
+            }
+
+            SGameFrameworkComponents.AddLast(gameFrameworkComponent);
+        }
     }
-}
 }

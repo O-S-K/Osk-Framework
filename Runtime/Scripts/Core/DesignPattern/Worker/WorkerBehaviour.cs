@@ -6,18 +6,8 @@ namespace OSK
 {
 	public class WorkerBehaviour : MonoBehaviour
 	{
-		#region Inspector Variables
-
-		#endregion
-
-		#region Member Variables
-
 		private Worker					worker;
 		private System.Action<Worker>	finishedCallback;
-
-		#endregion
-
-		#region Unity Methods
 
 		private void Update()
 		{
@@ -30,10 +20,6 @@ namespace OSK
 				Destroy(gameObject);
 			}
 		}
-
-		#endregion
-
-		#region Public Methods
 
 		//WorkerBehaviour.StartWorker(boardCreatorWorker, (Worker worker) =>
 		//	{
@@ -50,6 +36,5 @@ namespace OSK
 			this.finishedCallback	= finishedCallback;
 			worker.StartWorker();
 		}
-		#endregion
 	}
 }
