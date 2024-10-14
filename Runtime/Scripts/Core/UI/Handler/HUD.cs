@@ -23,6 +23,6 @@ namespace OSK
         {
             GetScreenManager.Initialize();
             GetPopupManager.Initialize();
-        }
+        } 
     }
 }

@@ -25,7 +25,36 @@ namespace OSK
     }
 
     public static class ColorUtils
-    {
+    { 
+        
+        public static uint ToUInt(this Color color)
+        {
+            Color32 c32 = color;
+            return (uint)((c32.a << 24) | (c32.r << 16) |
+                          (c32.g << 8) | (c32.b << 0));
+        }
+ 
+        public static Color32 ToColor32(this uint color)
+        {
+            return new Color32()
+            {
+                a = (byte)(color >> 24),
+                r = (byte)(color >> 16),
+                g = (byte)(color >> 8),
+                b = (byte)(color >> 0)
+            };
+        } 
+        
+        public static Color ToColor(this uint color)
+        {
+            return ToColor32(color);
+        } 
+        
+        public static string ToHex(this Color32 color)
+        {
+            return "#" + color.r.ToString("X2") + color.g.ToString("X2") + color.b.ToString("X2");
+        }
+
         public static Color GetColor(ColorCustom colorCustom)
         {
             switch (colorCustom)

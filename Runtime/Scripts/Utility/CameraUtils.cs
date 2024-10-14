@@ -41,6 +41,11 @@ namespace OSK
                 _ => 0,
             };
         }
+        
+        public static void FocusOn2D(Camera camera, GameObject target)
+        {
+            camera.transform.position = new Vector3(target.transform.localPosition.x, target.transform.localPosition.y, Camera.main.transform.position.z);
+        }
 
         public static Bounds GetBounds(Vector2 posCamera)
         {

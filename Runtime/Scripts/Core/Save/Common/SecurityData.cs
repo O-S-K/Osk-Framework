@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace OSK
 {
-    public class SecurityData : MonoBehaviour
+    public class SecurityData  
     {
         private static readonly string key = "b14ca5898a4e4133bbce2ea2315a1916";
 
-        public string Encrypt(string plainText)
+        public static string Encrypt(string plainText)
         {
             byte[] data = Encoding.UTF8.GetBytes(plainText);
             using (Aes aes = Aes.Create())
@@ -35,7 +35,7 @@ namespace OSK
             return plainText;
         }
 
-        public string Decrypt(string cipherText)
+        public static string Decrypt(string cipherText)
         {
             byte[] data = System.Convert.FromBase64String(cipherText);
             using (Aes aes = Aes.Create())
@@ -60,6 +60,22 @@ namespace OSK
             }
 
             return cipherText;
+        }
+        
+        
+        public static string CalculateMD5Hash(string input)
+        {
+            var md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+            byte[] hash = md5.ComputeHash(inputBytes);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            for (int i = 0; i < hash.Length; i++)
+            {
+                sb.Append(hash[i].ToString("x2"));
+            }
+            Logg.Log("CalculateMD5Hash" +  sb.ToString());
+            return sb.ToString();
         }
     }
 }

@@ -6,12 +6,10 @@ namespace OSK
     {
         [SerializeField] private Camera camera;
         [SerializeField] private UnityEngine.UI.CanvasScaler canvasScaler;
-
         [SerializeField] private bool isPortrait;
 
         private void Awake()
         {
-            float currentRatio = isPortrait ? 1080f / 1920 : 1920f / 1080;
             float newRatio = (float)Screen.width / Screen.height;
 
             if (camera == null)
@@ -27,15 +25,18 @@ namespace OSK
             if (Application.isPlaying) return;
             if (camera != null && canvasScaler != null)
             {
-                float currentRatio = isPortrait ? 1080f / 1920 : 1920f / 1080;
+                //float currentRatio = isPortrait ? 1080f / 1920 : 1920f / 1080;
                 float newRatio = (float)camera.pixelWidth / camera.pixelHeight;
                 SetupCanvasScaler(newRatio);
+                
+                // float scaleFactor = canvasScaler.referenceResolution.x / camera.pixelWidth;
+                // Debug.Log("canvas Scaler Factor X: " + scaleFactor);
             }
         }
 
         private void SetupCanvasScaler(float ratio)
         {
-            canvasScaler.matchWidthOrHeight = ratio > .65f ? 1 : 0;
+            canvasScaler.matchWidthOrHeight = ratio > 0.65f ? 1 : 0;
         }
     }
 }
