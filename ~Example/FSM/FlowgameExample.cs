@@ -1,27 +1,23 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using OSK;
+using CustomInspector;
 
 public class FlowgameExample : MonoBehaviour
 {
-    private string groupName = "FollowGame";
+    private string keyGroupName = "FollowGame";
+    [SerializeField, ReadOnly] private GroupState groupState = null;
+
     private void Start()
     {
-        // Initialize the StateMachine with different state groups
-        var group = Main.State.CreateGroup(groupName);
+        groupState = Main.Fsm.CreateGroup(keyGroupName);
 
-        // Add states to the group
-        StateGroup stateGroup = new StateGroup(group);
-        stateGroup.States.Add(new MenuStateExample());
-        stateGroup.States.Add(new IngameStateExample());
-        stateGroup.States.Add(new PauseStateExample());
+        // Add states to group
+        groupState.Add(new PauseStateExample());
+        groupState.Add(new IngameStateExample());
+        groupState.Add(new MenuStateExample());
 
-        Main.State.AddListToGroup(group, stateGroup.States);
-        
         // Set initial state
-        Main.State.Init(group, new MenuStateExample());
+        groupState.Init(new MenuStateExample());
     }
 
 
@@ -29,25 +25,24 @@ public class FlowgameExample : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.A))
         {
-            Main.State.SwitchState(groupName, new PauseStateExample());
+            groupState.Switch(new PauseStateExample());
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            Main.State.SwitchState(groupName, new IngameStateExample());
+            groupState.Switch(new IngameStateExample());
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            Main.State.SwitchState(groupName, new MenuStateExample());
+            groupState.Switch(new MenuStateExample());
         }
         else if (Input.GetKeyDown(KeyCode.E))
         {
-            Main.State.RemoveGroup("FollowGame");
+            Main.Fsm.RemoveGroup(keyGroupName);
         }
     }
- 
+
     private void OnDestroy()
     {
-        // Clean up the StateMachine
-        Main.State.ExitState(groupName);
+        Main.Fsm.Exit(keyGroupName);
     }
 }

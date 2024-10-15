@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using CustomInspector;
 using UnityEngine;
 
 namespace OSK
@@ -14,15 +13,20 @@ namespace OSK
 
     public class SoundManager : GameFrameworkComponent
     {
-        [SerializeField, ReadOnly] public List<SoundInfo> soundInfos = new List<SoundInfo>();
-        [SerializeField, ReadOnly] public List<PlayingSound> musicInfos = new List<PlayingSound>();
-        [SerializeField] private SoundData soundDataSO;
-        private AudioSource soundObject;
-
-        public bool isMusic { get; private set; }
-        public bool isSoundEffects { get; private set; }
         private string keyPoolSound = "AudioSource";
 
+        [CustomInspector.ReadOnly, SerializeField] private List<SoundInfo> soundInfos = new List<SoundInfo>();
+        [CustomInspector.ReadOnly, SerializeField] private List<PlayingSound> musicInfos = new List<PlayingSound>();
+        public List<SoundInfo> GetSoundInfos => soundInfos;
+        public List<PlayingSound> GetMusicInfos => musicInfos;
+
+
+        [SerializeField] 
+        private SoundData soundDataSO;
+        private AudioSource soundObject;
+        
+        public bool isMusic { get; private set; }
+        public bool isSoundEffects { get; private set; }
 
         protected override void Awake()
         {
@@ -204,7 +208,7 @@ namespace OSK
             }
 
             if ((soundInfo.type == SoundType.Music && !isMusic) ||
-                (soundInfo.type == SoundType.SoundEffect && !isSoundEffects))
+                (soundInfo.type == SoundType.SFX && !isSoundEffects))
             {
                 return;
             }
@@ -283,12 +287,12 @@ namespace OSK
                     else
                         Pause(SoundType.Music);
                     break;
-                case SoundType.SoundEffect:
+                case SoundType.SFX:
                     isSoundEffects = isOn;
                     if (isSoundEffects)
-                        Resume(SoundType.SoundEffect);
+                        Resume(SoundType.SFX);
                     else
-                        Pause(SoundType.SoundEffect);
+                        Pause(SoundType.SFX);
                     break;
             }
         }

@@ -7,7 +7,6 @@ namespace OSK
     [CreateAssetMenu(fileName = "SoundData", menuName = "OSK/Sound/SoundData")]
     public class SoundData : ScriptableID
     {
-        [TableList, SerializeField] 
         private List<SoundInfo> _listSoundInfos = new List<SoundInfo>();
         public List<SoundInfo> ListSoundInfos => _listSoundInfos;
 
@@ -42,13 +41,26 @@ namespace OSK
 
             UnityEditor.EditorUtility.SetDirty(this);
         }
+        
+        public bool IsSoundExist(string soundName)
+        {
+            if (_listSoundInfos == null || _listSoundInfos.Count == 0)
+                return false;
+            
+            foreach (var soundInfo in _listSoundInfos)
+            {
+                if (soundInfo.audioClip.name == soundName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         private void OnValidate()
         {
-            // check unique audio clip name
-
-            if (_listSoundInfos == null || _listSoundInfos.Count == 0)
-                return;
+            // check unique audio clip name 
 
             var audioClipNames = new List<string>();
             foreach (var soundInfo in _listSoundInfos)

@@ -16,7 +16,7 @@ namespace OSK
 
             DrawStaticFieldCheck("Observer", Main.Observer);
             DrawStaticFieldCheck("EventBus", Main.EventBus);
-            DrawStaticFieldCheck("State", Main.State);
+            DrawStaticFieldCheck("State", Main.Fsm);
             DrawStaticFieldCheck("Pool", Main.Pool);
             DrawStaticFieldCheck("Command", Main.Command);
             DrawStaticFieldCheck("Scene", Main.Scene);

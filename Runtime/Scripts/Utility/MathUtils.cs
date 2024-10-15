@@ -5,18 +5,26 @@ namespace OSK
 {
     public static class MathUtils
     {
+        public static Vector3 Parabola(Vector3 start, Vector3 end, float height, float t)
+        {
+            Func<float, float> f = x => -4 * height * x * x + 4 * height * x;
+            var mid = Vector3.Lerp(start, end, t);
+            return new Vector3(mid.x, f(t) + Mathf.Lerp(start.y, end.y, t), mid.z);
+        }
+
+        public static Vector2 Parabola(Vector2 start, Vector2 end, float height, float t)
+        {
+            Func<float, float> f = x => -4 * height * x * x + 4 * height * x;
+            var mid = Vector2.Lerp(start, end, t);
+            return new Vector2(mid.x, f(t) + Mathf.Lerp(start.y, end.y, t));
+        }
+
         public static string FloatToString(float value, int decim)
         {
             string _string = "F" + decim;
             return value.ToString(_string);
         }
 
-        public static long IntToLong(int value)
-        {
-            return Convert.ToInt64(value);
-        }
-        
-        
         public static float WrapAngle(this float angle)
         {
             angle %= 360;
@@ -25,33 +33,12 @@ namespace OSK
 
             return angle;
         }
- 
-        public static void RotationAxisY(this Transform transform)
-        {
-            Vector3 rotation = transform.eulerAngles;
-            rotation.x = 0;
-            rotation.z = 0;
-            transform.eulerAngles = rotation;
-        }
-
-        
-        public static Vector3 DirectionTo(this Vector3 source, Vector3 destination)
-        {
-            return Vector3.Normalize(destination - source);
-        }
 
         public static Vector3 GetDirection(Vector3 start, Vector3 end)
         {
             Vector3 direction = end - start;
             direction.Normalize();
             return direction;
-        }
-         
-        public static Vector2 ReverseVector(Vector2 start, Vector2 end)
-        {
-            Vector2 reverseVector = (start - end) * -1;
-            reverseVector.Normalize();
-            return reverseVector;
         }
 
         public static Vector3 ReverseVector(Vector3 start, Vector3 end)
@@ -60,7 +47,7 @@ namespace OSK
             reverseVector.Normalize();
             return reverseVector;
         }
-        
+
         public static Vector3 GetVectorFromAngle(float angle)
         {
             float angleRad = angle * (Mathf.PI / 180f);
@@ -83,11 +70,6 @@ namespace OSK
         public static float GetAngle(Vector2 start, Vector2 end)
         {
             return Mathf.Atan2(start.y - end.y, start.x - end.x) * Mathf.Rad2Deg;
-        }
-
-        public static long Lerp(double a, double b, float t)
-        {
-            return (long)(a + (b - a) * Mathf.Clamp01(t));
         }
 
         public static int Sign(double value)

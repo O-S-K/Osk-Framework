@@ -8,7 +8,7 @@ namespace OSK
     {
         public static Observer Observer { get; private set; }
         public static EventBus EventBus { get; private set; }
-        public static StateMachine State { get; private set; }
+        public static FSMManager Fsm { get; private set; }
         public static PoolManager Pool { get; private set; }
         public static CommandManager Command { get; private set; }
         public static SceneManager Scene { get; private set; }
@@ -46,7 +46,7 @@ namespace OSK
             Pool = Main.GetFrameworkComponent<PoolManager>();
             Observer = Main.GetFrameworkComponent<Observer>();
             EventBus = Main.GetFrameworkComponent<EventBus>();
-            State = Main.GetFrameworkComponent<StateMachine>();
+            Fsm = Main.GetFrameworkComponent<FSMManager>();
             Command = Main.GetFrameworkComponent<CommandManager>();
 
             Scene = Main.GetFrameworkComponent<SceneManager>();

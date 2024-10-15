@@ -5,24 +5,15 @@ namespace OSK
 {
     public class PoolManager : GameFrameworkComponent
     {
-        // Dictionary to store pools, keyed by group name and prefab (could be a Component or GameObject)
-        public Dictionary<string, Dictionary<Object, ObjectPool<Object>>> groupPrefabLookup = new();
-        private Dictionary<Object, ObjectPool<Object>> instanceLookup = new();
-
-        [HideInInspector] public bool dirty = false;
+        [SerializeReference] public Dictionary<string, Dictionary<Object, ObjectPool<Object>>> groupPrefabLookup = new();
+        [SerializeReference] public Dictionary<Object, ObjectPool<Object>> instanceLookup = new();
         private Dictionary<string, GameObject> groupObjects = new();
 
-        /// <summary>
-        /// Preloads a number of instances of a prefab (Component or GameObject) within a group.
-        /// </summary>
         public void Preload(string groupName, Object prefab, int size)
         {
             WarmPool(groupName, prefab, size);
         }
 
-        /// <summary>
-        /// Gets an instance of a prefab (Component or GameObject) within a group.
-        /// </summary> 
         public T Get<T>(string groupName, T prefab) where T : Object
         {
             if (IsGroupAndPrefabExist(groupName, prefab))
@@ -33,9 +24,6 @@ namespace OSK
             return null;
         }
     
-        /// <summary>
-        /// Creates or retrieves an instance of a prefab (Component or GameObject) within a group.
-        /// </summary>
         public T Spawn<T>(string groupName, T prefab, int size = 1) where T : Object
         {
             GetOrCreateGroup(groupName);
@@ -62,13 +50,9 @@ namespace OSK
                 Logg.LogWarning($"This object pool already contains the item provided: {instance}");
                 return instance;
             }
-            dirty = true;
             return instance;
         }
 
-        /// <summary>
-        /// Warms the pool for a specific prefab (Component or GameObject) within a group.
-        /// </summary>
         private void WarmPool<T>(string group, T prefab, int size) where T : Object
         {
             if (IsGroupAndPrefabExist(group, prefab))
@@ -85,12 +69,8 @@ namespace OSK
             }
 
             groupPrefabLookup[group][prefab] = pool;
-            dirty = true;
         }
 
-        /// <summary>
-        /// Instantiates the prefab under the specified parent.
-        /// </summary>
         private Object InstantiatePrefab<T>(T prefab, Transform parent) where T : Object
         {
             return prefab is GameObject gameObjectPrefab
@@ -98,9 +78,6 @@ namespace OSK
                 : Instantiate((Component)(object)prefab, parent);
         }
 
-        /// <summary>
-        /// Creates or retrieves the group GameObject for pooling objects.
-        /// </summary>
         private GameObject GetOrCreateGroup(string groupName)
         {
             if (!groupObjects.TryGetValue(groupName, out var groupObject))
@@ -113,17 +90,11 @@ namespace OSK
             return groupObject;
         }
 
-        /// <summary>
-        /// Checks if both the group and prefab exist in the pool.
-        /// </summary>
         private bool IsGroupAndPrefabExist(string groupName, Object prefab)
         {
             return groupPrefabLookup.ContainsKey(groupName) && groupPrefabLookup[groupName].ContainsKey(prefab);
         }
 
-        /// <summary>
-        /// Deactivates and returns an instance back to its pool.
-        /// </summary>
         public void Despawn(Object instance)
         {
             DeactivateInstance(instance);
@@ -131,7 +102,6 @@ namespace OSK
             {
                 pool.ReleaseItem(instance);
                 instanceLookup.Remove(instance);
-                dirty = true;
             }
             else
             {
@@ -139,9 +109,6 @@ namespace OSK
             }
         }
 
-        /// <summary>
-        /// Deactivates and returns all objects in a specified group to their pool.
-        /// </summary>
         public void DespawnAllInGroup(string groupName)
         {
             if (groupPrefabLookup.TryGetValue(groupName, out var prefabPools))
@@ -153,13 +120,9 @@ namespace OSK
                 }
 
                 instanceLookup.Clear();
-                dirty = true;
             }
         }
 
-        /// <summary>
-        /// Deactivates and returns all active instances to their pools.
-        /// </summary>
         public void DespawnAllActive()
         {
             foreach (var keyVal in instanceLookup)
@@ -169,12 +132,8 @@ namespace OSK
             }
 
             instanceLookup.Clear();
-            dirty = true;
         }
 
-        /// <summary>
-        /// Deactivates a specific instance.
-        /// </summary>
         private void DeactivateInstance(Object instance)
         {
             if (instance is Component component)
@@ -187,9 +146,6 @@ namespace OSK
             }
         }
 
-        /// <summary>
-        /// Destroys a specified group and all its objects.
-        /// </summary>
         public void DestroyGroup(string groupName)
         {
             if (groupObjects.TryGetValue(groupName, out var groupObject))
@@ -197,13 +153,9 @@ namespace OSK
                 Destroy(groupObject);
                 groupObjects.Remove(groupName);
                 groupPrefabLookup.Remove(groupName);
-                dirty = true;
             }
         }
-
-        /// <summary>
-        /// Destroys all groups and clears pools.
-        /// </summary>
+ 
         public void DestroyAllGroups()
         {
             foreach (var group in groupObjects.Values)
@@ -213,7 +165,6 @@ namespace OSK
 
             groupPrefabLookup.Clear();
             groupObjects.Clear();
-            dirty = true;
         }
     }
 }

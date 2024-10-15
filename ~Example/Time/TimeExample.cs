@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using CustomInspector;
 using UnityEngine;
 using OSK;
+
 public class TimeExample : MonoBehaviour
 {
     private Timer myTimer;
-    
+
     [Button("Test Time")]
     private void Test()
     {
@@ -18,23 +19,28 @@ public class TimeExample : MonoBehaviour
         //
         myTimer = Main.Time.Create(gameObject, 1f).Loops(5).Invoke(() => Debug.Log("Tick"));
         // myTimer = World.Time.Create(gameObject, 1f).Unscale().Invoke(() => Debug.Log("Tick"));
-
     }
-    
+
     [Button("Clear Timers")]
     private void ClearTimers()
     {
         Main.Time.ClearAllTimers();
         Debug.Log("All timers cleared.");
     }
-    
+
+    [Button("Get Real Time")]
+    private void GetRealTime()
+    {
+        Debug.Log(Main.Time.GetRealTimeWorld());
+    }
+
     [Button("Paused Timers")]
     private void PausedTimers()
     {
         myTimer.Pause();
         Debug.Log("All timers paused.");
     }
-    
+
     [Button("Resumed Timers")]
     private void ResumedTimers()
     {

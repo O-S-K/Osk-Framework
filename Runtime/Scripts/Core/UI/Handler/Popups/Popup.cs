@@ -2,14 +2,12 @@ using System;
 using CustomInspector;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace OSK
 {
     [RequireComponent(typeof(UITransition))]
     public class Popup : MonoBehaviour
-    {
-        public int STT = 0;
+    { 
         public bool isOverlay = false;
 
         [Header("Settings")] 
@@ -28,11 +26,7 @@ namespace OSK
 
         public bool IsShowing => _isShowing;
         [ShowInInspector, ReadOnly] private bool _isShowing;
-
-        // private void OnValidate()
-        // {
-        //     name = GetType().Name;
-        // }
+ 
 
         public virtual void Initialize(PopupManager popupManager)
         {
@@ -68,7 +62,7 @@ namespace OSK
             gameObject.SetActive(false);
             gameObject.SetActive(true);
 
-            _uiTransition.PlayOpeningTransition(() =>
+            _uiTransition.OpenTrans(() =>
             {
                 _afterOpened.Invoke();
             });
@@ -81,7 +75,7 @@ namespace OSK
 
             _isShowing = false;
             _beforeClosed.Invoke();
-            _uiTransition.PlayClosingTransition(() =>
+            _uiTransition.CloseTrans(() =>
             {
                 gameObject.SetActive(false);
                 _popupManager.RemovePopup(this);

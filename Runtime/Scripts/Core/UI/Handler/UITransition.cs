@@ -74,7 +74,7 @@ namespace OSK
             _rectTransform = GetComponent<RectTransform>();
         }
 
-        public void PlayOpeningTransition(Action onComplete)
+        public void OpenTrans(Action onComplete)
         {
             ResetTransitionState();
 
@@ -165,7 +165,7 @@ namespace OSK
             }
         }
 
-        public void PlayClosingTransition(Action onComplete)
+        public void CloseTrans(Action onComplete)
         {
             ResetTransitionState();
 

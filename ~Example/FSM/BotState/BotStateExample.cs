@@ -1,34 +1,41 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using CustomInspector;
 using UnityEngine;
 using OSK;
+using UnityEngine.Serialization;
 
 public class BotStateExample : MonoBehaviour
 {
     private string keyGroupStateBot = "BotStateExample";
-    
+    [SerializeField, ReadOnly] private GroupState groupState = null;
+
     private void Start()
     {
-        var group= Main.State.CreateGroup(keyGroupStateBot);
-        StateGroup stateGroup = new StateGroup(group);
-        stateGroup.States.Add(new BotIdleStateExample());
-        stateGroup.States.Add(new BotAttackStateExample());
-        stateGroup.States.Add(new BotDieStateExample());
-        
-        Main.State.AddListToGroup(group, stateGroup.States);
-        Main.State.Init(group, new BotIdleStateExample());
+        groupState = Main.Fsm.CreateGroup(keyGroupStateBot);
+        groupState.Add(new BotIdleStateExample());
+        groupState.Add(new BotAttackStateExample());
+        groupState.Add(new BotDieStateExample());
+
+        groupState.Init(new BotIdleStateExample());
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            Main.State.SwitchState(keyGroupStateBot, new BotAttackStateExample());
+            groupState.Switch(new BotAttackStateExample());
         }
+
         if (Input.GetKeyDown(KeyCode.X))
         {
-            Main.State.SwitchState(keyGroupStateBot, new BotDieStateExample());
+            groupState.Switch(new BotDieStateExample());
         }
+
+        var conditions = new bool[]
+        {
+            Input.GetKeyDown(KeyCode.O),
+            Input.GetKey(KeyCode.I)
+        };
+        groupState.Switch(new BotIdleStateExample(), conditions);
     }
 }

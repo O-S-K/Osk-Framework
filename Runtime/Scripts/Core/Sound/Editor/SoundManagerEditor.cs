@@ -22,10 +22,10 @@ namespace OSK
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Playing Sounds", EditorStyles.boldLabel, GUILayout.Width(400));
 
-            if (soundManager.soundInfos != null &&
-                (soundManager.musicInfos != null && soundManager.musicInfos.Count > 0))
+            if (soundManager.GetSoundInfos != null &&
+                (soundManager.GetMusicInfos != null && soundManager.GetMusicInfos.Count > 0))
             {
-                foreach (var playingSound in soundManager.musicInfos)
+                foreach (var playingSound in soundManager.GetMusicInfos)
                 {
                     EditorGUILayout.BeginHorizontal();
 
@@ -49,8 +49,8 @@ namespace OSK
                     {
                         playingSound.audioSource.Stop();
                         DestroyImmediate(playingSound.audioSource.gameObject);
-                        soundManager.musicInfos.Remove(playingSound);
-                        soundManager.musicInfos.RefreshList();
+                        soundManager.GetMusicInfos.Remove(playingSound);
+                        soundManager.GetMusicInfos.RefreshList();
                         break;
                     }
 
