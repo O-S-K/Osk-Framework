@@ -25,7 +25,7 @@ public class ScriptGeneratorTool : EditorWindow
     }
     
 
-    [MenuItem("OSK-FrameWorld/Tools/Script Generator Tool")]
+    [MenuItem("OSK-Framework/Tools/Script Generator Tool")]
     public static void ShowWindow()
     {
         GetWindow<ScriptGeneratorTool>("Script Generator Tool");

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using CustomInspector;
 using UnityEngine;
 
 namespace OSK
@@ -15,8 +16,8 @@ namespace OSK
     {
         private string keyPoolSound = "AudioSource";
 
-        [CustomInspector.ReadOnly, SerializeField] private List<SoundInfo> soundInfos = new List<SoundInfo>();
-        [CustomInspector.ReadOnly, SerializeField] private List<PlayingSound> musicInfos = new List<PlayingSound>();
+        [ReadOnly] [SerializeField] private List<SoundInfo> soundInfos = new List<SoundInfo>();
+        private List<PlayingSound> musicInfos = new List<PlayingSound>();
         public List<SoundInfo> GetSoundInfos => soundInfos;
         public List<PlayingSound> GetMusicInfos => musicInfos;
 
@@ -60,7 +61,7 @@ namespace OSK
 
         private void CheckForStoppedMusic()
         {
-            if (musicInfos == null)
+            if (musicInfos == null || musicInfos.Count == 0)
                 return;
 
             for (int i = 0; i < musicInfos.Count; i++)
@@ -77,56 +78,43 @@ namespace OSK
             }
         }
 
-        /// <summary>
-        /// Plays the sound with the give id
-        /// </summary>
+        public void Play(string id)
+        {
+            Play(id, false, 0, 0);
+        }
+
+        
         public void Play(string id, bool loop)
         {
             Play(id, loop, 0, 0);
         }
 
-        /// <summary>
-        ///  Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
-        /// </summary>
         public void Play(string id, bool loop, float playDelay)
         {
             Play(id, loop, playDelay, 0);
         }
 
-        /// <summary>
-        ///  Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
-        /// </summary>
         public void Play(string id, bool loop, int priority)
         {
             Play(id, loop, 0, priority);
         }
 
-        /// <summary>
-        ///  Plays the sound with the give id
-        /// </summary>
         public void Play(string id, float pitch)
         {
             Play(id, false, 0, 0, pitch);
         }
 
-        /// <summary>
-        /// SetVolume of all sounds
-        /// </summary>
         public void SetVolume(float volume)
         {
             if (soundInfos == null || soundInfos.Count == 0)
                 return;
-
             for (int i = 0; i < soundInfos.Count; i++)
             {
                 soundInfos[i].clipVolume = volume;
                 return;
             }
         }
-        
-        /// <summary>
-        /// Sets the volume of the sound with SoundType
-        /// </summary>
+
         public void SetVolume(SoundType type, float volume)
         {
             if (soundInfos == null || soundInfos.Count == 0)
@@ -142,9 +130,6 @@ namespace OSK
             }
         }
 
-        /// <summary>
-        ///  Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
-        /// </summary>
         public void PlayAudioClip(AudioClip audioClip, float volume = 1, bool loop = false, float playDelay = 0,
             int priority = 0, float pitch = 1)
         {
@@ -174,28 +159,18 @@ namespace OSK
             musicInfos.Add(new PlayingSound
                 { audioSource = audioSource, soundInfo = new SoundInfo { audioClip = audioClip } });
         }
-
-
-        /// <summary>
-        ///  Releases the audio source after the given delay
-        /// </summary>
+        
         public void ReleaseDelayedAudioSource(AudioSource audioSource, float delay)
         {
             StartCoroutine(ReleaseAudioSource(audioSource, delay));
         }
 
-        /// <summary>
-        ///  Releases the audio source after the given delay
-        /// </summary>
         private IEnumerator ReleaseAudioSource(AudioSource audioSource, float delay)
         {
             yield return new WaitForSeconds(delay);
             Main.Pool.Despawn(audioSource);
         }
 
-        /// <summary>
-        /// Plays the sound with the give id, if loop is set to true then the sound will only stop if the Stop method is called
-        /// </summary>
         public void Play(string id, bool loop, float playDelay, int priority, float pitch = 1)
         {
             SoundInfo soundInfo = GetSoundInfo(id);
@@ -239,9 +214,6 @@ namespace OSK
             musicInfos.Add(playingSound);
         }
 
-        /// <summary>
-        /// Stops all playing sounds with the given id
-        /// </summary>
         public void Stop(string id)
         {
             for (int i = 0; i < musicInfos.Count; i++)
@@ -256,9 +228,6 @@ namespace OSK
             }
         }
 
-        /// <summary>
-        /// Stops all playing sounds with the given type
-        /// </summary>
         public void Stop(SoundType type)
         {
             for (int i = 0; i < musicInfos.Count; i++)
@@ -272,10 +241,7 @@ namespace OSK
                 }
             }
         }
-
-        /// <summary>
-        /// Sets the SoundType on/off
-        /// </summary>
+        
         public void SetStatusSoundType(SoundType type, bool isOn)
         {
             switch (type)
@@ -297,10 +263,6 @@ namespace OSK
             }
         }
 
-
-        /// <summary>
-        ///   Sets the status of all sounds on/off
-        /// </summary>
         public void SetStatusAllSound(bool isOn)
         {
             isMusic = isOn;
@@ -316,9 +278,6 @@ namespace OSK
             }
         }
 
-        /// <summary>
-        /// Pauses all sounds
-        /// </summary>
         public void PauseAll()
         {
             foreach (var playingSound in musicInfos)
@@ -328,9 +287,6 @@ namespace OSK
             }
         }
 
-        /// <summary>
-        /// Pauses SoundType sounds
-        /// </summary>
         public void Pause(SoundType type)
         {
             foreach (var playingSound in musicInfos)
@@ -343,9 +299,6 @@ namespace OSK
             }
         }
 
-        /// <summary>
-        ///  Resumes all paused sounds
-        /// </summary>
         public void ResumeAll()
         {
             foreach (var playingSound in musicInfos)
@@ -355,9 +308,6 @@ namespace OSK
             }
         }
 
-        /// <summary>
-        /// Resumes SoundType sounds
-        /// </summary>
         public void Resume(SoundType type)
         {
             foreach (var playingSound in musicInfos)
@@ -386,7 +336,8 @@ namespace OSK
         private AudioSource CreateAudioSource(string id)
         {
             var audioSource = Main.Pool.Spawn(keyPoolSound, soundObject);
-            audioSource.transform.position = Camera.main.transform.position;
+            if (Camera.main != null) 
+                audioSource.transform.position = Camera.main.transform.position;
             audioSource.name = id;
             return audioSource;
         }

@@ -6,7 +6,7 @@ namespace OSK
 {
     public class OSKEditor : MonoBehaviour
     {
-        [MenuItem("OSK-FrameWorld/Create Framework")]
+        [MenuItem("OSK-Framework/Create Framework")]
         public static  void CreateWorldOnScene()
         { 
             if (FindObjectOfType<Main>() == null)

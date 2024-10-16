@@ -6,7 +6,7 @@ public class NamingToolWindow : EditorWindow
     private NamingRules namingRules;
     private GameObject selectedObject;
 
-    [MenuItem("OSK-FrameWorld/Tools/Naming Tool")]
+    [MenuItem("OSK-Framework/Tools/Naming Tool")]
     public static void ShowWindow()
     {
         GetWindow<NamingToolWindow>("Naming Tool");

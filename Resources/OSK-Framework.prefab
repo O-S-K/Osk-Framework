@@ -44,7 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 430d968e63581624e84fc43c08982663, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dirty: 0
 --- !u!1 &918181417850223934
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetFrameRate: 60
   vSyncCount: 0
-  languageCodeDefault: English
+  languageCodeDefault: 10
   settingsDefault:
     isMusicOnDefault: 1
     isSoundOnDefault: 1

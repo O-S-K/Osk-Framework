@@ -19,7 +19,7 @@ namespace CustomInspector.Editor.Samples
         private MonoScript _currentMonoScript;
         private Vector2 _currentScroll;
 
-        [MenuItem("OSK-FrameWorld/Tools/Custom Inspector &4")]
+        [MenuItem("OSK-Framework/Tools/Custom Inspector &4")]
         public static void Open()
         {
             var window = GetWindow<CustomSamplesWindow>();

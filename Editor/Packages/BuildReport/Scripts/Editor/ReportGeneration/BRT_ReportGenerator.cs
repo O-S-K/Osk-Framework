@@ -3108,7 +3108,7 @@ namespace BuildReportTool
 
 		const string EDITOR_WINDOW_TITLE = "Build Report";
 
-		[MenuItem("OSK-FrameWorld/Tools/Custom Build Report &1")]
+		[MenuItem("OSK-Framework/Tools/Custom Build Report &1")]
 		public static void ShowBuildReport()
 		{
 			//RefreshData(ref _lastKnownBuildInfo);

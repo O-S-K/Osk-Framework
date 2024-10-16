@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace OSK
 {
+    /// <summary>
+    /// Main class of the framework, contains all the components of the framework.
+    /// </summary>
     public partial class Main
     {
         public static Observer Observer { get; private set; }
