@@ -16,13 +16,13 @@ namespace OSK
     {
         private string keyPoolSound = "AudioSource";
 
-        [ReadOnly] [SerializeField] private List<SoundInfo> soundInfos = new List<SoundInfo>();
+        public List<SoundInfo> soundInfos = new List<SoundInfo>();
         private List<PlayingSound> musicInfos = new List<PlayingSound>();
         public List<SoundInfo> GetSoundInfos => soundInfos;
         public List<PlayingSound> GetMusicInfos => musicInfos;
 
 
-        [SerializeField] 
+        [SerializeField, Required] 
         private SoundData soundDataSO;
         private AudioSource soundObject;
         
@@ -43,9 +43,7 @@ namespace OSK
             SoundData soundData = soundDataSO;
             //SoundData soundData = Main.Save.SOData.Get<SoundData>();
             if (soundData != null)
-            {
-                if (soundData.ListSoundInfos.Count == 0)
-                    OSK.Logg.LogWarning("SoundData is empty in SoundManager.");
+            { 
                 soundInfos = soundData.ListSoundInfos;
             }
             else

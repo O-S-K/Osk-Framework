@@ -1,8 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System;
-using UnityEngine.UI;
-using System.Collections.Generic;
 
 namespace OSK
 {
@@ -30,7 +26,6 @@ namespace OSK
 		
 		public virtual void Refresh()
 		{
-
 		}
 	}
 }

@@ -166,7 +166,7 @@ namespace OSK
 
         public void Close()
         {
-            DemoRewardSytem.instance.ShowSpinWheelWindow(false);
+            RewardSytem.instance.ShowSpinWheelWindow(false);
         }
     }
 }

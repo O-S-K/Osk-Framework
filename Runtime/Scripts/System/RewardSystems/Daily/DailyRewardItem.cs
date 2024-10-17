@@ -27,8 +27,8 @@ namespace OSK
             this.CountText.text = reward.count.ToString();
             this.day = reward.day;
 
-            bool isReadyToCollect = DemoRewardSytem.instance.dailyRewardsPopup.IsDailyRewardReadyToCollect(day);
-            bool isClaimed = DemoRewardSytem.instance.dailyRewardsPopup.IsDailyRewardClaimed(day);
+            bool isReadyToCollect = RewardSytem.instance.dailyRewardsPopup.IsDailyRewardReadyToCollect(day);
+            bool isClaimed = RewardSytem.instance.dailyRewardsPopup.IsDailyRewardClaimed(day);
 
             GreenPanel.SetActive(isReadyToCollect);
             Glow.SetActive(!isClaimed && Instance == this);

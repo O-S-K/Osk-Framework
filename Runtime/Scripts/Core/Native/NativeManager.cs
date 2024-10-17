@@ -3,14 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using CandyCoded.HapticFeedback;
 
-
 namespace OSK
 {
     public class NativeManager : GameFrameworkComponent
     {
+        public void CaptureScreenshot()
+        {
+            ScreenShot.CaptureScreenshot(this);
+        }
+
+        public void Rating()
+        {
+            OSK.AppRate.Rate();
+        }
+
         public void Vibrate(EffectHaptic effectType)
         {
-            if (GameData.Vibration == false)
+            if (PlayerPrefs.GetInt("Vibration") == 0)
                 return;
 
             switch (effectType)
@@ -23,7 +32,7 @@ namespace OSK
                     break;
                 case EffectHaptic.Heavy:
                     HapticFeedback.HeavyFeedback();
-                    break; 
+                    break;
             }
         }
     }

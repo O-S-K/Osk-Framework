@@ -6,13 +6,13 @@ using UnityEngine.Serialization;
 
 namespace OSK
 {
-    public class DemoRewardSytem : MonoBehaviour
+    public class RewardSytem : MonoBehaviour
     {
-        public static DemoRewardSytem instance;
+        public static RewardSytem instance;
 
         public GameObject MainMenu;
-        [FormerlySerializedAs("DailyRewardsWindow")] public DailyRewardsPopup dailyRewardsPopup;
-        [FormerlySerializedAs("QuestWindow")] public QuestPopup questPopup;
+        public DailyRewardsPopup dailyRewardsPopup;
+        public QuestPopup questPopup;
         public SpinWheelPopup SpinWheelWindow;
 
 
@@ -24,12 +24,6 @@ namespace OSK
             ShowQuestWindow(false);
             ShowSpinWheelWindow(false);
             ShowMainMenu(true);
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
         }
 
         public void OnClickDailyRewardsButton()

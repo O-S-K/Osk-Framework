@@ -62,8 +62,7 @@ namespace OSK
 
         public void Close()
         {
-            DemoRewardSytem.instance.ShowQuestWindow(false);
-            //Destroy(this.gameObject);
+            RewardSytem.instance.ShowQuestWindow(false);
         }
 
         public void ClaimQuest(QuestItem questItem)

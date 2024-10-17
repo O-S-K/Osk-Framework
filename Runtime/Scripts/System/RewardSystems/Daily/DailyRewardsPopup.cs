@@ -42,7 +42,7 @@ namespace OSK
 
         public void Close()
         {
-            DemoRewardSytem.instance.ShowDailyRewardsWindow(false);
+            RewardSytem.instance.ShowDailyRewardsWindow(false);
         }
 
         [Button]

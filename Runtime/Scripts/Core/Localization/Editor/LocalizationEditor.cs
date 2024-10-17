@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using CustomInspector;
-using ExcelDataReader;
 using UnityEditor;
 using UnityEngine;
 
@@ -62,56 +59,6 @@ namespace OSK
             {
                 localization.SwitchLanguage(SystemLanguage.English);
             }
-        }
-        
-        void ConvertExcelToCsv()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            // Check folder path
-            if (!Directory.Exists(localization.outputCsvPath))
-            {
-                Directory.CreateDirectory(localization.outputCsvPath);
-            }
-            
-            // Check if file exists
-            var file = localization.outputCsvPath + "Localization.csv";
-            if (!File.Exists(file))
-            {
-                Logg.Log("File not found, creating new file at: " + file);
-                File.WriteAllText(file, string.Empty); // Tạo file rỗng
-            } 
-         
-
-            // Load file Excel
-            using (var stream = File.Open(localization.excelFilePath, FileMode.Open, FileAccess.Read))
-            {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    var result = reader.AsDataSet();
-                    var sheet = result.Tables[0];   // Lấy bảng tính đầu tiên
-
-                    // copy data from Excel to CSV
-                    for (int i = 0; i < sheet.Rows.Count; i++)
-                    {
-                        for (int j = 0; j < sheet.Columns.Count; j++)
-                        {
-                            sb.Append(sheet.Rows[i][j].ToString());
-
-                            // Add comma if this is not the last column
-                            if (j < sheet.Columns.Count - 1)
-                            {
-                                sb.Append(",");
-                            }
-                        }
-                        sb.AppendLine(); 
-                    }
-                }
-            }
-
-            // Write to file
-            File.WriteAllText(file, sb.ToString());
-            Logg.Log("File CSV created at: " + file);
         }
 
         private void OpenExcelFile()

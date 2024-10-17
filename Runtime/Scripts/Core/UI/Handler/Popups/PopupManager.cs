@@ -10,8 +10,8 @@ namespace OSK
     public class PopupManager : MonoBehaviour
     {
         [ShowInInspector, ReadOnly] [SerializeField] private List<Popup> ListPopups;
-        [ShowInInspector, ReadOnly] private Stack<Popup> _popupHistory = new Stack<Popup>();
-        [SerializeField] private ListUIPopupSO _listUIPopupSo;
+        [SerializeField, ReadOnly] private Stack<Popup> _popupHistory = new Stack<Popup>();
+        [SerializeField, Required] private ListUIPopupSO _listUIPopupSo;
         public ListUIPopupSO ListUIPopupSo => _listUIPopupSo;
         
         

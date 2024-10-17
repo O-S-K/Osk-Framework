@@ -7,7 +7,7 @@ namespace OSK
     [CreateAssetMenu(fileName = "SoundData", menuName = "OSK/Sound/SoundData")]
     public class SoundData : ScriptableID
     {
-        private List<SoundInfo> _listSoundInfos = new List<SoundInfo>();
+        [SerializeField] private List<SoundInfo> _listSoundInfos = new List<SoundInfo>();
         public List<SoundInfo> ListSoundInfos => _listSoundInfos;
 
 

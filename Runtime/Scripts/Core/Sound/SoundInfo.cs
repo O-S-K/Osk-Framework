@@ -1,3 +1,4 @@
+using CustomInspector;
 using UnityEngine;
 
 namespace OSK
@@ -18,9 +19,10 @@ namespace OSK
                 Debug.LogWarning("AudioClip is null.");
                 return;
             }
+
             EditorAudioHelper.PlayClip(audioClip);
         }
-        
+
         public void Stop()
         {
             if (audioClip == null)
@@ -28,30 +30,29 @@ namespace OSK
                 Debug.LogWarning("AudioClip is null.");
                 return;
             }
+
             EditorAudioHelper.StopClip(audioClip);
         }
-        
+
         public bool IsPlaying()
         {
             return EditorAudioHelper.IsClipPlaying(audioClip);
         }
-        
+
         public void UpdateId()
         {
             if (audioClip != null)
             {
-                id = audioClip.name; 
+                id = audioClip.name;
             }
             else
             {
                 id = string.Empty;
             }
         }
-        
+
 #endif
-
     }
-
 
     public enum SoundType
     {

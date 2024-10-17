@@ -15,10 +15,8 @@ public class SerializeFieldDictionaryDrawer : PropertyDrawer
         // Kiểm tra keys và values có tồn tại không
         if (keys == null || values == null)
         {
-            EditorGUI.LabelField(position, label.text, "Missing keys or values property" +
-                                                       "\n" +
-                                                       "or keys or values is object or type.");
-            EditorGUI.EndProperty();
+            EditorGUI.LabelField(position, label.text, "Missing keys or values is object or type.");
+            EditorGUI.EndProperty();    
             return;
         }
           

@@ -1,0 +1,22 @@
+{
+    "name": "OSKFramework.Example",
+    "rootNamespace": "",
+    "references": [
+        "Unity.TextMeshPro",
+        "CustomInspector",
+        "DOTween.Modules",
+        "CandyCoded.HapticFeedback",
+        "PlayerPrefsEditor",
+        "PlayerPrefsEditor.Editor",
+        "OSK.Framework.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
