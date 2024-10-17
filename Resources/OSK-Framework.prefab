@@ -136,7 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetFrameRate: 60
   vSyncCount: 0
-  languageCodeDefault: 10
+  languageDefault: 10
   settingsDefault:
     isMusicOnDefault: 1
     isSoundOnDefault: 1
@@ -318,9 +318,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d216cdb3942dff344b006f028052e5e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentLanguage: English
-  excelFilePath: Assets/Localization.xlsx
-  outputCsvPath: Assets/_Project/Resources/Localization/
+  currentLanguage: 10
+  outputCsvPath: Assets/_Project/Resources/Localization/Localization.csv
   pathLoadFileCsv: Localization/Localization
 --- !u!1 &3420730635210795504
 GameObject:

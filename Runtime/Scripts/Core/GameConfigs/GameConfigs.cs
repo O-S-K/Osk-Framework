@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
@@ -11,7 +12,7 @@ namespace OSK
         public int targetFrameRate = 60;
         public int vSyncCount = 0;
 
-        public SystemLanguage languageCodeDefault = SystemLanguage.English;
+        public SystemLanguage languageDefault = SystemLanguage.English;
         public Settings settingsDefault;
 
         public string GetVersion()

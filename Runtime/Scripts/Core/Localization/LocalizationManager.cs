@@ -22,19 +22,18 @@ namespace OSK
     public class LocalizationManager : GameFrameworkComponent
     {
         private Dictionary<string, string> _localizedText = new Dictionary<string, string>();
-        public string currentLanguage = "English";
-        public string excelFilePath = "Assets/Localization.xlsx";
+        public SystemLanguage currentLanguage = SystemLanguage.English;
         public string outputCsvPath = "Assets/_Project/Resources/Localization/Localization";
         public string pathLoadFileCsv = "Localization/Localization";
         private bool isSetDefaultLanguage = false;
-        
-        
+
+
         public void SetLanguageAppSystem()
         {
-            SetLanguage(Application.systemLanguage.ToString());
+            SetLanguage(Application.systemLanguage);
         }
 
-        public void SetLanguage(string languageCode)
+        public void SetLanguage(SystemLanguage languageCode)
         {
             isSetDefaultLanguage = true;
             LoadLocalizationData(languageCode);
@@ -50,12 +49,6 @@ namespace OSK
 
         public void SwitchLanguage(SystemLanguage language)
         {
-            SetLanguage(language.ToString());
-            UpdateAllText();
-        }
-
-        public void SwitchLanguage(string language)
-        {
             SetLanguage(language);
             UpdateAllText();
         }
@@ -70,13 +63,13 @@ namespace OSK
             }
         }
 
-        public string GetCurrentLanguage()
+        public SystemLanguage GetCurrentLanguage()
         {
             return currentLanguage;
         }
 
 
-        private void LoadLocalizationData(string languageCode)
+        private void LoadLocalizationData(SystemLanguage languageCode)
         {
             TextAsset textFile = Resources.Load<TextAsset>(pathLoadFileCsv);
             if (textFile == null)
@@ -93,7 +86,7 @@ namespace OSK
 
             // Find the index of the language code in the CSV header
             string[] headers = lines[0].Split(',');
-            int languageColumnIndex = Array.IndexOf(headers, languageCode);
+            int languageColumnIndex = Array.IndexOf(headers, languageCode.ToString());
 
             if (languageColumnIndex == -1)
             {
@@ -121,6 +114,7 @@ namespace OSK
                     Logg.LogWarning($"Invalid or missing data at line {i + 1} in localization file.");
                 }
             }
+
             Logg.Log($"Load localization data for language: {languageCode}", ColorCustom.Green, 15);
         }
 
@@ -155,8 +149,8 @@ namespace OSK
         }
 
         private void SetLanguageDefault()
-        {   
-            SetLanguage("English");
+        {
+            SetLanguage(Main.Configs.languageDefault);
         }
 
         public string GetKey(string key)

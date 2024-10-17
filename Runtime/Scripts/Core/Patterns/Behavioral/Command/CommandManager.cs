@@ -6,7 +6,7 @@ namespace OSK
 {
     public class CommandManager : GameFrameworkComponent
     {
-        private Dictionary<string, Stack<ICommand>> _commandHistory = new Dictionary<string, Stack<ICommand>>();
+        [SerializeReference] private Dictionary<string, Stack<ICommand>> _commandHistory = new();
 
         public void Create(string commandName, ICommand command)
         {

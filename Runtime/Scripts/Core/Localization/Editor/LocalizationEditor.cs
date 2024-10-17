@@ -27,10 +27,6 @@ namespace OSK
             // {
             //     ConvertExcelToCsv();
             // }
-            if (GUILayout.Button("Open Excel File"))
-            {
-                OpenExcelFile();
-            }
             if (GUILayout.Button("Open CSV File"))
             {
                 OpenCsvFile();
@@ -63,12 +59,12 @@ namespace OSK
 
         private void OpenExcelFile()
         {
-            UnityEditor.EditorUtility.RevealInFinder(localization.excelFilePath);
+            // UnityEditor.EditorUtility.RevealInFinder(localization.excelFilePath);
         }
 
         private void OpenCsvFile()
         {
-            UnityEditor.EditorUtility.RevealInFinder(localization.outputCsvPath + "Localization.csv");
+            UnityEditor.EditorUtility.RevealInFinder(localization.outputCsvPath);
         }
     }
 }
