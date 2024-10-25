@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    [DefaultExecutionOrder(-998)]
+    [DefaultExecutionOrder(-1001)]
     public class GameFrameworkComponent : MonoBehaviour
     {
         protected virtual void Awake()

@@ -8,12 +8,12 @@ namespace OSK
 {
     public class LocalizedText : MonoBehaviour
     {
-        public string key;
-        public bool isUpdateOnStart = true;
-
+        [SerializeField] private string key;
+        [SerializeField] private bool isUpdateOnStart = true;
+        [SerializeField, ReadOnly] private SystemLanguage currentLanguage;
         private object textComponent;
 
-        private void Start()
+        private void Awake()
         {
             textComponent = GetComponent<Text>() ??
                             (object)GetComponent<TextMeshPro>() ??
@@ -22,7 +22,8 @@ namespace OSK
 
             if (textComponent == null)
             {
-                Debug.LogWarning("No suitable text component found on " + gameObject.name);
+                Logg.LogWarning("No suitable text component found on " + gameObject.name);
+                return;
             }
 
             if (isUpdateOnStart)
@@ -31,9 +32,26 @@ namespace OSK
             }
         }
 
+        private void OnEnable()
+        {
+            if (currentLanguage != Main.Localization.GetCurrentLanguage)
+            {
+                currentLanguage = Main.Localization.GetCurrentLanguage;
+                UpdateText();
+            }
+
+            Main.Observer.Add("UpdateLanguage", UpdateText);
+        }
+
+        private void OnDisable()
+        {
+            Main.Observer.Remove("UpdateLanguage", UpdateText);
+        }
+
 #if UNITY_EDITOR
         public SystemLanguage language;
         public bool isOnValidate = false;
+
         private void OnValidate()
         {
             if (isOnValidate)
@@ -41,7 +59,7 @@ namespace OSK
                 UpdateText();
             }
         }
-        
+
         [Button]
         private void CheckKeyInLocalization()
         {
@@ -50,11 +68,12 @@ namespace OSK
                 Logg.LogError("Key is empty");
                 return;
             }
+
             CheckKeyOnFile();
         }
 
         private string CheckKeyOnFile()
-        { 
+        {
             var path = FindObjectOfType<LocalizationManager>().pathLoadFileCsv;
             var textAsset = Resources.Load<TextAsset>(path);
             if (textAsset == null)
@@ -62,7 +81,7 @@ namespace OSK
                 Logg.LogError("Not found localization file: " + path);
                 return null;
             }
-            
+
             var lines = textAsset.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
@@ -73,14 +92,20 @@ namespace OSK
                     return split[1];
                 }
             }
+
             Logg.Log($"Key Not found: {key}", ColorCustom.Red, 15);
-            return  null;
+            return null;
         }
 #endif
 
-        public void UpdateText()
+        private void UpdateText(object data = null)
         {
+            if (textComponent == null)
+                return;
+
             string localizedText = Main.Localization.GetKey(key);
+            if (string.IsNullOrEmpty(localizedText))
+                return;
 
             if (textComponent is Text uiText)
             {
@@ -91,7 +116,7 @@ namespace OSK
                 tmpText.text = localizedText;
             }
         }
-        
+
         public void SetText(string text)
         {
             if (textComponent is Text uiText)

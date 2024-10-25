@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using OSK;
 using UnityEngine;
 using UnityEditor;
@@ -64,3 +65,4 @@ namespace OSK
         }
     }
 }
+#endif

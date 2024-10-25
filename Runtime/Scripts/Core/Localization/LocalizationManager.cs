@@ -21,52 +21,61 @@ namespace OSK
 {
     public class LocalizationManager : GameFrameworkComponent
     {
-        private Dictionary<string, string> _localizedText = new Dictionary<string, string>();
-        public SystemLanguage currentLanguage = SystemLanguage.English;
+        [SerializeReference] private Dictionary<string, string> _localizedText = new Dictionary<string, string>();
+        [ReadOnly] public List<SystemLanguage> listLanguagesCvs = new List<SystemLanguage>();
+        private SystemLanguage currentLanguage = SystemLanguage.English;
+
         public string outputCsvPath = "Assets/_Project/Resources/Localization/Localization";
         public string pathLoadFileCsv = "Localization/Localization";
         private bool isSetDefaultLanguage = false;
 
 
-        public void SetLanguageAppSystem()
-        {
-            SetLanguage(Application.systemLanguage);
-        }
-
+        
         public void SetLanguage(SystemLanguage languageCode)
         {
             isSetDefaultLanguage = true;
             LoadLocalizationData(languageCode);
             currentLanguage = languageCode;
             Logg.Log($"Set language to: {languageCode}", ColorCustom.Green, 15);
-
-            // debug all keys
-            // foreach (var key in _localizedText.Keys)
-            // {
-            //     Logg.LogFormat("Key: {0} - Value: {1}", key, _localizedText[key], ColorCustom.Green);
-            // }
         }
 
+        
         public void SwitchLanguage(SystemLanguage language)
         {
             SetLanguage(language);
-            UpdateAllText();
+            Main.Observer.Notify("UpdateLanguage");
+        }
+        
+        public void SetLanguageConfigs()
+        {
+            SetLanguage(Main.Configs.languageDefault);
         }
 
-        [Button]
-        private void UpdateAllText()
+
+
+        public SystemLanguage GetCurrentLanguage => currentLanguage;
+        public SystemLanguage[] GetAllLanguages => listLanguagesCvs.ToArray();
+
+
+        public string GetKey(string key)
         {
-            var texts = FindObjectsOfType<LocalizedText>();
-            foreach (var text in texts)
+            if (isSetDefaultLanguage == false)
             {
-                text.UpdateText();
+                Logg.LogError("Please set default language first.");
+                return "";
             }
+
+            if (_localizedText.TryGetValue(key, out var value))
+            {
+                return value;
+            }
+
+            Logg.LogError($"Key '{key}' not found in localization data.");
+            return "";
         }
 
-        public SystemLanguage GetCurrentLanguage()
-        {
-            return currentLanguage;
-        }
+
+        #region Private
 
 
         private void LoadLocalizationData(SystemLanguage languageCode)
@@ -95,30 +104,53 @@ namespace OSK
             }
 
             // Start from the second line to skip the header
-            for (int i = 1; i < lines.Length; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
                 // Handle CSV values with commas or line breaks inside quotes
                 string[] columns = ParseCsvLine(lines[i]);
 
-                // Check if the column exists and ensure the first column (key) is present
-                if (columns.Length > languageColumnIndex && !string.IsNullOrWhiteSpace(columns[0]))
+                if (i == 0)
                 {
-                    string key = columns[0].Trim();
-                    string value = columns[languageColumnIndex].Trim();
-
-                    // Store the key-value pair in the dictionary
-                    _localizedText[key] = value;
+                    GetListLanguageCsv(columns);
                 }
                 else
                 {
-                    Logg.LogWarning($"Invalid or missing data at line {i + 1} in localization file.");
+                    GetValueFormLanguage(columns, languageColumnIndex, i);
                 }
             }
 
             Logg.Log($"Load localization data for language: {languageCode}", ColorCustom.Green, 15);
         }
 
-        // Helper function to parse a CSV line while handling commas inside quotes
+        private void GetValueFormLanguage(string[] columns, int languageColumnIndex, int i)
+        {
+            // Check if the column exists and ensure the first column (key) is present
+            if (columns.Length > languageColumnIndex && !string.IsNullOrWhiteSpace(columns[0]))
+            {
+                string key = columns[0].Trim();
+                string value = columns[languageColumnIndex].Trim();
+
+                // Store the key-value pair in the dictionary
+                _localizedText[key] = value;
+            }
+            else
+            {
+                Logg.LogWarning($"Invalid or missing data at line {i + 1} in localization file.");
+            }
+        }
+
+        private void GetListLanguageCsv(string[] columns)
+        {
+            for (int j = 0; j < columns.Length; j++)
+            {
+                if (Enum.TryParse(columns[j], out SystemLanguage language))
+                {
+                    if (!listLanguagesCvs.Contains(language))
+                        listLanguagesCvs.Add(language);
+                }
+            }
+        }
+
         private string[] ParseCsvLine(string line)
         {
             List<string> result = new List<string>();
@@ -148,28 +180,6 @@ namespace OSK
             return result.ToArray();
         }
 
-        private void SetLanguageDefault()
-        {
-            SetLanguage(Main.Configs.languageDefault);
-        }
-
-        public string GetKey(string key)
-        {
-            if (isSetDefaultLanguage == false)
-            {
-                Logg.LogError("Please set default language first.");
-                return "";
-            }
-
-            if (_localizedText.TryGetValue(key, out var key1))
-            {
-                return key1;
-            }
-            else
-            {
-                Logg.LogError($"Key '{key}' not found in localization file.");
-                return "";
-            }
-        }
+        #endregion
     }
 }

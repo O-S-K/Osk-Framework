@@ -318,6 +318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d216cdb3942dff344b006f028052e5e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  listLanguagesCvs: 
   currentLanguage: 10
   outputCsvPath: Assets/_Project/Resources/Localization/Localization.csv
   pathLoadFileCsv: Localization/Localization
@@ -657,7 +658,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2724614125671724400}
-  - component: {fileID: 2531725416022114096}
+  - component: {fileID: 357859535130803287}
   m_Layer: 0
   m_Name: Observer
   m_TagString: Untagged
@@ -680,7 +681,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6288512043441239631}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2531725416022114096
+--- !u!114 &357859535130803287
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -8,12 +8,9 @@ namespace OSK
     [RequireComponent(typeof(UITransition))]
     public class Popup : MonoBehaviour
     { 
-        public bool isOverlay = false;
-
-        [Header("Settings")] 
-        [SerializeField] private bool disableWhenNextPopupOpens;
+        public bool isOverlay = false; 
         [Header("Events")] 
-        [SerializeField] private bool showEvent;
+        [SerializeField] protected bool showEvent;
 
         [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _afterInitialized;
         [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _beforeOpened;
@@ -21,8 +18,8 @@ namespace OSK
         [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _beforeClosed;
         [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _afterClosed;
 
-        private UITransition _uiTransition;
-        private PopupManager _popupManager;
+        protected UITransition _uiTransition;
+        protected PopupManager _popupManager;
 
         public bool IsShowing => _isShowing;
         [ShowInInspector, ReadOnly] private bool _isShowing;

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -97,3 +98,4 @@ public class SerializeFieldDictionaryDrawer : PropertyDrawer
         return lineHeight * (keys.arraySize + 5); // +1 cho nhãn kích thước, +1 cho nút thêm/xóa
     }
 }
+#endif

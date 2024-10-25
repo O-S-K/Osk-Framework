@@ -26,7 +26,12 @@ namespace OSK
     
         public T Spawn<T>(string groupName, T prefab, int size = 1) where T : Object
         {
+#if UNITY_EDITOR
+            var group = GetOrCreateGroup(groupName);
+            group.transform.position = new Vector2(0, -5.5f);
+#else
             GetOrCreateGroup(groupName);
+#endif
             if (!IsGroupAndPrefabExist(groupName, prefab))
             {
                 WarmPool(groupName, prefab, size);
