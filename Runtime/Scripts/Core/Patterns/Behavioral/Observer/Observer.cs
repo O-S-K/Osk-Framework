@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    public class Observer : GameFrameworkComponent
+    public class Observer : GameFrameworkComponent 
     {
         public Dictionary<string, HashSet<CallBackObserver>> dictObserver = new();
         public delegate void CallBackObserver(object data);
