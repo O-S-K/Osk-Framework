@@ -9,6 +9,7 @@ namespace OSK
     /// </summary>
     public partial class Main
     {
+        public static ServiceLocator Service { get; private set; }
         public static Observer Observer { get; private set; }
         public static EventBus EventBus { get; private set; }
         public static FSMManager Fsm { get; private set; }
@@ -40,6 +41,7 @@ namespace OSK
 
         public static void InitComponents()
         {
+            Service = Main.GetFrameworkComponent<ServiceLocator>();
             Save = Main.GetFrameworkComponent<SaveManager>();
             Data = Main.GetFrameworkComponent<DataManager>();
             Configs = Main.GetFrameworkComponent<GameConfigs>();

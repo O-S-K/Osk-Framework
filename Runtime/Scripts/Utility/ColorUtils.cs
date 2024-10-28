@@ -55,6 +55,7 @@ namespace OSK
             return "#" + color.r.ToString("X2") + color.g.ToString("X2") + color.b.ToString("X2");
         }
 
+        // https://gist.github.com/darktable/7774281e1c90779772267e12197b3116
         public static Color GetColor(ColorCustom colorCustom)
         {
             switch (colorCustom)

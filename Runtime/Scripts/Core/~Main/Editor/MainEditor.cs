@@ -15,6 +15,7 @@ namespace OSK
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Static References", EditorStyles.boldLabel);
 
+            DrawStaticFieldCheck("ServiceLocator", Main.Service);
             DrawStaticFieldCheck("Observer", Main.Observer);
             DrawStaticFieldCheck("EventBus", Main.EventBus);
             DrawStaticFieldCheck("State", Main.Fsm);

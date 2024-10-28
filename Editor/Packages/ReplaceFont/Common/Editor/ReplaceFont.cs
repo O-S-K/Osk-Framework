@@ -11,7 +11,7 @@ namespace Plugins
 {
     public static class ReplaceFont
     {
-        [MenuItem("Tools/Project/Replace Font")]
+        [MenuItem("OSK-Framework/Tools/Replace Font")]
         private static void ReplaceFontMenuItem()
         {
             ReplaceFontEditorWindow.ShowWindow();
