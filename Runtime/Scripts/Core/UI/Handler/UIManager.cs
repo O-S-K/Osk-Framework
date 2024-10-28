@@ -1,14 +1,12 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using OSK;
+using CustomInspector;
 using UnityEngine;
 
 namespace OSK
 {
 public class UIManager : GameFrameworkComponent
 {
-    private HUD _hud;
+    [SerializeField, ReadOnly] private HUD _hud;
     public UIMoveEffect ParticleUI =>  _hud.ParticleUI;
     public Canvas GetCanvas =>  _hud.GetCanvas;
     public Camera GetUICamera =>  _hud.GetUICamera;
