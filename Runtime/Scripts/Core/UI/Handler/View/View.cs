@@ -2,14 +2,26 @@ using System;
 using CustomInspector;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
+    public enum EViewType
+    {
+        None,
+        Popup,
+        Overlay,
+        Screen
+    }
+    
     [RequireComponent(typeof(UITransition))]
     public class View : MonoBehaviour
     {
-        public int index;
+        [Header("View")]
+        public EViewType viewType = EViewType.Popup;
+        public int depth;
         public bool isOverlay = false; 
+        
         [Header("Events")] 
         [SerializeField] protected bool showEvent;
 

@@ -4,21 +4,21 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using CustomInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
     [System.Serializable]
     public class DataViewUI
     {
-        public string index;
+        public string depth;
         public View view;
     }
-    
+
     [CreateAssetMenu(fileName = "ListViewSO", menuName = "OSK/UI/ListViewSO")]
     public class ListViewSO : ScriptableID
-    { 
-        [TableList] [SerializeField]
-        private List<DataViewUI> _listView = new List<DataViewUI>();
+    {
+        [TableList] [SerializeField] private List<DataViewUI> _listView = new List<DataViewUI>();
         public List<DataViewUI> Views => _listView;
 
 #if UNITY_EDITOR
@@ -50,12 +50,28 @@ namespace OSK
                 var popup = listViews[i];
                 var data = new DataViewUI();
                 data.view = popup;
-                data.index = data.view.index.ToString();
+
+                switch (data.view.viewType)
+                {
+                    case EViewType.None:
+                        data.depth = (0 + data.view.depth).ToString();
+                        break;
+                    case EViewType.Popup:
+                        data.depth = (100 + data.view.depth).ToString();
+                        break;
+                    case EViewType.Overlay:
+                        data.depth = (1000 + data.view.depth).ToString();
+                        break;
+                    case EViewType.Screen:
+                        data.depth = (-100 + data.view.depth).ToString();
+                        break;
+                }
+
                 _listView.Add(data);
             }
-            
+
             // sort by index
-            _listView = _listView.OrderBy(x => int.Parse(x.index)).ToList();
+            _listView = _listView.OrderBy(x => int.Parse(x.depth)).ToList();
         }
 #endif
     }
