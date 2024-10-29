@@ -9,6 +9,8 @@ namespace OSK
         [SerializeReference] public Dictionary<Object, ObjectPool<Object>> instanceLookup = new();
         private Dictionary<string, GameObject> groupObjects = new();
 
+        public override void OnInit() {}
+
         public void Preload(string groupName, Object prefab, int size)
         {
             WarmPool(groupName, prefab, size);

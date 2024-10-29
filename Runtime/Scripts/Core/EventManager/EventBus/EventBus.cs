@@ -23,6 +23,10 @@ namespace OSK
         private Dictionary<Type, List<Action<GameEvent>>>
             _subscribers = new Dictionary<Type, List<Action<GameEvent>>>();
 
+        public override void OnInit()
+        { 
+        }
+        
         public void Subscribe<T>(Action<T> callback) where T : GameEvent
         {
             Type eventType = typeof(T);

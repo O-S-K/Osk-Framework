@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace OSK
 {
@@ -11,12 +10,12 @@ namespace OSK
         Quit,
     }
 
-    [DefaultExecutionOrder(-999)]
+    [DefaultExecutionOrder(-1000)]
     public partial class Main : MonoBehaviour
     {
         public static readonly GameFrameworkLinkedList<GameFrameworkComponent> SGameFrameworkComponents = new();
 
-        public static T GetFrameworkComponent<T>() where T : GameFrameworkComponent
+        public static T GetModule<T>() where T : GameFrameworkComponent
         {
             return (T)Get(typeof(T));
         }
@@ -35,7 +34,7 @@ namespace OSK
             }
 
             return null;
-        }
+        } 
 
         public static GameFrameworkComponent Get(string typeName)
         {
@@ -53,7 +52,7 @@ namespace OSK
 
             return null;
         }
-
+         
         public static void Shutdown(ShutdownType shutdownType)
         {
             OSK.Logg.Log($"Shutdown Game Framework ({shutdownType})...");
@@ -104,6 +103,29 @@ namespace OSK
             }
 
             SGameFrameworkComponents.AddLast(gameFrameworkComponent);
+        }
+        
+        internal static void UnRegister(GameFrameworkComponent gameFrameworkComponent)
+        {
+            if (gameFrameworkComponent == null)
+            {
+                OSK.Logg.Log("Game Framework component is invalid.");
+                return;
+            }
+
+            Type type = gameFrameworkComponent.GetType();
+
+            var current = SGameFrameworkComponents.First;
+            while (current != null)
+            {
+                if (current.Value.GetType() == type)
+                {
+                    SGameFrameworkComponents.Remove(current);
+                    return;
+                }
+
+                current = current.Next;
+            }
         }
     }
 }

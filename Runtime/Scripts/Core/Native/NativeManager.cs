@@ -7,6 +7,10 @@ namespace OSK
 {
     public class NativeManager : GameFrameworkComponent
     {
+        public override void OnInit()
+        { 
+        }
+        
         public void CaptureScreenshot()
         {
             ScreenShot.CaptureScreenshot(this);

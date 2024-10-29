@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 namespace OSK
 {
-    [CustomEditor(typeof(HUD))]
+    [CustomEditor(typeof(RootUI))]
     public class UIManagerEditor : Editor
     {
-        private HUD uiManager;
+        private RootUI uiManager;
 
         private void OnEnable()
         {
-            uiManager = (HUD)target;
+            uiManager = (RootUI)target;
         }
 
         public override void OnInspectorGUI()
@@ -21,30 +21,16 @@ namespace OSK
 
             EditorGUILayout.Space();
             EditorGUILayout.Space();
-            
-            // spam all the screens and popups
-            if (GUILayout.Button("Show All Views"))
+
+            if (GUILayout.Button("Select Data SO"))
             {
-                SpawnAllViews();
+                FindViewDataSOAssets();
             }
-            EditorGUILayout.Space();
-            if(GUILayout.Button("Clear All Views"))
-            {
-                CleanAllViews();
-            }
-            EditorGUILayout.Space();
 
-
-            // Draw background for the screens section
-            DrawBackground(Color.red);
-            EditorGUILayout.LabelField("--- List Screens ---", EditorStyles.boldLabel);
-            DisplayScreens();
-            EditorGUILayout.Space();
-
-            // Draw background for the popups section
+            // Draw background for the views section
             DrawBackground(Color.green);
-            EditorGUILayout.LabelField("--- List Popups  ---", EditorStyles.boldLabel);
-            DisplayPopups();
+            EditorGUILayout.LabelField("--- List Views  ---", EditorStyles.boldLabel);
+            DisplayViews();
 
             if (GUI.changed)
             {
@@ -52,27 +38,36 @@ namespace OSK
             }
         }
 
-        private void CleanAllViews()
+        private void FindViewDataSOAssets()
         {
-            
-        }
-
-        private void SpawnAllViews()
-        {
-            List<UIScreen> screens = uiManager.GetScreenManager.ListUIPopupSo.UIScreens;
-            foreach (var screen in screens)
+            string[] guids = AssetDatabase.FindAssets("t:ListViewSO");
+            if (guids.Length == 0)
             {
-                GameObject s = PrefabUtility.InstantiatePrefab(screen.gameObject) as GameObject;
-                s.transform.SetParent( uiManager.GetScreenManager.transform);
-                s.transform.localPosition = Vector3.zero;
+                Debug.LogError("No ViewData found in the project.");
+                return;
             }
-                
-            List<Popup> popups = uiManager.GetPopupManager.ListUIPopupSo.Popups;
-            foreach (var popup in popups)
+
+            List<ListViewSO> viewDatas = new List<ListViewSO>();
+            foreach (var guid in guids)
             {
-                GameObject p = PrefabUtility.InstantiatePrefab(popup.gameObject) as GameObject;
-                p.transform.SetParent(uiManager.GetPopupManager.transform);
-                p.transform.localPosition = Vector3.zero;
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                ListViewSO v = AssetDatabase.LoadAssetAtPath<ListViewSO>(path);
+                viewDatas.Add(v);
+            }
+
+            if (viewDatas.Count == 0)
+            {
+                Debug.LogError("No ViewData found in the project.");
+                return;
+            }
+            else
+            {
+                foreach (ListViewSO v in viewDatas)
+                {
+                    Debug.Log("ViewData found: " + v.name);
+                    Selection.activeObject = v;
+                    EditorGUIUtility.PingObject(v);
+                }
             }
         }
 
@@ -82,58 +77,34 @@ namespace OSK
             EditorGUI.DrawRect(rect, color);
         }
 
-        private void DisplayScreens()
+        private void DisplayViews()
         {
             if (!Application.isPlaying)
                 return;
 
-            List<UIScreen> screens = uiManager.GetScreenManager.GetAllScreens();
-            foreach (var screen in screens)
+            List<View> views = uiManager.ListViews.GetAll();
+            foreach (var _view in views)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(screen.name, GUILayout.Width(400));
+                EditorGUILayout.LabelField(_view.name, GUILayout.Width(400));
 
-                bool isVisible = uiManager.GetScreenManager.GetScreen(screen).IsShowing;
+                bool isVisible = uiManager.ListViews.Get(_view).IsShowing;
+
                 GUI.enabled = !isVisible;
-                if (GUILayout.Button("Show"))
+                if (GUILayout.Button("Open"))
                 {
-                    uiManager.GetScreenManager.Show(screen);
+                    uiManager.ListViews.Open(_view, true);
                 }
 
                 GUI.enabled = isVisible;
                 if (GUILayout.Button("Hide"))
                 {
-                    uiManager.GetScreenManager.Hide(screen);
+                    uiManager.ListViews.Hide(_view);
                 }
 
-                GUI.enabled = true;
-                EditorGUILayout.EndHorizontal();
-            }
-        }
-
-        private void DisplayPopups()
-        {
-            if (!Application.isPlaying)
-                return;
-
-            List<Popup> popups = uiManager.GetPopupManager.GetAllPopups();
-            foreach (var popup in popups)
-            {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(popup.name, GUILayout.Width(400));
-
-                bool isVisible = uiManager.GetPopupManager.Get(popup).IsShowing;
-
-                GUI.enabled = !isVisible;
-                if (GUILayout.Button("Show"))
+                if (GUILayout.Button("Delete"))
                 {
-                    uiManager.GetPopupManager.Show(popup, true);
-                }
-
-                GUI.enabled = isVisible;
-                if (GUILayout.Button("Hide"))
-                {
-                    uiManager.GetPopupManager.Hide(popup);
+                    uiManager.ListViews.Delete(_view);
                 }
 
                 GUI.enabled = true;

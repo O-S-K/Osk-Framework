@@ -9,6 +9,8 @@ namespace OSK
         public Dictionary<string, HashSet<CallBackObserver>> dictObserver = new();
         public delegate void CallBackObserver(object data);
 
+        public override void OnInit() {}
+
         public void Add(string topicName, CallBackObserver callbackObserver)
         {
             var listObserver = CreateListObserverForTopic(topicName);

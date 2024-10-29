@@ -6,8 +6,9 @@ using UnityEngine.Events;
 namespace OSK
 {
     [RequireComponent(typeof(UITransition))]
-    public class Popup : MonoBehaviour
-    { 
+    public class View : MonoBehaviour
+    {
+        public int index;
         public bool isOverlay = false; 
         [Header("Events")] 
         [SerializeField] protected bool showEvent;
@@ -19,19 +20,19 @@ namespace OSK
         [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _afterClosed;
 
         protected UITransition _uiTransition;
-        protected PopupManager _popupManager;
+        protected ViewManager ViewManager;
 
         public bool IsShowing => _isShowing;
         [ShowInInspector, ReadOnly] private bool _isShowing;
  
 
-        public virtual void Initialize(PopupManager popupManager)
+        public virtual void Initialize(ViewManager viewManager)
         {
             gameObject.SetActive(false);
             if(isOverlay)
                 transform.SetTopSibling();
             _isShowing = false;
-            _popupManager = popupManager;
+            ViewManager = viewManager;
             _uiTransition = GetComponent<UITransition>();
             _uiTransition.Initialize();
             _afterInitialized.Invoke();
@@ -51,7 +52,7 @@ namespace OSK
             }
         }
 
-        public virtual void Show()
+        public virtual void Open(object data = null)
         {
             _isShowing = true;
             _beforeOpened.Invoke();
@@ -75,7 +76,7 @@ namespace OSK
             _uiTransition.CloseTrans(() =>
             {
                 gameObject.SetActive(false);
-                _popupManager.RemovePopup(this);
+                ViewManager.RemovePopup(this);
                 _afterClosed.Invoke();
             });
         }

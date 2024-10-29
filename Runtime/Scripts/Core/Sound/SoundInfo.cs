@@ -56,7 +56,7 @@ namespace OSK
 
     public enum SoundType
     {
-        SFX,
-        Music
+        Music = 0,
+        SFX = 1
     }
 }

@@ -15,7 +15,10 @@ namespace OSK
         private readonly Dictionary<Type, IService> k_Services = new Dictionary<Type, IService>();
         private readonly Dictionary<Type, Action<IService>> k_Callbacks = new();
         private readonly Dictionary<Delegate, Action<IService>> k_RegisteredCallbacks = new();
+ 
+        public override void OnInit() {}
 
+        
         public bool Register<T>(T service) where T : class, IService
         {
             var type = typeof(T);

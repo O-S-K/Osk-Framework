@@ -3,15 +3,22 @@ using System.Collections.Generic;
 using OSK;
 using UnityEngine;
 
-public class HomeUIExample : UIScreen
+public class HomeUIExample : View
 {
-    public override void Initialize()
+    public override void Open(object data = null)
     {
-        Debug.Log("HomeUIExample Initialize");
+        base.Open(data);
+        Debug.Log("HomeUIExample OnShow");
     }
-    
-    public void StartIngame()
+
+    public override void Hide()
     {
-        Main.UI.ShowScreen<IngameUIExample>();
+        base.Hide();
+        Debug.Log("HomeUIExample OnHide");
+    }
+
+    public void OnClickButton()
+    {
+        Debug.Log("HomeUIExample OnClickButton");
     }
 }

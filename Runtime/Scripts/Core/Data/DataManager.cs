@@ -9,6 +9,10 @@ namespace OSK
         // Data store
         [SerializeField] private SerializeFieldDictionary<Type, object> _dataStore = new();
 
+        
+        public override void OnInit() {}
+
+        
         // Add data to the data store
         public void Add<T>(T data)
         {

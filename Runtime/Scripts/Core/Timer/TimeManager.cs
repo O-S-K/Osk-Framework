@@ -7,6 +7,8 @@ namespace OSK
 {
     public class TimeManager : GameFrameworkComponent
     {
+        public override void OnInit() {}
+
         // Lists to keep track of all active timers
         [ShowInInspector, ReadOnly] private List<Timer> updateTimers = new List<Timer>();
         [ShowInInspector, ReadOnly] private List<Timer> fixedUpdateTimers = new List<Timer>();

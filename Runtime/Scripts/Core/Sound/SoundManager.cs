@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using CustomInspector;
@@ -16,39 +17,29 @@ namespace OSK
     {
         private string keyPoolSound = "AudioSource";
 
-        public List<SoundInfo> soundInfos = new List<SoundInfo>();
+        [SerializeField, ReadOnly] private List<SoundInfo> soundInfos = new List<SoundInfo>();
         private List<PlayingSound> musicInfos = new List<PlayingSound>();
         public List<SoundInfo> GetSoundInfos => soundInfos;
         public List<PlayingSound> GetMusicInfos => musicInfos;
-
-
-        [SerializeField, Required] 
-        private SoundData soundDataSO;
         private AudioSource soundObject;
-        
+
         public bool isMusic { get; private set; }
         public bool isSoundEffects { get; private set; }
-
-        protected override void Awake()
+          
+        public override void OnInit()
         {
-            base.Awake();
-
-            soundObject = new GameObject().AddComponent<AudioSource>();
+            soundObject = new GameObject("AudioSource").AddComponent<AudioSource>();
             soundObject.transform.parent = transform;
             musicInfos = new List<PlayingSound>();
 
             isMusic = true;
-            isSoundEffects = true;
-
-            SoundData soundData = soundDataSO;
-            //SoundData soundData = Main.Save.SOData.Get<SoundData>();
-            if (soundData != null)
-            { 
-                soundInfos = soundData.ListSoundInfos;
-            }
-            else
+            isSoundEffects = true; 
+            
+            soundInfos = Main.Configs.data.soundDataSo.ListSoundInfos;
+            if (soundInfos == null || soundInfos.Count == 0)
             {
-                OSK.Logg.LogWarning("SoundData is not assigned in SoundManager.");
+                OSK.Logg.LogError("SoundInfos is empty");
+                return;
             }
         }
 
@@ -81,7 +72,7 @@ namespace OSK
             Play(id, false, 0, 0);
         }
 
-        
+
         public void Play(string id, bool loop)
         {
             Play(id, loop, 0, 0);
@@ -157,7 +148,7 @@ namespace OSK
             musicInfos.Add(new PlayingSound
                 { audioSource = audioSource, soundInfo = new SoundInfo { audioClip = audioClip } });
         }
-        
+
         public void ReleaseDelayedAudioSource(AudioSource audioSource, float delay)
         {
             StartCoroutine(ReleaseAudioSource(audioSource, delay));
@@ -239,7 +230,7 @@ namespace OSK
                 }
             }
         }
-        
+
         public void SetStatusSoundType(SoundType type, bool isOn)
         {
             switch (type)
@@ -334,7 +325,7 @@ namespace OSK
         private AudioSource CreateAudioSource(string id)
         {
             var audioSource = Main.Pool.Spawn(keyPoolSound, soundObject);
-            if (Camera.main != null) 
+            if (Camera.main != null)
                 audioSource.transform.position = Camera.main.transform.position;
             audioSource.name = id;
             return audioSource;

@@ -28,41 +28,54 @@ namespace OSK
         public static EntityManager Entity { get; private set; }
         public static TimeManager Time { get; private set; }
         public static NativeManager Native { get; private set; }
-
-
         public bool isDestroyingOnLoad = false;
-
+ 
         public void Awake()
         {
             if (isDestroyingOnLoad)
                 DontDestroyOnLoad(gameObject);
             InitComponents();
+            InitDataComponents();
         }
+        
 
-        public static void InitComponents()
+        private static void InitComponents()
         {
-            Service = Main.GetFrameworkComponent<ServiceLocator>();
-            Save = Main.GetFrameworkComponent<SaveManager>();
-            Data = Main.GetFrameworkComponent<DataManager>();
-            Configs = Main.GetFrameworkComponent<GameConfigs>();
-            Localization = Main.GetFrameworkComponent<LocalizationManager>();
-            Time = Main.GetFrameworkComponent<TimeManager>();
+            Configs      = Main.GetModule<GameConfigs>();
+            Save         = Main.GetModule<SaveManager>();
+            Data         = Main.GetModule<DataManager>();
+            Localization = Main.GetModule<LocalizationManager>();
+            Time         = Main.GetModule<TimeManager>();
 
-            Pool = Main.GetFrameworkComponent<PoolManager>();
-            Observer = Main.GetFrameworkComponent<Observer>();
-            EventBus = Main.GetFrameworkComponent<EventBus>();
-            Fsm = Main.GetFrameworkComponent<FSMManager>();
-            Command = Main.GetFrameworkComponent<CommandManager>();
+            Service      = Main.GetModule<ServiceLocator>();
+            Pool         = Main.GetModule<PoolManager>();
+            Observer     = Main.GetModule<Observer>();
+            EventBus     = Main.GetModule<EventBus>();
+            Fsm          = Main.GetModule<FSMManager>();
+            Command      = Main.GetModule<CommandManager>();
 
-            Scene = Main.GetFrameworkComponent<SceneManager>();
-            Res = Main.GetFrameworkComponent<ResourceManager>();
-            Network = Main.GetFrameworkComponent<NetworkManager>();
-            WebRequest = Main.GetFrameworkComponent<WebRequestManager>();
-            UI = Main.GetFrameworkComponent<UIManager>();
-            Sound = Main.GetFrameworkComponent<SoundManager>();
-            Entity = Main.GetFrameworkComponent<EntityManager>();
-            Native = Main.GetFrameworkComponent<NativeManager>();
+            Scene        = Main.GetModule<SceneManager>();
+            Res          = Main.GetModule<ResourceManager>();
+            Network      = Main.GetModule<NetworkManager>();
+            WebRequest   = Main.GetModule<WebRequestManager>();
+            UI           = Main.GetModule<UIManager>();
+            Sound        = Main.GetModule<SoundManager>();
+            Entity       = Main.GetModule<EntityManager>();
+            Native       = Main.GetModule<NativeManager>();
+            
             OSK.Logg.Log("Init Components Done!");
+        }
+         
+        public static void InitDataComponents()
+        {
+            var current = SGameFrameworkComponents.First;
+            while (current != null)
+            {
+                current.Value.OnInit();
+                current = current.Next;
+            }
+            
+            OSK.Logg.Log("Init Data Components Done!");
         }
     }
 }

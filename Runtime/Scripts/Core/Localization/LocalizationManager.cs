@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CustomInspector;
-using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEngine; 
 
 /*
  *
@@ -22,15 +21,14 @@ namespace OSK
     public class LocalizationManager : GameFrameworkComponent
     {
         [SerializeReference] private Dictionary<string, string> _localizedText = new Dictionary<string, string>();
-        [ReadOnly] public List<SystemLanguage> listLanguagesCvs = new List<SystemLanguage>();
+        [ReadOnly, SerializeField] private List<SystemLanguage> listLanguagesCvs = new List<SystemLanguage>();
         private SystemLanguage currentLanguage = SystemLanguage.English;
-
-        public string outputCsvPath = "Assets/_Project/Resources/Localization/Localization";
-        public string pathLoadFileCsv = "Localization/Localization";
+ 
         private bool isSetDefaultLanguage = false;
 
+        public override void OnInit() {}
 
-        
+
         public void SetLanguage(SystemLanguage languageCode)
         {
             isSetDefaultLanguage = true;
@@ -39,18 +37,17 @@ namespace OSK
             Logg.Log($"Set language to: {languageCode}", ColorCustom.Green, 15);
         }
 
-        
+
         public void SwitchLanguage(SystemLanguage language)
         {
             SetLanguage(language);
             Main.Observer.Notify("UpdateLanguage");
         }
-        
+
         public void SetLanguageConfigs()
         {
-            SetLanguage(Main.Configs.languageDefault);
+            SetLanguage(Main.Configs.setting.languageDefault);
         }
-
 
 
         public SystemLanguage GetCurrentLanguage => currentLanguage;
@@ -77,13 +74,18 @@ namespace OSK
 
         #region Private
 
-
         private void LoadLocalizationData(SystemLanguage languageCode)
         {
-            TextAsset textFile = Resources.Load<TextAsset>(pathLoadFileCsv);
+            var path = Main.Configs.path.pathLoadFileCsv;
+            if (path.StartsWith("Resources/"))
+            {
+                path = path["Resources/".Length..];
+            }
+            
+            TextAsset textFile = Resources.Load<TextAsset>(path);
             if (textFile == null)
             {
-                Logg.LogError("Not found localization file: " + pathLoadFileCsv);
+                Logg.LogError("Not found localization file: " + path);
                 return;
             }
 

@@ -89,7 +89,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundInfos: []
-  soundDataSO: {fileID: 11400000, guid: 8d8b5a8503248b14d80c9053c36d83b7, type: 2}
 --- !u!1 &1044508413081937448
 GameObject:
   m_ObjectHideFlags: 0
@@ -136,12 +135,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetFrameRate: 60
   vSyncCount: 0
-  languageDefault: 10
-  settingsDefault:
+  data:
+    listViewS0: {fileID: 11400000, guid: a5af9ad8262be1d4682b1ce1058cc6b7, type: 2}
+    soundDataSo: {fileID: 11400000, guid: 8d8b5a8503248b14d80c9053c36d83b7, type: 2}
+  setting:
     isMusicOnDefault: 1
     isSoundOnDefault: 1
     isVibrationOnDefault: 1
     isCheckInternetDefault: 1
+    languageDefault: 10
+  path:
+    pathLoadFileCsv: Resources/Localization/Localization
 --- !u!1 &2027871856706583842
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,8 +323,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   listLanguagesCvs: 
-  outputCsvPath: Assets/_Project/Resources/Localization/Localization.csv
-  pathLoadFileCsv: Localization/Localization
 --- !u!1 &3420730635210795504
 GameObject:
   m_ObjectHideFlags: 0
@@ -560,6 +562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40585ec21a6bb4448a6e12b732d8578a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rootUI: {fileID: 0}
 --- !u!1 &4544149334598963757
 GameObject:
   m_ObjectHideFlags: 0

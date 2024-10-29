@@ -65,7 +65,14 @@ namespace OSK
 
         private void OpenCsvFile()
         {
-            UnityEditor.EditorUtility.RevealInFinder(localization.outputCsvPath);
+            // find all file Localization.csv in assets
+            string[] files = Directory.GetFiles(Application.dataPath, "Localization.csv", SearchOption.AllDirectories);
+            if(files.Length == 0)
+            {
+                Debug.LogError("Localization.csv not found");
+                return;
+            } 
+            UnityEditor.EditorUtility.RevealInFinder(files[0]);
         }
     }
 }

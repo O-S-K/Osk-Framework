@@ -7,6 +7,8 @@ namespace OSK
 {
     public class WebRequestManager : GameFrameworkComponent
     {
+        public override void OnInit() {}
+
         // GET request
         public void Get(string url, System.Action<string> onSuccess, System.Action<string> onError)
         {

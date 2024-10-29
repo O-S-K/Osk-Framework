@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.Serialization;
 
 namespace OSK
@@ -12,17 +9,15 @@ namespace OSK
         public int targetFrameRate = 60;
         public int vSyncCount = 0;
 
-        public SystemLanguage languageDefault = SystemLanguage.English;
-        public Settings settingsDefault;
+        public DataConfigs data;
+        public Settings setting;
+        public PathConfigs path;
 
-        public string GetVersion()
-        {
-            return Application.version;
-        }
+        public string VersionApp => Application.version;
 
         public void CheckVersion(Action onNewVersion)
         {
-            string currentVersion = GetVersion();
+            string currentVersion = VersionApp;
             string key = "lastVersion";
 
             if (PlayerPrefs.HasKey(key))
@@ -52,6 +47,11 @@ namespace OSK
             Application.OpenURL(UrlIOS);
 #endif
         }
+
+        public override void OnInit()
+        {
+            
+        }
     }
 
     [System.Serializable]
@@ -61,5 +61,19 @@ namespace OSK
         public bool isSoundOnDefault = true;
         public bool isVibrationOnDefault = true;
         public bool isCheckInternetDefault = true;
+        public SystemLanguage languageDefault = SystemLanguage.English;
+    }
+
+    [System.Serializable]
+    public class DataConfigs
+    {
+        public ListViewSO listViewS0;
+        public SoundDataSO soundDataSo;
+    }
+    
+    [System.Serializable]
+    public class PathConfigs
+    { 
+        public string pathLoadFileCsv = "Localization/Localization";
     }
 }

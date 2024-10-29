@@ -7,6 +7,7 @@ namespace OSK
     public class CommandManager : GameFrameworkComponent
     {
         [SerializeReference] private Dictionary<string, Stack<ICommand>> _commandHistory = new();
+        public override void OnInit() {}
 
         public void Create(string commandName, ICommand command)
         {

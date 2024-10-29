@@ -8,6 +8,7 @@ public class UIFlowExample : MonoBehaviour
 {
     private void Start()
     {
-        Main.UI.ShowScreen<HomeUIExample>();
+        var homeUI = Main.UI.Spawn<HomeUIExample>("Popups/PopupHome");
+        homeUI.Open();
     } 
 }

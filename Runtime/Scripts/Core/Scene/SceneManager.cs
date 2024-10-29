@@ -14,6 +14,7 @@ namespace OSK
         
         [ReadOnly, SerializeField] private string currentSceneName = "";
 
+        public override void OnInit() {}
 
         public void LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode)
         {

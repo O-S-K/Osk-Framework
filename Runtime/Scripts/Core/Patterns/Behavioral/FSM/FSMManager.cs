@@ -22,6 +22,10 @@ namespace OSK
 
         [CustomInspector.ReadOnly, CustomInspector.ShowInInspector]
         private bool _pause = false;
+        
+        
+        public override void OnInit() {}
+
 
         public void Pause(bool isPause)
         {

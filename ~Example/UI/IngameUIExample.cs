@@ -1,29 +1,22 @@
-
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using OSK;
 using UnityEngine;
 
-public class IngameUIExample  : UIScreen
+public class IngameUIExample  : View
 {
-    public override void Initialize()
-    {
-        Debug.Log("Ingame UIExample Initialize");
-    }
-
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //World.UI.ShowPopup<WinPopupExample>();
-            Main.UI.ShowPopup<WinPopupExample>("Popups/PopupWin");
+            var winUI = Main.UI.Spawn<WinViewExample>("Popups/PopupWin");
+            winUI.Open();
         }
     }
 
     public void BackHome()
     {
-        Main.UI.ShowScreen<HomeUIExample>();
+        var homeUI = Main.UI.Spawn<HomeUIExample>("Popups/PopupHome");
+        homeUI.Open();
     }
 }
 

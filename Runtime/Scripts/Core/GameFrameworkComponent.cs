@@ -1,17 +1,20 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using OSK;
 using UnityEngine;
 
 namespace OSK
 {
     [DefaultExecutionOrder(-1001)]
-    public class GameFrameworkComponent : MonoBehaviour
+    public abstract class GameFrameworkComponent : MonoBehaviour
     {
-        protected virtual void Awake()
+        protected void Awake()
         {
             Main.Register(this);
         }
+        
+        public void OnDestroy() 
+        {
+            Main.UnRegister(this);
+        }
+
+        public abstract void OnInit();
     }
 }

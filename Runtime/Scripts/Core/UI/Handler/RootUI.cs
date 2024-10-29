@@ -5,24 +5,21 @@ using UnityEngine.Serialization;
 namespace OSK
 {
     [DefaultExecutionOrder(-101)]
-    public class HUD : MonoBehaviour
+    public class RootUI : MonoBehaviour
     {
-        [SerializeField] private ScreenManager _screenManager;
-        [SerializeField] private PopupManager _popupManager;
+        [SerializeField] private ViewManager viewManager;
         [SerializeField] private Camera _uiCamera;
         [SerializeField] private Canvas _canvas;
         [SerializeField] private UIMoveEffect _uiMoveEffect;
         
-        public ScreenManager GetScreenManager => _screenManager;
-        public PopupManager GetPopupManager => _popupManager;
+        public ViewManager ListViews => viewManager;
         public UIMoveEffect ParticleUI => _uiMoveEffect;
         public Canvas GetCanvas => _canvas;
         public Camera GetUICamera => _uiCamera;
 
-        private void Awake()
+        public void Initialize()
         {
-            GetScreenManager.Initialize();
-            GetPopupManager.Initialize();
-        } 
+            viewManager.Initialize();
+        }  
     }
 }

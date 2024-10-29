@@ -86,36 +86,6 @@ namespace OSK
                 return;
             Debug.Log(($"[OSK] {string.Format(format, args)}").Color(ColorCustom.Green).Size(12));
         }
-
-        // Set time for a task
-        public static void SetTime(string name)
-        {
-            if (!isLogEnabled)
-                return;
-            Log($"Task starts: {name}", ColorCustom.Cyan);
-            if (_timesDictionary.ContainsKey(name))
-            {
-                _timesDictionary[name] = DateTime.Now;
-                return;
-            }
-
-            _timesDictionary.Add(name, DateTime.Now);
-        }
-
-        // Show time difference between SetTime and ShowTimeDifference
-        public static void ShowTimeDifference(string name)
-        {
-            if (!isLogEnabled)
-                return;
-            if (!_timesDictionary.ContainsKey(name))
-            {
-                LogError($"{name} is not set before!");
-                return;
-            }
-
-            Log($"Task finished: {name} - Time {(DateTime.Now - _timesDictionary[name]).TotalSeconds}",
-                ColorCustom.Cyan);
-        }
     }
 
     public static class ExLog
@@ -125,5 +95,6 @@ namespace OSK
         public static string Color(this string str, ColorCustom clr) => str.GetColorHTML(clr);
         public static string Italic(this string str) => "<i>" + str + "</i>";
         public static string Size(this string str, int size) => $"<size={size}>{str}</size>";
+        public static string Time(this string str) => $"<time>{DateTime.Now}</time>";
     }
 }

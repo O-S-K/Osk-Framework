@@ -22,5 +22,8 @@ namespace OSK
 
         private ScriptableObjectManager _scriptableObjectManager;
         public ScriptableObjectManager SOData => _scriptableObjectManager ??= new ScriptableObjectManager();
+
+
+        public override void OnInit() {}
     }
 }

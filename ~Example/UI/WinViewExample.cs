@@ -4,18 +4,18 @@ using System.Collections.Generic;
 using OSK;
 using UnityEngine;
 
-public class WinPopupExample : Popup
+public class WinViewExample : View
 {
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.B))
         {
-            Main.UI.ShowPopup<PopupResExample>();
+            Main.UI.Open<ViewResExample>();
         }
         
         if (Input.GetKeyDown(KeyCode.D))
         {
-            Main.UI.DeletePopup(this);
+            Main.UI.Delete(this);
         }
     }
  

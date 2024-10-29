@@ -11,6 +11,8 @@ namespace OSK
     {
         [ShowInInspector, ReadOnly] private List<Entity> activeEntities = new List<Entity>();
 
+        public override void OnInit() {}
+
         public Entity Create(string name)
         {
             var entity = new Entity();

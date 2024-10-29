@@ -8,6 +8,8 @@ namespace OSK
         public InternetChecker InternetChecker { get; private set; }
         public bool IsOnline;
 
+        public override void OnInit() {}
+ 
         private async void Start()
         {
             InternetChecker = gameObject.GetOrAdd<InternetChecker>();
