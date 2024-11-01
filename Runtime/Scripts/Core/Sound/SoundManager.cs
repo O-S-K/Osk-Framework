@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using CustomInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
@@ -15,28 +16,28 @@ namespace OSK
 
     public class SoundManager : GameFrameworkComponent
     {
-        private string keyPoolSound = "AudioSource";
+        private const string keyPoolSound = "AudioSource";
 
-        [SerializeField, ReadOnly] private List<SoundInfo> soundInfos = new List<SoundInfo>();
-        private List<PlayingSound> musicInfos = new List<PlayingSound>();
-        public List<SoundInfo> GetSoundInfos => soundInfos;
-        public List<PlayingSound> GetMusicInfos => musicInfos;
-        private AudioSource soundObject;
+        [SerializeField, ReadOnly] private List<SoundInfo> _listSoundInfos = new List<SoundInfo>();
+        private List<PlayingSound> _listMusicInfos = new List<PlayingSound>();
+        public List<SoundInfo> GetListSoundInfos => _listSoundInfos;
+        public List<PlayingSound> GetListMusicInfos => _listMusicInfos;
+        private AudioSource _soundObject;
 
         public bool isMusic { get; private set; }
         public bool isSoundEffects { get; private set; }
           
         public override void OnInit()
         {
-            soundObject = new GameObject("AudioSource").AddComponent<AudioSource>();
-            soundObject.transform.parent = transform;
-            musicInfos = new List<PlayingSound>();
+            _soundObject = new GameObject("AudioSource").AddComponent<AudioSource>();
+            _soundObject.transform.parent = transform;
+            _listMusicInfos = new List<PlayingSound>();
 
             isMusic = true;
             isSoundEffects = true; 
             
-            soundInfos = Main.Configs.data.soundDataSo.ListSoundInfos;
-            if (soundInfos == null || soundInfos.Count == 0)
+            _listSoundInfos = Main.Configs.data.soundDataSo.ListSoundInfos;
+            if (_listSoundInfos == null || _listSoundInfos.Count == 0)
             {
                 OSK.Logg.LogError("SoundInfos is empty");
                 return;
@@ -50,18 +51,18 @@ namespace OSK
 
         private void CheckForStoppedMusic()
         {
-            if (musicInfos == null || musicInfos.Count == 0)
+            if (_listMusicInfos == null || _listMusicInfos.Count == 0)
                 return;
 
-            for (int i = 0; i < musicInfos.Count; i++)
+            for (int i = 0; i < _listMusicInfos.Count; i++)
             {
-                AudioSource audioSource = musicInfos[i].audioSource;
+                AudioSource audioSource = _listMusicInfos[i].audioSource;
 
                 // If the Audio Source is no longer playing then return it to the pool so it can be re-used
-                if (audioSource != null && !audioSource.isPlaying && !musicInfos[i].isPaused)
+                if (audioSource != null && !audioSource.isPlaying && !_listMusicInfos[i].isPaused)
                 {
                     Main.Pool.Despawn(audioSource);
-                    musicInfos.RemoveAt(i);
+                    _listMusicInfos.RemoveAt(i);
                     i--;
                 }
             }
@@ -95,21 +96,21 @@ namespace OSK
 
         public void SetVolume(float volume)
         {
-            if (soundInfos == null || soundInfos.Count == 0)
+            if (_listSoundInfos == null || _listSoundInfos.Count == 0)
                 return;
-            for (int i = 0; i < soundInfos.Count; i++)
+            for (int i = 0; i < _listSoundInfos.Count; i++)
             {
-                soundInfos[i].clipVolume = volume;
+                _listSoundInfos[i].clipVolume = volume;
                 return;
             }
         }
 
         public void SetVolume(SoundType type, float volume)
         {
-            if (soundInfos == null || soundInfos.Count == 0)
+            if (_listSoundInfos == null || _listSoundInfos.Count == 0)
                 return;
 
-            foreach (var s in soundInfos)
+            foreach (var s in _listSoundInfos)
             {
                 if (s.type == type)
                 {
@@ -145,7 +146,7 @@ namespace OSK
                 audioSource.Play();
             }
 
-            musicInfos.Add(new PlayingSound
+            _listMusicInfos.Add(new PlayingSound
                 { audioSource = audioSource, soundInfo = new SoundInfo { audioClip = audioClip } });
         }
 
@@ -200,18 +201,18 @@ namespace OSK
             playingSound.soundInfo = soundInfo;
             playingSound.audioSource = audioSource;
 
-            musicInfos.Add(playingSound);
+            _listMusicInfos.Add(playingSound);
         }
 
         public void Stop(string id)
         {
-            for (int i = 0; i < musicInfos.Count; i++)
+            for (int i = 0; i < _listMusicInfos.Count; i++)
             {
-                if (musicInfos[i].soundInfo.id == id)
+                if (_listMusicInfos[i].soundInfo.id == id)
                 {
-                    musicInfos[i].audioSource.Stop();
-                    Main.Pool.Despawn(musicInfos[i].audioSource);
-                    musicInfos.RemoveAt(i);
+                    _listMusicInfos[i].audioSource.Stop();
+                    Main.Pool.Despawn(_listMusicInfos[i].audioSource);
+                    _listMusicInfos.RemoveAt(i);
                     i--;
                 }
             }
@@ -219,13 +220,13 @@ namespace OSK
 
         public void Stop(SoundType type)
         {
-            for (int i = 0; i < musicInfos.Count; i++)
+            for (int i = 0; i < _listMusicInfos.Count; i++)
             {
-                if (musicInfos[i].soundInfo.type == type)
+                if (_listMusicInfos[i].soundInfo.type == type)
                 {
-                    musicInfos[i].audioSource.Stop();
-                    Main.Pool.Despawn(musicInfos[i].audioSource);
-                    musicInfos.RemoveAt(i);
+                    _listMusicInfos[i].audioSource.Stop();
+                    Main.Pool.Despawn(_listMusicInfos[i].audioSource);
+                    _listMusicInfos.RemoveAt(i);
                     i--;
                 }
             }
@@ -269,7 +270,7 @@ namespace OSK
 
         public void PauseAll()
         {
-            foreach (var playingSound in musicInfos)
+            foreach (var playingSound in _listMusicInfos)
             {
                 playingSound.audioSource.Pause();
                 playingSound.isPaused = true;
@@ -278,7 +279,7 @@ namespace OSK
 
         public void Pause(SoundType type)
         {
-            foreach (var playingSound in musicInfos)
+            foreach (var playingSound in _listMusicInfos)
             {
                 if (playingSound.soundInfo.type == type)
                 {
@@ -290,7 +291,7 @@ namespace OSK
 
         public void ResumeAll()
         {
-            foreach (var playingSound in musicInfos)
+            foreach (var playingSound in _listMusicInfos)
             {
                 playingSound.audioSource.UnPause();
                 playingSound.isPaused = false;
@@ -299,7 +300,7 @@ namespace OSK
 
         public void Resume(SoundType type)
         {
-            foreach (var playingSound in musicInfos)
+            foreach (var playingSound in _listMusicInfos)
             {
                 if (playingSound.soundInfo.type == type)
                 {
@@ -311,11 +312,11 @@ namespace OSK
 
         private SoundInfo GetSoundInfo(string id)
         {
-            for (int i = 0; i < soundInfos.Count; i++)
+            for (int i = 0; i < _listSoundInfos.Count; i++)
             {
-                if (id == soundInfos[i].id)
+                if (id == _listSoundInfos[i].id)
                 {
-                    return soundInfos[i];
+                    return _listSoundInfos[i];
                 }
             }
 
@@ -324,7 +325,7 @@ namespace OSK
 
         private AudioSource CreateAudioSource(string id)
         {
-            var audioSource = Main.Pool.Spawn(keyPoolSound, soundObject);
+            var audioSource = Main.Pool.Spawn(keyPoolSound, _soundObject);
             if (Camera.main != null)
                 audioSource.transform.position = Camera.main.transform.position;
             audioSource.name = id;
@@ -333,12 +334,12 @@ namespace OSK
 
         public void DestroyAll()
         {
-            foreach (var playingSound in musicInfos)
+            foreach (var playingSound in _listMusicInfos)
             {
                 Destroy(playingSound.audioSource.gameObject);
             }
 
-            musicInfos.Clear();
+            _listMusicInfos.Clear();
             Main.Pool.DestroyGroup(keyPoolSound);
         }
     }

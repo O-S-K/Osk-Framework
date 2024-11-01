@@ -77,7 +77,7 @@ namespace CustomInspector.Editors
             {
                 _inspector.Draw();
             }
-
+             
             if (serializedObject.ApplyModifiedProperties())
             {
                 _inspector.RequestValidation();

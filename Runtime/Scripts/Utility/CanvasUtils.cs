@@ -35,6 +35,47 @@ namespace OSK
             return results.Count > 0;
         }
 
+        public static Vector3 FlexPosition(Transform pointTarget, Camera camUI)
+        {
+            Vector3 worldPosition;
+            if (Main.UI.GetCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(pointTarget.GetRectTransform(),
+                    pointTarget.position, Main.UI.GetCanvas.worldCamera, out worldPosition);
+            }
+            else
+            { 
+                Vector3 screenPoint = camUI.WorldToScreenPoint(pointTarget.position);
+                screenPoint.z = Mathf.Abs(camUI.transform.position.z);
+                worldPosition = camUI.ScreenToWorldPoint(screenPoint);
+            }
+            return worldPosition;
+        }
+
+        public static Vector3 ConvertToUICameraSpace(Transform pointTarget, Camera mainCamera, Camera uiCamera)
+        {
+            Vector3 uiWorldPosition;
+            if (Main.UI.GetCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(pointTarget.GetRectTransform(),
+                    pointTarget.position, uiCamera, out uiWorldPosition);
+            }
+            else
+            {
+                Vector3 screenPoint = mainCamera.WorldToScreenPoint(pointTarget.position);
+                if (screenPoint.z < 0)
+                {
+                    Debug.LogWarning("Object is behind the main camera, unable to convert position.");
+                    return Vector3.zero;
+                }
+
+                uiWorldPosition = uiCamera.ScreenToWorldPoint(screenPoint);
+                uiWorldPosition.z = 0;
+            }
+
+            return uiWorldPosition;
+        }
+
         public static Vector2 WorldToCanvasPosition(RectTransform canvas, Camera camera, Vector3 position)
         {
             //Vector position (percentage from 0 to 1) considering camera size.
@@ -55,28 +96,32 @@ namespace OSK
             viewportPosition.y -= canvas.sizeDelta.y * canvas.pivot.y;
             return viewportPosition;
         }
-        
+
         public static Vector3 WorldToCanvasPosition(RectTransform canvas, Camera camera, Transform transform)
         {
             Vector3 viewportPos = camera.WorldToViewportPoint(transform.position);
 
             var canPos = new Vector3(viewportPos.x.Remap(0.5f, 1.5f, 0f, canvas.rect.width),
-                viewportPos.y.Remap(0.5f, 1.5f, 0f,  canvas.rect.height), 0);
-                        
-            canPos =  canvas.transform.TransformPoint(canPos);
-            canPos = transform.parent == null ? transform.InverseTransformPoint(canPos) : transform.parent.InverseTransformPoint(canPos);
+                viewportPos.y.Remap(0.5f, 1.5f, 0f, canvas.rect.height), 0);
+
+            canPos = canvas.transform.TransformPoint(canPos);
+            canPos = transform.parent == null
+                ? transform.InverseTransformPoint(canPos)
+                : transform.parent.InverseTransformPoint(canPos);
             return canPos;
         }
-    
+
         public static Vector2 SwitchToRectTransform(RectTransform from, RectTransform to)
         {
             Vector2 localPoint;
-            Vector2 fromPivotDerivedOffset = new Vector2(from.rect.width * from.pivot.x + from.rect.xMin, from.rect.height * from.pivot.y + from.rect.yMin);
+            Vector2 fromPivotDerivedOffset = new Vector2(from.rect.width * from.pivot.x + from.rect.xMin,
+                from.rect.height * from.pivot.y + from.rect.yMin);
             Vector2 screenP = RectTransformUtility.WorldToScreenPoint(null, from.position);
 
             screenP += fromPivotDerivedOffset;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(to, screenP, null, out localPoint);
-            Vector2 pivotDerivedOffset = new Vector2(to.rect.width * to.pivot.x + to.rect.xMin, to.rect.height * to.pivot.y + to.rect.yMin);
+            Vector2 pivotDerivedOffset = new Vector2(to.rect.width * to.pivot.x + to.rect.xMin,
+                to.rect.height * to.pivot.y + to.rect.yMin);
             return localPoint - pivotDerivedOffset;
         }
 
@@ -87,6 +132,7 @@ namespace OSK
             {
                 return canvas.worldCamera;
             }
+
             return null;
         }
 
@@ -97,11 +143,13 @@ namespace OSK
             {
                 return null;
             }
+
             Canvas canvas = transform.GetComponent<Canvas>();
             if (canvas != null)
             {
                 return canvas;
             }
+
             return GetCanvas(transform.parent);
         }
     }

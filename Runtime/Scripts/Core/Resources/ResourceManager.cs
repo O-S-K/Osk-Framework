@@ -6,26 +6,26 @@ namespace OSK
 {
     public class ResourceManager : GameFrameworkComponent
     {
-        private Dictionary<string, Object> _resourceCache = new Dictionary<string, Object>();
-        private Dictionary<string, int> _referenceCount = new Dictionary<string, int>();
-        private Dictionary<string, AssetBundle> _assetBundleCache = new Dictionary<string, AssetBundle>();
+        private Dictionary<string, Object> k_ResourceCache = new Dictionary<string, Object>();
+        private Dictionary<string, int> k_ReferenceCount = new Dictionary<string, int>();
+        private Dictionary<string, AssetBundle> k_AssetBundleCache = new Dictionary<string, AssetBundle>();
  
         public override void OnInit() {}
 
         // Load from Resources folder
         public T Load<T>(string path) where T : Object
         {
-            if (_resourceCache.TryGetValue(path, out var value))
+            if (k_ResourceCache.TryGetValue(path, out var value))
             {
-                _referenceCount[path]++;
+                k_ReferenceCount[path]++;
                 return (T)value;
             }
 
             T resource = Resources.Load<T>(path);
             if (resource != null)
             {
-                _resourceCache[path] = resource;
-                _referenceCount[path] = 1;
+                k_ResourceCache[path] = resource;
+                k_ReferenceCount[path] = 1;
             }
             else
             {
@@ -36,17 +36,17 @@ namespace OSK
 
         public T LoadSO<T>(string path) where T : ScriptableObject
         {
-            if (_resourceCache.TryGetValue(path, out var value))
+            if (k_ResourceCache.TryGetValue(path, out var value))
             {
-                _referenceCount[path]++;
+                k_ReferenceCount[path]++;
                 return (T)value;
             }
 
             T resource = Resources.Load<T>(path);
             if (resource != null)
             {
-                _resourceCache[path] = resource;
-                _referenceCount[path] = 1;
+                k_ResourceCache[path] = resource;
+                k_ReferenceCount[path] = 1;
             }
             else
             {
@@ -74,7 +74,7 @@ namespace OSK
             where T : Object
         {
             AssetBundle bundle = null;
-            if (!_assetBundleCache.TryGetValue(bundlePath, out bundle))
+            if (!k_AssetBundleCache.TryGetValue(bundlePath, out bundle))
             {
                 var bundleRequest = AssetBundle.LoadFromFileAsync(bundlePath);
                 yield return bundleRequest;
@@ -87,7 +87,7 @@ namespace OSK
                     yield break;
                 }
 
-                _assetBundleCache[bundlePath] = bundle;
+                k_AssetBundleCache[bundlePath] = bundle;
             }
 
             var assetRequest = bundle.LoadAssetAsync<T>(assetName);
@@ -97,8 +97,8 @@ namespace OSK
             if (asset != null)
             {
                 string cacheKey = $"{bundlePath}/{assetName}";
-                _resourceCache[cacheKey] = asset;
-                _referenceCount[cacheKey] = 1;
+                k_ResourceCache[cacheKey] = asset;
+                k_ReferenceCount[cacheKey] = 1;
             }
 
             onLoaded?.Invoke(asset);
@@ -107,14 +107,14 @@ namespace OSK
         // Unload an asset
         public void Unload(string path)
         {
-            if (_resourceCache.TryGetValue(path, out var value))
+            if (k_ResourceCache.TryGetValue(path, out var value))
             {
-                _referenceCount[path]--;
-                if (_referenceCount[path] <= 0)
+                k_ReferenceCount[path]--;
+                if (k_ReferenceCount[path] <= 0)
                 {
                     Resources.UnloadAsset(value);
-                    _resourceCache.Remove(path);
-                    _referenceCount.Remove(path);
+                    k_ResourceCache.Remove(path);
+                    k_ReferenceCount.Remove(path);
                 }
             }
         }
@@ -122,29 +122,29 @@ namespace OSK
         // Unload an entire AssetBundle
         public void UnloadAssetBundle(string bundlePath, bool unloadAllLoadedObjects = false)
         {
-            if (_assetBundleCache.ContainsKey(bundlePath))
+            if (k_AssetBundleCache.ContainsKey(bundlePath))
             {
-                _assetBundleCache[bundlePath].Unload(unloadAllLoadedObjects);
-                _assetBundleCache.Remove(bundlePath);
+                k_AssetBundleCache[bundlePath].Unload(unloadAllLoadedObjects);
+                k_AssetBundleCache.Remove(bundlePath);
             }
         }
 
         // Clear all caches
         public void ClearCache()
         {
-            foreach (var resource in _resourceCache.Values)
+            foreach (var resource in k_ResourceCache.Values)
             {
                 Resources.UnloadAsset(resource);
             }
 
-            foreach (var bundle in _assetBundleCache.Values)
+            foreach (var bundle in k_AssetBundleCache.Values)
             {
                 bundle.Unload(true);
             }
 
-            _resourceCache.Clear();
-            _referenceCount.Clear();
-            _assetBundleCache.Clear();
+            k_ResourceCache.Clear();
+            k_ReferenceCount.Clear();
+            k_AssetBundleCache.Clear();
         }
     }
 }

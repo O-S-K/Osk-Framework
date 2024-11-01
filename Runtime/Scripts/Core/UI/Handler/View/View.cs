@@ -92,5 +92,15 @@ namespace OSK
                 _afterClosed.Invoke();
             });
         }
+        
+        public void CloseImmediately()
+        {
+            _isShowing = false; 
+            _uiTransition.AnyClose(() =>
+            {
+                gameObject.SetActive(false);
+                ViewManager.RemovePopup(this); 
+            });
+        }
     }
 }

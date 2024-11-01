@@ -14,14 +14,11 @@ destroy:    EventBus.Unsubscribe<ScoreEventExample>(OnUpdateScore);
 
 namespace OSK
 {
-    public class GameEvent
-    {
-    }
+    public class GameEvent { }
 
     public class EventBus : GameFrameworkComponent
     {
-        private Dictionary<Type, List<Action<GameEvent>>>
-            _subscribers = new Dictionary<Type, List<Action<GameEvent>>>();
+        private Dictionary<Type, List<Action<GameEvent>>> k_Subscribers = new Dictionary<Type, List<Action<GameEvent>>>();
 
         public override void OnInit()
         { 
@@ -31,22 +28,22 @@ namespace OSK
         {
             Type eventType = typeof(T);
 
-            if (!_subscribers.ContainsKey(eventType))
+            if (!k_Subscribers.ContainsKey(eventType))
             {
-                _subscribers[eventType] = new List<Action<GameEvent>>();
+                k_Subscribers[eventType] = new List<Action<GameEvent>>();
             }
 
-            _subscribers[eventType].Add(e => callback((T)e));
+            k_Subscribers[eventType].Add(e => callback((T)e));
         }
 
         public void Unsubscribe<T>(Action<T> callback) where T : GameEvent
         {
             Type eventType = typeof(T);
 
-            if (_subscribers.ContainsKey(eventType))
+            if (k_Subscribers.ContainsKey(eventType))
             {
                 // check null
-                _subscribers[eventType].Remove(e =>
+                k_Subscribers[eventType].Remove(e =>
                 {
                     if (e != null)
                         callback((T)e);
@@ -58,9 +55,9 @@ namespace OSK
         {
             Type eventType = gameGameEvent.GetType();
 
-            if (_subscribers.ContainsKey(eventType))
+            if (k_Subscribers.ContainsKey(eventType))
             {
-                foreach (var subscriber in _subscribers[eventType])
+                foreach (var subscriber in k_Subscribers[eventType])
                 {
                     subscriber?.Invoke(gameGameEvent);
                 }

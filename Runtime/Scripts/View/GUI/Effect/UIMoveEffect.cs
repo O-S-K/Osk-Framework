@@ -1,292 +1,279 @@
-using System;
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using System.Linq;
 using DG.Tweening;
-using Random = UnityEngine.Random;
+using System.Collections.Generic;
 
 namespace OSK
 {
-public class UIMoveEffect : OSK.SingletonMono<UIMoveEffect>
-{
-    public Canvas canvas;
-    public GameObject[] iconClones;
-
-    public int indexIcon = 0;
-    public Vector2 randomX = new Vector2(-30f, 30f);
-    public Vector2 randomY = new Vector2(-20f, -30f);
-
-    public float timeDrop = 0.15f;
-    public float speedDrop = 1.5f;
-
-    public float timeFly = 1;
-    public float speedFly = 3;
-
-    public int numberOfCoins = 10;
-    public float delayMove = 0.15f;
-
-    public System.Action onCompleted;
-    private GameObject coinParent;
-
-    public Transform pointSpawn;
-    public Vector3 startPosition;
-    public Transform target;
-
-
-    private void Start()
+    public class UIMoveEffect : MonoBehaviour
     {
-        if (canvas == null)
+        [SerializeField] private Canvas canvas;
+        [SerializeField] private EffectSetting[] effectSettings;
+        private List<GameObject> _parentEffects;
+
+        private void Start()
         {
-            canvas = Main.UI.GetCanvas;
+            Initialize();
         }
 
-        for (int i = 0; i < iconClones.Length; i++)
+        private void Initialize()
         {
-            iconClones[i].SetActive(false);
-        }
+            if (effectSettings.Length == 0)
+                return;
 
-        coinParent = new GameObject("iconMoveParent");
-    }
+            if (canvas == null)
+                canvas = Main.UI.GetCanvas;
 
-    // private void Update()
-    // {
-    //     if (Input.GetKeyDown(KeyCode.Space))
-    //     {
-    //         var pC = World.UI.GetScreen<GameplayUI>().GetCoinUI().GetRootCoin();
-    //         SpawnImageWithRectTransform(0, transform, pC, () =>
-    //         {
-    //             Debug.Log("Completed");
-    //         });
-    //     }
-    // }
-
-    public void SpawnImageWithRectTransform(int idx, Transform posInit, Transform posIcon,
-        System.Action onCompleted = null)
-    {
-        new SpawnImageBuilder()
-            .SetIndexIcon(idx)
-            .SetStartTransform(posInit)
-            .SetEndPoint(posIcon)
-            .BuildWithTransform();
-    }
-
-    public void SpawnImageWithPosition(int idx, Transform posInit, Transform posIcon, System.Action onCompleted = null)
-    {
-        new SpawnImageBuilder()
-            .SetIndexIcon(idx)
-            .SetStartPosition(posInit, canvas.GetComponent<RectTransform>())
-            .SetEndPoint(posIcon)
-            .BuildWithPosition();
-    }
-
-    public void SpawnImageWithPosition()
-    {
-        StartCoroutine(DelaySpawnCoins(startPosition));
-    }
-
-
-    public void SpawnImagesTransform()
-    {
-        StartCoroutine(DelaySpawnCoins(pointSpawn.position));
-    }
-
-    private IEnumerator DelaySpawnCoins(Vector3 startPoint)
-    {
-        var cp = Main.Pool.Spawn("CoinParent", coinParent);
-        cp.transform.parent = canvas.transform;
-        cp.transform.localPosition = Vector3.zero;
-        cp.transform.localScale = Vector3.one;
-        this.DoDelay(delayMove + numberOfCoins / 10, () => { Main.Pool.Despawn(cp); });
-
-        float timeDlaySpawn = 0;
-
-        for (int i = 0; i < numberOfCoins; i++)
-        {
-            var coinClone = Main.Pool.Spawn("icon", iconClones[indexIcon]);
-            coinClone.transform.position = startPoint;
-            coinClone.transform.localScale = Vector3.one;
-            coinClone.transform.SetParent(cp.transform, false);
-            coinClone.transform.localPosition.WithZ(0);
-            coinClone.gameObject.SetActive(true);
-
-            if (gameObject.activeInHierarchy)
-                StartCoroutine(DropCoins(coinClone, startPoint));
-
-            float randomTime = Random.Range(0.01f, 0.03f);
-            timeDlaySpawn += randomTime;
-            yield return new WaitForSeconds(randomTime);
-
-            if (gameObject.activeInHierarchy)
-                StartCoroutine(MoveCoinToTarget(coinClone.transform));
-        }
-
-        onCompleted?.Invoke();
-    }
-
-    public bool isDrop = true;
-
-    private IEnumerator DropCoins(GameObject image, Vector3 startPoint)
-    {
-        float timer = 0f;
-        Vector3 randomOffset = new Vector2(Random.Range(randomX.x, randomX.y), Random.Range(randomY.x, randomY.y));
-        Vector3 spawnPos = startPoint + randomOffset;
-
-        if (isDrop)
-        {
-            while (timer < timeDrop)
+            _parentEffects = new List<GameObject>();
+            for (int i = 0; i < effectSettings.Length; i++)
             {
-                float t = timer / speedDrop;
-                image.transform.position =
-                    Vector3.MoveTowards(image.transform.position, new Vector3(spawnPos.x, spawnPos.y, 0), t);
-                timer += Time.deltaTime;
-                yield return null;
+                _parentEffects.Add(new GameObject(effectSettings[i].name));
+                _parentEffects[i].transform.SetParent(canvas.transform);
+                _parentEffects[i].transform.localScale = Vector3.one;
+                AddPaths(effectSettings[i]);
             }
         }
-        else
+ 
+        public void SpawnEffect(string nameEffect, Vector3 pointSpawn, Vector3 pointTarget,
+            int numberOfEffects,
+            System.Action OnCompleted)
         {
-            image.transform.position = spawnPos;
+            var effectSetting = effectSettings.ToList().Find(x => x.name == nameEffect);
+            effectSetting.pointSpawn = pointSpawn;
+            effectSetting.pointTarget = pointTarget;
+
+            effectSetting.numberOfEffects = numberOfEffects;
+            effectSetting.OnCompleted = OnCompleted;
+
+            if (gameObject.activeInHierarchy)
+            {
+                StartCoroutine(IESpawnEffect(effectSetting));
+            }
+        } 
+
+
+        private IEnumerator IESpawnEffect(EffectSetting effectSetting)
+        {
+            var parent = _parentEffects.Find(x => x.name == effectSetting.name)?.transform;
+            if (parent == null || !parent.gameObject.activeInHierarchy)
+                yield break;
+
+            for (int i = 0; i < effectSetting.numberOfEffects; i++)
+            {
+                var effect = Main.Pool.Spawn("UIEffect", effectSetting.icon, 1);
+                effect.transform.SetParent(parent);
+                effect.transform.localScale = Vector3.one;
+                effect.transform.position = effectSetting.pointSpawn;
+
+                if (effectSetting.isDrop)
+                {
+                    DoDropEffect(effect, effectSetting);
+                }
+                else
+                {
+                    DoMoveTarget(effect, effectSetting);
+                }
+            }
+
+            float totalDuration = effectSetting.timeMove.RandomValue + effectSetting.delayMove.RandomValue;
+            yield return new WaitForSeconds(totalDuration);
+            effectSetting.OnCompleted?.Invoke();
         }
 
-        // AudioManager.Instance.PlayOneShot("coin_collect_appear", 1, 1);   
-    }
-
-    public bool isUseJump = true;
-    public float jumpPower = 3;
-    public int numjump = 1;
-    public Ease ease = Ease.Linear;
-
-    private IEnumerator MoveCoinToTarget(Transform imageTransform)
-    {
-        float timer = 0f;
-        yield return new WaitForSeconds(delayMove + Random.Range(0.01f, 0.02f));
-
-        if (isUseJump)
+        private void DoDropEffect(GameObject effect, EffectSetting effectSetting)
         {
-            imageTransform.transform.DOJump(target.position, jumpPower, numjump, timeFly)
-                .SetEase(ease).OnComplete(() => { OnCompletedMove(imageTransform.gameObject); });
-        }
-        else
-        {
-            imageTransform.DOMove(target.position, timeFly)
-                .SetEase(ease).OnComplete(() => { OnCompletedMove(imageTransform.gameObject); });
+            Vector3 randomOffset = Random.insideUnitSphere * effectSetting.sphereRadius;
+            Vector3 target = effectSetting.pointSpawn + randomOffset;
+            Tween tween = effect.transform
+                .DOMove(target, effectSetting.timeDrop.RandomValue)
+                .SetDelay(effectSetting.delayDrop.RandomValue);
+           
+               if (tween != null)
+               {
+                   if (effectSetting.typeAnimationDrop == TypeAnimation.Ease)
+                       tween.SetEase(effectSetting.easeDrop);
+                   else if (effectSetting.typeAnimationDrop == TypeAnimation.Curve)
+                       tween.SetEase(effectSetting.curveDrop);
+                   else
+                       tween.SetEase(Ease.Linear);
+                   tween.OnComplete(() => { DoMoveTarget(effect, effectSetting); });
+               }
         }
 
-        yield return null;
+        private void DoMoveTarget(GameObject effect, EffectSetting effectSetting)
+        {
+            Tween tween = null;
+            switch (effectSetting.typeMove)
+            {
+                case TypeMove.Straight:
+                    tween = effect.transform
+                        .DOMove(effectSetting.pointTarget, effectSetting.timeMove.RandomValue)
+                        .SetDelay(effectSetting.delayMove.RandomValue);
+                    break;
+                case TypeMove.Beziers:
+                    if (effectSetting.paths.Count % 3 != 0)
+                    {
+                        Logg.LogError("CubicBezier paths must contain waypoints in multiple of 3");
+                        Main.Pool.Despawn(effect);
+                        effectSetting.OnCompleted?.Invoke();
+                        break;
+                    }
+
+                    tween = effect.transform
+                        .DOPath(effectSetting.paths.Select(x => x).ToArray(),
+                            effectSetting.timeMove.RandomValue, PathType.CubicBezier)
+                        .SetDelay(effectSetting.delayMove.RandomValue);
+                    break;
+
+                case TypeMove.CatmullRom:
+                    if (effectSetting.paths.Count < 4)
+                    {
+                        Logg.LogError("CatmullRom paths must contain at least 4 waypoints");
+                        Main.Pool.Despawn(effect);
+                        effectSetting.OnCompleted?.Invoke();
+                        break;
+                    }
+
+                    tween = effect.transform
+                        .DOPath(effectSetting.paths.Select(x => x).ToArray(),
+                            effectSetting.timeMove.RandomValue, PathType.CatmullRom)
+                        .SetDelay(effectSetting.delayMove.RandomValue);
+                    break;
+
+                case TypeMove.Path:
+                    tween = effect.transform
+                        .DOPath(effectSetting.paths.Select(x => x).ToArray(),
+                            effectSetting.timeMove.RandomValue)
+                        .SetDelay(effectSetting.delayMove.RandomValue);
+                    break;
+                case TypeMove.DoJump:
+                    tween = effect.transform
+                        .DOJump(effectSetting.pointTarget, effectSetting.jumpPower, 1, effectSetting.timeMove.RandomValue)
+                        .SetDelay(effectSetting.delayMove.RandomValue);
+                    break;
+            }
+
+            if (tween != null)
+            {
+                if (effectSetting.typeAnimationMove == TypeAnimation.Ease)
+                    tween.SetEase(effectSetting.easeMove);
+                else if (effectSetting.typeAnimationMove == TypeAnimation.Curve)
+                    tween.SetEase(effectSetting.curveMove);
+                else
+                    tween.SetEase(Ease.Linear);
+                
+                effect.transform.DOScale(effectSetting.scaleTarget, effectSetting.timeMove.RandomValue)
+                    .SetDelay(effectSetting.delayMove.RandomValue);
+                tween.OnComplete(() => { Main.Pool.Despawn(effect); });
+            }
+        }
+ 
+
+        private void AddPaths(EffectSetting effectSetting)
+        {
+            if (effectSetting.paths == null)
+                effectSetting.paths = new List<Vector3>();
+            if (!effectSetting.paths.Contains(effectSetting.pointSpawn))
+                effectSetting.paths.AddFirstList(effectSetting.pointSpawn);
+            if (!effectSetting.paths.Contains(effectSetting.pointTarget))
+                effectSetting.paths.AddLastList(effectSetting.pointTarget);
+        }
+
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            // if (Application.isEditor)
+            //     return;
+
+            if (effectSettings.Length == 0)
+                return;
+
+            Color color = Color.magenta;
+            for (int i = 0; i < effectSettings.Length; i++)
+            {
+                if (effectSettings[i].isDrop)
+                {
+                    
+                    if(effectSettings[i].pointSpawn == null)
+                        continue;
+
+                    Gizmos.color = color;
+                    Gizmos.DrawWireSphere(effectSettings[i].pointSpawn, effectSettings[i].sphereRadius);
+                }
+                
+                switch (effectSettings[i].typeMove)
+                {
+                    case TypeMove.Straight:
+                        Gizmos.color = color;
+                        if(effectSettings[i].pointSpawn == null)
+                            continue;
+                        Gizmos.DrawLine(effectSettings[i].pointSpawn, effectSettings[i].pointTarget);
+                        break;
+                    case TypeMove.Beziers:
+                        if(effectSettings[i].pointSpawn == null)
+                            continue;
+                        for (int j = 0; j < effectSettings[i].paths.Count - 3; j += 3)
+                        {
+                            Vector3 startPoint = effectSettings[i].paths[j];
+                            Vector3 controlPoint1 = effectSettings[i].paths[j + 1];
+                            Vector3 controlPoint2 = effectSettings[i].paths[j + 2];
+                            Vector3 endPoint = effectSettings[i].paths[j + 3];
+
+                            DrawCubicBezierCurve(startPoint, controlPoint1, controlPoint2, endPoint, Gizmos.color);
+                        }
+
+                        break;
+                    case TypeMove.Path:
+                        if(effectSettings[i].pointSpawn == null)
+                            continue;
+                        if (effectSettings[i].paths.Count < 2)
+                        {
+                            Logg.LogError("Path is not enough");
+                        }
+
+                        for (int j = 0; j < effectSettings[i].paths.Count - 1; j++)
+                        {
+                            Gizmos.color = color;
+                            Gizmos.DrawLine(effectSettings[i].paths[j],
+                                effectSettings[i].paths[j + 1]);
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void DrawCubicBezierCurve(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Color color,
+            int segments = 20)
+        {
+            Vector3 previousPoint = p0;
+
+            for (int i = 1; i <= segments; i++)
+            {
+                float t = i / (float)segments;
+                Vector3 pointOnCurve = CalculateCubicBezierPoint(t, p0, p1, p2, p3);
+                Gizmos.DrawLine(previousPoint, pointOnCurve);
+                previousPoint = pointOnCurve;
+            }
+        }
+
+        private Vector3 CalculateCubicBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+        {
+            float u = 1 - t;
+            float tt = t * t;
+            float uu = u * u;
+            float uuu = uu * u;
+            float ttt = tt * t;
+
+            return uuu * p0 + 3 * uu * t * p1 + 3 * u * tt * p2 + ttt * p3;
+        }
+
+        private Vector3 CalculateQuadraticBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)
+        {
+            float u = 1 - t;
+            return u * u * p0 + 2 * u * t * p1 + t * t * p2;
+        }
+#endif
     }
-
-    private void OnCompletedMove(GameObject go)
-    {
-        Main.Pool.Despawn(go);
-        Main.Sound.Play("coin_add", false);
-        Main.Native.Vibrate(EffectHaptic.Heavy);
-    }
-}
-
-
-public class SpawnImageBuilder
-{
-    private UIMoveEffect _img;
-
-    public SpawnImageBuilder()
-    {
-        _img = UIMoveEffect.Instance;
-    }
-
-    public SpawnImageBuilder SetIndexIcon(int indexIcon)
-    {
-        _img.indexIcon = indexIcon;
-        return this;
-    }
-
-
-    public SpawnImageBuilder SetStartTransform(Transform startPoint)
-    {
-        _img.pointSpawn = startPoint;
-        return this;
-    }
-
-
-    public SpawnImageBuilder SetStartPosition(Transform transform, RectTransform rectTransformCanvas)
-    {
-        var convertPos = OSK.CanvasUtils.WorldToCanvasPosition(rectTransformCanvas, Camera.main, transform);
-        _img.startPosition = convertPos;
-        return this;
-    }
-
-    public SpawnImageBuilder SetEndPoint(Transform endPoint)
-    {
-        _img.target = endPoint;
-        return this;
-    }
-
-    public SpawnImageBuilder SetOnCompleted(System.Action onCompleted)
-    {
-        _img.onCompleted = onCompleted;
-        return this;
-    }
-
-    public SpawnImageBuilder SetRandomX(Vector2 randomX)
-    {
-        _img.randomX = randomX;
-        return this;
-    }
-
-    public SpawnImageBuilder SetRandomY(Vector2 randomY)
-    {
-        _img.randomY = randomY;
-        return this;
-    }
-
-    public SpawnImageBuilder SetTimeDrop(float timeDrop)
-    {
-        _img.timeDrop = timeDrop;
-        return this;
-    }
-
-    public SpawnImageBuilder SetSpeedDrop(float speedDrop)
-    {
-        _img.speedDrop = speedDrop;
-        return this;
-    }
-
-    public SpawnImageBuilder SetTimeFly(float timeFly)
-    {
-        _img.timeFly = timeFly;
-        return this;
-    }
-
-    public SpawnImageBuilder SetSpeedFly(float speedFly)
-    {
-        _img.speedFly = speedFly;
-        return this;
-    }
-
-    public SpawnImageBuilder SetNumberOfCoins(int numberOfCoins)
-    {
-        _img.numberOfCoins = numberOfCoins;
-        return this;
-    }
-
-    public SpawnImageBuilder SetDelayMove(float delayMove)
-    {
-        _img.delayMove = delayMove;
-        return this;
-    }
-
-    public SpawnImageBuilder SetUseJump(bool isUseJump)
-    {
-        _img.isUseJump = isUseJump;
-        return this;
-    }
-
-
-    public void BuildWithTransform()
-    {
-        _img.SpawnImagesTransform();
-    }
-
-    public void BuildWithPosition()
-    {
-        _img.SpawnImageWithPosition();
-    }
-}
 }

@@ -1,11 +1,19 @@
 using OSK;
+using UnityEngine;
 
-public class PauseStateExample : IStateMachine
+
+public class PauseStateExample : IState
 {
     public string StateName => "PauseStateExample";
-
-    public void Enter()
+    FlowgameExample flowgameExample;
+    public PauseStateExample(FlowgameExample flowgameExample)
     {
+        this.flowgameExample = flowgameExample;
+    }
+ 
+    public void OnEnter()
+    {
+        Debug.Log("PauseStateExample");
     }
 
     public void Tick()
@@ -16,9 +24,7 @@ public class PauseStateExample : IStateMachine
     {
     }
 
-    public void Exit()
+    public void OnExit()
     {
-    }
-    
-
+    } 
 }

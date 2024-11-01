@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using CustomInspector;
-using UnityEngine; 
+using UnityEngine;
+using UnityEngine.Serialization;
 
 /*
  *
@@ -20,20 +21,20 @@ namespace OSK
 {
     public class LocalizationManager : GameFrameworkComponent
     {
-        [SerializeReference] private Dictionary<string, string> _localizedText = new Dictionary<string, string>();
-        [ReadOnly, SerializeField] private List<SystemLanguage> listLanguagesCvs = new List<SystemLanguage>();
-        private SystemLanguage currentLanguage = SystemLanguage.English;
+        [SerializeReference] private Dictionary<string, string> k_LocalizedText = new Dictionary<string, string>();
+        [ReadOnly, SerializeField] private List<SystemLanguage> _listLanguagesCvs = new List<SystemLanguage>();
+        private SystemLanguage _currentLanguage = SystemLanguage.English;
  
-        private bool isSetDefaultLanguage = false;
+        private bool _isSetDefaultLanguage = false;
 
         public override void OnInit() {}
 
 
         public void SetLanguage(SystemLanguage languageCode)
         {
-            isSetDefaultLanguage = true;
+            _isSetDefaultLanguage = true;
             LoadLocalizationData(languageCode);
-            currentLanguage = languageCode;
+            _currentLanguage = languageCode;
             Logg.Log($"Set language to: {languageCode}", ColorCustom.Green, 15);
         }
 
@@ -50,19 +51,19 @@ namespace OSK
         }
 
 
-        public SystemLanguage GetCurrentLanguage => currentLanguage;
-        public SystemLanguage[] GetAllLanguages => listLanguagesCvs.ToArray();
+        public SystemLanguage GetCurrentLanguage => _currentLanguage;
+        public SystemLanguage[] GetAllLanguages => _listLanguagesCvs.ToArray();
 
 
         public string GetKey(string key)
         {
-            if (isSetDefaultLanguage == false)
+            if (_isSetDefaultLanguage == false)
             {
                 Logg.LogError("Please set default language first.");
                 return "";
             }
 
-            if (_localizedText.TryGetValue(key, out var value))
+            if (k_LocalizedText.TryGetValue(key, out var value))
             {
                 return value;
             }
@@ -93,7 +94,7 @@ namespace OSK
             string[] lines = textFile.text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             // Clear the previous localization data
-            _localizedText.Clear();
+            k_LocalizedText.Clear();
 
             // Find the index of the language code in the CSV header
             string[] headers = lines[0].Split(',');
@@ -133,7 +134,7 @@ namespace OSK
                 string value = columns[languageColumnIndex].Trim();
 
                 // Store the key-value pair in the dictionary
-                _localizedText[key] = value;
+                k_LocalizedText[key] = value;
             }
             else
             {
@@ -147,8 +148,8 @@ namespace OSK
             {
                 if (Enum.TryParse(columns[j], out SystemLanguage language))
                 {
-                    if (!listLanguagesCvs.Contains(language))
-                        listLanguagesCvs.Add(language);
+                    if (!_listLanguagesCvs.Contains(language))
+                        _listLanguagesCvs.Add(language);
                 }
             }
         }

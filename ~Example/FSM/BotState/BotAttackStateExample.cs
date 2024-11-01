@@ -1,11 +1,19 @@
 using OSK;
+using UnityEngine;
 
-public class BotAttackStateExample : IStateMachine
+public class BotAttackStateExample : IState
 {
     public string StateName => "BotAttackStateExample";
-
-    public void Enter()
+    private BotStateExample botStateExample;
+    
+    public BotAttackStateExample(BotStateExample botStateExample)
     {
+        this.botStateExample = botStateExample;
+    }
+
+    public void OnEnter()
+    {
+        Debug.Log("Attack");
     }
 
     public void Tick()
@@ -16,7 +24,7 @@ public class BotAttackStateExample : IStateMachine
     {
     }
 
-    public void Exit()
+    public void OnExit()
     {
-    }
+    } 
 }

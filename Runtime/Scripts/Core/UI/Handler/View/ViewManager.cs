@@ -1,21 +1,25 @@
 using UnityEngine;
 using CustomInspector;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OSK
 {
     public class ViewManager : MonoBehaviour
     {
         [ShowInInspector, ReadOnly] [SerializeField]
-        private List<View> _listView;
+        private List<View> _listView = new List<View>();
         private Stack<View> _viewHistory = new Stack<View>();
+        public Stack<View> ListViewHistory => _viewHistory;
 
 
         #region Init
+
         public void Initialize()
         {
             Preload();
         }
+
         private void Preload()
         {
             _listView.Clear();
@@ -37,7 +41,7 @@ namespace OSK
         }
 
         #endregion
- 
+
         #region Spawn
 
         public T Spawn<T>(string path, bool isCache, bool hidePrevView) where T : View
@@ -53,11 +57,12 @@ namespace OSK
                 {
                     if (!_listView.Contains(_view))
                         _listView.Add(_view);
-                } 
+                }
+
                 return _view;
             }
-        } 
-        
+        }
+
         #endregion
 
         #region Open
@@ -73,11 +78,11 @@ namespace OSK
                         _viewHistory.Push(_view);
                         OSK.Logg.Log($"[View] {_view.name} is already showing");
                         break;
-                    } 
+                    }
 
                     Open(_view, hidePrevView);
                     return (T)_view;
-                } 
+                }
             }
 
             return null;
@@ -88,23 +93,38 @@ namespace OSK
             foreach (var _view in _listView)
             {
                 if (_view is T)
-                {
-                    if (hidePrevView && _viewHistory.Count > 0)
+                { 
+                    if (_viewHistory.Count > 0 && hidePrevView)
                     {
-                        _viewHistory.Peek().Hide();
+                        var _prevView = _viewHistory.Peek();
+                        _prevView.CloseImmediately(); 
+                        Logg.Log($"[View] Close previous view: {_prevView.name}");
                     }
                     _view.Open();
                     return (T)_view;
                 }
             }
+
             return null;
+        }
+
+        public void OpenPrevious()
+        {
+            if (_viewHistory.Count > 0)
+            {
+                var _prevView = _viewHistory.Pop();
+                _prevView.Open();
+                Logg.Log($"[View] Open previous view: {_prevView.name}");
+            }
         }
 
         public View Open(View view, bool hidePrevView)
         {
             if (hidePrevView && _viewHistory.Count > 0)
             {
-                _viewHistory.Peek().Hide();
+                var prevView = _viewHistory.Peek();
+                prevView.Hide();
+                Logg.Log($"[View] Hide previous view: {prevView.name}");
             }
 
             _viewHistory.Push(view);
@@ -128,7 +148,7 @@ namespace OSK
 
             return null;
         }
-        
+
         public T GetIsActive<T>() where T : View
         {
             foreach (var _view in _listView)
@@ -138,6 +158,7 @@ namespace OSK
                     return (T)_view;
                 }
             }
+
             return null;
         }
 
@@ -151,7 +172,7 @@ namespace OSK
 
             return null;
         }
-        
+
         public List<View> GetAll()
         {
             return _listView;
@@ -169,7 +190,7 @@ namespace OSK
                 Remove();
             }
         }
-        
+
         public void HideIgnore<T>() where T : View
         {
             foreach (var _view in _listView)
@@ -179,6 +200,20 @@ namespace OSK
                 if (_view.IsShowing)
                 {
                     _view.Hide();
+                }
+            }
+        }
+
+        public void HideIgnore<T>(T[] viewsToKeep) where T : View
+        {
+            foreach (var _view in _listView)
+            {
+                if (_view is T && !viewsToKeep.Contains(_view as T))
+                {
+                    if (_view.IsShowing)
+                    {
+                        _view.Hide();
+                    }
                 }
             }
         }
@@ -206,12 +241,8 @@ namespace OSK
             var _curView = _viewHistory.Pop();
             _curView.Hide();
 
-            if (_viewHistory.Count > 0)
-            {
-                var _prevView = _viewHistory.Peek();
-                if (hidePrevView)
-                    _prevView.Open();
-            }
+            if (hidePrevView)
+                OpenPrevious();
         }
 
         public void RemovePopup(View view)
@@ -279,5 +310,5 @@ namespace OSK
         }
 
         #endregion
-    } 
+    }
 }

@@ -2,6 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OSK
 {
@@ -31,10 +32,24 @@ namespace OSK
             DrawBackground(Color.green);
             EditorGUILayout.LabelField("--- List Views  ---", EditorStyles.boldLabel);
             DisplayViews();
+            
+            GUILayout.Space(10);
+            
+            EditorGUILayout.LabelField("--- List Views History ---", EditorStyles.boldLabel);
+            ShowListViewHistory();
 
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(target);
+            }
+        }
+        
+        private void ShowListViewHistory()
+        {
+            List<View> views = uiManager.ListViews.ListViewHistory.ToList();
+            foreach (var view in views)
+            {
+                EditorGUILayout.LabelField(view.name);
             }
         }
 

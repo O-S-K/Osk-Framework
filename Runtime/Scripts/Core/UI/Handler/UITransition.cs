@@ -228,5 +228,12 @@ namespace OSK
             TargetRectTransform.localScale = Vector3.one;
             TargetRectTransform.anchoredPosition = Vector2.zero;
         }
+
+        public void AnyClose(Action onComplete)
+        {
+            DOTween.KillAll();
+            ResetTransitionState();
+            onComplete?.Invoke();
+        }
     }
 }

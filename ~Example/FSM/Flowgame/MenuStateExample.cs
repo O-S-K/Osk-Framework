@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using OSK;
 using UnityEngine;
 
-public class MenuStateExample : IStateMachine
+public class MenuStateExample : IState
 {
     public string StateName => "MenuStateExample";
-
-    public void Enter()
+    public FlowgameExample flowgameExample;
+    public MenuStateExample(FlowgameExample flowgameExample)
     {
+        this.flowgameExample = flowgameExample;
+    }
+
+    public void OnEnter()
+    {
+        Debug.Log("MenuStateExample");
     }
 
     public void Tick()
@@ -19,8 +25,7 @@ public class MenuStateExample : IStateMachine
     {
     }
 
-    public void Exit()
+    public void OnExit()
     {
-    }
-        
+    }   
 }

@@ -9,6 +9,18 @@ namespace OSK
         public delegate TResult MapFunc<out TResult, TArg>(TArg arg);
         public delegate bool FilterFunc<TArg>(TArg arg);
 
+        public static List<Vector3> AddFirstList(this List<Vector3> list, Vector3 obj)
+        {
+            list.Insert(0, obj);
+            return list;
+        }
+        
+        public static List<Vector3> AddLastList(this List<Vector3> list, Vector3 obj)
+        {
+            list.Add(obj);
+            return list;
+        }
+        
         public static List<TOut> Map<TIn, TOut>(List<TIn> list, MapFunc<TOut, TIn> func)
         {
             List<TOut> newList = new List<TOut>(list.Count);

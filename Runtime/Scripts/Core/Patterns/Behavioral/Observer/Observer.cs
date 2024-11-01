@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace OSK
 {
-    public class Observer : GameFrameworkComponent 
+    public class Observer : GameFrameworkComponent
     {
-        public Dictionary<string, HashSet<CallBackObserver>> dictObserver = new();
+        public Dictionary<string, HashSet<CallBackObserver>> k_ObserverCallBack =  new Dictionary<string, HashSet<CallBackObserver>>();
         public delegate void CallBackObserver(object data);
 
         public override void OnInit() {}
@@ -31,10 +31,10 @@ namespace OSK
 
         public void RemoveAllListeners()
         {
-            var keys = new List<string>(dictObserver.Keys);
+            var keys = new List<string>(k_ObserverCallBack.Keys);
             foreach (string key in keys)
             {
-                dictObserver.Remove(key);
+                k_ObserverCallBack.Remove(key);
             }
         }
 
@@ -58,11 +58,11 @@ namespace OSK
 
         private HashSet<CallBackObserver> CreateListObserverForTopic(string topicName)
         {
-            if (!dictObserver.ContainsKey(topicName))
+            if (!k_ObserverCallBack.ContainsKey(topicName))
             {
-                dictObserver.Add(topicName, new HashSet<CallBackObserver>());
+                k_ObserverCallBack.Add(topicName, new HashSet<CallBackObserver>());
             }
-            return dictObserver[topicName];
+            return k_ObserverCallBack[topicName];
         }
     }
 }

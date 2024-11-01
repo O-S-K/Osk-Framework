@@ -20,6 +20,6 @@ namespace OSK
         public void Initialize()
         {
             viewManager.Initialize();
-        }  
+        } 
     }
 }

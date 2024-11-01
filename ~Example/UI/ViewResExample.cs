@@ -8,9 +8,9 @@ public class ViewResExample : View
     public override void Open(object data = null)
     {
         base.Open(data);
-        Main.Time.Create(gameObject, 1, false, () =>
-        {
-            Hide();
-        });
+        // Main.Time.Create(gameObject, 1, false, () =>
+        // {
+        //     Hide();
+        // });
     }
 }

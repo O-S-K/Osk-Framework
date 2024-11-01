@@ -1,26 +1,26 @@
 using System.Collections.Generic;
 using CustomInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
     public class UIManager : GameFrameworkComponent
     {
-        [ReadOnly, SerializeField]
-        private RootUI rootUI;
-        public UIMoveEffect ParticleUI => rootUI.ParticleUI;
-        public Canvas GetCanvas => rootUI.GetCanvas;
-        public Camera GetUICamera => rootUI.GetUICamera;
- 
+        [ReadOnly, SerializeField] private RootUI _rootUI;
+        public UIMoveEffect ParticleUI => _rootUI.ParticleUI;
+        public Canvas GetCanvas => _rootUI.GetCanvas;
+        public Camera GetUICamera => _rootUI.GetUICamera;
+
 
         public override void OnInit()
-        { 
-            if (rootUI == null)
+        {
+            if (_rootUI == null)
             {
-                rootUI = FindObjectOfType<RootUI>();
-                if (rootUI != null)
+                _rootUI = FindObjectOfType<RootUI>();
+                if (_rootUI != null)
                 {
-                    rootUI.Initialize();
+                    _rootUI.Initialize();
                 }
                 else
                 {
@@ -33,57 +33,77 @@ namespace OSK
 
         public T Spawn<T>(string path, bool isCache = true, bool isHidePrevPopup = true) where T : View
         {
-            return rootUI.ListViews.Spawn<T>(path, isCache, isHidePrevPopup);
+            return _rootUI.ListViews.Spawn<T>(path, isCache, isHidePrevPopup);
         }
-        
+
         public void Delete<T>(T popup) where T : View
         {
-            rootUI.ListViews.Delete<T>(popup);
+            _rootUI.ListViews.Delete<T>(popup);
         }
 
         public T Open<T>(bool isHidePrevPopup = false) where T : View
         {
-            return rootUI.ListViews.Open<T>(isHidePrevPopup);
+            return _rootUI.ListViews.Open<T>(isHidePrevPopup);
+        }
+
+        public void OpenPrevious()
+        {
+            _rootUI.ListViews.OpenPrevious();
         }
 
         public T TryOpen<T>(bool isHidePrevPopup = false) where T : View
         {
-            return rootUI.ListViews.TryOpen<T>(isHidePrevPopup);
+            return _rootUI.ListViews.TryOpen<T>(isHidePrevPopup);
         }
 
         public void Open(View view)
         {
-            rootUI.ListViews.Open(view, true);
+            _rootUI.ListViews.Open(view, true);
         }
 
         public void Hide(View view)
         {
-            rootUI.ListViews.Hide(view);
+            _rootUI.ListViews.Hide(view);
         }
 
         public void HideAll()
         {
-            rootUI.ListViews.HideAll();
-        } 
-        
-        public void HideIgnore<T>() where T : View
-        {
-            rootUI.ListViews.HideIgnore<T>();
+            _rootUI.ListViews.HideAll();
         }
-        
+
+        public void HideAllIgnoreView<T>() where T : View
+        {
+            _rootUI.ListViews.HideIgnore<T>();
+        }
+
+        public void HideAllIgnoreView<T>(T[] viewsToKeep) where T : View
+        {
+            _rootUI.ListViews.HideIgnore(viewsToKeep);
+        }
+
         public T Get<T>() where T : View
         {
-            return rootUI.ListViews.Get<T>();
+            return _rootUI.ListViews.Get<T>();
+        }
+
+        public T GetOrOpen<T>() where T : View
+        {
+            var view = _rootUI.ListViews.GetIsActive<T>();
+            if (view == null)
+            {
+                view = Open<T>();
+            }
+            return view;
         }
 
         public bool IsShowing(View view)
         {
-            return rootUI.ListViews.Get(view).IsShowing;
+            return _rootUI.ListViews.Get(view).IsShowing;
         }
 
         public List<View> GetAll()
         {
-            return rootUI.ListViews.GetAll();
+            return _rootUI.ListViews.GetAll();
         }
 
         #endregion

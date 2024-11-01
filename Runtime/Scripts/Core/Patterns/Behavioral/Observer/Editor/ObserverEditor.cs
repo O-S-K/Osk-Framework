@@ -28,7 +28,7 @@ namespace OSK
         {
             if (observer == null) return;
 
-            foreach (var topic in observer.dictObserver)
+            foreach (var topic in observer.k_ObserverCallBack)
             {
                 EditorGUILayout.LabelField(topic.Key, EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;

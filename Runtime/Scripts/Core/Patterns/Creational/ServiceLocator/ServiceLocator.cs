@@ -6,15 +6,13 @@ using System.Collections.Generic;
 
 namespace OSK
 {
-    public interface IService
-    {
-    }
+    public interface IService { }
 
     public class ServiceLocator : GameFrameworkComponent
     {
         private readonly Dictionary<Type, IService> k_Services = new Dictionary<Type, IService>();
-        private readonly Dictionary<Type, Action<IService>> k_Callbacks = new();
-        private readonly Dictionary<Delegate, Action<IService>> k_RegisteredCallbacks = new();
+        private readonly Dictionary<Type, Action<IService>> k_Callbacks = new Dictionary<Type, Action<IService>>();
+        private readonly Dictionary<Delegate, Action<IService>> k_RegisteredCallbacks = new Dictionary<Delegate, Action<IService>>();
  
         public override void OnInit() {}
 

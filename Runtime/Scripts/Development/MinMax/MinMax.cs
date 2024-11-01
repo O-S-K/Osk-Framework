@@ -1,16 +1,12 @@
 using UnityEngine;
 
-
 [System.Serializable]
-public struct MinMax
+public class MinMax
 {
     public float min;
     public float max;
 
-    public float randomValue
-    {
-        get { return Random.Range(min, max); }
-    }
+    public float RandomValue => Random.Range(min, max);
 
     public MinMax(float min, float max)
     {

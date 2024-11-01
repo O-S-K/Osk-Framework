@@ -12,13 +12,61 @@ public class TimeExample : MonoBehaviour
     [Button("Test Time")]
     private void Test()
     {
-        // myTimer = World.Time.Create(gameObject, 2, () =>
+        // var t1 = Main.Time.Create(this);
+        // t1.OnStart = () => Debug.Log("T1 Timer started.");
+        // t1.OnStart?.Invoke();
+
+        // var t2 = Main.Time.Create(this);
+        // t2.OnStart = () => Logg.Log("T2 Timer started.");
+        // t2.OnStart?.Invoke();
+        // t2.UseFixedUpdate(false).SetTimeOut(10);
+        // t2.OnTick = () =>
         // {
-        //     Debug.Log("Hello World");
-        // });
+        //     if (t2.Second == 5)
+        //     {
+        //         t2.SetSpeedTime(2);
+        //     }
+        //     if (t2.Second == 9)
+        //     {
+        //         t2.SetSpeedTime(0.5f);
+        //     }
+        // };
+        // t2.OnTick = () =>
+        // {
+        //     Logg.Log("t2 Timer:  " + t2.Second);
+        //     if (t2.Second >= 10)
+        //     {
+        //         t2.Dispose();
+        //     }
+        // };
+        // t2.OnCompleted = () => Logg.Log("T2 Timer completed.");
+
+        var t3 = Main.Time.CreateLoops(this);
+        t3.OnTick = () => Debug.Log("T3 Timer ticked.");
+        t3.OnFixedTick = () => Debug.Log("T3  Fixed Timer ticked.");
+        t3.OnTickPerSecond = () => Debug.Log("T3 Timer:  " + t3.Second);
+
+        // var t4 = Main.Time.CreateLoops(this, true).UseFixedUpdate(false).SetSpeedTime(1);
+        // t4.OnTickPerSecond = () =>
+        // {
+        //     Logg.Log("T4 Timer:  " + t4.Second);
+        //     if (t4.Second >= 10)
+        //     {
+        //         t4.Dispose();
+        //     }
+        // };
+        // t4.OnCompleted = () => Logg.Log("T4 Timer completed.");
         //
-        myTimer = Main.Time.Create(gameObject, 1f).Loops(5).Invoke(() => Debug.Log("Tick"));
-        // myTimer = World.Time.Create(gameObject, 1f).Unscale().Invoke(() => Debug.Log("Tick"));
+        // var t5 = Main.Time.CreateLoops(this, true).UseFixedUpdate(false).SetSpeedTime(2);
+        // t5.OnTickPerSecond = () =>
+        // {
+        //     Logg.Log("T5 Timer:  " + t5.Second);
+        //     if (t5.Second >= 10)
+        //     {
+        //         t5.Dispose();
+        //     }
+        // };
+        // t5.OnCompleted = () => Logg.Log("T5 Timer completed.");
     }
 
     [Button("Clear Timers")]

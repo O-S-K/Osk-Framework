@@ -32,14 +32,14 @@ namespace OSK
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Playing Sounds", EditorStyles.boldLabel, GUILayout.Width(400));
 
-            if (soundManager.GetSoundInfos != null &&
-                (soundManager.GetMusicInfos != null && soundManager.GetMusicInfos.Count > 0))
+            if (soundManager.GetListSoundInfos != null &&
+                (soundManager.GetListMusicInfos != null && soundManager.GetListMusicInfos.Count > 0))
             {
                 // Sổ nhóm Music
                 showMusic = EditorGUILayout.Foldout(showMusic, "Music");
                 if (showMusic)
                 {
-                    foreach (var playingSound in soundManager.GetMusicInfos)
+                    foreach (var playingSound in soundManager.GetListMusicInfos)
                     {
                         if (playingSound.soundInfo.type == SoundType.Music) // Giả sử có SoundType
                         {
@@ -52,7 +52,7 @@ namespace OSK
                 showSFX = EditorGUILayout.Foldout(showSFX, "SFX");
                 if (showSFX)
                 {
-                    foreach (var playingSound in soundManager.GetMusicInfos)
+                    foreach (var playingSound in soundManager.GetListMusicInfos)
                     {
                         if (playingSound.soundInfo.type == SoundType.SFX) // Giả sử có SoundType
                         {
@@ -92,8 +92,8 @@ namespace OSK
             {
                 playingSound.audioSource.Stop();
                 DestroyImmediate(playingSound.audioSource.gameObject);
-                ((SoundManager)target).GetMusicInfos.Remove(playingSound);
-                ((SoundManager)target).GetMusicInfos.RefreshList();
+                ((SoundManager)target).GetListMusicInfos.Remove(playingSound);
+                ((SoundManager)target).GetListMusicInfos.RefreshList();
             }
 
             EditorGUILayout.EndHorizontal();

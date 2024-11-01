@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using OSK;
 using UnityEngine;
 
-public class BotIdleStateExample : IStateMachine
+public class BotIdleStateExample : IState
 {
-    public string StateName  => "BotIdleStateExample";
+    public string StateName => "BotIdleStateExample";
+    private BotStateExample botStateExample;
 
-    public void Enter()
+    public BotIdleStateExample(BotStateExample botStateExample)
     {
+        this.botStateExample = botStateExample;
+    }
+
+    public void OnEnter()
+    {
+        Debug.Log("Idle");
     }
 
     public void Tick()
@@ -19,7 +26,7 @@ public class BotIdleStateExample : IStateMachine
     {
     }
 
-    public void Exit()
+    public void OnExit()
     {
     }
 }

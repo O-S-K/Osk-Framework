@@ -2,6 +2,7 @@ using UnityEngine;
 using CustomInspector;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
@@ -12,7 +13,7 @@ namespace OSK
         public System.Action OnLoadingComplete { get; set; }
         public System.Action<string> OnLoadingFailed { get; set; }
         
-        [ReadOnly, SerializeField] private string currentSceneName = "";
+        [ReadOnly, SerializeField] private string _currentSceneName = "";
 
         public override void OnInit() {}
 

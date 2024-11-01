@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic; 
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
     public class DataManager : GameFrameworkComponent
     {  
         // Data store
-        [SerializeField] private SerializeFieldDictionary<Type, object> _dataStore = new();
-
+        [SerializeReference] [SerializeField]
+        private Dictionary<Type, object> k_DataStore = new Dictionary<Type, object>();
         
         public override void OnInit() {}
 
@@ -17,14 +18,14 @@ namespace OSK
         public void Add<T>(T data)
         {
             Type type = typeof(T);
-            if (!_dataStore.ContainsKey(type))
+            if (!k_DataStore.ContainsKey(type))
             {
                 Logg.Log($"Creating data store for type {type}.", ColorCustom.Green);
-                _dataStore[type] = new List<T>();
+                k_DataStore[type] = new List<T>();
             }
 
             // check if data is already in the list
-            List<T> list = (List<T>)_dataStore[type];
+            List<T> list = (List<T>)k_DataStore[type];
             if (!list.Contains(data))
             {
                 Logg.Log($"Adding data of type {type}.", ColorCustom.Green);
@@ -40,20 +41,20 @@ namespace OSK
         public void Add<T>(List<T> dataList)
         {
             Type type = typeof(T);
-            if (!_dataStore.ContainsKey(type))
+            if (!k_DataStore.ContainsKey(type))
             {
-                _dataStore[type] = new List<T>();
+                k_DataStore[type] = new List<T>();
             }
 
             Logg.Log($"Adding data of type {type}.", ColorCustom.Green);
-            ((List<T>)_dataStore[type]).AddRange(dataList);
+            ((List<T>)k_DataStore[type]).AddRange(dataList);
         }
 
         // Get all data of type T
         public List<T> GetAll<T>()
         {
             Type type = typeof(T);
-            if (_dataStore.TryGetValue(type, out var value))
+            if (k_DataStore.TryGetValue(type, out var value))
             {
                 Logg.Log($"Data of type {type} found.", ColorCustom.Green);
                 return (List<T>)value;
@@ -66,7 +67,7 @@ namespace OSK
         public T Get<T>()
         {
             Type type = typeof(T);
-            if (_dataStore.TryGetValue(type, out var value))
+            if (k_DataStore.TryGetValue(type, out var value))
             {
                 List<T> list = (List<T>)value;
                 if (list.Count > 0)
@@ -85,7 +86,7 @@ namespace OSK
         public T Query<T>(Predicate<T> query)
         {
             Type type = typeof(T);
-            if (_dataStore.TryGetValue(type, out var value))
+            if (k_DataStore.TryGetValue(type, out var value))
             {
                 Logg.Log($"Data of type {type} found.", ColorCustom.Green);
                 List<T> list = (List<T>)value;
@@ -99,7 +100,7 @@ namespace OSK
         public List<T> QueriesAll<T>(Predicate<T> query)
         {
             Type type = typeof(T);
-            if (_dataStore.TryGetValue(type, out var value))
+            if (k_DataStore.TryGetValue(type, out var value))
             {
                 Logg.Log($"Data of type {type} found.", ColorCustom.Green);
                 List<T> list = (List<T>)value;
@@ -114,7 +115,7 @@ namespace OSK
         public void Remove<T>(Predicate<T> query)
         {
             Type type = typeof(T);
-            if (_dataStore.TryGetValue(type, out var value))
+            if (k_DataStore.TryGetValue(type, out var value))
             {
                 Logg.Log($"Data of type {type} found.");
                 List<T> list = (List<T>)value;

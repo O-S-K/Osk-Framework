@@ -17,7 +17,26 @@ namespace OSK
             return v;
         }
 
-       
+        public static GameObject CreateGO(this GameObject gameObject, Transform parent)
+        {
+            if(parent == null)
+            {
+                Debug.LogError("Parent is null");
+                return null;
+            }
+            
+            if(parent.Find(gameObject.name) != null)
+            {
+                Debug.LogError("GameObject with name " + gameObject.name + " already exists in parent " + parent.name);
+                return parent.Find(gameObject.name).gameObject;
+            }
+            
+            GameObject go = new GameObject(gameObject.name);
+            go.transform.SetParent(parent);
+            return go;
+        }
+
+
         public static void DestroyAllChildren(this Transform parent)
         {
             for (int i = parent.childCount - 1; i >= 0; i--)
@@ -33,7 +52,7 @@ namespace OSK
                 gameObjects[i].SetActive(false);
             }
         }
- 
+
         public static void RefreshList<T>(this List<T> list) where T : class
         {
             for (int i = list.Count - 1; i >= 0; i--)
@@ -42,6 +61,5 @@ namespace OSK
                     list.RemoveAt(i);
             }
         }
-
     }
 }

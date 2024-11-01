@@ -7,121 +7,104 @@ namespace OSK
 {
     public class TimeManager : GameFrameworkComponent
     {
-        public override void OnInit() {}
-
         // Lists to keep track of all active timers
-        [ShowInInspector, ReadOnly] private List<Timer> updateTimers = new List<Timer>();
-        [ShowInInspector, ReadOnly] private List<Timer> fixedUpdateTimers = new List<Timer>();
+        [ShowInInspector, ReadOnly] private List<Timer> _listUpdateTimers = new List<Timer>();
+        [ShowInInspector, ReadOnly] private List<Timer> _listFixedUpdateTimers = new List<Timer>();
 
-        // update every frame for a duration
-        public Timer Create(MonoBehaviour owner, float duration, bool useFixedUpdate = false, Action onDispose = null)
+        public override void OnInit()
         {
-            return Create(owner.gameObject, duration, useFixedUpdate, onDispose);
         }
 
-        public Timer Create(GameObject owner, float duration, bool useFixedUpdate = false, Action onDispose = null)
+        // update every frame for a duration
+        public Timer Create(MonoBehaviour owner)
+        {
+            return Create(owner.gameObject);
+        }
+
+        public Timer Create(GameObject owner)
         {
             Timer newTimer = new Timer();
-            newTimer.Start(owner, duration, onDispose);
+            newTimer.Start(owner);
 
-            if (useFixedUpdate)
-            {
-                fixedUpdateTimers.Add(newTimer);
-            }
+            if (newTimer.useFixedUpdate)
+                _listFixedUpdateTimers.Add(newTimer);
             else
-            {
-                updateTimers.Add(newTimer);
-            }
+                _listUpdateTimers.Add(newTimer);
 
             return newTimer;
         }
-        
+
         public DateTime GetRealTimeWorld()
         {
             WorldTimeAPI worldTimeAPI = new WorldTimeAPI();
             return worldTimeAPI.GetCurrentDateTime();
         }
-         
 
-        // update every frame
-        public Timer Create(MonoBehaviour owner, bool useFixedUpdate = false)
+        /// <summary>
+        /// Create a timer that loops a certain number of times
+        /// not use SetTimeOut, Add, Loops, UseFixedUpdate
+        /// </summary>
+        public Timer CreateLoops(MonoBehaviour owner, bool useFixedUpdate)
+        {
+            return CreateLoops(owner.gameObject, useFixedUpdate);
+        }
+
+        /// <summary>
+        /// Create a timer that loops a certain number of times
+        /// not use SetTimeOut, Add, Loops, UseFixedUpdate
+        /// </summary>
+        public Timer CreateLoops(GameObject owner, bool useFixedUpdate)
         {
             Timer newTimer = new Timer();
-            newTimer.Start(owner.gameObject, 0);
-            newTimer.Loops(-1);
+            newTimer.Start(owner).Loops(-1);
 
             if (useFixedUpdate)
-            {
-                fixedUpdateTimers.Add(newTimer);
-            }
+                _listFixedUpdateTimers.Add(newTimer);
             else
-            {
-                updateTimers.Add(newTimer);
-            }
-
+                _listUpdateTimers.Add(newTimer);
             return newTimer;
         }
 
-        public Timer Create(GameObject owner, bool useFixedUpdate = false)
+        public Timer CreateLoops(MonoBehaviour owner)
         {
             Timer newTimer = new Timer();
-            newTimer.Start(owner, 0);
-            newTimer.Loops(-1);
+            newTimer.Start(owner.gameObject).Loops(-1);
 
-            if (useFixedUpdate)
-            {
-                fixedUpdateTimers.Add(newTimer);
-            }
-            else
-            {
-                updateTimers.Add(newTimer);
-            }
-
+            _listFixedUpdateTimers.Add(newTimer);
+            _listUpdateTimers.Add(newTimer);
             return newTimer;
         }
-
-        public void AddSpeedMultiplier(float speedMultiplier)
-        {
-            foreach (Timer timer in updateTimers)
-            {
-                timer.AddSpeedMultiplier(speedMultiplier);
-            }
-
-            foreach (Timer timer in fixedUpdateTimers)
-            {
-                timer.AddSpeedMultiplier(speedMultiplier);
-            }
-        }
+ 
 
         // Method to update all timers (called in Update)
         private void Update()
         {
-            for (int i = updateTimers.Count - 1; i >= 0; i--)
+            for (int i = _listUpdateTimers.Count - 1; i >= 0; i--)
             {
-                Timer timer = updateTimers[i];
+                Timer timer = _listUpdateTimers[i];
                 timer.Update();
 
                 // Remove the timer if it has been disposed
                 if (timer == null || timer.Equals(null))
                 {
-                    updateTimers.RemoveAt(i);
-                }
+                    _listUpdateTimers.RemoveAt(i);
+                } 
             }
         }
 
         // Method to update all timers (called in FixedUpdate)
         private void FixedUpdate()
         {
-            for (int i = fixedUpdateTimers.Count - 1; i >= 0; i--)
+            for (int i = _listFixedUpdateTimers.Count - 1; i >= 0; i--)
             {
-                Timer timer = fixedUpdateTimers[i];
+                Timer timer = _listFixedUpdateTimers[i];
                 timer.FixedUpdate();
 
                 // Remove the timer if it has been disposed
                 if (timer == null || timer.Equals(null))
                 {
-                    fixedUpdateTimers.RemoveAt(i);
-                }
+                    _listFixedUpdateTimers.RemoveAt(i);
+                } 
             }
         }
 
@@ -134,12 +117,12 @@ namespace OSK
         [Button]
         public void PauseAllTimers()
         {
-            foreach (Timer timer in updateTimers)
+            foreach (Timer timer in _listUpdateTimers)
             {
                 timer.Pause();
             }
 
-            foreach (Timer timer in fixedUpdateTimers)
+            foreach (Timer timer in _listFixedUpdateTimers)
             {
                 timer.Pause();
             }
@@ -154,12 +137,12 @@ namespace OSK
         [Button]
         public void ResumeAllTimers()
         {
-            foreach (Timer timer in updateTimers)
+            foreach (Timer timer in _listUpdateTimers)
             {
                 timer.Resume();
             }
 
-            foreach (Timer timer in fixedUpdateTimers)
+            foreach (Timer timer in _listFixedUpdateTimers)
             {
                 timer.Resume();
             }
@@ -169,41 +152,41 @@ namespace OSK
         // Method to remove a specific timer
         public void RemoveTimer(Timer timer)
         {
-            if (updateTimers.Contains(timer))
+            if (_listUpdateTimers.Contains(timer))
             {
                 timer.Dispose();
-                updateTimers.Remove(timer);
+                _listUpdateTimers.Remove(timer);
             }
-            else if (fixedUpdateTimers.Contains(timer))
+            else if (_listFixedUpdateTimers.Contains(timer))
             {
                 timer.Dispose();
-                fixedUpdateTimers.Remove(timer);
+                _listFixedUpdateTimers.Remove(timer);
             }
         }
 
         public void UpdateListTimer()
         {
-            updateTimers.RemoveAll(timer => timer.count == 0 || timer.owner == null);
-            fixedUpdateTimers.RemoveAll(timer => timer.count == 0 || timer.owner == null);
+            _listUpdateTimers.RemoveAll(timer => timer.count == 0 || timer.owner == null);
+            _listFixedUpdateTimers.RemoveAll(timer => timer.count == 0 || timer.owner == null);
         }
 
         // Method to clear all timers
         [Button]
         public void ClearAllTimers()
         {
-            foreach (Timer timer in updateTimers)
+            foreach (Timer timer in _listUpdateTimers)
             {
                 timer.Dispose();
             }
 
-            updateTimers.Clear();
+            _listUpdateTimers.Clear();
 
-            foreach (Timer timer in fixedUpdateTimers)
+            foreach (Timer timer in _listFixedUpdateTimers)
             {
                 timer.Dispose();
             }
 
-            fixedUpdateTimers.Clear();
+            _listFixedUpdateTimers.Clear();
         }
     }
 }

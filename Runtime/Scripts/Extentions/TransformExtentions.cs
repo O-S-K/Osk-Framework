@@ -11,6 +11,11 @@ namespace OSK
             var r = rectTransform as RectTransform;
             if (r != null) r.anchoredPosition = pos;
         }
+        
+        public static RectTransform GetRectTransform(this Transform transform)
+        {
+            return transform as RectTransform;
+        }
 
         public static void SetTopSibling(this Transform transform)
         {

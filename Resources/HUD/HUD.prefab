@@ -101,104 +101,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _listView: []
-  _listViewSO: {fileID: 11400000, guid: a5af9ad8262be1d4682b1ce1058cc6b7, type: 2}
---- !u!1 &6633980017457705876
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1704734985287674680}
-  - component: {fileID: 8482655411840522565}
-  - component: {fileID: 2893222674408706832}
-  - component: {fileID: 3021036961124419736}
-  m_Layer: 5
-  m_Name: CoinImage
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &1704734985287674680
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6633980017457705876}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 5732135583120036421}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 85, y: 85}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &8482655411840522565
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6633980017457705876}
-  m_CullTransparentMesh: 1
---- !u!114 &2893222674408706832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6633980017457705876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7aa27338648158445bc42f8c4318759e, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 1
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!95 &3021036961124419736
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6633980017457705876}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0cd96a9ceba921e4cb82c637ba43d5ed, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6635573903415105639
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,7 +217,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 882085733013863172}
-  - {fileID: 1704734985287674680}
   m_Father: {fileID: 1800635879066748726}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -524,22 +425,277 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvas: {fileID: 1271570112722841435}
-  iconClones:
-  - {fileID: 6633980017457705876}
-  indexIcon: 0
-  randomX: {x: -3, y: 3}
-  randomY: {x: -2, y: -3}
-  timeDrop: 0.3
-  speedDrop: 1
-  timeFly: 1
-  speedFly: 2
-  numberOfCoins: 25
-  delayMove: 0.1
-  pointSpawn: {fileID: 0}
-  startPosition: {x: 0, y: 0, z: 0}
-  target: {fileID: 0}
-  isDrop: 1
-  isUseJump: 1
-  jumpPower: 1
-  numjump: 1
-  ease: 2
+  effectSettings:
+  - name: OrangeDrop
+    icon: {fileID: 7443643066586346681, guid: e01142b0fbdf55c4296ae4d84f117eb5, type: 3}
+    numberOfEffects: 1
+    isDrop: 0
+    sphereRadius: 1.3
+    delayDrop:
+      min: 0
+      max: 0.2
+    timeDrop:
+      min: 0.2
+      max: 0.4
+    typeAnimationDrop: 0
+    easeDrop: 27
+    curveDrop:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    typeMove: 4
+    jumpPower: 1.5
+    paths: []
+    typeAnimationMove: 0
+    easeMove: 18
+    curveMove:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    timeMove:
+      min: 0.3
+      max: 0.3
+    delayMove:
+      min: 0
+      max: 0
+    scaleTarget: 0.5
+  - name: Coin
+    icon: {fileID: 1924525239510825705, guid: 601d6dc6d17842047b76e6a864b46da6, type: 3}
+    numberOfEffects: 20
+    isDrop: 1
+    sphereRadius: 1.3
+    delayDrop:
+      min: 0
+      max: 0.2
+    timeDrop:
+      min: 0.2
+      max: 0.4
+    typeAnimationDrop: 0
+    easeDrop: 27
+    curveDrop:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    typeMove: 0
+    jumpPower: 1
+    paths: []
+    typeAnimationMove: 1
+    easeMove: 0
+    curveMove:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.06234008
+        outSlope: 0.06234008
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.3061606
+      - serializedVersion: 3
+        time: 0.18017736
+        value: -0.085696906
+        inSlope: -0.82472825
+        outSlope: -0.82472825
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.40226582
+        value: -0.3423096
+        inSlope: -0.7173681
+        outSlope: -0.7173681
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.53941226
+        value: -0.15541378
+        inSlope: 3.5605104
+        outSlope: 3.5605104
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.07637996
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    timeMove:
+      min: 0.5
+      max: 0.8
+    delayMove:
+      min: 0.2
+      max: 0.8
+    scaleTarget: 1
+  - name: Orange
+    icon: {fileID: 7443643066586346681, guid: e01142b0fbdf55c4296ae4d84f117eb5, type: 3}
+    numberOfEffects: 20
+    isDrop: 1
+    sphereRadius: 1.3
+    delayDrop:
+      min: 0
+      max: 0.2
+    timeDrop:
+      min: 0.2
+      max: 0.4
+    typeAnimationDrop: 0
+    easeDrop: 27
+    curveDrop:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    typeMove: 0
+    jumpPower: 1
+    paths: []
+    typeAnimationMove: 1
+    easeMove: 0
+    curveMove:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.06234008
+        outSlope: 0.06234008
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.3061606
+      - serializedVersion: 3
+        time: 0.18017736
+        value: -0.085696906
+        inSlope: -0.82472825
+        outSlope: -0.82472825
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.40226582
+        value: -0.3423096
+        inSlope: -0.7173681
+        outSlope: -0.7173681
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.53941226
+        value: -0.15541378
+        inSlope: 3.5605104
+        outSlope: 3.5605104
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.07637996
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    timeMove:
+      min: 0.5
+      max: 0.8
+    delayMove:
+      min: 0.2
+      max: 0.8
+    scaleTarget: 1
