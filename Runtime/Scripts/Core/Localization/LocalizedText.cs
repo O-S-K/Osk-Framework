@@ -25,43 +25,53 @@ namespace OSK
                 Logg.LogWarning("No suitable text component found on " + gameObject.name);
                 return;
             }
-
-            if (isUpdateOnStart)
-            {
-                UpdateText();
-            }
         }
 
-        private void OnEnable()
+        private void Start()
         {
-            if (currentLanguage != Main.Localization.GetCurrentLanguage)
+            if (isUpdateOnStart && textComponent != null)
             {
-                currentLanguage = Main.Localization.GetCurrentLanguage;
                 UpdateText();
             }
-
+             
             Main.Observer.Add("UpdateLanguage", UpdateText);
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             Main.Observer.Remove("UpdateLanguage", UpdateText);
         }
 
-#if UNITY_EDITOR
-        public SystemLanguage language;
-        public bool isOnValidate = false;
-
-        private void OnValidate()
+        private void OnEnable()
         {
-            if (isOnValidate)
+            if (Main.Localization == null)
+                return;
+
+            if (Main.Localization.IsSetDefaultLanguage)
             {
-                UpdateText();
+                if (currentLanguage != Main.Localization.GetCurrentLanguage)
+                {
+                    currentLanguage = Main.Localization.GetCurrentLanguage;
+                    UpdateText();
+                }
             }
         }
+ 
+
+#if UNITY_EDITOR
+        // public SystemLanguage language;
+        // public bool isOnValidate = false;
+        //
+        // private void OnValidate()
+        // {
+        //     if (isOnValidate)
+        //     {
+        //         UpdateText();
+        //     }
+        // }
 
         [Button]
-        private void CheckKeyInLocalization()
+        private void CheckKeyExist()
         {
             if (string.IsNullOrEmpty(key))
             {

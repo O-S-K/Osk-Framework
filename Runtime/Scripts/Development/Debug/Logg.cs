@@ -86,6 +86,14 @@ namespace OSK
                 return;
             Debug.Log(($"[OSK] {string.Format(format, args)}").Color(ColorCustom.Green).Size(12));
         }
+        
+        public static void CheckNullRef(bool isNull, string name)
+        {
+            if (isNull)
+            {
+                Logg.LogError($"Null Reference: {name}");
+            }
+        }
     }
 
     public static class ExLog

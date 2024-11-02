@@ -36,8 +36,8 @@ namespace OSK
                 DontDestroyOnLoad(gameObject);
             InitComponents();
             InitDataComponents();
+            CheckNullComponents();
         }
-        
 
         private static void InitComponents()
         {
@@ -76,6 +76,30 @@ namespace OSK
             }
             
             OSK.Logg.Log("Init Data Components Done!");
+        }
+        
+        public void CheckNullComponents()
+        {
+             Logg.CheckNullRef(Configs == null, "Configs");
+             Logg.CheckNullRef(Save== null, "Save");
+             Logg.CheckNullRef(Data== null, "Data");
+             Logg.CheckNullRef(Localization== null, "Localization");
+             Logg.CheckNullRef(Time== null, "Time");
+             Logg.CheckNullRef(Service== null, "Service");
+             Logg.CheckNullRef(Pool== null, "Pool");
+             Logg.CheckNullRef(Observer== null, "Observer");
+             Logg.CheckNullRef(EventBus== null, "EventBus");
+             Logg.CheckNullRef(Fsm== null, "Fsm");
+             Logg.CheckNullRef(Command== null, "Command");
+             Logg.CheckNullRef(Scene== null, "Scene");
+             Logg.CheckNullRef(Res== null, "Res");
+             Logg.CheckNullRef(Network== null, "Network");
+             Logg.CheckNullRef(WebRequest== null, "WebRequest");
+             Logg.CheckNullRef(UI== null, "UI");
+             Logg.CheckNullRef(Sound== null, "Sound");
+             Logg.CheckNullRef(Entity== null, "Entity");
+             Logg.CheckNullRef(Native== null, "Native");
+             Logg.Log("Check Null Components Done!");
         }
     }
 }

@@ -10,10 +10,10 @@ namespace OSK
         [SerializeField] private ViewManager viewManager;
         [SerializeField] private Camera _uiCamera;
         [SerializeField] private Canvas _canvas;
-        [SerializeField] private UIMoveEffect _uiMoveEffect;
+        [FormerlySerializedAs("_uiMoveEffect")] [SerializeField] private UIImageEffect uiImageEffect;
         
         public ViewManager ListViews => viewManager;
-        public UIMoveEffect ParticleUI => _uiMoveEffect;
+        public UIImageEffect ParticleUI => uiImageEffect;
         public Canvas GetCanvas => _canvas;
         public Camera GetUICamera => _uiCamera;
 

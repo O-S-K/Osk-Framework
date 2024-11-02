@@ -25,6 +25,7 @@ namespace OSK
         [ReadOnly, SerializeField] private List<SystemLanguage> _listLanguagesCvs = new List<SystemLanguage>();
         private SystemLanguage _currentLanguage = SystemLanguage.English;
  
+        public bool IsSetDefaultLanguage => _isSetDefaultLanguage;
         private bool _isSetDefaultLanguage = false;
 
         public override void OnInit() {}
@@ -59,7 +60,7 @@ namespace OSK
         {
             if (_isSetDefaultLanguage == false)
             {
-                Logg.LogError("Please set default language first.");
+                Logg.LogError("Please set default language first." + key);
                 return "";
             }
 

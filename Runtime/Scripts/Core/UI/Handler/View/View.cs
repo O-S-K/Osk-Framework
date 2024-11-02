@@ -13,41 +13,39 @@ namespace OSK
         Overlay,
         Screen
     }
-    
+
     [RequireComponent(typeof(UITransition))]
     public class View : MonoBehaviour
     {
-        [Header("View")]
-        public EViewType viewType = EViewType.Popup;
+        [Header("View")] public EViewType viewType = EViewType.Popup;
         public int depth;
-        public bool isOverlay = false; 
-        
-        [Header("Events")] 
-        [SerializeField] protected bool showEvent;
+        public bool isOverlay = false;
 
-        [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _afterInitialized;
-        [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _beforeOpened;
-        [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _afterOpened;
-        [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _beforeClosed;
-        [ShowIf(nameof(showEvent)), SerializeField] protected UnityEvent _afterClosed;
+        [Header("Events")] [SerializeField] protected bool showEvent;
+
+        [ShowIf(nameof(showEvent))] public Action EventAfterInit;
+        [ShowIf(nameof(showEvent))] public Action EventBeforeOpened;
+        [ShowIf(nameof(showEvent))] public Action EventAfterOpened;
+        [ShowIf(nameof(showEvent))] public Action EventBeforeClosed;
+        [ShowIf(nameof(showEvent))] public Action EventAfterClosed;
 
         protected UITransition _uiTransition;
         protected ViewManager ViewManager;
 
         public bool IsShowing => _isShowing;
         [ShowInInspector, ReadOnly] private bool _isShowing;
- 
+
 
         public virtual void Initialize(ViewManager viewManager)
         {
             gameObject.SetActive(false);
-            if(isOverlay)
+            if (isOverlay)
                 transform.SetTopSibling();
             _isShowing = false;
             ViewManager = viewManager;
             _uiTransition = GetComponent<UITransition>();
             _uiTransition.Initialize();
-            _afterInitialized.Invoke();
+            EventAfterInit?.Invoke();
         }
 
         public void SetSetSiblingIndex(int index)
@@ -67,15 +65,12 @@ namespace OSK
         public virtual void Open(object data = null)
         {
             _isShowing = true;
-            _beforeOpened.Invoke();
+            EventBeforeOpened?.Invoke();
 
             gameObject.SetActive(false);
             gameObject.SetActive(true);
 
-            _uiTransition.OpenTrans(() =>
-            {
-                _afterOpened.Invoke();
-            });
+            _uiTransition.OpenTrans(() => { EventAfterOpened?.Invoke(); });
         }
 
         public virtual void Hide()
@@ -84,22 +79,22 @@ namespace OSK
                 return;
 
             _isShowing = false;
-            _beforeClosed.Invoke();
+            EventBeforeClosed?.Invoke();
             _uiTransition.CloseTrans(() =>
             {
                 gameObject.SetActive(false);
                 ViewManager.RemovePopup(this);
-                _afterClosed.Invoke();
+                EventAfterClosed?.Invoke();
             });
         }
-        
+
         public void CloseImmediately()
         {
-            _isShowing = false; 
+            _isShowing = false;
             _uiTransition.AnyClose(() =>
             {
                 gameObject.SetActive(false);
-                ViewManager.RemovePopup(this); 
+                ViewManager.RemovePopup(this);
             });
         }
     }

@@ -51,7 +51,7 @@ MonoBehaviour:
   viewManager: {fileID: 5071804772547125937}
   _uiCamera: {fileID: 793015797466591391}
   _canvas: {fileID: 1271570112722841435}
-  _uiMoveEffect: {fileID: 3914629582143115954}
+  uiImageEffect: {fileID: 3914629582143115954}
 --- !u!1 &6018025278365338786
 GameObject:
   m_ObjectHideFlags: 0
@@ -602,7 +602,7 @@ MonoBehaviour:
   - name: Orange
     icon: {fileID: 7443643066586346681, guid: e01142b0fbdf55c4296ae4d84f117eb5, type: 3}
     numberOfEffects: 20
-    isDrop: 1
+    isDrop: 0
     sphereRadius: 1.3
     delayDrop:
       min: 0
@@ -636,11 +636,11 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-    typeMove: 0
-    jumpPower: 1
+    typeMove: 4
+    jumpPower: -3
     paths: []
-    typeAnimationMove: 1
-    easeMove: 0
+    typeAnimationMove: 0
+    easeMove: 4
     curveMove:
       serializedVersion: 2
       m_Curve:
@@ -696,6 +696,106 @@ MonoBehaviour:
       min: 0.5
       max: 0.8
     delayMove:
+      min: 0
+      max: 0
+    scaleTarget: 1
+  - name: CoinWorldToUI
+    icon: {fileID: 1924525239510825705, guid: 601d6dc6d17842047b76e6a864b46da6, type: 3}
+    numberOfEffects: 1
+    isDrop: 1
+    sphereRadius: 1.3
+    delayDrop:
+      min: 0
+      max: 0.2
+    timeDrop:
       min: 0.2
+      max: 0.4
+    typeAnimationDrop: 0
+    easeDrop: 27
+    curveDrop:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    typeMove: 4
+    jumpPower: -3
+    paths: []
+    typeAnimationMove: 0
+    easeMove: 4
+    curveMove:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0.06234008
+        outSlope: 0.06234008
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.3061606
+      - serializedVersion: 3
+        time: 0.18017736
+        value: -0.085696906
+        inSlope: -0.82472825
+        outSlope: -0.82472825
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.40226582
+        value: -0.3423096
+        inSlope: -0.7173681
+        outSlope: -0.7173681
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.53941226
+        value: -0.15541378
+        inSlope: 3.5605104
+        outSlope: 3.5605104
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.07637996
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    timeMove:
+      min: 0.5
       max: 0.8
+    delayMove:
+      min: 0
+      max: 0
     scaleTarget: 1
