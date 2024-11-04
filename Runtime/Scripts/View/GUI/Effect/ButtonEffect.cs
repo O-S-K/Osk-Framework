@@ -3,6 +3,7 @@ using CustomInspector;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace OSK
@@ -41,8 +42,14 @@ namespace OSK
         [Header("Sound")] 
         [SerializeField] private bool playSoundOnClick;
         [ShowIf(nameof(playSoundOnClick)), SerializeField]
-        private string soundName;
+        private string soundClick = "ui_click";
 
+        [Button]
+        private void GetRootTransform()
+        {
+            rootAppear = transform;
+        }
+        
         private Transform root => rootAppear ? rootAppear : transform;
 
         private void OnEnable()

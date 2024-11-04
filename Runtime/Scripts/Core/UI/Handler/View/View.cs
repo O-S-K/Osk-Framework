@@ -21,20 +21,17 @@ namespace OSK
         public int depth;
         public bool isOverlay = false;
 
-        [Header("Events")] [SerializeField] protected bool showEvent;
-
-        [ShowIf(nameof(showEvent))] public Action EventAfterInit;
-        [ShowIf(nameof(showEvent))] public Action EventBeforeOpened;
-        [ShowIf(nameof(showEvent))] public Action EventAfterOpened;
-        [ShowIf(nameof(showEvent))] public Action EventBeforeClosed;
-        [ShowIf(nameof(showEvent))] public Action EventAfterClosed;
+        public bool IsShowing => _isShowing;
+        [ShowInInspector, ReadOnly] private bool _isShowing;
 
         protected UITransition _uiTransition;
         protected ViewManager ViewManager;
 
-        public bool IsShowing => _isShowing;
-        [ShowInInspector, ReadOnly] private bool _isShowing;
-
+        public Action EventAfterInit { get; set; }
+        public Action EventBeforeOpened { get; set; }
+        public Action EventAfterOpened { get; set; }
+        public Action EventBeforeClosed { get; set; }
+        public Action EventAfterClosed { get; set; }
 
         public virtual void Initialize(ViewManager viewManager)
         {

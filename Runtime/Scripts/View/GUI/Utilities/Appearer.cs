@@ -5,32 +5,33 @@ namespace OSK
 {
     public class Appearer : MonoBehaviour
     {
-        [Header("Appearer")]
-        public Transform rootAppear;
+        [Header("Appearer")] public Transform rootAppear;
         public float scaleInit = 0f;
-        
-        [Header("Animation")]
-        public Ease animStartButton = Ease.OutBack;
+        public bool ignoreTimeScale = true;
+
+        [Header("Animation")] public Ease animStartButton = Ease.OutBack;
         public Ease animEndButton = Ease.InBack;
         public float duration = 0.3f;
 
-        [Header("Delay")]
-        public float appearAfter;
+        [Header("Delay")] public float appearAfter;
         public float hideDelay;
 
         private bool shown;
         private Transform root => rootAppear ? rootAppear : transform;
+        private Tween tween;
 
         private void OnEnable()
         {
             root.localScale = Vector3.one * scaleInit;
-            if (appearAfter >= 0)
-                Invoke(nameof(Show), appearAfter);
+            if (appearAfter <= 0)
+                Show();
+            else
+                tween = DOVirtual.DelayedCall(appearAfter, Show).SetUpdate(ignoreTimeScale);
         }
 
         public void Show()
         {
-            root.DOScale(Vector3.one, duration).SetEase(animStartButton).SetUpdate(true);
+            tween = root.DOScale(Vector3.one, duration).SetEase(animStartButton).SetUpdate(ignoreTimeScale);
             if (!shown)
             {
                 shown = true;
@@ -39,13 +40,13 @@ namespace OSK
 
         private void OnDisable()
         {
-            CancelInvoke(nameof(Show));
-            CancelInvoke(nameof(Hide));
+            tween.Kill();
+            tween = null;
         }
 
         public void Hide()
         {
-            root.DOScale(Vector3.zero, duration).SetEase(animEndButton).SetUpdate(true);
+            tween = root.DOScale(Vector3.zero, duration).SetEase(animEndButton).SetUpdate(ignoreTimeScale);
             if (shown)
             {
                 shown = false;
@@ -54,7 +55,10 @@ namespace OSK
 
         public void HideWithDelay()
         {
-            Invoke(nameof(Hide), hideDelay);
+            if (hideDelay <= 0)
+                Hide();
+            else
+                tween = DOVirtual.DelayedCall(hideDelay, Hide).SetUpdate(ignoreTimeScale);
         }
     }
 }
