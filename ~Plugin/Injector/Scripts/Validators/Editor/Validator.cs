@@ -9,7 +9,7 @@ namespace Injector
     public class Validator : MonoBehaviour
     {
         [InitializeOnLoadMethod]
-        [MenuItem("OSK-Framework/Injector/Check")]
+        [MenuItem("OSK-Framework/Tools/Injector/Check")]
         private static void Check()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
