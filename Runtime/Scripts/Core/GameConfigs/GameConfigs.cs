@@ -6,13 +6,9 @@ namespace OSK
 {
     public class GameConfigs : GameFrameworkComponent
     {
-        public int targetFrameRate = 60;
-        public int vSyncCount = 0;
-
-        public DataConfigs data;
-        public Settings setting;
-        public PathConfigs path;
-
+        public ConfigInitDefault Game => game;
+        [SerializeField] private ConfigInitDefault game;
+        
         public string VersionApp => Application.version;
 
         public void CheckVersion(Action onNewVersion)
@@ -54,26 +50,4 @@ namespace OSK
         }
     }
 
-    [System.Serializable]
-    public class Settings
-    {
-        public bool isMusicOnDefault = true;
-        public bool isSoundOnDefault = true;
-        public bool isVibrationOnDefault = true;
-        public bool isCheckInternetDefault = true;
-        public SystemLanguage languageDefault = SystemLanguage.English;
-    }
-
-    [System.Serializable]
-    public class DataConfigs
-    {
-        public ListViewSO listViewS0;
-        public SoundDataSO soundDataSo;
-    }
-    
-    [System.Serializable]
-    public class PathConfigs
-    { 
-        public string pathLoadFileCsv = "Localization/Localization";
-    }
 }

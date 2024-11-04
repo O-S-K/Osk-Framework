@@ -36,7 +36,7 @@ namespace OSK
             isMusic = true;
             isSoundEffects = true; 
             
-            _listSoundInfos = Main.Configs.data.soundDataSo.ListSoundInfos;
+            _listSoundInfos = Main.Configs.Game.data.soundDataSo.ListSoundInfos;
             if (_listSoundInfos == null || _listSoundInfos.Count == 0)
             {
                 OSK.Logg.LogError("SoundInfos is empty");

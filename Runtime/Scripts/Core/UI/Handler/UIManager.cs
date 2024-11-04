@@ -8,7 +8,7 @@ namespace OSK
     public class UIManager : GameFrameworkComponent
     {
         [ReadOnly, SerializeField] private RootUI _rootUI;
-        public UIImageEffect ImageEffectUI => _rootUI.ParticleUI;
+        public UIImageEffect ImageEffectUI => _rootUI.ImageEffect;
         public Canvas GetCanvas => _rootUI.GetCanvas;
         public Camera GetUICamera => _rootUI.GetUICamera;
 
@@ -29,11 +29,16 @@ namespace OSK
             }
         }
 
-        #region Popups
+        #region Views
 
         public T Spawn<T>(string path, bool isCache = true, bool isHidePrevPopup = true) where T : View
         {
             return _rootUI.ListViews.Spawn<T>(path, isCache, isHidePrevPopup);
+        }
+
+        public T SpawnCache<T>(T view, bool isHidePrevPopup = true) where T : View
+        {
+            return _rootUI.ListViews.Spawn(view, isHidePrevPopup);
         }
 
         public void Delete<T>(T popup) where T : View
@@ -58,7 +63,7 @@ namespace OSK
 
         public void Open(View view)
         {
-            _rootUI.ListViews.Open(view, true);
+            //_rootUI.ListViews.Open(view, true);
         }
 
         public void Hide(View view)
@@ -81,29 +86,35 @@ namespace OSK
             _rootUI.ListViews.HideIgnore(viewsToKeep);
         }
 
-        public T Get<T>() where T : View
+        public T Get<T>(bool isInitOnScene = true) where T : View
         {
-            return _rootUI.ListViews.Get<T>();
+            return _rootUI.ListViews.Get<T>(isInitOnScene);
         }
 
         public T GetOrOpen<T>() where T : View
         {
-            var view = _rootUI.ListViews.GetIsActive<T>();
+            var view = _rootUI.ListViews.Get<T>();
             if (view == null)
             {
-                view = Open<T>();
+                if (!view.IsShowing)
+                    view = Open<T>();
+            }
+            else
+            {
+                if (!view.IsShowing)
+                    view.Open();
             }
             return view;
         }
 
         public bool IsShowing(View view)
         {
-            return _rootUI.ListViews.Get(view).IsShowing;
+            return _rootUI.ListViews.Get<View>().IsShowing;
         }
 
-        public List<View> GetAll()
+        public List<View> GetAll(bool isInitOnScene)
         {
-            return _rootUI.ListViews.GetAll();
+            return _rootUI.ListViews.GetAll(isInitOnScene);
         }
 
         #endregion

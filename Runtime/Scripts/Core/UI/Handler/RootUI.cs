@@ -7,19 +7,19 @@ namespace OSK
     [DefaultExecutionOrder(-101)]
     public class RootUI : MonoBehaviour
     {
-        [SerializeField] private ViewManager viewManager;
+        [SerializeField] private ViewManager _viewManager;
         [SerializeField] private Camera _uiCamera;
         [SerializeField] private Canvas _canvas;
-        [FormerlySerializedAs("_uiMoveEffect")] [SerializeField] private UIImageEffect uiImageEffect;
+        [SerializeField] private UIImageEffect _uiImageEffect;
         
-        public ViewManager ListViews => viewManager;
-        public UIImageEffect ParticleUI => uiImageEffect;
+        public ViewManager ListViews => _viewManager;
+        public UIImageEffect ImageEffect => _uiImageEffect;
         public Canvas GetCanvas => _canvas;
         public Camera GetUICamera => _uiCamera;
 
         public void Initialize()
         {
-            viewManager.Initialize();
+            _viewManager.Initialize();
         } 
     }
 }

@@ -84,7 +84,7 @@ namespace OSK
 
         private string CheckKeyOnFile()
         {
-            var path = FindObjectOfType<GameConfigs>().path.pathLoadFileCsv;
+            var path = FindObjectOfType<GameConfigs>().Game.path.pathLoadFileCsv;
             var textAsset = Resources.Load<TextAsset>(path);
             if (textAsset == null)
             {

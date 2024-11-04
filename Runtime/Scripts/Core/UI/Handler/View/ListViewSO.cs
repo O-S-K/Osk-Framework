@@ -18,7 +18,7 @@ namespace OSK
     [CreateAssetMenu(fileName = "ListViewSO", menuName = "OSK/UI/ListViewSO")]
     public class ListViewSO : ScriptableID
     {
-        [TableList] [SerializeField] private List<DataViewUI> _listView = new List<DataViewUI>();
+        [TableList, SerializeField] private List<DataViewUI> _listView = new List<DataViewUI>();
         public List<DataViewUI> Views => _listView;
 
 #if UNITY_EDITOR
@@ -42,12 +42,17 @@ namespace OSK
         [Button("Add All View Form Resources")]
         public void AddAllViewFormResources()
         {
-            _listView.Clear();
-            var listViews = Resources.LoadAll<View>("").ToList();
+            var listViews = Resources.LoadAll<View>("").ToList().FindAll(x => x.isAddToViewManager);
 
-            for (int i = 0; i < listViews.Count; i++)
+            foreach (var popup in listViews)
             {
-                var popup = listViews[i];
+                // Kiểm tra xem view đã tồn tại trong danh sách chưa
+                if (_listView.Any(x => x.view == popup))
+                {
+                    // Nếu đã tồn tại, bỏ qua việc thêm vào danh sách
+                    continue;
+                }
+
                 var data = new DataViewUI();
                 data.view = popup;
 
@@ -70,8 +75,8 @@ namespace OSK
                 _listView.Add(data);
             }
 
-            // sort by index
-            _listView = _listView.OrderBy(x => int.Parse(x.depth)).ToList();
+            // Sắp xếp theo depth
+            // _listView = _listView.OrderBy(x => int.Parse(x.depth)).ToList();
         }
 #endif
     }

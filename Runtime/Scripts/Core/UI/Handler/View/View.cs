@@ -1,8 +1,6 @@
 using System;
 using CustomInspector;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 namespace OSK
 {
@@ -19,13 +17,15 @@ namespace OSK
     {
         [Header("View")] public EViewType viewType = EViewType.Popup;
         public int depth;
-        public bool isOverlay = false;
+        public bool isAddToViewManager = true;
+        public bool isPreloadSpawn = true;
 
+        [ReadOnly] public bool isInitOnScene = false;
         public bool IsShowing => _isShowing;
         [ShowInInspector, ReadOnly] private bool _isShowing;
 
         protected UITransition _uiTransition;
-        protected ViewManager ViewManager;
+        protected ViewManager _viewManager;
 
         public Action EventAfterInit { get; set; }
         public Action EventBeforeOpened { get; set; }
@@ -35,13 +35,20 @@ namespace OSK
 
         public virtual void Initialize(ViewManager viewManager)
         {
-            gameObject.SetActive(false);
-            if (isOverlay)
-                transform.SetTopSibling();
-            _isShowing = false;
-            ViewManager = viewManager;
+            isInitOnScene = true;
+            _viewManager = viewManager;
             _uiTransition = GetComponent<UITransition>();
             _uiTransition.Initialize();
+
+            if (_viewManager == null)
+            {
+                Logg.LogError("View Manager is still null after initialization.");
+            }
+            else
+            {
+                Logg.Log("View Manager initialized successfully.");
+            }
+    
             EventAfterInit?.Invoke();
         }
 
@@ -61,13 +68,35 @@ namespace OSK
 
         public virtual void Open(object data = null)
         {
-            _isShowing = true;
+            if (_uiTransition == null)
+            {
+                Logg.LogError("UI Transition is null. Ensure that the View has been initialized before calling Open.");
+                return;
+            }
+
+            if (_viewManager == null)
+            {
+                Logg.LogError("View Manager is null. Ensure that the View has been initialized before calling Open.");
+                return;
+            }
+
+            if (_isShowing)
+            {
+                Logg.LogWarning("View is already showing");
+                return;
+            }
+
+            _isShowing = true; 
             EventBeforeOpened?.Invoke();
 
-            gameObject.SetActive(false);
-            gameObject.SetActive(true);
-
-            _uiTransition.OpenTrans(() => { EventAfterOpened?.Invoke(); });
+            gameObject.SetActive(true); 
+            _uiTransition.OpenTrans(() => 
+            {
+                if (_isShowing)
+                {
+                    EventAfterOpened?.Invoke();
+                }
+            });
         }
 
         public virtual void Hide()
@@ -80,7 +109,7 @@ namespace OSK
             _uiTransition.CloseTrans(() =>
             {
                 gameObject.SetActive(false);
-                ViewManager.RemovePopup(this);
+                _viewManager.RemovePopup(this);
                 EventAfterClosed?.Invoke();
             });
         }
@@ -91,7 +120,7 @@ namespace OSK
             _uiTransition.AnyClose(() =>
             {
                 gameObject.SetActive(false);
-                ViewManager.RemovePopup(this);
+                _viewManager.RemovePopup(this);
             });
         }
     }

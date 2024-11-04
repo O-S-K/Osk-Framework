@@ -48,7 +48,7 @@ namespace OSK
 
         public void SetLanguageConfigs()
         {
-            SetLanguage(Main.Configs.setting.languageDefault);
+            SetLanguage(Main.Configs.Game.setting.languageDefault);
         }
 
 
@@ -78,7 +78,7 @@ namespace OSK
 
         private void LoadLocalizationData(SystemLanguage languageCode)
         {
-            var path = Main.Configs.path.pathLoadFileCsv;
+            var path = Main.Configs.Game.path.pathLoadFileCsv;
             if (path.StartsWith("Resources/"))
             {
                 path = path["Resources/".Length..];

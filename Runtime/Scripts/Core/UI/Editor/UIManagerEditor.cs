@@ -97,7 +97,7 @@ namespace OSK
             if (!Application.isPlaying)
                 return;
 
-            List<View> views = uiManager.ListViews.GetAll();
+            List<View> views = uiManager.ListViews.GetAll(true);
             foreach (var _view in views)
             {
                 EditorGUILayout.BeginHorizontal();
