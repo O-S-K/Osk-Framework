@@ -27,6 +27,11 @@ namespace OSK
             {
                 FindViewDataSOAssets();
             }
+            
+            if (GUILayout.Button("Select Data UIImage Effect SO"))
+            {
+                FindDataImageEffectAssets();
+            }
 
             // Draw background for the views section
             DrawBackground(Color.green);
@@ -53,6 +58,39 @@ namespace OSK
             }
         }
 
+        private void FindDataImageEffectAssets()
+        {
+            string[] guids = AssetDatabase.FindAssets("t:UIImageSO");
+            if (guids.Length == 0)
+            {
+                Debug.LogError("No ImageEffectData found in the project.");
+                return;
+            }
+
+            List<UIImageSO> imageEffectDatas = new List<UIImageSO>();
+            foreach (var guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                UIImageSO v = AssetDatabase.LoadAssetAtPath<UIImageSO>(path);
+                imageEffectDatas.Add(v);
+            }
+
+            if (imageEffectDatas.Count == 0)
+            {
+                Debug.LogError("No ImageEffectData found in the project.");
+                return;
+            }
+            else
+            {
+                foreach (UIImageSO v in imageEffectDatas)
+                {
+                    Debug.Log("ImageEffectData found: " + v.name);
+                    Selection.activeObject = v;
+                    EditorGUIUtility.PingObject(v);
+                }
+            }
+        }
+        
         private void FindViewDataSOAssets()
         {
             string[] guids = AssetDatabase.FindAssets("t:ListViewSO");
