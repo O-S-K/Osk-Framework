@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    public class QuestSystem : MonoBehaviour
+    public class QuestSystem : MonoBehaviour, IService
     {
         public static QuestSystem Instance;
 

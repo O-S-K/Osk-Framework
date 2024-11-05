@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace OSK
 {
-    public class DialogSystem : MonoBehaviour
+    public class DialogSystem : MonoBehaviour, IService
     {
         public List<Dialog> dialogs = new List<Dialog>();
         public Text npcNameText;
@@ -13,15 +13,30 @@ namespace OSK
         public Transform optionsContainer;
 
         private Dialog currentDialog;
-
-
-        public void StartDialog(int dialogID)
+ 
+        public void Run(int dialogID)
         {
             currentDialog = dialogs.Find(d => d.dialogID == dialogID);
-            DisplayDialog();
+            //Display();
+            DrawCurrentDialog();
+        }
+        
+        public void Add(Dialog dialog)
+        {
+            if(dialogs.Contains(dialog))
+                return;
+            dialogs.Add(dialog);
+        }
+        
+        public void Add(List<Dialog> dialogs)
+        {
+            foreach (var dialog in dialogs)
+            {
+                Add(dialog);
+            }
         }
 
-        private void DisplayDialog()
+        private void Display()
         {
             if (currentDialog == null)
                 return;
@@ -32,13 +47,13 @@ namespace OSK
             // Xóa các nút lựa chọn cũ
             foreach (Transform child in optionsContainer)
             {
-                Destroy(child.gameObject);
+                GameObject.Destroy(child.gameObject);
             }
 
             // Tạo các nút lựa chọn mới
             foreach (var option in currentDialog.options)
             {
-                Button newButton = Instantiate(optionButtonPrefab, optionsContainer);
+                Button newButton = GameObject.Instantiate(optionButtonPrefab, optionsContainer);
                 newButton.GetComponentInChildren<Text>().text = option.optionText;
                 int nextID = option.nextDialogID;
                 newButton.onClick.AddListener(() => OnOptionSelected(nextID));
@@ -48,7 +63,16 @@ namespace OSK
         private void OnOptionSelected(int nextDialogID)
         {
             currentDialog = dialogs.Find(d => d.dialogID == nextDialogID);
-            DisplayDialog();
+            Display();
+        }
+        
+        public void DrawCurrentDialog()
+        {
+            Logg.Log($"ID: {currentDialog.dialogID} | Name: {currentDialog.npcName} | Options: {currentDialog.options.Count}");
+        }
+        public void DrawDisplay()
+        {
+            Logg.Log($"Current Dialog: {currentDialog.dialogID}");
         }
     }
 }

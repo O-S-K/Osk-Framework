@@ -15,7 +15,7 @@ namespace OSK
         public void Setup(InventoryItem item)
         {
             currentItem = item;
-            itemNameText.text = item.itemName;
+            itemNameText.text = item.name;
             itemQuantityText.text = "x" + item.quantity.ToString();
             itemIcon.sprite = item.icon;
         }
@@ -25,17 +25,17 @@ namespace OSK
             if (currentItem.itemType == ItemType.Consumable)
             {
                 // Logic for using the item (e.g., healing, gaining a buff)
-                Debug.Log($"Used {currentItem.itemName}");
+                Debug.Log($"Used {currentItem.name}");
                 currentItem.quantity--;
 
                 // Remove item if quantity is zero
                 if (currentItem.quantity <= 0)
                 {
-                    FindObjectOfType<InventorySystem>().RemoveItem(currentItem.itemName, 1);
+                    //FindObjectOfType<InventorySystem>().RemoveItem(currentItem.itemName, 1);
                 }
 
                 // Update UI
-                FindObjectOfType<InventoryUI>().UpdateInventoryUI();
+                //FindObjectOfType<InventoryUI>().UpdateInventoryUI();
             }
         }
     }

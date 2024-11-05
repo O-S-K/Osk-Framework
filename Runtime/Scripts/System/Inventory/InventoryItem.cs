@@ -6,15 +6,15 @@ namespace OSK
 
     public class InventoryItem
     {
-        public string itemName;
+        public string name;
         public string description;
         public Sprite icon;
         public int quantity;
-        public ItemType itemType; // New field for item type
+        public ItemType itemType; 
 
         public InventoryItem(string name, string desc, Sprite iconSprite, int qty, ItemType type)
         {
-            itemName = name;
+            this.name = name;
             description = desc;
             icon = iconSprite;
             quantity = qty;

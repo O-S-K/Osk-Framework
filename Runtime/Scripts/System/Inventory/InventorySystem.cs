@@ -1,69 +1,65 @@
 using System.Collections.Generic;
 using System.IO;
+using CustomInspector;
 using UnityEngine;
 
 namespace OSK
 {
-    public class InventorySystem : MonoBehaviour
+    public class InventorySystem : MonoBehaviour, IService
     {
-        private List<InventoryItem> items = new List<InventoryItem>();
+        [TableList]
+        [SerializeField] private List<InventoryItem> items = new List<InventoryItem>();
 
         public void AddItem(InventoryItem item)
         {
-            // Check if the item already exists
             foreach (var inventoryItem in items)
             {
-                if (inventoryItem.itemName == item.itemName)
+                if (inventoryItem.name == item.name)
                 {
-                    inventoryItem.quantity += item.quantity; // Increase quantity
+                    inventoryItem.quantity += item.quantity; 
                     return;
                 }
             }
 
-            items.Add(item); // Add new item if it doesn't exist
+            if (!items.Contains(item))
+                items.Add(item);
+        }
+        
+        public void AddItems(List<InventoryItem> itemsToAdd)
+        {
+            foreach (var item in itemsToAdd)
+                AddItem(item);
         }
 
         public void RemoveItem(string itemName, int quantity)
         {
-            InventoryItem itemToRemove = items.Find(item => item.itemName == itemName);
+            InventoryItem itemToRemove = items.Find(item => item.name == itemName);
 
             if (itemToRemove != null)
             {
                 if (itemToRemove.quantity > quantity)
                 {
-                    itemToRemove.quantity -= quantity; // Decrease quantity
+                    itemToRemove.quantity -= quantity;
                 }
                 else
                 {
-                    items.Remove(itemToRemove); // Remove item if quantity is 0 or less
+                    items.Remove(itemToRemove); 
                 }
             }
         }
 
-        public InventoryItem GetItem(string itemName)
+        public InventoryItem GetItem(string itemName) => items.Find(item => item.name == itemName);
+        public List<InventoryItem> GetAllItems() => items;
+         
+        public void DrawInventory()
         {
-            return items.Find(item => item.itemName == itemName);
-        }
-
-        public List<InventoryItem> GetAllItems()
-        {
-            return items;
-        }
-
-        // Method to save the inventory
-        public void SaveInventory(string path)
-        {
-            string json = JsonUtility.ToJson(this);
-            File.WriteAllText(path, json);
-        }
-
-        // Method to load the inventory
-        public void LoadInventory(string path)
-        {
-            if (File.Exists(path))
+            foreach (var item in items)
             {
-                string json = File.ReadAllText(path);
-                JsonUtility.FromJsonOverwrite(json, this);
+                Logg.Log(
+                    $"Item: {item.name}, " +
+                    $"Description: {item.description}, " +
+                    $"Quantity: {item.quantity}, " +
+                    $"Type: {item.itemType}");
             }
         }
     }

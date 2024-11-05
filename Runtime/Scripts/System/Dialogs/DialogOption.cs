@@ -5,5 +5,11 @@ namespace OSK
     {
         public string optionText;
         public int nextDialogID;
+        
+        public DialogOption(string optionText, int nextDialogID)
+        {
+            this.optionText = optionText;
+            this.nextDialogID = nextDialogID;
+        }
     }
 }

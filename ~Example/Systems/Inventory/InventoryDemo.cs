@@ -22,17 +22,11 @@ public class InventoryDemo : MonoBehaviour
 
         inventoryUIManager.UpdateInventoryUI();
         inventorySystem.RemoveItem("Apple", 1);
-
-        // Load inventory if needed
-        string path = Application.persistentDataPath + "/inventory.json";
-        inventorySystem.LoadInventory(path);
+ 
         inventoryUIManager.UpdateInventoryUI();
     }
 
     private void OnApplicationQuit()
-    {
-        // Save inventory when quitting
-        string path = Application.persistentDataPath + "/inventory.json";
-        inventorySystem.SaveInventory(path);
+    { 
     }
 }

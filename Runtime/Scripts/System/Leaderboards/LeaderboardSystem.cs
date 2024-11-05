@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace OSK
 {
-    public class LeaderboardSystem : MonoBehaviour
+    public class LeaderboardSystem : MonoBehaviour, IService
     {
         public List<LeaderboardEntry> leaderboard = new List<LeaderboardEntry>();
         public Transform leaderboardPanel;
@@ -19,7 +19,8 @@ namespace OSK
             };
             leaderboard.Add(newEntry);
             SortLeaderboard();
-            DisplayLeaderboard();
+            DrawDisplay();
+            //DisplayLeaderboard();
         }
 
         private void SortLeaderboard()
@@ -27,18 +28,26 @@ namespace OSK
             leaderboard.Sort((a, b) => b.score.CompareTo(a.score));
         }
 
-        private void DisplayLeaderboard()
+        public void DisplayLeaderboard()
         {
             foreach (Transform child in leaderboardPanel)
             {
-                Destroy(child.gameObject);
+                GameObject.Destroy(child.gameObject);
             }
 
             foreach (var entry in leaderboard)
             {
-                GameObject entryGO = Instantiate(entryPrefab, leaderboardPanel);
+                GameObject entryGO = GameObject.Instantiate(entryPrefab, leaderboardPanel);
                 Text entryText = entryGO.GetComponent<Text>();
                 entryText.text = $"{entry.playerName}: {entry.score}";
+            }
+        }
+
+        public void DrawDisplay()
+        {
+            for (int i = 0; i < leaderboard.Count; i++)
+            {
+                Logg.Log($"Name {leaderboard[i].playerName} | {leaderboard[i].score}");
             }
         }
     }
