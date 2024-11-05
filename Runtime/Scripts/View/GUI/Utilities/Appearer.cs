@@ -46,11 +46,18 @@ namespace OSK
 
         public void Hide()
         {
-            tween = root.DOScale(Vector3.zero, duration).SetEase(animEndButton).SetUpdate(ignoreTimeScale);
-            if (shown)
-            {
-                shown = false;
-            }
+            tween = root.DOScale(Vector3.zero, duration)
+                .SetEase(animEndButton)
+                .SetUpdate(ignoreTimeScale)
+                .OnComplete(() =>
+                {
+                    if (shown)
+                    {
+                        shown = false;
+                    }
+                    gameObject.SetActive(false);
+                });
+            
         }
 
         public void HideWithDelay()

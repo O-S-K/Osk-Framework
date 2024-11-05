@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using CustomInspector;
@@ -11,6 +12,7 @@ namespace OSK
         [ShowInInspector, ReadOnly] [SerializeField]
         private List<View> _listViewInit = new List<View>();
 
+        [ShowInInspector, ReadOnly] [SerializeField]
         private List<View> _listCacheView = new List<View>();
         private Stack<View> _viewHistory = new Stack<View>();
         public Stack<View> ListViewHistory => _viewHistory;
@@ -84,6 +86,7 @@ namespace OSK
             view.transform.localPosition = Vector3.zero;
             view.transform.localScale = Vector3.one;
 
+            Logg.Log($"[View] Spawn view: {view.name}");
             if (!_listCacheView.Contains(view))
                 _listCacheView.Add(view);
             return view;
@@ -288,6 +291,16 @@ namespace OSK
         #endregion
 
         #region Remove
+        
+        
+        public void RemovePopup(View view)
+        {
+            if (_viewHistory.Count <= 0) return;
+            if (_viewHistory.Peek() == view)
+            {
+                Remove();
+            }
+        }
 
         public void Remove(bool hidePrevView = false)
         {
@@ -299,15 +312,6 @@ namespace OSK
 
             if (hidePrevView)
                 OpenPrevious();
-        }
-
-        public void RemovePopup(View view)
-        {
-            if (_viewHistory.Count <= 0) return;
-            if (_viewHistory.Peek() == view)
-            {
-                Remove();
-            }
         }
 
         public void RemoveAll()
@@ -323,12 +327,15 @@ namespace OSK
 
         #region Delete
 
-        public void Delete<T>(T view) where T : View
+        public void Delete<T>(T view, Action action = null) where T : View
         {
             if (!_listCacheView.Contains(view))
                 return;
+            
+            Logg.Log($"[View] Delete view: {view.name}");
             _listCacheView.Remove(view);
             Destroy(view.gameObject);
+            action?.Invoke();
         }
 
         #endregion

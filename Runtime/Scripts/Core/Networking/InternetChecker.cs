@@ -5,63 +5,67 @@ using UnityEngine;
 
 namespace OSK
 {
-public class InternetChecker : MonoBehaviour
-{
-    private readonly List<string> _theListOfIPs = new() { "4.2.2.4", "www.unity.com" };
-    private int _counter;
-    [SerializeField] private float Timeout;
-
-    public async Task<bool> CheckNetwork()
+    public class InternetChecker : MonoBehaviour
     {
-        var internetPossiblyAvailable = Application.internetReachability switch
+        private readonly List<string> _theListOfIPs = new() { "4.2.2.4", "www.unity.com" };
+        private int _counter;
+        [SerializeField] private float Timeout;
+
+        public async Task<bool> CheckNetwork()
         {
-            NetworkReachability.ReachableViaCarrierDataNetwork => true,
-            NetworkReachability.ReachableViaLocalAreaNetwork => true,
-            NetworkReachability.NotReachable => false,
-            _ => false
-        };
-
-        if (!internetPossiblyAvailable)
-        {
-            return false;
-        }
-
-        return await CheckPing();
-    }
-
-    private async Task<bool> CheckPing()
-    {
-        _counter = 0;
-        var tcs = new TaskCompletionSource<bool>();
-        StartCoroutine(Ping(tcs));
-        await tcs.Task;
-        return tcs.Task.Result;
-    }
-
-    private IEnumerator Ping(TaskCompletionSource<bool> task)
-    {
-        var ping = new Ping(_theListOfIPs[_counter]);
-        while (!ping.isDone || Timeout > 0)
-        {
-            Timeout -= 0.1f;
-            yield return new WaitForSeconds(0.1f);
-        }
-
-        if (!ping.isDone)
-        {
-            _counter++;
-            if (_counter >= _theListOfIPs.Count)
+            var internetPossiblyAvailable = Application.internetReachability switch
             {
-                task.SetResult(false);
+                NetworkReachability.ReachableViaCarrierDataNetwork => true,
+                NetworkReachability.ReachableViaLocalAreaNetwork => true,
+                NetworkReachability.NotReachable => false,
+                _ => false
+            };
+
+            if (!internetPossiblyAvailable)
+            {
+                return false;
+            }
+
+            return await CheckPing();
+        }
+
+        private async Task<bool> CheckPing()
+        {
+            _counter = 0;
+            var tcs = new TaskCompletionSource<bool>();
+            StartCoroutine(Ping(tcs));
+            await tcs.Task;
+            return tcs.Task.Result;
+        }
+
+        private IEnumerator Ping(TaskCompletionSource<bool> task)
+        {
+            var ping = new Ping(_theListOfIPs[_counter]);
+            while (!ping.isDone || Timeout > 0)
+            {
+                Timeout -= 0.1f;
+                yield return new WaitForSeconds(0.1f);
+            }
+
+            if (!ping.isDone)
+            {
+                _counter++;
+                if (_counter >= _theListOfIPs.Count)
+                {
+                    task.SetResult(false);
+                }
+                else
+                    StartCoroutine(Ping(task));
             }
             else
-                StartCoroutine(Ping(task));
+            {
+                task.SetResult(true);
+            }
         }
-        else
-        {
-            task.SetResult(true);
-        }
-    } 
-}
 
+        public bool IsConnected()
+        {
+            return Application.internetReachability != NetworkReachability.NotReachable;
+        }
+    }
 }

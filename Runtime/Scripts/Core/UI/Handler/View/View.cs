@@ -19,6 +19,7 @@ namespace OSK
         public int depth;
         public bool isAddToViewManager = true;
         public bool isPreloadSpawn = true;
+        public bool isRemoveOnHide = false;
 
         [ReadOnly] public bool isInitOnScene = false;
         public bool IsShowing => _isShowing;
@@ -109,8 +110,12 @@ namespace OSK
             _uiTransition.CloseTrans(() =>
             {
                 gameObject.SetActive(false);
-                _viewManager.RemovePopup(this);
                 EventAfterClosed?.Invoke();
+                
+                if(isRemoveOnHide)
+                    _viewManager.Delete(this);
+                else
+                    _viewManager.RemovePopup(this);
             });
         }
 
@@ -122,6 +127,11 @@ namespace OSK
                 gameObject.SetActive(false);
                 _viewManager.RemovePopup(this);
             });
+        }
+        
+        public void Delete()
+        {
+            _viewManager.Delete(this);
         }
     }
 }
