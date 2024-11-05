@@ -9,7 +9,7 @@ namespace OSK
     public class UIImageEffect : MonoBehaviour
     {
         [SerializeField] private Canvas canvas;
-        [SerializeField] private EffectSetting[] effectSettings;
+        private EffectSetting[] effectSettings;
         private List<GameObject> _parentEffects;
 
         private void Start()
@@ -19,6 +19,10 @@ namespace OSK
 
         private void Initialize()
         {
+            if(Main.Configs.Game.data.uiImageSO == null)
+                return;
+              
+            effectSettings = Main.Configs.Game.data.uiImageSO.EffectSettings;
             if (effectSettings.Length == 0)
                 return;
 
@@ -51,13 +55,13 @@ namespace OSK
                 StartCoroutine(IESpawnEffect(effectSetting));
             }
         }
- 
+
         private IEnumerator IESpawnEffect(EffectSetting effectSetting)
         {
             var parent = _parentEffects.Find(x => x.name == effectSetting.name)?.transform;
             if (parent == null || !parent.gameObject.activeInHierarchy)
                 yield break;
- 
+
             for (int i = 0; i < effectSetting.numberOfEffects; i++)
             {
                 var effect = Main.Pool.Spawn("UIEffect", effectSetting.icon, 1);
@@ -79,19 +83,19 @@ namespace OSK
             var timeDropDelay = (effectSetting.delayDrop.max + effectSetting.delayDrop.min) / 2;
             var timeMove = (effectSetting.timeMove.max + effectSetting.timeMove.min) / 2;
             var timeMoveDelay = (effectSetting.delayMove.max + effectSetting.delayMove.min) / 2;
-            
-            var totalTimeOnCompleted =  timedrop + timeDropDelay + timeMove + timeMoveDelay;
+
+            var totalTimeOnCompleted = timedrop + timeDropDelay + timeMove + timeMoveDelay;
             yield return new WaitForSeconds(totalTimeOnCompleted - 0.1f);
             effectSetting.OnCompleted?.Invoke();
         }
- 
+
         private void DoDropEffect(GameObject effect, EffectSetting effectSetting)
         {
             Vector3 randomOffset = Random.insideUnitSphere * effectSetting.sphereRadius;
             Vector3 target = effectSetting.pointSpawn + randomOffset;
             var timeDrop = effectSetting.timeDrop.RandomValue;
-            var timeDropDelay = effectSetting.delayDrop.RandomValue; 
-            
+            var timeDropDelay = effectSetting.delayDrop.RandomValue;
+
             Tween tween = effect.transform
                 .DOMove(target, timeDrop)
                 .SetDelay(timeDropDelay);
@@ -119,12 +123,12 @@ namespace OSK
         {
             Tween tween = null;
             var timeMove = effectSetting.timeMove.RandomValue;
-            var timeMoveDelay = effectSetting.delayMove.RandomValue; 
-            
+            var timeMoveDelay = effectSetting.delayMove.RandomValue;
+
             switch (effectSetting.typeMove)
             {
                 case TypeMove.Straight:
-                    tween = effect.transform.DOMove(effectSetting.pointTarget, timeMove) .SetDelay(timeMoveDelay);
+                    tween = effect.transform.DOMove(effectSetting.pointTarget, timeMove).SetDelay(timeMoveDelay);
                     break;
                 case TypeMove.Beziers:
                     if (effectSetting.paths.Count % 3 != 0)
@@ -136,7 +140,7 @@ namespace OSK
                     }
 
                     tween = effect.transform
-                        .DOPath(effectSetting.paths.Select(x => x).ToArray(),timeMove, PathType.CubicBezier)
+                        .DOPath(effectSetting.paths.Select(x => x).ToArray(), timeMove, PathType.CubicBezier)
                         .SetDelay(timeMoveDelay);
                     break;
 
@@ -161,7 +165,7 @@ namespace OSK
                     break;
                 case TypeMove.DoJump:
                     tween = effect.transform
-                        .DOJump(effectSetting.pointTarget, effectSetting.jumpPower, 1,timeMove)
+                        .DOJump(effectSetting.pointTarget, effectSetting.jumpPower, 1, timeMove)
                         .SetDelay(timeMoveDelay);
                     break;
             }
@@ -180,7 +184,7 @@ namespace OSK
                 tween.OnComplete(() => { Main.Pool.Despawn(effect); });
             }
         }
- 
+
         private void AddPaths(EffectSetting effectSetting)
         {
             if (effectSetting.paths == null)
@@ -198,6 +202,8 @@ namespace OSK
             // if (Application.isEditor)
             //     return;
 
+            if(effectSettings == null)
+                return;
             if (effectSettings.Length == 0)
                 return;
 

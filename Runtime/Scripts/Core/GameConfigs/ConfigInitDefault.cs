@@ -28,7 +28,8 @@ namespace OSK
     public class DataConfigs
     {
         public ListViewSO listViewS0;
-        public SoundDataSO soundDataSo;
+        public SoundDataSO soundDataSO;
+        public UIImageSO uiImageSO;
     }
     
     [System.Serializable]

@@ -23,7 +23,7 @@ namespace OSK
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            if (GUILayout.Button("Select Data SO"))
+            if (GUILayout.Button("Select Data UI SO"))
             {
                 FindViewDataSOAssets();
             }
