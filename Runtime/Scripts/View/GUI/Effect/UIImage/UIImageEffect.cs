@@ -1,15 +1,14 @@
-using System.Collections;
 using UnityEngine;
 using System.Linq;
 using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace OSK
 {
     public class UIImageEffect : MonoBehaviour
-    {
-        [SerializeField] private Canvas canvas;
-        private EffectSetting[] effectSettings;
+    { 
+        private EffectSetting[] _effectSettings;
         private List<GameObject> _parentEffects;
 
         private void Start()
@@ -22,20 +21,17 @@ namespace OSK
             if(Main.Configs.Game.data.uiImageSO == null)
                 return;
               
-            effectSettings = Main.Configs.Game.data.uiImageSO.EffectSettings;
-            if (effectSettings.Length == 0)
+            _effectSettings = Main.Configs.Game.data.uiImageSO.EffectSettings;
+            if (_effectSettings.Length == 0)
                 return;
-
-            if (canvas == null)
-                canvas = Main.UI.GetCanvas;
-
+ 
             _parentEffects = new List<GameObject>();
-            for (int i = 0; i < effectSettings.Length; i++)
+            for (int i = 0; i < _effectSettings.Length; i++)
             {
-                _parentEffects.Add(new GameObject(effectSettings[i].name));
-                _parentEffects[i].transform.SetParent(canvas.transform);
+                _parentEffects.Add(new GameObject(_effectSettings[i].name));
+                _parentEffects[i].transform.SetParent(Main.UI.GetCanvas.transform);
                 _parentEffects[i].transform.localScale = Vector3.one;
-                AddPaths(effectSettings[i]);
+                AddPaths(_effectSettings[i]);
             }
         }
 
@@ -43,7 +39,7 @@ namespace OSK
             int numberOfEffects,
             System.Action OnCompleted)
         {
-            var effectSetting = effectSettings.ToList().Find(x => x.name == nameEffect);
+            var effectSetting = _effectSettings.ToList().Find(x => x.name == nameEffect);
             effectSetting.pointSpawn = pointSpawn;
             effectSetting.pointTarget = pointTarget;
 
@@ -202,58 +198,58 @@ namespace OSK
             // if (Application.isEditor)
             //     return;
 
-            if(effectSettings == null)
+            if(_effectSettings == null)
                 return;
-            if (effectSettings.Length == 0)
+            if (_effectSettings.Length == 0)
                 return;
 
             Color color = Color.magenta;
-            for (int i = 0; i < effectSettings.Length; i++)
+            for (int i = 0; i < _effectSettings.Length; i++)
             {
-                if (effectSettings[i].isDrop)
+                if (_effectSettings[i].isDrop)
                 {
-                    if (effectSettings[i].pointSpawn == null)
+                    if (_effectSettings[i].pointSpawn == null)
                         continue;
 
                     Gizmos.color = color;
-                    Gizmos.DrawWireSphere(effectSettings[i].pointSpawn, effectSettings[i].sphereRadius);
+                    Gizmos.DrawWireSphere(_effectSettings[i].pointSpawn, _effectSettings[i].sphereRadius);
                 }
 
-                switch (effectSettings[i].typeMove)
+                switch (_effectSettings[i].typeMove)
                 {
                     case TypeMove.Straight:
                         Gizmos.color = color;
-                        if (effectSettings[i].pointSpawn == null)
+                        if (_effectSettings[i].pointSpawn == null)
                             continue;
-                        Gizmos.DrawLine(effectSettings[i].pointSpawn, effectSettings[i].pointTarget);
+                        Gizmos.DrawLine(_effectSettings[i].pointSpawn, _effectSettings[i].pointTarget);
                         break;
                     case TypeMove.Beziers:
-                        if (effectSettings[i].pointSpawn == null)
+                        if (_effectSettings[i].pointSpawn == null)
                             continue;
-                        for (int j = 0; j < effectSettings[i].paths.Count - 3; j += 3)
+                        for (int j = 0; j < _effectSettings[i].paths.Count - 3; j += 3)
                         {
-                            Vector3 startPoint = effectSettings[i].paths[j];
-                            Vector3 controlPoint1 = effectSettings[i].paths[j + 1];
-                            Vector3 controlPoint2 = effectSettings[i].paths[j + 2];
-                            Vector3 endPoint = effectSettings[i].paths[j + 3];
+                            Vector3 startPoint = _effectSettings[i].paths[j];
+                            Vector3 controlPoint1 = _effectSettings[i].paths[j + 1];
+                            Vector3 controlPoint2 = _effectSettings[i].paths[j + 2];
+                            Vector3 endPoint = _effectSettings[i].paths[j + 3];
 
                             DrawCubicBezierCurve(startPoint, controlPoint1, controlPoint2, endPoint, Gizmos.color);
                         }
 
                         break;
                     case TypeMove.Path:
-                        if (effectSettings[i].pointSpawn == null)
+                        if (_effectSettings[i].pointSpawn == null)
                             continue;
-                        if (effectSettings[i].paths.Count < 2)
+                        if (_effectSettings[i].paths.Count < 2)
                         {
                             Logg.LogError("Path is not enough");
                         }
 
-                        for (int j = 0; j < effectSettings[i].paths.Count - 1; j++)
+                        for (int j = 0; j < _effectSettings[i].paths.Count - 1; j++)
                         {
                             Gizmos.color = color;
-                            Gizmos.DrawLine(effectSettings[i].paths[j],
-                                effectSettings[i].paths[j + 1]);
+                            Gizmos.DrawLine(_effectSettings[i].paths[j],
+                                _effectSettings[i].paths[j + 1]);
                         }
 
                         break;
