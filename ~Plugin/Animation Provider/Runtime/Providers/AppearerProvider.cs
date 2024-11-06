@@ -1,9 +1,11 @@
+using CustomInspector;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace OSK
 {
-    public class Appearer : MonoBehaviour
+    public class AppearerProvider : MonoBehaviour
     {
         [Header("Appearer")] public Transform rootAppear;
         public float scaleInit = 0f;
@@ -20,6 +22,8 @@ namespace OSK
         private Transform root => rootAppear ? rootAppear : transform;
         private Tween tween;
 
+        public UnityEvent OnShow;
+
         private void OnEnable()
         {
             root.localScale = Vector3.one * scaleInit;
@@ -29,13 +33,18 @@ namespace OSK
                 tween = DOVirtual.DelayedCall(appearAfter, Show).SetUpdate(ignoreTimeScale);
         }
 
+        [Button]
         public void Show()
         {
-            tween = root.DOScale(Vector3.one, duration).SetEase(animStartButton).SetUpdate(ignoreTimeScale);
-            if (!shown)
-            {
-                shown = true;
-            }
+            tween = root.DOScale(Vector3.one, duration).SetEase(animStartButton).SetUpdate(ignoreTimeScale).OnComplete(
+                () =>
+                {
+                    if (!shown)
+                    {
+                        shown = true;
+                        OnShow?.Invoke();
+                    }
+                });
         }
 
         private void OnDisable()
@@ -55,11 +64,12 @@ namespace OSK
                     {
                         shown = false;
                     }
+
                     gameObject.SetActive(false);
                 });
-            
         }
 
+        [Button]
         public void HideWithDelay()
         {
             if (hideDelay <= 0)

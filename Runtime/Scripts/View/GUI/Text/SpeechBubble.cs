@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 namespace OSK
 {
+    
     public class SpeechBubble : MonoBehaviour
     {
         public UnityEvent onCompleted;
@@ -18,12 +19,7 @@ namespace OSK
         [SerializeField] private Color highlightColor = Color.red;
         [SerializeField] private float delayBetweenLetters = 0.02f;
         [SerializeField] private float delayBetweenWords = 0.05f;
-
         [SerializeField] private bool staticPlacing = true;
-
-        // [SerializeField] private SoundCollection toggleSound;
-        [SerializeField] private Appearer appearer;
-        
 
         [SerializeField] private bool isSpeechToEnable;
         [SerializeField] private float delaySpeechToEnable;
@@ -85,7 +81,6 @@ namespace OSK
             if (showing) return;
 
             PlaySound();
-            appearer.Show();
             showing = true;
         }
 
@@ -129,7 +124,6 @@ namespace OSK
         public void Hide()
         {
             showing = false;
-            appearer.Hide();
         }
 
         private void CancelPrevious()

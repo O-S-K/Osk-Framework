@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using CustomInspector;
 using UnityEngine;
 using System.Collections.Generic;
@@ -113,3 +114,4 @@ namespace OSK
         }
     }
 }
+#endif
