@@ -8,6 +8,9 @@ namespace OSK
     {
         public int targetFrameRate = 60;
         public int vSyncCount = 0;
+        
+        public string packageName = "";
+        public string appstoreID = ""; 
 
         public DataConfigs data;
         public SettingConfigs setting;
@@ -17,6 +20,10 @@ namespace OSK
         [CustomInspector.Button]
         private void AddConfigs()
         {
+            packageName = Application.identifier;
+            Application.targetFrameRate = targetFrameRate;
+            QualitySettings.vSyncCount = vSyncCount;
+                
             FindViewDataSOAssets();
             FindSoundDataSOAssets();
             FindImageDataSOAssets();

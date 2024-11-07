@@ -1,5 +1,7 @@
+using CustomInspector;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Events;
 
 namespace OSK
 {
@@ -18,10 +20,21 @@ namespace OSK
         public float duration = 2f;
         public int loopcount = 0;
         public LoopType loopType = LoopType.Restart;
+        
+        public TypeAnimation typeAnim = TypeAnimation.Ease;
+ 
+        [HideIf(nameof(typeAnim), TypeAnimation.Curve)]
         public Ease ease = Ease.Linear;
+        [HideIf(nameof(curve), TypeAnimation.Ease)]
+        public AnimationCurve curve;
+        
+        public bool isIgnoreTimeScale = true;
+        
         public Tweener tweener;
         public Tweener Tweener => tweener;
         public bool IsPlaying => null != tweener && tweener.IsPlaying();
+        
+        public UnityEvent onComplete;
 
         public virtual void OnEnable()
         {
@@ -42,9 +55,15 @@ namespace OSK
             if (!target) target = (Object)tweener.target;
             tweener.SetDelay(delay)
                 .SetAutoKill(setAutoKill)
-                .SetEase(ease)
                 .SetLoops(loopcount, loopType)
-                .SetTarget(target);
+                .SetUpdate(isIgnoreTimeScale)
+                .SetTarget(target)
+                .OnComplete(() => onComplete?.Invoke());
+            
+            if (typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(ease);
+            else
+                tweener.SetEase(curve);
         }
 
         public abstract Tweener InitTween();

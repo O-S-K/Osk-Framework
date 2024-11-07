@@ -96,7 +96,7 @@ namespace OSK
                 EditorGUILayout.BeginHorizontal();
 
                 // Button to open the scene
-                if (GUILayout.Button(Path.GetFileNameWithoutExtension(scenePath), GUILayout.ExpandWidth(true)))
+                if (GUILayout.Button(System.IO.Path.GetFileNameWithoutExtension(scenePath), GUILayout.ExpandWidth(true)))
                 {
                     OpenScene(scenePath);
                 }

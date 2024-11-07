@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace OSK
 {
+    [DisallowMultipleComponent]
     public class MoverProvider : MonoBehaviour
     {
         public float speed = 1f;

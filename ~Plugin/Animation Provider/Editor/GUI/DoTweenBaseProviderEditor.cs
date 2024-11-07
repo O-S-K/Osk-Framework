@@ -44,34 +44,19 @@ namespace OSK
 
             var itr = serializedObject.GetIterator();
             itr.NextVisible(true);
-            fd0 = EditorGUILayout.Foldout(fd0, "General Parameters", fds);
-            if (fd0)
-            {
-                HorizontalLine();
-                while (itr.NextVisible(false))
-                {
-                    if (itr.name != "loopType" || provider.loopcount != 0 && provider.loopcount != 1)
-                    {
-                        EditorGUILayout.PropertyField(itr, true);
-                    }
-
-                    if (itr.name == "ease") break;
-                }
-            }
-
-            fd1 = EditorGUILayout.Foldout(fd1, " Provider Parameter ", fds);
-            if (fd1)
-            {
-                HorizontalLine();
-                while (itr.NextVisible(false))
-                {
-                    if (fd0 || IsPropertyDrawRequired(itr))
-                    {
-                        EditorGUILayout.PropertyField(itr, true);
-                    }
-                }
-            }
-
+             fd0 = EditorGUILayout.Foldout(fd0, "General Parameters", fds);
+             if (fd0)
+             {
+                 HorizontalLine();
+                 while (itr.NextVisible(false))
+                 {
+                     if (itr.name != "loopType" || provider.loopcount != 0 && provider.loopcount != 1)
+                     {
+                         EditorGUILayout.PropertyField(itr, true);
+                     }
+                 }
+             }
+            
             if (serializedObject.hasModifiedProperties)
             {
                 serializedObject.ApplyModifiedProperties();
