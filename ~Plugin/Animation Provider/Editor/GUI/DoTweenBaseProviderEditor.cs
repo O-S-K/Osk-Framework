@@ -17,7 +17,7 @@ namespace OSK
         SerializedProperty loopcount;
         SerializedProperty duration;
         float _previewTime = 0;
-        bool isPreview;
+        bool isPreviewSlider;
 
         public override void OnInspectorGUI()
         {
@@ -67,7 +67,7 @@ namespace OSK
             GUILayout.Space(10);
             GUILayout.BeginHorizontal();
 
-            if (!isPreview)
+            if (!isPreviewSlider)
             {
                 if (GUILayout.Button(isTweening ? "Stop preview" : "Start preview"))
                 {
@@ -82,38 +82,12 @@ namespace OSK
                     }
                 }
 
-                var providers = provider.GetComponents<DoTweenBaseProvider>();
-                if (null != providers && providers.Length > 1)
-                {
-                    // if(isPreview)
-                    //     return;
-
-                    var anyispreviewing = providers.Any(v => v.IsPreviewing());
-                    var label = anyispreviewing ? "<color=red>Stop All</color>" : "Preview all";
-                    if (GUILayout.Button(label, bt))
-                    {
-                        if (anyispreviewing)
-                        {
-                            foreach (var item in providers)
-                            {
-                                item.StopPreview();
-                            }
-                        }
-                        else
-                        {
-                            foreach (var item in providers)
-                            {
-                                item.StopPreview();
-                                item.StartPreview(() => OnTweenerStart(providers), () => OnTweenerUpdating(item));
-                            }
-                        }
-                    }
-                }
+                PreviewAll();
             }
 
             GUILayout.EndHorizontal();
-            isPreview = GUILayout.Toggle(isPreview, "Preview Control");
-            if (isPreview)
+            isPreviewSlider = GUILayout.Toggle(isPreviewSlider, "Preview Slider");
+            if (isPreviewSlider)
             {
                 if (!_isPlaying)
                 {
@@ -123,8 +97,8 @@ namespace OSK
                     provider.StartPreview(OnTweenerStart, OnTweenerUpdating);
                 }
 
-                EditorGUILayout.LabelField("Preview Control");
-                _previewTime = EditorGUILayout.Slider("Timeline", _previewTime, 0, provider.GetDuration() - 0.0001f);
+                EditorGUILayout.LabelField("Preview Slider");
+                _previewTime = EditorGUILayout.Slider("Timeline", _previewTime, 0, provider.Duration()- 0.001f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     provider.Preview(_previewTime);
@@ -135,27 +109,54 @@ namespace OSK
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Stop preview"))
                 {
-                    _previewTime = 0;
-                    _isPlaying = false;
-                    provider.SetIsPreview(false);
-                    if (!_isCancelPreviewing)
-                    {
-                        _isCancelPreviewing = true;
-                        provider.StopPreview();
-                    }
+                    StopPreview();
                 }
 
                 GUILayout.EndHorizontal();
             }
             else
             {
-                _isPlaying = false;
-                provider.SetIsPreview(false);
-                if (!_isCancelPreviewing)
+                StopPreview();
+            }
+        }
+        
+        public void PreviewAll()
+        {
+            var providers = provider.GetComponents<DoTweenBaseProvider>();
+            if (null != providers && providers.Length > 1)
+            {
+                var anyIsPreviewing = providers.Any(v => v.IsPreviewing());
+                var label = anyIsPreviewing ? "<color=red>Stop All</color>" : "Preview all";
+                if (GUILayout.Button(label, bt))
                 {
-                    _isCancelPreviewing = true;
-                    provider.StopPreview();
+                    if (anyIsPreviewing)
+                    {
+                        foreach (var item in providers)
+                        {
+                            item.StopPreview();
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in providers)
+                        {
+                            item.StopPreview();
+                            item.StartPreview(() => OnTweenerStart(providers), () => OnTweenerUpdating(item));
+                        }
+                    }
                 }
+            }
+        }
+        
+        private void StopPreview()
+        {
+            _previewTime = 0;
+            _isPlaying = false;
+            provider.SetIsPreview(false);
+            if (!_isCancelPreviewing)
+            {
+                _isCancelPreviewing = true;
+                provider.StopPreview();
             }
         }
 

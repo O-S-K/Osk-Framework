@@ -1,19 +1,23 @@
-using DG.Tweening;
-using TMPro;
+using System;
 using UnityEngine;
+using DG.Tweening;
 
 namespace OSK
 {
-    [DisallowMultipleComponent, RequireComponent(typeof(TextMeshProUGUI))]
-    public class TMPNumScrollProvider : DoTweenBaseProvider
+    [DisallowMultipleComponent]
+    public class RectPositionProvider : DoTweenBaseProvider
     {
-        public TextMeshProUGUI text;
-        public int value;
-        
+        public bool snapping = false;
+        public Vector3 endValue = Vector3.zero;
+
+        private void Reset()
+        { 
+            endValue = RootRectTransform.anchoredPosition;
+        }
+
         public override Tweener InitTween()
-        {
-            target = text;// This step must not be missed
-            return DOTween.To(() => 0, y => text.text = y.ToString(), value, duration); //tostring high GC
+        { 
+            return RootRectTransform.DOAnchorPos(endValue, duration, snapping);
         }
 
         public override void Play()
@@ -22,7 +26,7 @@ namespace OSK
             tweener = null;
             if (!target)
                 if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;            
+                    target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
             tweener.SetDelay(delay)
                 .SetAutoKill(setAutoKill)
@@ -37,6 +41,12 @@ namespace OSK
                 tweener.SetEase(curve);
         }
 
-        private void Reset() => text = GetComponent<TextMeshProUGUI>();
+
+        public override void Stop()
+        {
+            base.Stop();
+            tweener?.Rewind(); //Reset the changes made by Dotween
+            tweener = null;
+        }
     }
 }

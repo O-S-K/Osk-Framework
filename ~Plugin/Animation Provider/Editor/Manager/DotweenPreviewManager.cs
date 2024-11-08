@@ -48,8 +48,8 @@ namespace OSK
             DOTweenEditorPreview.PrepareTweenForPreview(tweener);
             // Register callback, be sure to add the listener at the end
             tweener.OnComplete(() => TweenerPostProcess(provider))
-            .OnUpdate(OnUpdate)
-            .OnStart(OnStart);
+            .OnStart(OnStart)
+            .OnUpdate(OnUpdate);
         }
         
         public static void StopPreview(this DotweenProviderManager manager)
@@ -68,8 +68,23 @@ namespace OSK
             {
                 provider.StartPreview();
             }
+        } 
+      
+        public static bool IsPreviewing(this DotweenProviderManager manager)
+        {
+            return manager.Providers.Any(v => v.IsPreviewing() || v.GetIsPreview());
         }
-
+        
+        public static bool IsPreviewing(this IDoTweenProviderBehaviours provider)
+        {
+            return !EditorApplication.isPlayingOrWillChangePlaymode 
+                   &&null != provider 
+                   && null != provider.Tweener 
+                   && provider.Tweener.active
+                   && provider.Tweener.IsPlaying() 
+                   && tweeners.Contains(provider.Tweener);
+        }
+        
         public static bool IsPreview = false;
         public static bool GetIsPreview(this IDoTweenProviderBehaviours provider)
         {
@@ -79,34 +94,6 @@ namespace OSK
         public static void SetIsPreview(this IDoTweenProviderBehaviours provider, bool value)
         {
             IsPreview = value;
-        }
-        
-        
-        public static void UpdatePreview(this DotweenProviderManager manager, float time)
-        {
-            // Adjust each provider's tween to the selected timeline position
-            foreach (var provider in manager.Providers)
-            {
-                if (provider.Tweener != null && provider.Tweener.active)
-                {
-                    float adjustedTime = time * provider.GetDuration(); // Scale preview time to duration
-                    provider.Preview(adjustedTime);
-                }
-            }
-        }
-
-        public static bool IsPreviewing(this IDoTweenProviderBehaviours provider)
-        {
-            return !EditorApplication.isPlayingOrWillChangePlaymode 
-                &&null != provider 
-                && null != provider.Tweener 
-                && provider.Tweener.active
-                && provider.Tweener.IsPlaying() 
-                && tweeners.Contains(provider.Tweener);
-        }
-        public static bool IsPreviewing(this DotweenProviderManager manager)
-        {
-            return manager.Providers.Any(v => v.IsPreviewing() || v.GetIsPreview());
         }
         #endregion
 

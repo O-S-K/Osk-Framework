@@ -10,7 +10,7 @@ namespace OSK
         void Play();
         void Rewind();
         void Stop();
-        float GetDuration();
+        float Duration();
         void Preview(float time);
     }
 }

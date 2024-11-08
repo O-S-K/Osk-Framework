@@ -24,7 +24,7 @@ namespace OSK
 
             if (_appearerProvider != null)
             {
-                currentDelay = delay + _appearerProvider.duration + _appearerProvider.appearAfter;
+                currentDelay = delay + _appearerProvider.duration + _appearerProvider.delay;
                 originalScale = Vector3.one;
             }
             else

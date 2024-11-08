@@ -62,6 +62,28 @@ namespace OSK
             return tweener;
         }
 
+        public override void Play()
+        {
+            tweener?.Kill();
+            tweener = null;
+            if (!target)
+                if (tweener != null)
+                    target = (UnityEngine.Object)tweener.target;
+
+            tweener = InitTween();
+            tweener.SetDelay(delay)
+                .SetAutoKill(setAutoKill)
+                .SetLoops(loopcount, loopType)
+                .SetUpdate(isIgnoreTimeScale)
+                .SetTarget(target)
+                .OnComplete(() => onComplete?.Invoke());
+
+            if (typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(ease);
+            else
+                tweener.SetEase(curve);
+        }
+
         public void AddPathPoint()
         {
             var idx = paths.Count;

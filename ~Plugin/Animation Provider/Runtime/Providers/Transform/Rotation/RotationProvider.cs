@@ -1,21 +1,24 @@
-using DG.Tweening;
-using TMPro;
 using UnityEngine;
+using DG.Tweening;
 
 namespace OSK
 {
-    [DisallowMultipleComponent, RequireComponent(typeof(TextMeshProUGUI))]
-    public class TMPNumScrollProvider : DoTweenBaseProvider
+    [DisallowMultipleComponent]
+    public class RotationProvider : DoTweenBaseProvider
     {
-        public TextMeshProUGUI text;
-        public int value;
-        
+        public bool isLocal = true;
+        public RotateMode rotateMode = RotateMode.Fast;
+        public Vector3 endValue = Vector3.zero;
+
+        private void Reset() => endValue = isLocal ? RootTransform.localEulerAngles : RootTransform.eulerAngles;
+
         public override Tweener InitTween()
         {
-            target = text;// This step must not be missed
-            return DOTween.To(() => 0, y => text.text = y.ToString(), value, duration); //tostring high GC
+            return isLocal
+                ? RootTransform.DOLocalRotate(endValue, duration, rotateMode)
+                : RootTransform.DORotate(endValue, duration, rotateMode);
         }
-
+        
         public override void Play()
         {
             tweener?.Kill();
@@ -37,6 +40,11 @@ namespace OSK
                 tweener.SetEase(curve);
         }
 
-        private void Reset() => text = GetComponent<TextMeshProUGUI>();
+        public override void Stop()
+        {
+            base.Stop();
+            tweener?.Rewind(); //Reset the changes made by Dotween
+            tweener = null;
+        }
     }
 }

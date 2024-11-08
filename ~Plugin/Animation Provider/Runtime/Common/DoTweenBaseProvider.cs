@@ -8,33 +8,39 @@ namespace OSK
     public abstract class DoTweenBaseProvider : MonoBehaviour, IDoTweenProviderBehaviours
     {
         [HideInInspector] public Object target;
+        
+        [SerializeField] private Transform _root;
+        
+        public Transform RootTransform => _root ? _root : transform;
+        public RectTransform RootRectTransform => _root as RectTransform;
 
-        [Tooltip("When checked, the animation will start playing every time the game object is activated")]
+
         public bool playOnAwake = false;
 
-        [Tooltip(
-            "When checked, the animation is destroyed upon completion. If you need to rewind, please set it to false")]
+        [Tooltip( "When checked, the animation is destroyed upon completion. " +
+                  "If you need to rewind, please set it to false")]
         public bool setAutoKill = true;
 
         public float delay = 0f;
         public float duration = 2f;
         public int loopcount = 0;
-        public LoopType loopType = LoopType.Restart;
         
+        public LoopType loopType = LoopType.Restart;
         public TypeAnimation typeAnim = TypeAnimation.Ease;
- 
+
         [HideIf(nameof(typeAnim), TypeAnimation.Curve)]
         public Ease ease = Ease.Linear;
+
         [HideIf(nameof(curve), TypeAnimation.Ease)]
         public AnimationCurve curve;
-        
+
         public bool isIgnoreTimeScale = true;
-        
+
         public Tweener tweener;
         public Tweener Tweener => tweener;
-        public bool IsPlaying => null != tweener && tweener.IsPlaying();
         
         public UnityEvent onComplete;
+        public bool IsPlaying => null != tweener && tweener.IsPlaying();
 
         public virtual void OnEnable()
         {
@@ -43,36 +49,34 @@ namespace OSK
 
         public virtual void OnDisable() => Stop();
 
-        public virtual void OnValidate()
-        {
-        }
-
-        public virtual void Play()
-        {
-            tweener?.Kill();
-            tweener = null;
-            tweener = InitTween();
-            if (!target) target = (Object)tweener.target;
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
-                .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
-            
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
-            else
-                tweener.SetEase(curve);
-        }
+#if UNITY_EDITOR
+        public virtual void OnValidate()  {}
+#endif
 
         public abstract Tweener InitTween();
-        public virtual void Stop() => tweener?.Kill();
+        public abstract void Play();
+        public float Duration() => duration;
 
-        public float GetDuration()
-        { 
-            return duration;
-        }
+        /*private void BaseInitTween()
+        {
+                tweener?.Kill();
+                tweener = null;
+                if (!target)
+                    if (tweener != null)
+                        target = (UnityEngine.Object)tweener.target;
+                //
+                tweener.SetDelay(delay)
+                    .SetAutoKill(setAutoKill)
+                    .SetLoops(loopcount, loopType)
+                    .SetUpdate(isIgnoreTimeScale)
+                    .SetTarget(target)
+                    .OnComplete(() => onComplete?.Invoke());
+
+                if (typeAnim == TypeAnimation.Ease)
+                    tweener.SetEase(ease);
+                else
+                    tweener.SetEase(curve);
+        }*/
 
         public void Preview(float time)
         {
@@ -81,5 +85,11 @@ namespace OSK
         }
 
         public virtual void Rewind() => tweener?.Rewind();
+        
+        public virtual void Stop() => tweener?.Kill();
+        public virtual void Resume() => tweener?.Play();
+        public virtual void Pause() => tweener?.Pause(); 
+        public virtual void Kill() => tweener?.Kill();
+        public virtual void Restart() => tweener?.Restart(); 
     }
 }

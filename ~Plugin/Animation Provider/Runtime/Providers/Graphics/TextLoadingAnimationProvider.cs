@@ -31,7 +31,7 @@ namespace OSK
         }
         private void Awake() => text = GetComponent<Graphic>();
         private void Reset() => text = GetComponent<Graphic>();
-        public override Tweener InitTween()
+        public  override Tweener InitTween()
         {
             if (text)
             {
@@ -46,12 +46,35 @@ namespace OSK
             }
             return tweener;
         }
+
+        public override void Play()
+        {
+            tweener?.Kill();
+            tweener = null;
+            if (!target)
+                if (tweener != null)
+                    target = (UnityEngine.Object)tweener.target;            
+            tweener = InitTween();
+            tweener.SetDelay(delay)
+                .SetAutoKill(setAutoKill)
+                .SetLoops(loopcount, loopType)
+                .SetUpdate(isIgnoreTimeScale)
+                .SetTarget(target)
+                .OnComplete(() => onComplete?.Invoke());
+
+            if (typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(ease);
+            else
+                tweener.SetEase(curve);
+        }
+
         public override void Stop()
         {
             base.Stop();
             tweener = null;
             Text = cached;
         }
+        
         public override void OnValidate()
         {
             base.OnValidate();
@@ -60,6 +83,6 @@ namespace OSK
                 Debug.LogError($"{nameof(TextLoadingAnimationProvider)}: The Text Loading component requires a Text or TMP component!");
                 text = null;
             }
-        }
+        } 
     }
 }
