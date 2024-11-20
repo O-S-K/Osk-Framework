@@ -1,8 +1,9 @@
 #if UNITY_EDITOR
+// #define CustomPlayerPref
+
 using UnityEditor;
 using UnityEngine;
 using System.IO;
-using CustomPlayerPref.PlayerPrefsEditor;
 
 namespace OSK
 {
@@ -31,7 +32,7 @@ namespace OSK
             DrawBackground(Color.white);
             DisplayFileSystemFiles();
 
-            
+
             EditorGUILayout.Space();
             DrawBackground(Color.white);
             DisplayPlayerPrefsKeys();
@@ -67,7 +68,10 @@ namespace OSK
 
             if (GUILayout.Button("Open"))
             {
-                PlayerPrefsEditor.Init();
+                
+#if CustomPlayerPref
+                 CustomPlayerPref.PlayerPrefsEditor.Init();
+#endif
             }
         }
 
@@ -96,10 +100,10 @@ namespace OSK
                 Debug.LogError($"Directory not found: {fileDirectory}");
             }
         }
-        
+
         private void DrawBackground(Color color)
         {
-            Rect rect = EditorGUILayout.GetControlRect(false, 1); 
+            Rect rect = EditorGUILayout.GetControlRect(false, 1);
             EditorGUI.DrawRect(rect, color);
         }
     }

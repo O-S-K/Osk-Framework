@@ -18,6 +18,8 @@ namespace OSK
 
         private void Initialize()
         {
+            if(Main.Configs.Game.data.isUseUIImage == false)
+                return;
             if(Main.Configs.Game.data.uiImageSO == null)
                 return;
               

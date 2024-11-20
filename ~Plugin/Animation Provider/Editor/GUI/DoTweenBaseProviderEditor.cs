@@ -44,19 +44,20 @@ namespace OSK
 
             var itr = serializedObject.GetIterator();
             itr.NextVisible(true);
-             fd0 = EditorGUILayout.Foldout(fd0, "General Parameters", fds);
-             if (fd0)
-             {
-                 HorizontalLine();
-                 while (itr.NextVisible(false))
-                 {
-                     if (itr.name != "loopType" || provider.loopcount != 0 && provider.loopcount != 1)
-                     {
-                         EditorGUILayout.PropertyField(itr, true);
-                     }
-                 }
-             }
-            
+            fd0 = EditorGUILayout.Foldout(fd0, "General Parameters", fds);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Script"), true);
+            if (fd0)
+            {
+                HorizontalLine();
+                while (itr.NextVisible(false))
+                {
+                    if (itr.name != "loopType" || provider.loopcount != 0 && provider.loopcount != 1)
+                    {
+                        EditorGUILayout.PropertyField(itr, true);
+                    }
+                }
+            }
+
             if (serializedObject.hasModifiedProperties)
             {
                 serializedObject.ApplyModifiedProperties();
@@ -81,6 +82,12 @@ namespace OSK
                         provider.StartPreview(OnTweenerStart, OnTweenerUpdating);
                     }
                 }
+                
+                /*if (GUILayout.Button("Play Backward"))
+                {
+                    provider.StopPreview();
+                    provider.PlayBackwards();
+                }*/
 
                 PreviewAll();
             }
@@ -98,7 +105,7 @@ namespace OSK
                 }
 
                 EditorGUILayout.LabelField("Preview Slider");
-                _previewTime = EditorGUILayout.Slider("Timeline", _previewTime, 0, provider.Duration()- 0.001f);
+                _previewTime = EditorGUILayout.Slider("Timeline", _previewTime, 0, provider.Duration() - 0.001f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     provider.Preview(_previewTime);
@@ -119,35 +126,38 @@ namespace OSK
                 StopPreview();
             }
         }
-        
+
         public void PreviewAll()
         {
-            var providers = provider.GetComponents<DoTweenBaseProvider>();
-            if (null != providers && providers.Length > 1)
+            var providers = provider.GetComponentsInChildren<DoTweenBaseProvider>(true);
+            var providerActive = providers
+                .Where(v => v.gameObject.activeInHierarchy && v.enabled).ToArray();
+            
+            if (null != providerActive && providerActive.Length > 1)
             {
-                var anyIsPreviewing = providers.Any(v => v.IsPreviewing());
+                var anyIsPreviewing = providerActive.Any(v => v.IsPreviewing());
                 var label = anyIsPreviewing ? "<color=red>Stop All</color>" : "Preview all";
                 if (GUILayout.Button(label, bt))
                 {
                     if (anyIsPreviewing)
                     {
-                        foreach (var item in providers)
+                        foreach (var item in providerActive)
                         {
                             item.StopPreview();
                         }
                     }
                     else
                     {
-                        foreach (var item in providers)
+                        foreach (var item in providerActive)
                         {
                             item.StopPreview();
-                            item.StartPreview(() => OnTweenerStart(providers), () => OnTweenerUpdating(item));
+                            item.StartPreview(() => OnTweenerStart(providerActive), () => OnTweenerUpdating(item));
                         }
                     }
                 }
             }
         }
-        
+
         private void StopPreview()
         {
             _previewTime = 0;

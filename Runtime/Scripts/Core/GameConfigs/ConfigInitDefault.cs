@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using CustomInspector;
 
 namespace OSK
 {
@@ -8,9 +9,9 @@ namespace OSK
     {
         public int targetFrameRate = 60;
         public int vSyncCount = 0;
-        
+
         public string packageName = "";
-        public string appstoreID = ""; 
+        public string appstoreID = "";
 
         public DataConfigs data;
         public SettingConfigs setting;
@@ -23,7 +24,7 @@ namespace OSK
             packageName = Application.identifier;
             Application.targetFrameRate = targetFrameRate;
             QualitySettings.vSyncCount = vSyncCount;
-                
+
             FindViewDataSOAssets();
             FindSoundDataSOAssets();
             FindImageDataSOAssets();
@@ -144,9 +145,14 @@ namespace OSK
     [System.Serializable]
     public class DataConfigs
     {
-        public ListViewSO listViewS0;
-        public SoundDataSO soundDataSO;
-        public UIImageSO uiImageSO;
+        public bool isUseUI;
+        public bool isUseSound;
+        public bool isUseUIImage;
+
+
+        [ShowIf(nameof(isUseUI), true)] public ListViewSO listViewS0;
+        [ShowIf(nameof(isUseSound), true)] public SoundDataSO soundDataSO;
+        [ShowIf(nameof(isUseUIImage), true)] public UIImageSO uiImageSO;
     }
 
     [System.Serializable]

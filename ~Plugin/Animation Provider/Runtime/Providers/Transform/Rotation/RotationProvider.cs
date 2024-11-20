@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
@@ -8,24 +9,27 @@ namespace OSK
     {
         public bool isLocal = true;
         public RotateMode rotateMode = RotateMode.Fast;
+
+        public Vector3 startValue = Vector3.zero;
         public Vector3 endValue = Vector3.zero;
 
         private void Reset() => endValue = isLocal ? RootTransform.localEulerAngles : RootTransform.eulerAngles;
 
         public override Tweener InitTween()
         {
+            RootTransform.localEulerAngles = startValue;
             return isLocal
                 ? RootTransform.DOLocalRotate(endValue, duration, rotateMode)
                 : RootTransform.DORotate(endValue, duration, rotateMode);
         }
-        
+
         public override void Play()
         {
             tweener?.Kill();
             tweener = null;
             if (!target)
                 if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;            
+                    target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
             tweener.SetDelay(delay)
                 .SetAutoKill(setAutoKill)
@@ -43,7 +47,8 @@ namespace OSK
         public override void Stop()
         {
             base.Stop();
-            tweener?.Rewind(); //Reset the changes made by Dotween
+            tweener?.Rewind();
+            RootTransform.localEulerAngles = endValue;
             tweener = null;
         }
     }

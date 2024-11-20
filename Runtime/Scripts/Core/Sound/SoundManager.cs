@@ -29,6 +29,9 @@ namespace OSK
           
         public override void OnInit()
         {
+            if(Main.Configs.Game.data.isUseSound == false)
+                return;
+            
             _soundObject = new GameObject("AudioSource").AddComponent<AudioSource>();
             _soundObject.transform.parent = transform;
             _listMusicInfos = new List<PlayingSound>();

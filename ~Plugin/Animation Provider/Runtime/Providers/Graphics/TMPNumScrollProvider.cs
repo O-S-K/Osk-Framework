@@ -1,19 +1,21 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace OSK
 {
-    [DisallowMultipleComponent, RequireComponent(typeof(TextMeshProUGUI))]
+    [DisallowMultipleComponent]
     public class TMPNumScrollProvider : DoTweenBaseProvider
     {
-        public TextMeshProUGUI text;
-        public int value;
+        public Text text;
+        public int startValue;
+        public int endValue;
         
         public override Tweener InitTween()
-        {
-            target = text;// This step must not be missed
-            return DOTween.To(() => 0, y => text.text = y.ToString(), value, duration); //tostring high GC
+        { 
+            target =  text;
+            return DOTween.To(() => 0, y => text.text = y.ToString(), endValue, duration); //tostring high GC
         }
 
         public override void Play()
@@ -22,7 +24,9 @@ namespace OSK
             tweener = null;
             if (!target)
                 if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;            
+                    target = (UnityEngine.Object)tweener.target;     
+            
+            text.text = startValue.ToString();
             tweener = InitTween();
             tweener.SetDelay(delay)
                 .SetAutoKill(setAutoKill)
@@ -37,6 +41,11 @@ namespace OSK
                 tweener.SetEase(curve);
         }
 
-        private void Reset() => text = GetComponent<TextMeshProUGUI>();
+        private void Reset()
+        {
+            tweener?.Kill();
+            tweener = null;
+            text.text = startValue.ToString();
+        }
     }
 }

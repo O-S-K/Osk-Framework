@@ -52,6 +52,11 @@ namespace OSK
         {
             return UnityEngine.Random.onUnitSphere * radius;
         }
+        
+        public static Vector3 RandomVector3(Vector3 min, Vector3 max)
+        {
+            return  new Vector3(RandomFloat(min.x, max.x), RandomFloat(min.y, max.y), RandomFloat(min.z, max.z));
+        }
 
         public static int UniqueRandomInt(int min, int max)
         {

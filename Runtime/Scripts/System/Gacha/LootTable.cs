@@ -3,61 +3,66 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-// https://github.com/Balastrong/random-loot-table-video
-[CreateAssetMenu(fileName = "LootTable", menuName = "OSK/Gacha/LootTable")]
-public class LootTable : ScriptableObject
+namespace OSK
 {
-    [SerializeField] private List<RewardItem> _items;
-    [System.NonSerialized] private bool isInitialized = false;
-
-    private float _totalWeight;
-
-    private void Initialize()
+// https://github.com/Balastrong/random-loot-table-video
+    [CreateAssetMenu(fileName = "LootTable", menuName = "OSK/Gacha/LootTable")]
+    public class LootTable : ScriptableObject
     {
-        if (!isInitialized)
+        [SerializeField] private List<RewardItem> _items;
+        [System.NonSerialized] private bool isInitialized = false;
+
+        private float _totalWeight;
+
+        private void Initialize()
         {
-            _totalWeight = _items.Sum(item => item.weight);
-            isInitialized = true;
+            if (!isInitialized)
+            {
+                _totalWeight = _items.Sum(item => item.weight);
+                isInitialized = true;
+            }
         }
-    }
 
 
-    private void AltInitialize()
-    {
-        if (!isInitialized)
+        private void AltInitialize()
         {
-            _totalWeight = 0;
+            if (!isInitialized)
+            {
+                _totalWeight = 0;
+                foreach (var item in _items)
+                {
+                    _totalWeight += item.weight;
+                }
+
+                isInitialized = true;
+            }
+        }
+
+
+        public RewardItem GetRandomItem()
+        {
+            Initialize();
+            float diceRoll = Random.Range(0f, _totalWeight);
+
             foreach (var item in _items)
             {
-                _totalWeight += item.weight;
+                if (item.weight >= diceRoll)
+                {
+                    return item;
+                }
+
+                diceRoll -= item.weight;
             }
-            isInitialized = true;
+
+            throw new System.Exception("Reward generation failed!");
         }
     }
 
-
-    public RewardItem GetRandomItem()
+    [System.Serializable]
+    public class RewardItem
     {
-        Initialize();
-        float diceRoll = Random.Range(0f, _totalWeight);
-
-        foreach (var item in _items)
-        {
-            if (item.weight >= diceRoll)
-            {
-                return item;
-            }
-
-            diceRoll -= item.weight;
-        }
-        throw new System.Exception("Reward generation failed!");
+        public string itemName;
+        public float weight;
+        public Sprite sprite;
     }
-}
-
-[System.Serializable]
-public class RewardItem
-{
-    public string itemName;
-    public float weight;
-    public Sprite sprite;
 }

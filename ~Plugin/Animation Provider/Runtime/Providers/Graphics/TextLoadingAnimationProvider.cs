@@ -11,9 +11,9 @@ namespace OSK
     [RequireComponent(typeof(Graphic))]
     public class TextLoadingAnimationProvider : DoTweenBaseProvider
     {
-        [Header("For Text  and TextMeshPro")]
-        public Graphic text;
+        [Header("For Text  and TextMeshPro")] public Graphic text;
         private string cached;
+
         public string Text
         {
             get => text is Text ? (text as Text).text : (text as TextMeshProUGUI).text;
@@ -29,9 +29,8 @@ namespace OSK
                 }
             }
         }
-        private void Awake() => text = GetComponent<Graphic>();
-        private void Reset() => text = GetComponent<Graphic>();
-        public  override Tweener InitTween()
+
+        public override Tweener InitTween()
         {
             if (text)
             {
@@ -42,8 +41,10 @@ namespace OSK
             }
             else
             {
-                Debug.LogError($"{nameof(TextLoadingAnimationProvider)}: 没有发现 Text 组件！");
+                Debug.LogError(
+                    $"{nameof(TextLoadingAnimationProvider)}:  The Text Loading component requires a Text or TMP component!");
             }
+
             return tweener;
         }
 
@@ -53,7 +54,7 @@ namespace OSK
             tweener = null;
             if (!target)
                 if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;            
+                    target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
             tweener.SetDelay(delay)
                 .SetAutoKill(setAutoKill)
@@ -74,15 +75,16 @@ namespace OSK
             tweener = null;
             Text = cached;
         }
-        
+
         public override void OnValidate()
         {
             base.OnValidate();
             if (!(text is Text) && !(text is TMPro.TextMeshProUGUI))
             {
-                Debug.LogError($"{nameof(TextLoadingAnimationProvider)}: The Text Loading component requires a Text or TMP component!");
+                Debug.LogError(
+                    $"{nameof(TextLoadingAnimationProvider)}: The Text Loading component requires a Text or TMP component!");
                 text = null;
             }
-        } 
+        }
     }
 }

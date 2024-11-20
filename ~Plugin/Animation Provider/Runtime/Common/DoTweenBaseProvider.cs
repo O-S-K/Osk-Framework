@@ -1,7 +1,7 @@
-using CustomInspector;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
@@ -15,7 +15,7 @@ namespace OSK
         public RectTransform RootRectTransform => _root as RectTransform;
 
 
-        public bool playOnAwake = false;
+        public bool playOnEnable = true;
 
         [Tooltip( "When checked, the animation is destroyed upon completion. " +
                   "If you need to rewind, please set it to false")]
@@ -28,10 +28,7 @@ namespace OSK
         public LoopType loopType = LoopType.Restart;
         public TypeAnimation typeAnim = TypeAnimation.Ease;
 
-        [HideIf(nameof(typeAnim), TypeAnimation.Curve)]
         public Ease ease = Ease.Linear;
-
-        [HideIf(nameof(curve), TypeAnimation.Ease)]
         public AnimationCurve curve;
 
         public bool isIgnoreTimeScale = true;
@@ -44,7 +41,7 @@ namespace OSK
 
         public virtual void OnEnable()
         {
-            if (playOnAwake) Play();
+            if (playOnEnable) Play();
         }
 
         public virtual void OnDisable() => Stop();
@@ -83,13 +80,20 @@ namespace OSK
             if (null == tweener) return;
             tweener.Goto(time);
         }
+        
+        public void PlayBackwards()
+        {
+            if (null == tweener) return;
+            tweener.PlayBackwards();
+        }
 
         public virtual void Rewind() => tweener?.Rewind();
-        
+        public virtual void Backward() => tweener?.PlayBackwards();
         public virtual void Stop() => tweener?.Kill();
         public virtual void Resume() => tweener?.Play();
         public virtual void Pause() => tweener?.Pause(); 
         public virtual void Kill() => tweener?.Kill();
         public virtual void Restart() => tweener?.Restart(); 
+        
     }
 }

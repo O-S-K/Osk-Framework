@@ -14,17 +14,17 @@ namespace OSK
         public Vector3 ratio = Vector3.one;
         private Vector3 originalScale;
 
-        private OSK.AppearerProvider _appearerProvider;
+        private OSK.ScaleProvider _scaleProvider;
         private ButtonEffect buttonEffect;
 
         private void OnEnable()
         {
-            _appearerProvider = GetComponent<OSK.AppearerProvider>();
+            _scaleProvider = GetComponent<OSK.ScaleProvider>();
             buttonEffect = GetComponent<ButtonEffect>();
 
-            if (_appearerProvider != null)
+            if (_scaleProvider != null)
             {
-                currentDelay = delay + _appearerProvider.duration + _appearerProvider.delay;
+                currentDelay = delay + _scaleProvider.duration + _scaleProvider.delay;
                 originalScale = Vector3.one;
             }
             else

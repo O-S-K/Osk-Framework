@@ -198,7 +198,6 @@ GameObject:
   - component: {fileID: 3410516606559479183}
   - component: {fileID: 4727173312225109593}
   - component: {fileID: 3978751225802753934}
-  - component: {fileID: 623172498133634736}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -288,7 +287,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 262135
 --- !u!114 &3978751225802753934
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -304,18 +303,6 @@ MonoBehaviour:
   camera: {fileID: 793015797466591391}
   canvasScaler: {fileID: 3410516606559479183}
   isPortrait: 0
---- !u!114 &623172498133634736
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7150874070419862654}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a405e0d871d815642bb92055b259eefc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7627645749250189064
 GameObject:
   m_ObjectHideFlags: 0
@@ -438,4 +425,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41768cc817b6091438f14d7bba3ab70b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 1271570112722841435}

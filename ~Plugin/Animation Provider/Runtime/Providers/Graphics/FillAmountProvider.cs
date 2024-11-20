@@ -1,34 +1,35 @@
-using System;
-using UnityEngine;
 using DG.Tweening;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace OSK
 {
     [DisallowMultipleComponent]
-    public class RectPositionProvider : DoTweenBaseProvider
+    public class FillAmountProvider : DoTweenBaseProvider
     {
-        public bool snapping = false;
-        public Vector3 startValue = Vector3.zero;
-        public Vector3 endValue = Vector3.zero;
-
-        private void Reset()
-        { 
-            endValue = RootRectTransform.anchoredPosition;
-        }
-
+        public Image image;
+        [Range(0, 1)]
+        public float startValue;
+        
+        [Range(0, 1)]
+        public float endValue;
+        
         public override Tweener InitTween()
         { 
-            return RootRectTransform.DOAnchorPos(endValue, duration, snapping);
+            target =  image;
+            return DOTween.To(() => 0, y => image.fillAmount = (float)y, endValue, duration);
         }
 
         public override void Play()
         {
             tweener?.Kill();
             tweener = null;
-            RootRectTransform.anchoredPosition = startValue;
             if (!target)
                 if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
+                    target = (UnityEngine.Object)tweener.target;     
+            
+            image.fillAmount = startValue;
             tweener = InitTween();
             tweener.SetDelay(delay)
                 .SetAutoKill(setAutoKill)
@@ -43,13 +44,11 @@ namespace OSK
                 tweener.SetEase(curve);
         }
 
-
-        public override void Stop()
+        private void Reset()
         {
-            base.Stop();
-            tweener?.Rewind(); 
-            RootRectTransform.anchoredPosition =  endValue;
+            tweener?.Kill();
             tweener = null;
+            image.fillAmount = startValue;
         }
     }
 }

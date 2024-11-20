@@ -14,6 +14,7 @@ namespace OSK
 
         [ShowInInspector, ReadOnly] [SerializeField]
         private List<View> _listCacheView = new List<View>();
+
         private Stack<View> _viewHistory = new Stack<View>();
         public Stack<View> ListViewHistory => _viewHistory;
 
@@ -22,6 +23,8 @@ namespace OSK
 
         public void Initialize()
         {
+            if (Main.Configs.Game.data.isUseUI == false)
+                return;
             Preload();
         }
 
@@ -95,8 +98,8 @@ namespace OSK
         #endregion
 
         #region Open
-        
-        public View Open(View _view, bool hidePrevView , bool checkShowing = true)
+
+        public View Open(View _view, bool hidePrevView, bool checkShowing = true)
         {
             var view = _listCacheView.FirstOrDefault(v => v == _view);
             if (hidePrevView && _viewHistory.Count > 0)
@@ -291,8 +294,7 @@ namespace OSK
         #endregion
 
         #region Remove
-        
-        
+
         public void RemovePopup(View view)
         {
             if (_viewHistory.Count <= 0) return;
@@ -331,7 +333,7 @@ namespace OSK
         {
             if (!_listCacheView.Contains(view))
                 return;
-            
+
             Logg.Log($"[View] Delete view: {view.name}");
             _listCacheView.Remove(view);
             Destroy(view.gameObject);
