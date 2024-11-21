@@ -15,9 +15,7 @@ namespace OSK
     }
 
     public class SoundManager : GameFrameworkComponent
-    {
-        private const string keyPoolSound = "AudioSource";
-
+    { 
         [SerializeField, ReadOnly] private List<SoundInfo> _listSoundInfos = new List<SoundInfo>();
         private List<PlayingSound> _listMusicInfos = new List<PlayingSound>();
         public List<SoundInfo> GetListSoundInfos => _listSoundInfos;
@@ -328,7 +326,7 @@ namespace OSK
 
         private AudioSource CreateAudioSource(string id)
         {
-            var audioSource = Main.Pool.Spawn(keyPoolSound, _soundObject);
+            var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject);
             if (Camera.main != null)
                 audioSource.transform.position = Camera.main.transform.position;
             audioSource.name = id;
@@ -343,7 +341,7 @@ namespace OSK
             }
 
             _listMusicInfos.Clear();
-            Main.Pool.DestroyGroup(keyPoolSound);
+            Main.Pool.DestroyGroup(KeyGroupPool.AudioSound);
         }
     }
 }

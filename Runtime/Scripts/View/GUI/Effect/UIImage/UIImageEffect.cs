@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace OSK
 {
     public class UIImageEffect : MonoBehaviour
-    { 
+    {
         private EffectSetting[] _effectSettings;
         private List<GameObject> _parentEffects;
 
@@ -18,15 +18,15 @@ namespace OSK
 
         private void Initialize()
         {
-            if(Main.Configs.Game.data.isUseUIImage == false)
+            if (Main.Configs.Game.data.isUseUIImage == false)
                 return;
-            if(Main.Configs.Game.data.uiImageSO == null)
+            if (Main.Configs.Game.data.uiImageSO == null)
                 return;
-              
+
             _effectSettings = Main.Configs.Game.data.uiImageSO.EffectSettings;
             if (_effectSettings.Length == 0)
                 return;
- 
+
             _parentEffects = new List<GameObject>();
             for (int i = 0; i < _effectSettings.Length; i++)
             {
@@ -62,7 +62,7 @@ namespace OSK
 
             for (int i = 0; i < effectSetting.numberOfEffects; i++)
             {
-                var effect = Main.Pool.Spawn("UIEffect", effectSetting.icon, 1);
+                var effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, effectSetting.icon, 1);
                 effect.transform.SetParent(parent);
                 effect.transform.localScale = Vector3.one;
                 effect.transform.position = effectSetting.pointSpawn;
@@ -193,6 +193,19 @@ namespace OSK
                 effectSetting.paths.AddLastList(effectSetting.pointTarget);
         }
 
+        public void DestroyEffect(string nameEffect)
+        {
+            var parent = _parentEffects.Find(x => x.name == nameEffect)?.transform;
+            if (parent == null)
+                return;
+            Main.Pool.DestroyGroup(nameEffect);
+        }
+
+        public void DestroyAllEffects()
+        {
+            Main.Pool.DestroyGroup(KeyGroupPool.UIEffect);
+        }
+
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -200,7 +213,7 @@ namespace OSK
             // if (Application.isEditor)
             //     return;
 
-            if(_effectSettings == null)
+            if (_effectSettings == null)
                 return;
             if (_effectSettings.Length == 0)
                 return;

@@ -3,7 +3,6 @@
     "rootNamespace": "OSK",
     "references": [
         "Unity.TextMeshPro",
-        "Sirenix.OdinInspector",
         "DOTween.Modules"
     ],
     "includePlatforms": [],

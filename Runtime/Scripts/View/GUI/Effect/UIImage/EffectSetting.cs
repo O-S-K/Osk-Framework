@@ -39,19 +39,21 @@ namespace OSK
         public float sphereRadius = 1;
 
         [ShowIf(nameof(isDrop), true)]
+        [MinMaxSlider(0, 10, true)]
         public MinMax delayDrop;
 
         [ShowIf(nameof(isDrop), true)]
+        [MinMaxSlider(0, 10, true)]
         public MinMax timeDrop;
 
         [ShowIf(nameof(isDrop), true)] public TypeAnimation typeAnimationDrop = TypeAnimation.Ease;
  
         private bool isShowEase => typeAnimationDrop == TypeAnimation.Ease && isDrop;
-        [Sirenix.OdinInspector.ShowIf(nameof(isShowEase), true)]
+        [ShowIf(nameof(isShowEase), true)]
         public Ease easeDrop = Ease.Linear;
 
         private bool isShowCurve => typeAnimationDrop == TypeAnimation.Curve && isDrop;
-        [Sirenix.OdinInspector.ShowIf(nameof(isShowCurve), true)]
+        [ShowIf(nameof(isShowCurve), true)]
         public AnimationCurve curveDrop;
 
         #endregion
@@ -63,21 +65,24 @@ namespace OSK
         [Header("Move")]
         public TypeMove typeMove = TypeMove.Straight;
         
-        [Sirenix.OdinInspector.ShowIf(nameof(typeMove), TypeMove.DoJump)]
+        [ShowIf(nameof(typeMove), TypeMove.DoJump)]
         public float jumpPower = 1;
         private bool isShowPath => typeMove != TypeMove.DoJump && typeMove != TypeMove.Straight;
-        [Sirenix.OdinInspector.ShowIf(nameof(isShowPath), true)]
+        [ShowIf(nameof(isShowPath), true)]
         public List<Vector3> paths;
 
         public TypeAnimation typeAnimationMove = TypeAnimation.Ease;
 
-        [Sirenix.OdinInspector.ShowIf(nameof(typeAnimationMove), TypeAnimation.Ease)]
+        [ShowIf(nameof(typeAnimationMove), TypeAnimation.Ease)]
         public Ease easeMove = Ease.Linear;
 
-        [Sirenix.OdinInspector.ShowIf(nameof(typeAnimationMove), TypeAnimation.Curve)]
+        [ShowIf(nameof(typeAnimationMove), TypeAnimation.Curve)]
         public AnimationCurve curveMove;
 
+        [MinMaxSlider(0, 10, true)]
         public MinMax timeMove;
+        
+        [MinMaxSlider(0, 10, true)]
         public MinMax delayMove;
 
         public float scaleTarget = 1;
