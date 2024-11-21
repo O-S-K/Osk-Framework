@@ -4,12 +4,7 @@
     "references": [
         "Unity.TextMeshPro",
         "CustomInspector",
-        "DOTween.Modules",
-        "CandyCoded.HapticFeedback",
-        "PlayerPrefsEditor",
-        "PlayerPrefsEditor.Editor",
-        "UniTask",
-        "UniTask.DOTween"
+        "DOTween.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
