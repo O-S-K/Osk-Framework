@@ -1,6 +1,7 @@
+//#define  JsonConvert
+
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace OSK
@@ -76,7 +77,9 @@ namespace OSK
         {
             if (!isLogEnabled)
                 return;
-            Debug.Log($"[OSK] " + JsonConvert.SerializeObject(obj).Color(ColorCustom.Cyan).Size(12));
+            #if JsonConvert
+            Debug.Log($"[OSK] " + Newtonsoft.Json.JsonConvert.SerializeObject(obj).Color(ColorCustom.Cyan).Size(12));
+            #endif
         }
         
         // Log format time

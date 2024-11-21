@@ -38,11 +38,9 @@ namespace OSK
         [ShowIf(nameof(isDrop), true)]
         public float sphereRadius = 1;
 
-        [MinMaxRange(0, 10)]
         [ShowIf(nameof(isDrop), true)]
         public MinMax delayDrop;
 
-        [MinMaxRange(0, 10)]
         [ShowIf(nameof(isDrop), true)]
         public MinMax timeDrop;
 
@@ -79,8 +77,8 @@ namespace OSK
         [CustomInspector.ShowIf(nameof(typeAnimationMove), TypeAnimation.Curve)]
         public AnimationCurve curveMove;
 
-        [MinMaxRange(0, 10)] public MinMax timeMove;
-        [MinMaxRange(0, 10)] public MinMax delayMove;
+        public MinMax timeMove;
+        public MinMax delayMove;
 
         public float scaleTarget = 1;
         public System.Action OnCompleted;
