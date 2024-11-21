@@ -1,31 +1,33 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
+using System.Collections;
+using UnityEngine.Events;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace OSK
 {
-    
+    [DefaultExecutionOrder(-101)]
     public class SpeechBubble : MonoBehaviour
     {
         public UnityEvent onCompleted;
         public Action onVocal, onWord;
 
-        [SerializeField] private Text textArea;
-        [SerializeField] private Color highlightColor = Color.red;
+        [SerializeField] private Graphic textArea;
         [SerializeField] private float delayBetweenLetters = 0.02f;
         [SerializeField] private float delayBetweenWords = 0.05f;
-        [SerializeField] private bool staticPlacing = true;
 
-        [SerializeField] private bool isSpeechToEnable;
+        [SerializeField] private bool speechToEnable;
         [SerializeField] private float delaySpeechToEnable;
-        [SerializeField] private string message;
 
-        private string hex;
+        [SerializeField] private string message;
+        [SerializeField] private bool getMessageToText;
+
+        [SerializeField] private KeyCode keySkip = KeyCode.Mouse0;
+
         private IEnumerator showHandle;
         private readonly string[] vocals = { "a", "e", "i", "o", "u", "y" };
         private bool done = true;
@@ -35,15 +37,27 @@ namespace OSK
         private void Awake()
         {
             queue = new Queue<string>();
-            hex = ColorUtility.ToHtmlStringRGB(highlightColor); 
+            if (getMessageToText)
+                message = textArea is Text ? ((Text)textArea).text : ((TMP_Text)textArea).text;
         }
 
         private void OnEnable()
         {
-            if (isSpeechToEnable)
+            if (speechToEnable)
             {
-                textArea.text = "";
+                if (textArea is Text)
+                {
+                    var t = (Text)textArea;
+                    t.text = "";
+                }
+                else if (textArea is TMP_Text)
+                {
+                    var t = (TMP_Text)textArea;
+                    t.text = "";
+                }
+
                 StartCoroutine(DelayShow());
+
                 IEnumerator DelayShow()
                 {
                     yield return new WaitForSeconds(delaySpeechToEnable);
@@ -88,13 +102,14 @@ namespace OSK
         {
             // if (toggleSound)
             // {
-            //     AudioManager.Instance.PlayEffectFromCollection(toggleSound, transform.position);
+            //     playSound
             // }
         }
 
         private void Update()
         {
-            if (!Input.anyKeyDown) return;
+            if (!Input.GetKeyDown(keySkip))
+                return;
             SkipOrHide();
         }
 
@@ -134,45 +149,84 @@ namespace OSK
             }
         }
 
-        private string GetMessagePart(string message, int pos)
+        private string StripHtmlTags(string input)
         {
-            string msg = message.Substring(0, pos);
-
-            var openCount = msg.Split('(').Length - 1;
-            var closeCount = msg.Split(')').Length - 1;
-
-            if (openCount > closeCount)
-            {
-                msg += ")";
-            }
-
-            var rest = message.Substring(pos).Replace("(", "").Replace(")", "");
-            return staticPlacing ? $"{msg}<color=#00000000>{rest}</color>" : msg;
-        }
-
-        private string ApplyColors(string text)
-        {
-            return text.Replace("(", "<color=#" + hex + ">")
-                .Replace(")", "</color>");
+            // Dùng biểu thức chính quy để loại bỏ mọi thẻ HTML khỏi chuỗi.
+            return Regex.Replace(input, "<.*?>", string.Empty);
         }
 
         private IEnumerator RevealText()
         {
-            var pos = 1;
+            int visibleCharCount = 0;
+            string fullMessage = message;
+            string visibleMessage = "";
 
-            while (pos <= message.Length)
+            //  use regex to find all html tags
+            var matches = Regex.Matches(fullMessage, "<.*?>");
+            List<(int index, string tag)> htmlTags = new List<(int, string)>();
+
+            foreach (Match match in matches)
             {
-                var text = GetMessagePart(message, pos);
-                textArea.text = ApplyColors(text);
-                var current = message.Substring(pos - 1, 1);
-                CheckForVocal(current);
-                CheckForWord(pos, current);
-                var delay = current == " " ? delayBetweenWords : delayBetweenLetters;
-                pos++;
+                htmlTags.Add((match.Index, match.Value));
+            }
+
+            // delete all html tags
+            string strippedMessage = Regex.Replace(fullMessage, "<.*?>", string.Empty);
+
+            while (visibleCharCount <= strippedMessage.Length)
+            {
+                // build visible message
+                visibleMessage = BuildVisibleMessage(strippedMessage, htmlTags, visibleCharCount);
+
+                if (textArea is Text)
+                {
+                    var t = (Text)textArea;
+                    t.text = visibleMessage;
+                }
+
+                if (textArea is TMP_Text)
+                {
+                    var t = (TMP_Text)textArea;
+                    t.text = visibleMessage;
+                }
+
+                if (visibleCharCount < strippedMessage.Length)
+                {
+                    string current = strippedMessage[visibleCharCount].ToString();
+                    CheckForVocal(current);
+                    CheckForWord(visibleCharCount, current);
+                }
+
+                float delay = visibleCharCount < strippedMessage.Length && strippedMessage[visibleCharCount] == ' '
+                    ? delayBetweenWords
+                    : delayBetweenLetters;
+
+                visibleCharCount++;
                 yield return new WaitForSeconds(delay);
             }
 
             RevealDone();
+        }
+
+        /// <summary>
+        /// build visible message
+        /// </summary>
+        private string BuildVisibleMessage(string strippedMessage, List<(int index, string tag)> htmlTags,
+            int visibleCharCount)
+        {
+            string visibleText = strippedMessage.Substring(0, visibleCharCount);
+            string result = visibleText;
+
+            //  insert html tags
+            foreach (var tag in htmlTags)
+            {
+                if (tag.index <= result.Length)
+                {
+                    result = result.Insert(tag.index, tag.tag);
+                }
+            }
+
+            return result;
         }
 
         private void CheckForWord(int pos, string current)
@@ -200,7 +254,18 @@ namespace OSK
         private void Skip()
         {
             CancelPrevious();
-            textArea.text = ApplyColors(message);
+
+            if (textArea is Text)
+            {
+                var t = (Text)textArea;
+                t.text =  message;
+            }
+            else if (textArea is TMP_Text)
+            {
+                var t = (TMP_Text)textArea;
+                t.text = message;
+            }
+
             RevealDone();
         }
     }

@@ -4,6 +4,7 @@ using Random = UnityEngine.Random;
 
 namespace OSK
 {
+    
     public class WobblingText : MonoBehaviour
     {
         [SerializeField] private float amount = 0.01f;
