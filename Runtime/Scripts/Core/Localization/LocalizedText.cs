@@ -1,5 +1,5 @@
 using System;
-using CustomInspector;
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

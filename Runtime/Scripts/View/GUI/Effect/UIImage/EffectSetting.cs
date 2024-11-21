@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CustomInspector;
+using Sirenix.OdinInspector;
 using DG.Tweening;
 using UnityEngine;
 
@@ -47,11 +47,11 @@ namespace OSK
         [ShowIf(nameof(isDrop), true)] public TypeAnimation typeAnimationDrop = TypeAnimation.Ease;
  
         private bool isShowEase => typeAnimationDrop == TypeAnimation.Ease && isDrop;
-        [CustomInspector.ShowIf(nameof(isShowEase), true)]
+        [Sirenix.OdinInspector.ShowIf(nameof(isShowEase), true)]
         public Ease easeDrop = Ease.Linear;
 
         private bool isShowCurve => typeAnimationDrop == TypeAnimation.Curve && isDrop;
-        [CustomInspector.ShowIf(nameof(isShowCurve), true)]
+        [Sirenix.OdinInspector.ShowIf(nameof(isShowCurve), true)]
         public AnimationCurve curveDrop;
 
         #endregion
@@ -63,18 +63,18 @@ namespace OSK
         [Header("Move")]
         public TypeMove typeMove = TypeMove.Straight;
         
-        [CustomInspector.ShowIf(nameof(typeMove), TypeMove.DoJump)]
+        [Sirenix.OdinInspector.ShowIf(nameof(typeMove), TypeMove.DoJump)]
         public float jumpPower = 1;
         private bool isShowPath => typeMove != TypeMove.DoJump && typeMove != TypeMove.Straight;
-        [CustomInspector.ShowIf(nameof(isShowPath), true)]
+        [Sirenix.OdinInspector.ShowIf(nameof(isShowPath), true)]
         public List<Vector3> paths;
 
         public TypeAnimation typeAnimationMove = TypeAnimation.Ease;
 
-        [CustomInspector.ShowIf(nameof(typeAnimationMove), TypeAnimation.Ease)]
+        [Sirenix.OdinInspector.ShowIf(nameof(typeAnimationMove), TypeAnimation.Ease)]
         public Ease easeMove = Ease.Linear;
 
-        [CustomInspector.ShowIf(nameof(typeAnimationMove), TypeAnimation.Curve)]
+        [Sirenix.OdinInspector.ShowIf(nameof(typeAnimationMove), TypeAnimation.Curve)]
         public AnimationCurve curveMove;
 
         public MinMax timeMove;

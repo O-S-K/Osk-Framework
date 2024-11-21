@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using CustomInspector;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace OSK

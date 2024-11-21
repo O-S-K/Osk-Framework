@@ -1,5 +1,5 @@
 using UnityEngine;
-using CustomInspector;
+using Sirenix.OdinInspector;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;

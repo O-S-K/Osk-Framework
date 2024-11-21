@@ -1,5 +1,5 @@
 using System;
-using CustomInspector;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace OSK

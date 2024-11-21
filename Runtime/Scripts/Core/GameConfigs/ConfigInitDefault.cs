@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using CustomInspector;
+using Sirenix.OdinInspector;
 
 namespace OSK
 {
@@ -18,7 +18,7 @@ namespace OSK
         public PathConfigs path;
 
 #if UNITY_EDITOR
-        [CustomInspector.Button]
+        [Button]
         private void AddConfigs()
         {
             packageName = Application.identifier;
@@ -146,18 +146,17 @@ namespace OSK
     public class DataConfigs
     {
         public bool isUseUI;
-        public bool isUseSound;
-        public bool isUseUIImage;
-
-
         [ShowIf(nameof(isUseUI), true)] public ListViewSO listViewS0;
+        public bool isUseSound;
         [ShowIf(nameof(isUseSound), true)] public SoundDataSO soundDataSO;
+        public bool isUseUIImage;
         [ShowIf(nameof(isUseUIImage), true)] public UIImageSO uiImageSO;
     }
 
     [System.Serializable]
     public class PathConfigs
     {
+        [FolderPath]
         public string pathLoadFileCsv = "Localization/Localization";
     }
 }

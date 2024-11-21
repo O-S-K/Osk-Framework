@@ -1,5 +1,5 @@
 #if UNITY_EDITOR
-using CustomInspector;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using System.Collections.Generic;
 

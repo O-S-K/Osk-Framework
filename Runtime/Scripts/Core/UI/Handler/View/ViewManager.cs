@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using CustomInspector;
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using System.Linq;
 
