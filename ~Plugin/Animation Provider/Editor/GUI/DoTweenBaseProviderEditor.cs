@@ -5,11 +5,12 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using DG.Tweening;
+using Sirenix.OdinInspector.Editor;
 
 namespace OSK
 {
     [CustomEditor(typeof(DoTweenBaseProvider), true)]
-    public class DoTweenBaseProviderEditor : Editor
+    public class DoTweenBaseProviderEditor : OdinEditor
     {
         private DoTweenBaseProvider provider;
         private bool generalParametersFoldout = true;
@@ -21,29 +22,20 @@ namespace OSK
         private bool _isMoveRight = true;
 
         public void OnEnable() => provider = (DoTweenBaseProvider)target;
-        public void OnDisable() => provider.StopPreview();  
-        
+        public void OnDisable() => provider.StopPreview();
+
         public override void OnInspectorGUI()
         {
-            InitializeStyles();
-
-            provider = (DoTweenBaseProvider)target;
-            GUI.enabled = EditorApplication.isPlaying || !provider.IsPreviewing();
+             InitializeStyles();
+         
+             provider = (DoTweenBaseProvider)target;
+             GUI.enabled = EditorApplication.isPlaying || !provider.IsPreviewing();
+     
+             serializedObject.Update();
+             serializedObject.ApplyModifiedProperties();
              
-            serializedObject.Update(); 
-            serializedObject.ApplyModifiedProperties();
-            
-            ValidateProperties();
-            DrawGeneralParameters();
-
-            if (serializedObject.hasModifiedProperties)
-            {
-                serializedObject.ApplyModifiedProperties();
-            }
-
-            DrawPreviewControls();
-            
-            base.OnInspectorGUI();
+             base.OnInspectorGUI();
+             DrawPreviewControls();
         }
 
         private void InitializeStyles()
@@ -88,7 +80,7 @@ namespace OSK
                 DrawHorizontalLine();
                 SerializedProperty iterator = serializedObject.GetIterator();
                 iterator.NextVisible(true);
- 
+              
                 while (iterator.NextVisible(false))
                 {
                     if (iterator.name != "settings.loopType" || provider.settings.loopcount != 0 && provider.settings.loopcount != 1)
@@ -96,11 +88,6 @@ namespace OSK
                         EditorGUILayout.PropertyField(iterator, true);
                     }
                 }
-            }
-              
-            if (serializedObject.hasModifiedProperties)
-            {
-                serializedObject.ApplyModifiedProperties();
             }
         }
 
@@ -155,8 +142,8 @@ namespace OSK
                 }
 
                 GUI.enabled = true;
-                
-                
+
+
                 // GUILayout.Space(5); 
                 // PreviewAll();
 
@@ -246,7 +233,7 @@ namespace OSK
         {
             _previewTime = 0;
             _isPlaying = true;
-            
+
             provider.StartPreview(OnTweenerStart, OnTweenerUpdating);
             EditorApplication.update += UpdatePreview;
         }
@@ -323,8 +310,7 @@ namespace OSK
                 EditorUtility.SetDirty(provider.target);
             }
         }
-         
-        
+
 
         private static void DrawHorizontalLine(float height = 1)
         {

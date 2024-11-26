@@ -4,7 +4,7 @@ namespace OSK
 {
     public interface IDoTweenProviderBehaviours
     {
-        TweenSettings settings { get; set; }
+        void SetInit(bool playOnEnable, bool setAutoKill, float delay, UpdateType updateType, bool useUnscaledTime);
         Tweener Tweener { get; }
         bool IsPlaying { get; }
         Tweener InitTween();

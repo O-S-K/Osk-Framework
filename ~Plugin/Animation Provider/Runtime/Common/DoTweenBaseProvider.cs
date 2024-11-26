@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using UnityEngine.Events;
 
 namespace OSK
@@ -10,13 +11,26 @@ namespace OSK
         public bool playOnEnable = true;
         public bool setAutoKill = true;
 
+        [Min(0)]
         public float delay = 0f;
+        
+        [Min(0)]
         public float duration = 2f;
+        
+        [Min(-1)]
         public int loopcount = 0;
+        
+        [ShowIf("@loopcount == -1")] 
         public LoopType loopType = LoopType.Restart;
+        
         public TypeAnimation typeAnim = TypeAnimation.Ease;
+        
+        [ShowIf(nameof(typeAnim), TypeAnimation.Ease)]
         public Ease ease = Ease.Linear;
+        
+        [ShowIf(nameof(typeAnim), TypeAnimation.Curve)]
         public AnimationCurve curve;
+        
         public UpdateType updateType = UpdateType.Normal;
         public bool useUnscaledTime = false;
         public UnityEvent eventCompleted;
@@ -32,7 +46,7 @@ namespace OSK
         public RectTransform RootRectTransform => _root as RectTransform;
 
 
-        public TweenSettings settings { get; set; } = new TweenSettings();
+        public TweenSettings settings = new TweenSettings();
 
         public Tweener tweener;
         public Tweener Tweener => tweener;
@@ -51,6 +65,16 @@ namespace OSK
         {
         }
 #endif
+
+        public virtual void SetInit(bool playOnEnable, bool setAutoKill, float delay, UpdateType updateType,
+            bool useUnscaledTime)
+        {
+            settings.playOnEnable = playOnEnable;
+            settings.setAutoKill = setAutoKill;
+            settings.delay += delay;
+            settings.updateType = updateType;
+            settings.useUnscaledTime = useUnscaledTime;
+        }
 
         public abstract Tweener InitTween();
         public abstract void Play();

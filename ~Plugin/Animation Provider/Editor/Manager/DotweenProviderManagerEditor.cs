@@ -49,7 +49,7 @@ namespace OSK
             bool isPreviewing = manager.IsPreviewing();
 
             GUIStyle buttons = new GUIStyle(GUI.skin.button);
-            buttons.normal.background = MakeColorTexture(!isPreviewing ? Color.green : Color.red);
+            buttons.normal.background = MakeColorTexture(!isPreviewing ? new Color32(46, 139, 87, 255) : new Color32(178, 34, 34, 255));
             
             if (GUILayout.Button(isPreviewing ? "Stop preview" : "Start preview", buttons))
             {
