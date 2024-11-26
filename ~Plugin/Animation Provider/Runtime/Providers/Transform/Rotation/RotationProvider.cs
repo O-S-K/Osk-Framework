@@ -10,17 +10,17 @@ namespace OSK
         public bool isLocal = true;
         public RotateMode rotateMode = RotateMode.Fast;
 
-        public Vector3 startValue = Vector3.zero;
-        public Vector3 endValue = Vector3.zero;
+        public Vector3 from = Vector3.zero;
+        public Vector3 to = Vector3.zero;
 
-        private void Reset() => endValue = isLocal ? RootTransform.localEulerAngles : RootTransform.eulerAngles;
+        private void Reset() => to = isLocal ? RootTransform.localEulerAngles : RootTransform.eulerAngles;
 
         public override Tweener InitTween()
         {
-            RootTransform.localEulerAngles = startValue;
+            RootTransform.localEulerAngles = from;
             return isLocal
-                ? RootTransform.DOLocalRotate(endValue, duration, rotateMode)
-                : RootTransform.DORotate(endValue, duration, rotateMode);
+                ? RootTransform.DOLocalRotate(to, settings.duration, rotateMode)
+                : RootTransform.DORotate(to, settings.duration, rotateMode);
         }
 
         public override void Play()
@@ -31,24 +31,24 @@ namespace OSK
                 if (tweener != null)
                     target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType,settings. useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
         public override void Stop()
         {
             base.Stop();
             tweener?.Rewind();
-            RootTransform.localEulerAngles = endValue;
+            RootTransform.localEulerAngles = to;
             tweener = null;
         }
     }

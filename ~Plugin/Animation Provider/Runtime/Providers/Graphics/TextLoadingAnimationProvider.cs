@@ -36,7 +36,7 @@ namespace OSK
             {
                 string[] dots = { "   ", ".  ", ".. ", "...", };
                 var msg = cached = Text;
-                tweener = DOTween.To(() => 0, v => Text = $"{msg}{dots[v]}", 3, duration);
+                tweener = DOTween.To(() => 0, v => Text = $"{msg}{dots[v]}", 3, settings. duration);
                 target = text; // This must be written!
             }
             else
@@ -56,17 +56,17 @@ namespace OSK
                 if (tweener != null)
                     target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
         public override void Stop()

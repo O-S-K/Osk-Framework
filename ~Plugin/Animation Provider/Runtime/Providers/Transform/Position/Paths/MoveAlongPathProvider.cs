@@ -49,14 +49,14 @@ namespace OSK
             if (isLocal)
             {
                 tweener = (applyLookAt) 
-                    ? transform.DOLocalPath(pathPositions, duration, pathType).SetLookAt(0.01f) 
-                    : transform.DOLocalPath(pathPositions, duration, pathType);
+                    ? transform.DOLocalPath(pathPositions, settings.duration, pathType).SetLookAt(0.01f) 
+                    : transform.DOLocalPath(pathPositions, settings.duration, pathType);
             }
             else
             {
                 tweener = (applyLookAt) 
-                    ? transform.DOPath(pathPositions, duration, pathType).SetLookAt(0.01f) 
-                    : transform.DOPath(pathPositions, duration, pathType);
+                    ? transform.DOPath(pathPositions, settings.duration, pathType).SetLookAt(0.01f) 
+                    : transform.DOPath(pathPositions, settings.duration, pathType);
             }
 
             return tweener;
@@ -71,17 +71,17 @@ namespace OSK
                     target = (UnityEngine.Object)tweener.target;
 
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
         public void AddPathPoint()

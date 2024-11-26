@@ -10,8 +10,8 @@ namespace OSK
         DotweenProviderManager manager;
         private HideFlags cached;
         const string info = @"Used to drive itself and its child nodes to mount Provider";
-        float timePreview   = 0;
-        
+        float timePreview = 0;
+
         private void OnDisable()
         {
             EditorApplication.playModeStateChanged -= EditorApplication_playModeStateChanged;
@@ -20,6 +20,7 @@ namespace OSK
                 manager.StopPreview();
             }
         }
+
         private void OnEnable()
         {
             manager = target as DotweenProviderManager;
@@ -38,13 +39,19 @@ namespace OSK
 
         public override void OnInspectorGUI()
         {
-            GUI.enabled = !EditorApplication.isPlayingOrWillChangePlaymode && manager.gameObject.activeInHierarchy && (manager.hideFlags != HideFlags.NotEditable || manager.IsPreviewing());
-            EditorStyles.helpBox.fontSize = 13;
+            base.OnInspectorGUI();
+
+            GUILayout.Space(10);
+            GUI.enabled = !EditorApplication.isPlayingOrWillChangePlaymode && manager.gameObject.activeInHierarchy &&
+                          (manager.hideFlags != HideFlags.NotEditable || manager.IsPreviewing());
+            EditorStyles.helpBox.fontSize = 12;
             EditorGUILayout.HelpBox(info, MessageType.Info);
             bool isPreviewing = manager.IsPreviewing();
+
+            GUIStyle buttons = new GUIStyle(GUI.skin.button);
+            buttons.normal.background = MakeColorTexture(!isPreviewing ? Color.green : Color.red);
             
-            
-            if (GUILayout.Button(isPreviewing ? "Stop preview" : "Start preview"))            
+            if (GUILayout.Button(isPreviewing ? "Stop preview" : "Start preview", buttons))
             {
                 if (isPreviewing)
                 {
@@ -52,9 +59,18 @@ namespace OSK
                 }
                 else
                 {
+                    manager.SetupSetting();
                     manager.StartPreview();
                 }
             } 
+        }
+        
+        private Texture2D MakeColorTexture(Color color)
+        {
+            Texture2D texture = new Texture2D(1, 1);
+            texture.SetPixel(0, 0, color);
+            texture.Apply();
+            return texture;
         }
     }
 }

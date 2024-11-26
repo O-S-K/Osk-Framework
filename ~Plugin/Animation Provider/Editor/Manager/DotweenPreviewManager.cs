@@ -66,13 +66,14 @@ namespace OSK
             Debug.Assert(manager.Providers.Count != 0, "Manager Not found under its child nodes, Dotween Provider");
             foreach (var provider in manager.Providers)
             {
+                provider.StopPreview();
                 provider.StartPreview();
             }
         } 
       
         public static bool IsPreviewing(this DotweenProviderManager manager)
         {
-            return manager.Providers.Any(v => v.IsPreviewing() || v.GetIsPreview());
+            return manager.Providers.Any(v => v.IsPreviewing());
         }
         
         public static bool IsPreviewing(this IDoTweenProviderBehaviours provider)
@@ -83,18 +84,7 @@ namespace OSK
                    && provider.Tweener.active
                    && provider.Tweener.IsPlaying() 
                    && tweeners.Contains(provider.Tweener);
-        }
-        
-        public static bool IsPreview = false;
-        public static bool GetIsPreview(this IDoTweenProviderBehaviours provider)
-        {
-            return IsPreview;
-        }
-        
-        public static void SetIsPreview(this IDoTweenProviderBehaviours provider, bool value)
-        {
-            IsPreview = value;
-        }
+        }  
         #endregion
 
         #region Assistance Funtion

@@ -51,7 +51,7 @@ namespace OSK
                 TimeData timeData = JsonUtility.FromJson<TimeData>(webRequest.downloadHandler.text);
                 // timeData.datetime value is : 2020-08-14T15:54:04+01:00
                 _currentDateTime = ParseDateTime(timeData.datetime);
-                Logg.Log("Get time success: " + _currentDateTime, ColorCustom.Green);
+                Logg.Log("Get time success: " + _currentDateTime, Color.green);
             }
         }
 

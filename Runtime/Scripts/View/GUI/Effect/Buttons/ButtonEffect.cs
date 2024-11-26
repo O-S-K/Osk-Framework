@@ -64,8 +64,8 @@ namespace OSK
             if (GetComponent<Button>() != null && GetComponent<Button>().interactable == false)
                 return;
 
-            //if (playSoundOnClick)
-            Main.Sound.Play("ui_click", false);
+            if (playSoundOnClick)
+                Main.Sound.Play("ui_click", false);
 
             if (_isScaler)
                 root.DOScale(defaultSize * hoverScale, duration).SetEase(ease);

@@ -1,6 +1,7 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace OSK
@@ -10,15 +11,15 @@ namespace OSK
     {
         public Image image;
         [Range(0, 1)]
-        public float startValue;
+        public float from;
         
         [Range(0, 1)]
-        public float endValue;
+        public float to;
         
         public override Tweener InitTween()
         { 
             target =  image;
-            return DOTween.To(() => 0, y => image.fillAmount = (float)y, endValue, duration);
+            return DOTween.To(() => 0, y => image.fillAmount = (float)y, to, settings. duration);
         }
 
         public override void Play()
@@ -29,26 +30,26 @@ namespace OSK
                 if (tweener != null)
                     target = (UnityEngine.Object)tweener.target;     
             
-            image.fillAmount = startValue;
+            image.fillAmount = from;
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
         private void Reset()
         {
             tweener?.Kill();
             tweener = null;
-            image.fillAmount = startValue;
+            image.fillAmount = from;
         }
     }
 }

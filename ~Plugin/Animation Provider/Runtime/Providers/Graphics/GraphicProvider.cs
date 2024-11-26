@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace OSK
@@ -7,14 +8,14 @@ namespace OSK
     [RequireComponent(typeof(Graphic))]
     public class GraphicProvider : DoTweenBaseProvider
     {
-        public Color startValue = default;
-        public Color endValue = default;
+        public Color from = default;
+        public Color to = default;
         public Graphic graphic;
 
         private void Reset()
         {
             graphic = graphic ? GetComponent<Graphic>() : graphic;
-            endValue = graphic.color; // Capture the initial value
+            to = graphic.color; // Capture the initial value
         }
 
         public override Tweener InitTween()
@@ -25,7 +26,8 @@ namespace OSK
             {
                 Debug.Log($"Found multiple {nameof(GraphicProvider)} entering color mixing mode!");
             }
-            return blendable ? graphic.DOBlendableColor(endValue, duration) : graphic.DOColor(endValue, duration);
+
+            return blendable ? graphic.DOBlendableColor(to, settings.duration) : graphic.DOColor(to, settings.duration);
         }
 
         public override void Play()
@@ -37,21 +39,21 @@ namespace OSK
                     target = (UnityEngine.Object)tweener.target;
 
             graphic = graphic ? GetComponent<Graphic>() : graphic;
-            graphic.color = startValue;
+            graphic.color = from;
 
             tweener = InitTween();
             tweener
-                .SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+                .SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
         public override void Stop()
@@ -59,7 +61,7 @@ namespace OSK
             base.Stop();
             tweener?.Rewind(); //Reset the changes made by Dotween
             tweener = null;
-            graphic.color = endValue;
+            graphic.color = to;
         }
     }
 }

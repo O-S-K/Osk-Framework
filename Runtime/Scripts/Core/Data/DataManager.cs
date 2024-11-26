@@ -20,7 +20,7 @@ namespace OSK
             Type type = typeof(T);
             if (!k_DataStore.ContainsKey(type))
             {
-                Logg.Log($"Creating data store for type {type}.", ColorCustom.Green);
+                Logg.Log($"Creating data store for type {type}.", Color.green);
                 k_DataStore[type] = new List<T>();
             }
 
@@ -28,7 +28,7 @@ namespace OSK
             List<T> list = (List<T>)k_DataStore[type];
             if (!list.Contains(data))
             {
-                Logg.Log($"Adding data of type {type}.", ColorCustom.Green);
+                Logg.Log($"Adding data of type {type}.", Color.green);
                 list.Add(data);
             }
             else
@@ -46,7 +46,7 @@ namespace OSK
                 k_DataStore[type] = new List<T>();
             }
 
-            Logg.Log($"Adding data of type {type}.", ColorCustom.Green);
+            Logg.Log($"Adding data of type {type}.", Color.green);
             ((List<T>)k_DataStore[type]).AddRange(dataList);
         }
 
@@ -56,7 +56,7 @@ namespace OSK
             Type type = typeof(T);
             if (k_DataStore.TryGetValue(type, out var value))
             {
-                Logg.Log($"Data of type {type} found.", ColorCustom.Green);
+                Logg.Log($"Data of type {type} found.", Color.green);
                 return (List<T>)value;
             }
 
@@ -72,7 +72,7 @@ namespace OSK
                 List<T> list = (List<T>)value;
                 if (list.Count > 0)
                 {
-                    Logg.Log($"Data of type {type} found.", ColorCustom.Green);
+                    Logg.Log($"Data of type {type} found.", Color.green);
                     return list[0];
                 }
 
@@ -88,7 +88,7 @@ namespace OSK
             Type type = typeof(T);
             if (k_DataStore.TryGetValue(type, out var value))
             {
-                Logg.Log($"Data of type {type} found.", ColorCustom.Green);
+                Logg.Log($"Data of type {type} found.", Color.green);
                 List<T> list = (List<T>)value;
                 return list.Find(query);
             }
@@ -102,7 +102,7 @@ namespace OSK
             Type type = typeof(T);
             if (k_DataStore.TryGetValue(type, out var value))
             {
-                Logg.Log($"Data of type {type} found.", ColorCustom.Green);
+                Logg.Log($"Data of type {type} found.", Color.green);
                 List<T> list = (List<T>)value;
                 return list.FindAll(query);
             }

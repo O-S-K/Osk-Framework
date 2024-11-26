@@ -32,10 +32,10 @@ namespace OSK
             return typeShake switch
             {
                 
-                TypeShake.Position => RootTransform.DOShakePosition(duration, rs, vibrato, randomness, snapping,
+                TypeShake.Position => RootTransform.DOShakePosition(settings.duration, rs, vibrato, randomness, snapping,
                     fadeOut),
-                TypeShake.Rotation => RootTransform.DOShakeRotation(duration, rs, vibrato, randomness, fadeOut),
-                TypeShake.Scale => RootTransform.DOShakeScale(duration, rs, vibrato, randomness, fadeOut),
+                TypeShake.Rotation => RootTransform.DOShakeRotation(settings.duration, rs, vibrato, randomness, fadeOut),
+                TypeShake.Scale => RootTransform.DOShakeScale(settings.duration, rs, vibrato, randomness, fadeOut),
                 _ => null
             };
         }
@@ -53,17 +53,17 @@ namespace OSK
                     target = (UnityEngine.Object)tweener.target;
 
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
         public override void Stop()

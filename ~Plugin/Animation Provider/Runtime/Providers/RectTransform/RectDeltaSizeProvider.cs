@@ -7,14 +7,15 @@ namespace OSK
     public class RectDeltaSizeProvider : DoTweenBaseProvider
     {
         public bool snapping = false;
-        public Vector3 endValue = Vector3.zero;
+        public Vector3 to = Vector3.zero;
+        public Vector3 from = Vector3.zero;
     
-        private void Reset() => endValue = RootRectTransform.sizeDelta;
+        private void Reset() => from = RootRectTransform.sizeDelta;
         
         public override Tweener InitTween()
         {
             target = RootRectTransform;
-            return RootRectTransform.DOSizeDelta(endValue, duration, snapping);
+            return RootRectTransform.DOSizeDelta(from,settings. duration, snapping);
         }
 
         public override void Play()
@@ -23,19 +24,21 @@ namespace OSK
             tweener = null;
             if (!target)
                 if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;            
+                    target = (UnityEngine.Object)tweener.target;   
+            
+            RootRectTransform.sizeDelta = from;
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
         public override void Stop()

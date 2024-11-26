@@ -10,8 +10,8 @@ namespace OSK
     public class ScaleProvider : DoTweenBaseProvider
     {
         [Header("Appearer")] 
-        public Vector3 startValue = Vector3.zero;
-        public Vector3 endValue = Vector3.one;
+        public Vector3 from = Vector3.zero;
+        public Vector3 to = Vector3.one;
 
         [Header("Hide")] 
         public Ease animEndButton = Ease.InBack;
@@ -21,40 +21,36 @@ namespace OSK
 
         public override Tweener InitTween()
         {
-           return RootTransform.DOScale(endValue, duration);
+           return RootTransform.DOScale(to, settings.duration);
         }
 
         public override void Play()
         {
             tweener?.Kill();
             tweener = null;
-            RootTransform.localScale = startValue;
+            RootTransform.localScale = from;
             if (!target)
                 if (tweener != null)
                     target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(DoneTween);
+                .OnComplete( () => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
-        private void DoneTween()
-        {
-            Debug.Log($"onComplete has listeners: {onComplete.GetPersistentEventCount()}");
-                onComplete?.Invoke();
-        }
+        
 
         public void Hide()
         {
-            tweener = RootTransform.DOScale(Vector3.zero, duration)
+            tweener = RootTransform.DOScale(Vector3.zero, settings.duration)
                 .SetEase(animEndButton)
                 .OnComplete(() =>
                 { 
@@ -66,7 +62,7 @@ namespace OSK
         {
             base.Stop();
             tween?.Kill(); 
-            RootTransform.localScale = endValue;
+            RootTransform.localScale = to;
         }
 
         [Button]

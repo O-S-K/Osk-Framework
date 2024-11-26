@@ -9,18 +9,18 @@ namespace OSK
     public class EventProvider : DoTweenBaseProvider
     {
         public UnityEvent onComplete;
-        public bool startValue;
-        public bool endValue;
-        
+        public bool from;
+        public bool to;
+
         private Tween tween;
 
         public override Tweener InitTween()
         {
-           return  DOVirtual.Float(startValue ? 1 : 0, endValue ? 1 : 0, duration, value =>
-           {
-               if(value > 0)
-                   onComplete?.Invoke();
-           });
+            return DOVirtual.Float(from ? 1 : 0, to ? 1 : 0, settings.duration, value =>
+            {
+                if (value > 0)
+                    onComplete?.Invoke();
+            });
         }
 
         public override void Play()
@@ -28,29 +28,23 @@ namespace OSK
             tweener?.Kill();
             tweener = null;
             onComplete.RemoveAllListeners();
-            
+
             if (!target)
                 if (tweener != null)
                     target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill) 
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetUpdate(settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(DoneTween); 
+                .OnComplete(() => onComplete?.Invoke());
         }
 
-        private void DoneTween()
-        {
-                Debug.Log($"onComplete has listeners: {onComplete.GetPersistentEventCount()}");
-                onComplete?.Invoke();
-        }
- 
         public override void Stop()
         {
             base.Stop();
-            tween?.Kill(); 
+            tween?.Kill();
             onComplete.RemoveAllListeners();
         }
     }
-} 
+}

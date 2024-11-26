@@ -1,19 +1,20 @@
 using DG.Tweening;
-using UnityEngine; 
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OSK
 {
     public class EffectProvider : DoTweenBaseProvider
     {
         public ParticleSystem  particleSystem;
-        public bool startValue;
-        public bool endValue;
+        public bool form;
+        public bool to;
         
         private Tween tween;
 
         public override Tweener InitTween()
         {
-            return  DOVirtual.Float(startValue ? 1 : 0, endValue ? 1 : 0, duration, value =>
+            return  DOVirtual.Float(form ? 1 : 0, to ? 1 : 0, settings.duration, value =>
             {
                 //particleSystem.gameObject.SetActive(value > 0);
                 if (value > 0)
@@ -33,18 +34,13 @@ namespace OSK
                 if (tweener != null)
                     target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill) 
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill) 
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(DoneTween); 
+                .OnComplete( () => settings.eventCompleted?.Invoke());
         }
-
-        private void DoneTween()
-        {
-            Debug.Log($"onComplete has listeners: {onComplete.GetPersistentEventCount()}");
-            onComplete?.Invoke();
-        }
+ 
  
         public override void Stop()
         {

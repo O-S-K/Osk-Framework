@@ -8,39 +8,39 @@ namespace OSK
     public class RectPositionProvider : DoTweenBaseProvider
     {
         public bool snapping = false;
-        public Vector3 startValue = Vector3.zero;
-        public Vector3 endValue = Vector3.zero;
+        public Vector3 from = Vector3.zero;
+        public Vector3 to = Vector3.zero;
 
         private void Reset()
         { 
-            endValue = RootRectTransform.anchoredPosition;
+            to = RootRectTransform.anchoredPosition;
         }
 
         public override Tweener InitTween()
         { 
-            return RootRectTransform.DOAnchorPos(endValue, duration, snapping);
+            return RootRectTransform.DOAnchorPos(to, settings.duration, snapping);
         }
 
         public override void Play()
         {
             tweener?.Kill();
             tweener = null;
-            RootRectTransform.anchoredPosition = startValue;
+            RootRectTransform.anchoredPosition = from;
             if (!target)
                 if (tweener != null)
                     target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType,settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
 
@@ -48,7 +48,7 @@ namespace OSK
         {
             base.Stop();
             tweener?.Rewind(); 
-            RootRectTransform.anchoredPosition =  endValue;
+            RootRectTransform.anchoredPosition =  to;
             tweener = null;
         }
     }

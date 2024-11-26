@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace OSK
@@ -8,8 +9,8 @@ namespace OSK
     public class CanvasGroupProvider : DoTweenBaseProvider
     {
         private CanvasGroup canvasGroup;
-        public float startValue = 0;
-        public float endValue = 1;
+        public float from = 0;
+        public float to = 1;
 
 
         #region Editor initialization and null reference prevention measures
@@ -17,14 +18,14 @@ namespace OSK
         private void Reset()
         {
             canvasGroup = gameObject.GetOrAdd<CanvasGroup>();
-            endValue = canvasGroup.alpha;
+            to = canvasGroup.alpha;
         }
 
         #endregion
 
         public override Tweener InitTween()
         {
-            return canvasGroup.DOFade(endValue, duration);
+            return canvasGroup.DOFade(to, settings.duration);
         }
 
         public override void Play()
@@ -36,22 +37,22 @@ namespace OSK
                     target = (UnityEngine.Object)tweener.target;
 
             canvasGroup = gameObject.GetOrAdd<CanvasGroup>();
-            canvasGroup.alpha = startValue;
+            canvasGroup.alpha = from;
 
             tweener = InitTween();
 
             tweener
-                .SetDelay(delay)
-                .SetAutoKill(setAutoKill)
-                .SetLoops(loopcount, loopType)
-                .SetUpdate(isIgnoreTimeScale)
+                .SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-            if (typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(ease);
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
             else
-                tweener.SetEase(curve);
+                tweener.SetEase(settings.curve);
         }
 
         public override void Stop()
@@ -59,7 +60,7 @@ namespace OSK
             base.Stop();
             tweener?.Rewind(); //Reset the changes made by Dotween
             tweener = null;
-            canvasGroup.alpha = endValue;
+            canvasGroup.alpha = to;
         }
     }
 }

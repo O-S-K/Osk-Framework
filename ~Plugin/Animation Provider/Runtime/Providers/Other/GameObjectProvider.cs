@@ -8,44 +8,38 @@ namespace OSK
     public class GameObjectProvider : DoTweenBaseProvider
     {
         public GameObject gameObject;
-        public bool startValue;
-        public bool endValue;
+        public bool from;
+        public bool to;
         
         private Tween tween;
 
         public override Tweener InitTween()
         {
-           return  DOVirtual.Float(startValue ? 1 : 0, endValue ? 1 : 0, duration, value => gameObject.SetActive(value > 0));
+           return  DOVirtual.Float(from ? 1 : 0, to ? 1 : 0, settings.duration, value => gameObject.SetActive(value > 0));
         }
 
         public override void Play()
         {
             tweener?.Kill();
             tweener = null;
-            gameObject.SetActive(startValue);
+            gameObject.SetActive(from);
             
             if (!target)
                 if (tweener != null)
                     target = (UnityEngine.Object)tweener.target;
             tweener = InitTween();
-            tweener.SetDelay(delay)
-                .SetAutoKill(setAutoKill) 
-                .SetUpdate(isIgnoreTimeScale)
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill) 
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
                 .SetTarget(target)
-                .OnComplete(DoneTween); 
-        }
-
-        private void DoneTween()
-        {
-                Debug.Log($"onComplete has listeners: {onComplete.GetPersistentEventCount()}");
-                onComplete?.Invoke();
-        }
+                .OnComplete( () => settings.eventCompleted?.Invoke());
+        } 
  
         public override void Stop()
         {
             base.Stop();
             tween?.Kill(); 
-            gameObject.SetActive(startValue);
+            gameObject.SetActive(from);
         }
     }
 } 

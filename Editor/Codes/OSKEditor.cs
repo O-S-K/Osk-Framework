@@ -13,7 +13,7 @@ namespace OSK
             {
                 PrefabUtility.InstantiatePrefab(Resources.Load<Main>("OSK-Framework"));
                 PrefabUtility.InstantiatePrefab(Resources.Load<RootUI>("HUD/HUD"));
-                Debug.Log("OSK-Framework created".Bold().Color(ColorCustom.Green));
+                Debug.Log("OSK-Framework created".Bold().Color(Color.green));
             }
         }
     }

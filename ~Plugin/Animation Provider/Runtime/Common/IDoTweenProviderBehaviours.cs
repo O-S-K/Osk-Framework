@@ -4,6 +4,7 @@ namespace OSK
 {
     public interface IDoTweenProviderBehaviours
     {
+        TweenSettings settings { get; set; }
         Tweener Tweener { get; }
         bool IsPlaying { get; }
         Tweener InitTween();
