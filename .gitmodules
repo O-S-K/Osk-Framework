@@ -1,0 +1,3 @@
+[submodule "~Plugin/path/to/submodule"]
+	path = ~Plugin/path/to/submodule
+	url = https://github.com/O-S-K/UIFeel.git
