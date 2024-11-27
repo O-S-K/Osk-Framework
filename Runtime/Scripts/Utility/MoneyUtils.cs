@@ -1,9 +1,11 @@
 using UnityEngine;
 using System.Collections;
 
-public static class MoneyUtils {
-
-    public static string[] StringUnits = new string[41] { string.Empty,
+public static class MoneyUtils
+{
+    public static string[] StringUnits = new string[41]
+    {
+        string.Empty,
         "k",
         "m",
         "b",
@@ -57,25 +59,26 @@ public static class MoneyUtils {
     {
         if (value < 1.0f)
             return "0";
-        string s = value.ToString ("#");
-        Debug.Log (s);
-        if (s == "Ifinity")
+        string s = value.ToString("#");
+        Debug.Log(s);
+        if (s == "Infinity")
             return "Inf";
         int l = s.Length;
-        if(l > 3)
+        if (l > 3)
         {
             string e = string.Empty;
-            e = s.Substring (0, 3);
+            e = s.Substring(0, 3);
             int n = l % 3;
             if (n > 0)
-                e = (e.Substring (0, n) + "," + s.Substring (n, 3));
+                e = (e.Substring(0, n) + "," + s.Substring(n, 3));
             else
-                e += ("," + s.Substring (3, 3));
+                e += ("," + s.Substring(3, 3));
             int n2 = (l - 1) / 3;
             string e2 = string.Empty;
-            e2 = ((n2 >= StringUnits.Length) ? GetNewIndex (n2 - StringUnits.Length) : StringUnits [n2]) ;
+            e2 = ((n2 >= StringUnits.Length) ? GetNewIndex(n2 - StringUnits.Length) : StringUnits[n2]);
             return e + e2;
         }
+
         return s;
     }
 }
