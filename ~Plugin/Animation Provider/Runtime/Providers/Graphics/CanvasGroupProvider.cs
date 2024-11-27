@@ -12,48 +12,21 @@ namespace OSK
         public float from = 0;
         public float to = 1;
 
-
-        #region Editor initialization and null reference prevention measures
-
-        private void Reset()
+        public override void ProgressTween()
         {
-            canvasGroup = gameObject.GetOrAdd<CanvasGroup>();
-            to = canvasGroup.alpha;
-        }
-
-        #endregion
-
-        public override Tweener InitTween()
-        {
-            return canvasGroup.DOFade(to, settings.duration);
-        }
-
-        public override void Play()
-        {
-            tweener?.Kill();
-            tweener = null;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-
             canvasGroup = gameObject.GetOrAdd<CanvasGroup>();
             canvasGroup.alpha = from;
-
-            tweener = InitTween();
-
-            tweener
-                .SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete(() => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            
+            tweener = canvasGroup.DOFade(to, settings.duration);
+            base.ProgressTween(); 
         }
+
+  
+        public override void Play()
+        {
+            base.Play();
+        }
+
 
         public override void Stop()
         {

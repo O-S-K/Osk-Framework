@@ -13,34 +13,20 @@ namespace OSK
         public int form;
         public int to;
         
-        public override Tweener InitTween()
+        public override void ProgressTween()
         { 
             target =  text;
-            return DOTween.To(() => 0, y => text.text = y.ToString(), to, settings.duration); //tostring high GC
+            text.text = form.ToString();
+            tweener = DOTween.To(() => 0, y => text.text = y.ToString(), to, settings.duration);
+            base.ProgressTween();
         }
 
+       
         public override void Play()
         {
-            tweener?.Kill();
-            tweener = null;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;     
-            
-            text.text = form.ToString();
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete(() => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            base.Play();
         }
+
 
         private void Reset()
         {

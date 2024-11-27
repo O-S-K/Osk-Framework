@@ -30,7 +30,7 @@ namespace OSK
             }
         }
 
-        public override Tweener InitTween()
+        public override void ProgressTween()
         {
             if (text)
             {
@@ -44,46 +44,20 @@ namespace OSK
                 Debug.LogError(
                     $"{nameof(TextLoadingAnimationProvider)}:  The Text Loading component requires a Text or TMP component!");
             }
-
-            return tweener;
+            base.ProgressTween();
         }
 
+    
         public override void Play()
         {
-            tweener?.Kill();
-            tweener = null;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete(() => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            base.Play();
         }
+
 
         public override void Stop()
         {
             base.Stop();
             Text = cached;
-        }
-
-        public override void OnValidate()
-        {
-            base.OnValidate();
-            if (!(text is Text) && !(text is TMPro.TextMeshProUGUI))
-            {
-                Debug.LogError(
-                    $"{nameof(TextLoadingAnimationProvider)}: The Text Loading component requires a Text or TMP component!");
-                text = null;
-            }
-        }
+        } 
     }
 }

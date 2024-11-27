@@ -12,9 +12,10 @@ namespace OSK
         
         private Tween tween;
 
-        public override Tweener InitTween()
-        {
-            return  DOVirtual.Float(form ? 1 : 0, to ? 1 : 0, settings.duration, value =>
+        public override void ProgressTween()
+        { 
+            particleSystem.Stop();
+            tweener =  DOVirtual.Float(form ? 1 : 0, to ? 1 : 0, settings.duration, value =>
             {
                 //particleSystem.gameObject.SetActive(value > 0);
                 if (value > 0)
@@ -22,23 +23,12 @@ namespace OSK
                     particleSystem.Play();
                 } 
             });
+            base.ProgressTween();
         }
 
         public override void Play()
         {
-            tweener?.Kill();
-            tweener = null;
-            particleSystem.Stop();
-            
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill) 
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete( () => settings.eventCompleted?.Invoke());
+            base.Play();
         }
  
  

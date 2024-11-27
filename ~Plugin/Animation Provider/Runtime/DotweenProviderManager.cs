@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
-using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace OSK
 {
@@ -14,7 +12,6 @@ namespace OSK
 
         public bool playOnEnable = true;
         public bool setAutoKill = true;
-        public float delay = 0f;
 
         public UpdateType updateType = UpdateType.Normal;
         public bool useUnscaledTime = false;
@@ -25,7 +22,7 @@ namespace OSK
         private void Awake()
         {
             SetupSetting();
-            providers = new List<DoTweenBaseProvider>(GetComponentsInChildren<DoTweenBaseProvider>());
+            AddProvider();
         }
         
         public void AddProvider()
@@ -35,29 +32,39 @@ namespace OSK
 
         public void SetupSetting()
         {
+            providers.ForEach(provider =>
+            {
+                provider.InitFromMG(playOnEnable, setAutoKill, updateType, useUnscaledTime);
+            });
+        }
+
+        public void Play() => providers.ForEach(provider => provider.Play());
+        public void Stop()=> providers.ForEach(provider => provider.Stop());
+        public void Rewind() => providers.ForEach(provider => provider.Rewind());
+        public void Preview(float time) => providers.ForEach(provider => provider.Preview(time));
+        
+        public float GetCurrentDuration()
+        {
+            float CurrentDuration = 0;
+            foreach(var provider in providers)
+            {
+                CurrentDuration += provider.GetCurrentDuration() > 0 ? provider.GetCurrentDuration() : 0;
+            }
             
+            Debug.Log( $"CurrentDuration: {CurrentDuration}");
+            return CurrentDuration;
         }
-
-
-        public void Play()
+        
+        public float GetTotalDuration()
         {
-            Providers.ForEach(provider => provider.Play());
-        }
-
-        public void Stop()
-        {
-            Providers.ForEach(provider => provider.Stop());
-        }
-
-        public bool Rewind()
-        {
-            Providers.ForEach(provider => provider.Rewind());
-            return true;
-        }
-
-        public void Preview(float time)
-        {
-            Providers.ForEach(provider => provider.Preview(time));
+            float TotalDuration = 0;
+            foreach(var provider in providers)
+            {
+                TotalDuration += provider.GetDuration() > 0 ? provider.GetDuration() : 0;
+            }
+            
+            Debug.Log( $"TotalDuration: {TotalDuration}");
+            return TotalDuration;
         }
     }
 }

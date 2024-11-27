@@ -19,12 +19,12 @@ namespace OSK
         public bool isStartFirstPoint = true;
         public bool isLookAt = false;
 
-        public override Tweener InitTween()
+        public override void ProgressTween()
         {
             if (paths == null || paths.Count == 0)
             {
-                Debug.LogWarning("Path points are not defined!");
-                return null;
+                Logg.LogWarning("Path points are not defined!");
+                return;
             }
 
             if (isStartFirstPoint)
@@ -43,54 +43,40 @@ namespace OSK
             {
                 pathPositions = paths.Select(p => p.position).ToArray();
             }
+
             PathType pathType = typePath == PathType.Linear ? PathType.Linear : PathType.CatmullRom;
-            bool applyLookAt = isLookAt || !isLocal; 
+            bool applyLookAt = isLookAt || !isLocal;
 
             if (isLocal)
             {
-                tweener = (applyLookAt) 
-                    ? transform.DOLocalPath(pathPositions, settings.duration, pathType).SetLookAt(0.01f) 
+                tweener = (applyLookAt)
+                    ? transform.DOLocalPath(pathPositions, settings.duration, pathType).SetLookAt(0.01f)
                     : transform.DOLocalPath(pathPositions, settings.duration, pathType);
             }
             else
             {
-                tweener = (applyLookAt) 
-                    ? transform.DOPath(pathPositions, settings.duration, pathType).SetLookAt(0.01f) 
+                tweener = (applyLookAt)
+                    ? transform.DOPath(pathPositions, settings.duration, pathType).SetLookAt(0.01f)
                     : transform.DOPath(pathPositions, settings.duration, pathType);
             }
-
-            return tweener;
+            
+            base.ProgressTween();
         }
 
+  
         public override void Play()
         {
-            tweener?.Kill();
-            tweener = null;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete(() => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            base.Play();
         }
+
 
         public void AddPathPoint()
         {
             var idx = paths.Count;
-            Path newPath = new Path(idx , transform.position, transform.rotation);
+            Path newPath = new Path(idx, transform.position, transform.rotation);
             paths.Add(newPath);
         }
-        
+
         public void AddPathPoint(Vector3 position, Quaternion rotation)
         {
             Path newPath = new Path(paths.Count, position, rotation);
@@ -99,7 +85,7 @@ namespace OSK
 
         public void RemovePathPoint(Path path)
         {
-            if(paths.Contains(path))
+            if (paths.Contains(path))
             {
                 paths.Remove(path);
             }

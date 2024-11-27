@@ -18,52 +18,40 @@ namespace OSK
 
         [ContextMenu("Get From")]
         public void GetPositionFrom() => from = isLocal ? transform.localPosition : transform.position;
+
         [ContextMenu("Get To")]
         public void GetPositionTo() => to = isLocal ? transform.localPosition : transform.position;
 
-        public override Tweener InitTween()
+        public override void ProgressTween()
         {
-            return isLocal ? transform.DOLocalMove(to, settings.duration, snapping) : transform.DOMove(to, settings.duration, snapping);
-        }
-
-        public override void Play()
-        {
-            tweener?.Kill();
-            tweener = null;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-
             if (isLocal)
                 transform.localPosition = from;
             else
                 transform.position = from;
-
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .SetRelative(negatives)
-                .OnComplete(() => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            
+            tweener = isLocal
+                ? transform.DOLocalMove(to, settings.duration, snapping)
+                : transform.DOMove(to, settings.duration, snapping);
+            tweener.SetRelative(negatives);
+            base.ProgressTween();
         }
 
   
+        public override void Play()
+        {
+            base.Play();
+        }
+
+
+
         public override void Stop()
         {
-            base.Stop(); 
+            base.Stop();
             if (isResetToFrom)
-                if (isLocal)  transform.localPosition = from;
+                if (isLocal) transform.localPosition = from;
                 else transform.position = from;
-            else
-                if (isLocal)  transform.localPosition = to;
-                else  transform.position = to;
+            else if (isLocal) transform.localPosition = to;
+            else transform.position = to;
         }
     }
 }

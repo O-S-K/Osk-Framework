@@ -1,16 +1,12 @@
-using System;
 using System.Linq;
-using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using System.Collections.Generic;
 using DG.Tweening;
-using Sirenix.OdinInspector.Editor;
 
 namespace OSK
 {
     [CustomEditor(typeof(DoTweenBaseProvider), true)]
-    public class DoTweenBaseProviderEditor : OdinEditor
+    public class DoTweenBaseProviderEditor : Editor
     {
         private DoTweenBaseProvider provider;
         private bool generalParametersFoldout = true;
@@ -29,6 +25,7 @@ namespace OSK
              InitializeStyles();
          
              provider = (DoTweenBaseProvider)target;
+             provider.SetCurrentTime(_previewTime);
              GUI.enabled = EditorApplication.isPlaying || !provider.IsPreviewing();
      
              serializedObject.Update();
@@ -144,13 +141,13 @@ namespace OSK
                 GUI.enabled = true;
 
 
-                // GUILayout.Space(5); 
-                // PreviewAll();
+                 GUILayout.Space(5); 
+                 PreviewAll();
 
                 GUILayout.Space(10);
                 EditorGUI.BeginChangeCheck();
 
-                float newPreviewTime = EditorGUILayout.Slider(_previewTime, 0, provider.Duration() - 0.001f);
+                float newPreviewTime = EditorGUILayout.Slider(_previewTime, 0, provider.GetDuration() - 0.001f);
                 if (EditorGUI.EndChangeCheck())
                 {
                     if (_previewTime == 0)
@@ -159,8 +156,7 @@ namespace OSK
                     provider.Preview(_previewTime);
                     _isPlaying = false;
                     EditorApplication.update -= UpdatePreview;
-                }
-
+                } 
                 //GUILayout.Label($"{_previewTime:F2}s", GUILayout.Width(50));
                 GUILayout.EndHorizontal();
             }
@@ -207,8 +203,9 @@ namespace OSK
                         //background = MakeColorTexture(new Color32(70, 130, 180, 255))
                     }
                 };
+                bool showButton =  providers.Length > 1;
 
-                if (GUILayout.Button(label, stBtnPreviewAll))
+                if (showButton && GUILayout.Button(label, stBtnPreviewAll))
                 {
                     if (anyIsPreviewing)
                     {
@@ -257,13 +254,13 @@ namespace OSK
                     {
                         case LoopType.Restart:
                             _previewTime += Time.deltaTime;
-                            _previewTime %= provider.Duration();
+                            _previewTime %= provider.GetDuration();
                             break;
                         case LoopType.Yoyo:
                             if (_isMoveRight)
                             {
                                 _previewTime += Time.deltaTime;
-                                if (_previewTime >= provider.Duration())
+                                if (_previewTime >= provider.GetDuration())
                                     _isMoveRight = false;
                             }
                             else
@@ -284,11 +281,10 @@ namespace OSK
                     _previewTime += Time.deltaTime;
                 }
 
-                if (_previewTime >= provider.Duration() && provider.settings.loopcount != -1)
+                if (_previewTime >= provider.GetDuration() && provider.settings.loopcount != -1)
                 {
                     StopPreview();
-                }
-
+                } 
                 provider.Preview(_previewTime);
                 Repaint();
             }

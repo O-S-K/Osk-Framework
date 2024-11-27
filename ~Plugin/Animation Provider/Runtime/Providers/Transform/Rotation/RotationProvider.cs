@@ -15,33 +15,20 @@ namespace OSK
 
         private void Reset() => to = isLocal ? RootTransform.localEulerAngles : RootTransform.eulerAngles;
 
-        public override Tweener InitTween()
-        {
+        public override void ProgressTween()
+        { 
             RootTransform.localEulerAngles = from;
-            return isLocal
+            tweener = isLocal
                 ? RootTransform.DOLocalRotate(to, settings.duration, rotateMode)
                 : RootTransform.DORotate(to, settings.duration, rotateMode);
+            
+            base.ProgressTween();
         }
 
+ 
         public override void Play()
         {
-            tweener?.Kill();
-            tweener = null;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType,settings. useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete(() => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            base.Play();
         }
 
         public override void Stop()

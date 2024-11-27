@@ -26,10 +26,15 @@ namespace OSK
         private Vector3 _originalRotation;
         private Vector3 _originalScale;
 
-        public override Tweener InitTween()
+        public override void ProgressTween()
         {
+            _originalPosition = RootTransform.localPosition;
+            _originalRotation = RootTransform.localEulerAngles;
+            _originalScale = RootTransform.localScale;
+
+            
             var rs = (isRandom) ? RandomUtils.RandomVector3(-strength, strength) : strength;
-            return typeShake switch
+            tweener = typeShake switch
             {
                 TypePunch.Position => RootTransform.DOPunchPosition(rs, settings.duration, vibrato, elasticity, snapping),
                 TypePunch.Rotation => RootTransform.DOPunchRotation(rs,settings. duration, vibrato, elasticity),
@@ -37,33 +42,16 @@ namespace OSK
                 TypePunch.Scale =>  RootTransform.DOPunchScale(rs, settings.duration, vibrato, elasticity),
                 _ => null
             };
+            
+            base.ProgressTween();
         }
 
+      
         public override void Play()
         {
-            _originalPosition = RootTransform.localPosition;
-            _originalRotation = RootTransform.localEulerAngles;
-            _originalScale = RootTransform.localScale;
-
-            tweener?.Kill();
-            tweener = null;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete(() => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            base.Play();
         }
+
 
         public override void Stop()
         {

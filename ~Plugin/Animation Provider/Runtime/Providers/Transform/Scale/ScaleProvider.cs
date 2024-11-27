@@ -19,34 +19,18 @@ namespace OSK
 
         private Tween tween;
 
-        public override Tweener InitTween()
+        public override void ProgressTween()
         {
-           return RootTransform.DOScale(to, settings.duration);
+            RootTransform.localScale = from;
+           tweener = RootTransform.DOScale(to, settings.duration);
         }
 
+  
         public override void Play()
         {
-            tweener?.Kill();
-            tweener = null;
-            RootTransform.localScale = from;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete( () => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            base.Play();
         }
 
-        
 
         public void Hide()
         {

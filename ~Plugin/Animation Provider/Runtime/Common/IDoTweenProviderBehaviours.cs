@@ -4,14 +4,15 @@ namespace OSK
 {
     public interface IDoTweenProviderBehaviours
     {
-        void SetInit(bool playOnEnable, bool setAutoKill, float delay, UpdateType updateType, bool useUnscaledTime);
+        void InitFromMG(bool playOnEnable, bool setAutoKill, UpdateType updateType, bool useUnscaledTime);
         Tweener Tweener { get; }
         bool IsPlaying { get; }
-        Tweener InitTween();
+        void ProgressTween();
         void Play();
         void Rewind();
         void Stop();
-        float Duration();
+        float GetDuration();
+        float GetCurrentDuration();
         void Preview(float time);
     }
 }

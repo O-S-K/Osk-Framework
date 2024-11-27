@@ -11,26 +11,22 @@ namespace OSK
         public bool playOnEnable = true;
         public bool setAutoKill = true;
 
-        [Min(0)]
-        public float delay = 0f;
-        
-        [Min(0)]
-        public float duration = 2f;
-        
-        [Min(-1)]
-        public int loopcount = 0;
-        
-        [ShowIf("@loopcount == -1")] 
-        public LoopType loopType = LoopType.Restart;
-        
+        [Min(0)] public float delay = 0f;
+
+        [Min(0)] public float duration = 2f;
+
+        [Min(-1)] public int loopcount = 0;
+
+        [ShowIf("@loopcount == -1")] public LoopType loopType = LoopType.Restart;
+
         public TypeAnimation typeAnim = TypeAnimation.Ease;
-        
+
         [ShowIf(nameof(typeAnim), TypeAnimation.Ease)]
         public Ease ease = Ease.Linear;
-        
+
         [ShowIf(nameof(typeAnim), TypeAnimation.Curve)]
         public AnimationCurve curve;
-        
+
         public UpdateType updateType = UpdateType.Normal;
         public bool useUnscaledTime = false;
         public UnityEvent eventCompleted;
@@ -55,69 +51,63 @@ namespace OSK
 
         public virtual void OnEnable()
         {
-            if (settings.playOnEnable)
-            {
-                Play();
-            }
+            if (settings.playOnEnable) Play();
         }
 
-        public virtual void OnDisable()
-        {
-            Stop();
-        }
+        public virtual void OnDisable() => Stop();
 
-#if UNITY_EDITOR
-        public virtual void OnValidate()
-        {
-        }
-#endif
-
-        public virtual void SetInit(bool playOnEnable, bool setAutoKill, float delay, UpdateType updateType,
-            bool useUnscaledTime)
+        public virtual void InitFromMG(bool playOnEnable, bool setAutoKill, UpdateType updateType, bool useUnscaledTime)
         {
             settings.playOnEnable = playOnEnable;
             settings.setAutoKill = setAutoKill;
-            settings.delay += delay;
             settings.updateType = updateType;
             settings.useUnscaledTime = useUnscaledTime;
         }
 
-        public abstract Tweener InitTween();
-        public abstract void Play();
-
-        public float Duration() => settings.duration;
-
-        /*private void BaseInitTween()
+        public virtual void ProgressTween()
         {
-                tweener?.Kill();
-                tweener = null;
-                if (!target)
-                    if (tweener != null)
-                        target = (UnityEngine.Object)tweener.target;
-                //
-                tweener.SetDelay(delay)
-                    .SetAutoKill(setAutoKill)
-                    .SetLoops(loopcount, loopType)
-                    .SetUpdate(isIgnoreTimeScale)
-                    .SetTarget(target)
-                    .OnComplete(() => onComplete?.Invoke());
+            tweener.SetDelay(settings.delay)
+                .SetAutoKill(settings.setAutoKill)
+                .SetLoops(settings.loopcount, settings.loopType)
+                .SetUpdate(settings.updateType, settings.useUnscaledTime)
+                .SetTarget(target)
+                .OnComplete(() => settings.eventCompleted?.Invoke());
 
-                if (typeAnim == TypeAnimation.Ease)
-                    tweener.SetEase(ease);
-                else
-                    tweener.SetEase(curve);
-        }*/
+
+            if (settings.typeAnim == TypeAnimation.Ease)
+                tweener.SetEase(settings.ease);
+            else
+                tweener.SetEase(settings.curve);
+        }
+
+        public virtual void Play()
+        {
+            tweener?.Kill();
+            tweener = null;
+            if (!target)
+                if (tweener != null)
+                    target = (UnityEngine.Object)tweener.target;
+            ProgressTween();
+        }
+
+        public float currentDuration;
+        public float GetDuration() => settings.duration;
+        public float GetCurrentDuration()
+        {
+            return currentDuration;
+        }
+
+        public void SetCurrentTime(float time) =>  currentDuration = time;
 
         public void Preview(float time)
         {
-            if (null == tweener) return;
+            if (tweener == null) return;
             tweener.Goto(time);
         }
 
         public void PlayBackwards()
         {
-            if (null == tweener) return;
-            tweener.PlayBackwards();
+            tweener?.PlayBackwards();
         }
 
         public virtual void Rewind() => tweener?.Rewind();
@@ -128,6 +118,7 @@ namespace OSK
             tweener?.Kill();
             tweener = null;
         }
+
         public virtual void Resume() => tweener?.Play();
         public virtual void Pause() => tweener?.Pause();
         public virtual void Kill() => tweener?.Kill();

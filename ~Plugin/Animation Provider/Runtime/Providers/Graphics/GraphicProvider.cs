@@ -11,15 +11,13 @@ namespace OSK
         public Color from = default;
         public Color to = default;
         public Graphic graphic;
+ 
 
-        private void Reset()
-        {
+        public override void ProgressTween()
+        { 
             graphic = graphic ? GetComponent<Graphic>() : graphic;
-            to = graphic.color; // Capture the initial value
-        }
+            graphic.color = from;
 
-        public override Tweener InitTween()
-        {
             var arr = GetComponents<GraphicProvider>();
             var blendable = null != arr && arr.Length > 1;
             if (blendable)
@@ -27,34 +25,15 @@ namespace OSK
                 Debug.Log($"Found multiple {nameof(GraphicProvider)} entering color mixing mode!");
             }
 
-            return blendable ? graphic.DOBlendableColor(to, settings.duration) : graphic.DOColor(to, settings.duration);
+            tweener = blendable ? graphic.DOBlendableColor(to, settings.duration) : graphic.DOColor(to, settings.duration);
         }
 
+  
         public override void Play()
         {
-            tweener?.Kill();
-            tweener = null;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-
-            graphic = graphic ? GetComponent<Graphic>() : graphic;
-            graphic.color = from;
-
-            tweener = InitTween();
-            tweener
-                .SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete(() => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            base.Play();
         }
+
 
         public override void Stop()
         {

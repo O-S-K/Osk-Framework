@@ -14,31 +14,24 @@ namespace OSK
 
         private Tween tween;
 
-        public override Tweener InitTween()
-        {
-            return DOVirtual.Float(from ? 1 : 0, to ? 1 : 0, settings.duration, value =>
+        public override void ProgressTween()
+        { 
+            onComplete.RemoveAllListeners();
+            tweener = DOVirtual.Float(from ? 1 : 0, to ? 1 : 0, settings.duration, value =>
             {
                 if (value > 0)
                     onComplete?.Invoke();
             });
+            
+            base.ProgressTween();
         }
 
+        
         public override void Play()
         {
-            tweener?.Kill();
-            tweener = null;
-            onComplete.RemoveAllListeners();
-
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetUpdate(settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete(() => onComplete?.Invoke());
+            base.Play();
         }
+
 
         public override void Stop()
         {

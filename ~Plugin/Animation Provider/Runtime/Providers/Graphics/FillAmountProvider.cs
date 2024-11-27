@@ -16,34 +16,20 @@ namespace OSK
         [Range(0, 1)]
         public float to;
         
-        public override Tweener InitTween()
+        public override void ProgressTween()
         { 
             target =  image;
-            return DOTween.To(() => 0, y => image.fillAmount = (float)y, to, settings. duration);
+            image.fillAmount = from;
+            tweener = DOTween.To(() => 0, y => image.fillAmount = (float)y, to, settings. duration);
+            base.ProgressTween();
         }
 
+   
         public override void Play()
         {
-            tweener?.Kill();
-            tweener = null;
-            if (!target)
-                if (tweener != null)
-                    target = (UnityEngine.Object)tweener.target;     
-            
-            image.fillAmount = from;
-            tweener = InitTween();
-            tweener.SetDelay(settings.delay)
-                .SetAutoKill(settings.setAutoKill)
-                .SetLoops(settings.loopcount, settings.loopType)
-                .SetUpdate(settings.updateType, settings.useUnscaledTime)
-                .SetTarget(target)
-                .OnComplete(() => settings.eventCompleted?.Invoke());
-
-            if (settings.typeAnim == TypeAnimation.Ease)
-                tweener.SetEase(settings.ease);
-            else
-                tweener.SetEase(settings.curve);
+            base.Play();
         }
+
 
         private void Reset()
         {
