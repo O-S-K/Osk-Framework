@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -17,19 +18,24 @@ namespace OSK
 
         public UpdateType updateType = UpdateType.Normal;
         public bool useUnscaledTime = false;
+        
+        public List<DoTweenBaseProvider> providers = new List<DoTweenBaseProvider>();
 
 
         private void Awake()
         {
             SetupSetting();
+            providers = new List<DoTweenBaseProvider>(GetComponentsInChildren<DoTweenBaseProvider>());
+        }
+        
+        public void AddProvider()
+        {
+            providers = new List<DoTweenBaseProvider>(GetComponentsInChildren<DoTweenBaseProvider>());
         }
 
         public void SetupSetting()
         {
-            Providers.ForEach(provider =>
-            {
-                provider.SetInit(playOnEnable, setAutoKill, delay, updateType, useUnscaledTime);
-            });
+            
         }
 
 

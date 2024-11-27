@@ -11,8 +11,6 @@ namespace OSK
         public bool from;
         public bool to;
         
-        private Tween tween;
-
         public override Tweener InitTween()
         {
            return  DOVirtual.Float(from ? 1 : 0, to ? 1 : 0, settings.duration, value => gameObject.SetActive(value > 0));
@@ -38,7 +36,6 @@ namespace OSK
         public override void Stop()
         {
             base.Stop();
-            tween?.Kill(); 
             gameObject.SetActive(from);
         }
     }

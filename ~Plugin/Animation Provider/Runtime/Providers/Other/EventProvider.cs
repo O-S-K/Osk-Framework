@@ -43,7 +43,6 @@ namespace OSK
         public override void Stop()
         {
             base.Stop();
-            tween?.Kill();
             onComplete.RemoveAllListeners();
         }
     }

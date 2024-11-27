@@ -9,7 +9,7 @@ namespace OSK
     {
         public string GetPath(string fileName, bool isSaveToDocument = true)
         {
-            return PathFile.GetPath($"{fileName}");
+            return PathUtility.GetPath($"{fileName}");
         }
 
         public void SaveData<T>(string fileName, object data, bool isSaveToDocument = true)

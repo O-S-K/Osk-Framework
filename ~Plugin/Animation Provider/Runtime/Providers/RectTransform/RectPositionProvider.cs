@@ -47,9 +47,7 @@ namespace OSK
         public override void Stop()
         {
             base.Stop();
-            tweener?.Rewind(); 
             RootRectTransform.anchoredPosition =  to;
-            tweener = null;
         }
     }
 }

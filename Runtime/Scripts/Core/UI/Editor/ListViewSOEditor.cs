@@ -19,7 +19,7 @@ namespace OSK
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-            EditorGUILayout.Space();
+            EditorGUILayout.Space(10);
 
             // Display header
             EditorGUILayout.BeginHorizontal();
@@ -27,16 +27,19 @@ namespace OSK
             EditorGUILayout.LabelField("Type", GUILayout.Width(100));
             EditorGUILayout.LabelField("Script Ref", GUILayout.Width(200));
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.LabelField("----------------------------------------------------------------------------");
+
             
             // Display the list of views
             DisplayGroupedViews(listViewSO);
-            
             EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("----------------------------------------------------------------------------");
+            EditorGUILayout.Space();
 
             // Button to add all views from Resources
             if (GUILayout.Button("Add All View From Resources"))
             {
-                listViewSO.AddAllViewFormResources();
+                AddAllViewFormResources();
                 EditorUtility.SetDirty(target);
             }
 
@@ -44,6 +47,7 @@ namespace OSK
             if (GUILayout.Button("Sort By ViewType and Depth"))
             {
                 SortViews(listViewSO);
+                EditorUtility.SetDirty(target);
             }
             
             EditorGUILayout.Space(10);
@@ -63,12 +67,66 @@ namespace OSK
                 listViewSO.Views.Clear();
                 EditorUtility.SetDirty(target);
             }
-
-
+ 
             if (GUI.changed)
             {
                 EditorUtility.SetDirty(target);
             }
+        }
+
+        private void CheckUniqueUI()
+        {
+            // check unique ui screen  type
+            var views = new List<DataViewUI>();
+            foreach (var view in listViewSO.Views)
+            {
+                if (views.Contains(view))
+                {
+                    OSK.Logg.LogError($"Popup Type {view} exists in the list. Please remove it.");
+                }
+                else
+                {
+                    views.Add(view);
+                }
+            }
+        }
+
+
+        public void AddAllViewFormResources()
+        {
+            var listViews = Resources.LoadAll<View>("").ToList().FindAll(x => x.isAddToViewManager);
+
+            foreach (var popup in listViews)
+            {
+                if (listViewSO.Views.Any(x => x.view == popup))
+                {
+                    continue;
+                }
+
+                var data = new DataViewUI();
+                data.view = popup;
+                data.path = PathUtility.GetPathAfterResources(popup);
+
+                switch (data.view.viewType)
+                {
+                    case EViewType.None:
+                        data.depth = (0 + data.view.depth).ToString();
+                        break;
+                    case EViewType.Popup:
+                        data.depth = (100 + data.view.depth).ToString();
+                        break;
+                    case EViewType.Overlay:
+                        data.depth = (1000 + data.view.depth).ToString();
+                        break;
+                    case EViewType.Screen:
+                        data.depth = (-100 + data.view.depth).ToString();
+                        break;
+                }
+
+                listViewSO.Views.Add(data);
+            }
+
+            SortViews(listViewSO);
         }
 
         private void SortViews(ListViewSO listViewSO)

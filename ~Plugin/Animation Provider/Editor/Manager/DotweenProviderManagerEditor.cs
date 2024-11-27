@@ -63,6 +63,13 @@ namespace OSK
                     manager.StartPreview();
                 }
             } 
+            
+            buttons.normal.background = MakeColorTexture(Color.grey);
+            
+            if (GUILayout.Button("Get Providers", buttons))
+            {
+                manager.AddProvider();
+            } 
         }
         
         private Texture2D MakeColorTexture(Color color)

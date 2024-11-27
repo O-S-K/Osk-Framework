@@ -72,7 +72,6 @@ namespace OSK
         public override void Stop()
         {
             base.Stop();
-            tweener = null;
             Text = cached;
         }
 

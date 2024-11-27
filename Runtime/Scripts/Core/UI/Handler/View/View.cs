@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -49,7 +50,7 @@ namespace OSK
             {
                 Logg.Log("View Manager initialized successfully.");
             }
-    
+
             EventAfterInit?.Invoke();
         }
 
@@ -87,11 +88,11 @@ namespace OSK
                 return;
             }
 
-            _isShowing = true; 
+            _isShowing = true;
             EventBeforeOpened?.Invoke();
 
-            gameObject.SetActive(true); 
-            _uiTransition.OpenTrans(() => 
+            gameObject.SetActive(true);
+            _uiTransition.OpenTrans(() =>
             {
                 if (_isShowing)
                 {
@@ -111,8 +112,8 @@ namespace OSK
             {
                 gameObject.SetActive(false);
                 EventAfterClosed?.Invoke();
-                
-                if(isRemoveOnHide)
+
+                if (isRemoveOnHide)
                     _viewManager.Delete(this);
                 else
                     _viewManager.RemovePopup(this);
@@ -128,7 +129,7 @@ namespace OSK
                 _viewManager.RemovePopup(this);
             });
         }
-        
+
         public void Delete()
         {
             _viewManager.Delete(this);

@@ -57,10 +57,7 @@ namespace OSK
   
         public override void Stop()
         {
-            base.Stop();
-            tweener?.Rewind(); //Reset the changes made by Dotween
-            tweener = null;
-            
+            base.Stop(); 
             if (isResetToFrom)
                 if (isLocal)  transform.localPosition = from;
                 else transform.position = from;

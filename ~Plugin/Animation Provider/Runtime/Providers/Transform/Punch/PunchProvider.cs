@@ -67,10 +67,7 @@ namespace OSK
 
         public override void Stop()
         {
-            base.Stop();
-            tweener?.Rewind();
-            tweener = null;
-
+            base.Stop(); 
             RootTransform.localPosition = _originalPosition;
             RootTransform.localEulerAngles = _originalRotation;
             RootTransform.localScale = _originalScale;

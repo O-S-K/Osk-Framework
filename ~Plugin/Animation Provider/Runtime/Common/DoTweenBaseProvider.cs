@@ -55,10 +55,16 @@ namespace OSK
 
         public virtual void OnEnable()
         {
-            if (settings.playOnEnable) Play();
+            if (settings.playOnEnable)
+            {
+                Play();
+            }
         }
 
-        public virtual void OnDisable() => Stop();
+        public virtual void OnDisable()
+        {
+            Stop();
+        }
 
 #if UNITY_EDITOR
         public virtual void OnValidate()
@@ -116,7 +122,12 @@ namespace OSK
 
         public virtual void Rewind() => tweener?.Rewind();
         public virtual void Backward() => tweener?.PlayBackwards();
-        public virtual void Stop() => tweener?.Kill();
+
+        public virtual void Stop()
+        {
+            tweener?.Kill();
+            tweener = null;
+        }
         public virtual void Resume() => tweener?.Play();
         public virtual void Pause() => tweener?.Pause();
         public virtual void Kill() => tweener?.Kill();
