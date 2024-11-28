@@ -12,9 +12,33 @@ namespace OSK
             if (FindObjectOfType<Main>() == null)
             {
                 PrefabUtility.InstantiatePrefab(Resources.Load<Main>("OSK-Framework"));
-                PrefabUtility.InstantiatePrefab(Resources.Load<RootUI>("HUD/HUD"));
-                Debug.Log("OSK-Framework created".Bold().Color(Color.green));
             }
+        }
+
+        [MenuItem("OSK-Framework/Create HUD")]
+        public static void CreateHUDOnScene()
+        {
+            if (FindObjectOfType<RootUI>() == null)
+            {
+                PrefabUtility.InstantiatePrefab(Resources.Load<RootUI>("HUD/HUD"));
+            }
+        }
+
+        [MenuItem("OSK-Framework/Install Dependencies/Dotween")]
+        public static void InstallDependenciesDotween()
+        {
+            AddPackage("https://github.com/O-S-K/DOTween.git");
+        }
+
+        [MenuItem("OSK-Framework/Install Dependencies/UIFeel")]
+        public static void InstallDependenciesUIFeel()
+        {
+            AddPackage("https://github.com/O-S-K/UIFeel.git");
+        }
+
+        private static void AddPackage(string packageName)
+        {
+            UnityEditor.PackageManager.Client.Add(packageName);
         }
     }
 }
