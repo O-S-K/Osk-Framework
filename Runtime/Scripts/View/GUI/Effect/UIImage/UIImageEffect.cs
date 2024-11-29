@@ -37,15 +37,27 @@ namespace OSK
             }
         }
 
-        public void SpawnEffect(string nameEffect, Vector3 pointSpawn, Vector3 pointTarget,
-            int numberOfEffects,
+        public void SpawnEffect(string nameEffect, Vector3 pointSpawn, Vector3 pointTarget)
+        {
+            var effectSetting = _effectSettings.ToList().Find(x => x.name == nameEffect);
+            effectSetting.pointSpawn = pointSpawn;
+            effectSetting.pointTarget = pointTarget;
+
+            if (gameObject.activeInHierarchy)
+            {
+                StartCoroutine(IESpawnEffect(effectSetting));
+            }
+        }
+
+        public void SpawnEffect(string nameEffect, Vector3 pointSpawn, Vector3 pointTarget, int numberOfEffects,
             System.Action OnCompleted)
         {
             var effectSetting = _effectSettings.ToList().Find(x => x.name == nameEffect);
             effectSetting.pointSpawn = pointSpawn;
             effectSetting.pointTarget = pointTarget;
 
-            effectSetting.numberOfEffects = numberOfEffects;
+            if (numberOfEffects > 0)
+                effectSetting.numberOfEffects = numberOfEffects;
             effectSetting.OnCompleted = OnCompleted;
 
             if (gameObject.activeInHierarchy)
@@ -63,6 +75,7 @@ namespace OSK
             for (int i = 0; i < effectSetting.numberOfEffects; i++)
             {
                 var effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, effectSetting.icon, 1);
+                effect.gameObject.GetOrAdd<RectTransform>();
                 effect.transform.SetParent(parent);
                 effect.transform.localScale = Vector3.one;
                 effect.transform.position = effectSetting.pointSpawn;
@@ -126,7 +139,8 @@ namespace OSK
             switch (effectSetting.typeMove)
             {
                 case TypeMove.Straight:
-                    tween = effect.transform.DOMove(effectSetting.pointTarget, timeMove).SetDelay(timeMoveDelay);
+                    tween = effect.transform.DOMove(effectSetting.pointTarget, timeMove)
+                        .SetDelay(timeMoveDelay);
                     break;
                 case TypeMove.Beziers:
                     if (effectSetting.paths.Count % 3 != 0)
@@ -163,7 +177,31 @@ namespace OSK
                     break;
                 case TypeMove.DoJump:
                     tween = effect.transform
-                        .DOJump(effectSetting.pointTarget, effectSetting.jumpPower, 1, timeMove)
+                        .DOJump(effectSetting.pointTarget, effectSetting.jumpPower.RandomValue,
+                            effectSetting.jumpNumber, timeMove)
+                        .SetDelay(timeMoveDelay);
+                    break;
+                case TypeMove.Around:
+                    // Calculate a control point to define the curvature at the spawn point
+                    Vector3 controlPoint = effectSetting.pointSpawn + new Vector3(effectSetting.midPointOffsetX.RandomValue, effectSetting.height.RandomValue, effectSetting.midPointOffsetZ.RandomValue);
+
+                    // Create the path
+                    Vector3[] path = new Vector3[] { effectSetting.pointSpawn, controlPoint, effectSetting.pointTarget };
+                    tween = effect.transform.DOPath(path, timeMove, PathType.CatmullRom)
+                        .SetDelay(timeMoveDelay);
+                    break;
+                case TypeMove.Sin: 
+                    Vector3[] path1 = new Vector3[effectSetting.pointsCount];
+
+                    for (int i = 0; i < effectSetting.pointsCount; i++)
+                    {
+                        float t = (float)i / (effectSetting.pointsCount - 1);
+                        Vector3 point = Vector3.Lerp(effectSetting.pointSpawn, effectSetting.pointTarget, t);
+                        point.y += Mathf.Sin(t * Mathf.PI * 2) * effectSetting.height.RandomValue; // Apply sine wave offset
+                        path1[i] = point;
+                    }
+
+                    tween = effect.transform.DOPath(path1, timeMove, PathType.CatmullRom)
                         .SetDelay(timeMoveDelay);
                     break;
             }

@@ -11,7 +11,9 @@ namespace OSK
         Beziers,
         CatmullRom,
         Path,
-        DoJump
+        DoJump,
+        Around,
+        Sin,
     }
 
     public enum TypeAnimation
@@ -23,10 +25,11 @@ namespace OSK
 
     [System.Serializable]
     public class EffectSetting
-    { 
+    {
         [Header("Setup")]
         public string name;
         public GameObject icon;
+        [Min(1)]
         public int numberOfEffects = 10;
         public bool isDrop = true;
 
@@ -39,15 +42,14 @@ namespace OSK
         public float sphereRadius = 1;
 
         [ShowIf(nameof(isDrop), true)]
-        [MinMaxSlider(0, 10, true)]
-        public MinMax delayDrop;
+        public MinMaxFloat delayDrop;
 
         [ShowIf(nameof(isDrop), true)]
-        [MinMaxSlider(0, 10, true)]
-        public MinMax timeDrop;
+        public MinMaxFloat timeDrop;
 
-        [ShowIf(nameof(isDrop), true)] public TypeAnimation typeAnimationDrop = TypeAnimation.Ease;
- 
+        [ShowIf(nameof(isDrop), true)] 
+        public TypeAnimation typeAnimationDrop = TypeAnimation.Ease;
+
         private bool isShowEase => typeAnimationDrop == TypeAnimation.Ease && isDrop;
         [ShowIf(nameof(isShowEase), true)]
         public Ease easeDrop = Ease.Linear;
@@ -65,25 +67,29 @@ namespace OSK
         [Header("Move")]
         public TypeMove typeMove = TypeMove.Straight;
         
-        [ShowIf(nameof(typeMove), TypeMove.DoJump)]
-        public float jumpPower = 1;
-        private bool isShowPath => typeMove != TypeMove.DoJump && typeMove != TypeMove.Straight;
-        [ShowIf(nameof(isShowPath), true)]
         public List<Vector3> paths;
-
         public TypeAnimation typeAnimationMove = TypeAnimation.Ease;
-
-        [ShowIf(nameof(typeAnimationMove), TypeAnimation.Ease)]
+ 
         public Ease easeMove = Ease.Linear;
-
-        [ShowIf(nameof(typeAnimationMove), TypeAnimation.Curve)]
         public AnimationCurve curveMove;
 
-        [MinMaxSlider(0, 10, true)]
-        public MinMax timeMove;
         
-        [MinMaxSlider(0, 10, true)]
-        public MinMax delayMove;
+        // Jump
+        public MinMaxFloat jumpPower;
+        [Min(1)]
+        public int jumpNumber;
+ 
+        public MinMaxFloat midPointOffsetX;
+        public MinMaxFloat midPointOffsetZ;
+        
+        // Sin
+        [Min(4)]
+        public int pointsCount = 10;
+
+        public MinMaxFloat height;
+
+        public MinMaxFloat timeMove;
+        public MinMaxFloat delayMove;
 
         public float scaleTarget = 1;
         public System.Action OnCompleted;

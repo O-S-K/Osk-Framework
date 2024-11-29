@@ -59,26 +59,50 @@ public static class MoneyUtils
     {
         if (value < 1.0f)
             return "0";
-        string s = value.ToString("#");
+        var s = value.ToString("#");
         Debug.Log(s);
         if (s == "Infinity")
             return "Inf";
-        int l = s.Length;
-        if (l > 3)
-        {
-            string e = string.Empty;
-            e = s.Substring(0, 3);
-            int n = l % 3;
-            if (n > 0)
-                e = (e.Substring(0, n) + "," + s.Substring(n, 3));
-            else
-                e += ("," + s.Substring(3, 3));
-            int n2 = (l - 1) / 3;
-            string e2 = string.Empty;
-            e2 = ((n2 >= StringUnits.Length) ? GetNewIndex(n2 - StringUnits.Length) : StringUnits[n2]);
-            return e + e2;
-        }
+        var l = s.Length;
+        if (l <= 3) 
+            return s;
+        
+        string e = string.Empty;
+        e = s.Substring(0, 3);
+        int n = l % 3;
+        if (n > 0)
+            e = (e.Substring(0, n) + "," + s.Substring(n, 3));
+        else
+            e += ("," + s.Substring(3, 3));
+        int n2 = (l - 1) / 3;
+        string e2 = string.Empty;
+        e2 = ((n2 >= StringUnits.Length) ? GetNewIndex(n2 - StringUnits.Length) : StringUnits[n2]);
+        return e + e2;
 
-        return s;
     }
+    
+    public static string FormatCurrency(long number)
+    {
+        return number switch
+        {
+            >= 1000000000000000 => (number / 1000000000000000f).ToString("0.#") + "Q",
+            >= 1000000000000 => (number / 1000000000000f).ToString("0.#") + "T",
+            >= 1000000000 => (number / 1000000000f).ToString("0.#") + "B",
+            >= 1000000 => (number / 1000000f).ToString("0.#") + "M",
+            >= 1000 => (number / 1000f).ToString("0.#") + "K",
+            _ => number.ToString()
+        };
+    }
+    
+    public static string FormatCurrency(int number)
+    {
+        return number switch
+        {
+            >= 1000000000 => (number / 1000000000f).ToString("0.#") + "B",
+            >= 1000000 => (number / 1000000f).ToString("0.#") + "M",
+            >= 1000 => (number / 1000f).ToString("0.#") + "K",
+            _ => number.ToString()
+        };
+    }
+
 }

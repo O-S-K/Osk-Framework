@@ -2,6 +2,7 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 using UnityEditor;
+
 namespace OSK
 {
     [CustomEditor(typeof(UIImageSO))]
@@ -17,7 +18,7 @@ namespace OSK
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
-               
+
             GUIStyle titleStyle0 = new GUIStyle(EditorStyles.boldLabel)
             {
                 normal = { textColor = Color.yellow }
@@ -58,7 +59,7 @@ namespace OSK
                         {
                             normal = { textColor = Color.green }
                         };
-                        
+
                         EditorGUILayout.LabelField("Drop Settings", titleStyle1);
                         EditorGUILayout.BeginVertical("box"); // Tạo khung cho Drop Settings
                         DrawColoredBox(() =>
@@ -68,7 +69,8 @@ namespace OSK
                             EditorGUILayout.PropertyField(element.FindPropertyRelative("timeDrop"));
                             EditorGUILayout.PropertyField(element.FindPropertyRelative("typeAnimationDrop"));
 
-                            var typeAnimationDrop = (TypeAnimation)element.FindPropertyRelative("typeAnimationDrop").enumValueIndex;
+                            var typeAnimationDrop =
+                                (TypeAnimation)element.FindPropertyRelative("typeAnimationDrop").enumValueIndex;
                             if (typeAnimationDrop == TypeAnimation.Ease)
                             {
                                 EditorGUILayout.PropertyField(element.FindPropertyRelative("easeDrop"));
@@ -82,8 +84,8 @@ namespace OSK
                     }
 
                     GUILayout.Space(10);
-                    
-                    
+
+
                     GUIStyle titleStyle2 = new GUIStyle(EditorStyles.boldLabel)
                     {
                         normal = { textColor = Color.cyan }
@@ -96,17 +98,36 @@ namespace OSK
                     {
                         EditorGUILayout.PropertyField(element.FindPropertyRelative("typeMove"));
                         var typeMove = (TypeMove)element.FindPropertyRelative("typeMove").enumValueIndex;
-                        if (typeMove == TypeMove.DoJump)
-                        {
-                            EditorGUILayout.PropertyField(element.FindPropertyRelative("jumpPower"));
-                        }
-                        else if (typeMove != TypeMove.Straight)
+                        if (typeMove is TypeMove.Path or TypeMove.Beziers or TypeMove.CatmullRom)
                         {
                             EditorGUILayout.PropertyField(element.FindPropertyRelative("paths"));
                         }
+                        else if (typeMove == TypeMove.Straight)
+                        {
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("height"));
+                        }
+                        else if (typeMove == TypeMove.DoJump)
+                        {
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("jumpPower"));
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("jumpNumber"));
+                        }
+
+                        else if (typeMove == TypeMove.Around)
+                        {
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("midPointOffsetX"));
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("midPointOffsetZ"));
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("height"));
+                        }
+                        else if (typeMove == TypeMove.Sin)
+                        {
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("pointsCount"));
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("height"));
+                        }
+
 
                         EditorGUILayout.PropertyField(element.FindPropertyRelative("typeAnimationMove"));
-                        var typeAnimationMove = (TypeAnimation)element.FindPropertyRelative("typeAnimationMove").enumValueIndex;
+                        var typeAnimationMove =
+                            (TypeAnimation)element.FindPropertyRelative("typeAnimationMove").enumValueIndex;
                         if (typeAnimationMove == TypeAnimation.Ease)
                         {
                             EditorGUILayout.PropertyField(element.FindPropertyRelative("easeMove"));
