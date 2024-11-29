@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace OSK
 {
-    [CreateAssetMenu(fileName = "UIImageSO", menuName = "OSK/UI/UIImageSO", order = 0)]
-    public class UIImageSO : ScriptableObject
+    [CreateAssetMenu(fileName = "UIParticleSO", menuName = "OSK/UI/UIParticleSO", order = 0)]
+    public class UIParticleSO : ScriptableObject
     {
         public EffectSetting[] EffectSettings => _effectSettings;
         [SerializeField] private EffectSetting[] _effectSettings;

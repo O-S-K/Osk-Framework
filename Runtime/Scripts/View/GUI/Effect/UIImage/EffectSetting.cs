@@ -98,5 +98,10 @@ namespace OSK
 
         public Vector3 pointSpawn { get; set; }
         public Vector3 pointTarget { get; set; }
+        
+        public EffectSetting Clone()
+        {
+            return (EffectSetting) MemberwiseClone();
+        }
     }
 }

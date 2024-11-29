@@ -67,11 +67,11 @@ namespace OSK
                 return;
             }
 
-            List<UIImageSO> imageEffectDatas = new List<UIImageSO>();
+            List<UIParticleSO> imageEffectDatas = new List<UIParticleSO>();
             foreach (var guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                UIImageSO v = AssetDatabase.LoadAssetAtPath<UIImageSO>(path);
+                UIParticleSO v = AssetDatabase.LoadAssetAtPath<UIParticleSO>(path);
                 imageEffectDatas.Add(v);
             }
 
@@ -82,7 +82,7 @@ namespace OSK
             }
             else
             {
-                foreach (UIImageSO v in imageEffectDatas)
+                foreach (UIParticleSO v in imageEffectDatas)
                 {
                     Debug.Log("ImageEffectData found: " + v.name);
                     Selection.activeObject = v;

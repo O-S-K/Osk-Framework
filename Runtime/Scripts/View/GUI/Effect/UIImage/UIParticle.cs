@@ -1,15 +1,25 @@
-using UnityEngine;
-using System.Linq;
-using DG.Tweening;
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using DG.Tweening;
+using System.Linq;
+using System.Collections;
 
 namespace OSK
 {
-    public class UIImageEffect : MonoBehaviour
+    public class UIParticle : MonoBehaviour
     {
         private EffectSetting[] _effectSettings;
         private List<GameObject> _parentEffects;
+        private Dictionary<string, Coroutine> _activeCoroutines = new Dictionary<string, Coroutine>();
+
+        public enum ETypeSpawn
+        {
+            UIToUI,
+            UIToWorld,
+            WorldToUI,
+            WorldToWorld,
+            WorldToWorld3D,
+        }
 
         private void Start()
         {
@@ -20,10 +30,10 @@ namespace OSK
         {
             if (Main.Configs.Game.data.isUseUIImage == false)
                 return;
-            if (Main.Configs.Game.data.uiImageSO == null)
+            if (Main.Configs.Game.data.uiParticleSO == null)
                 return;
 
-            _effectSettings = Main.Configs.Game.data.uiImageSO.EffectSettings;
+            _effectSettings = Main.Configs.Game.data.uiParticleSO.EffectSettings;
             if (_effectSettings.Length == 0)
                 return;
 
@@ -31,42 +41,75 @@ namespace OSK
             for (int i = 0; i < _effectSettings.Length; i++)
             {
                 _parentEffects.Add(new GameObject(_effectSettings[i].name));
+                // _parentEffects[i].gameObject.GetOrAdd<RectTransform>();
+                // _parentEffects[i].SetLayer("UI");
                 _parentEffects[i].transform.SetParent(Main.UI.GetCanvas.transform);
                 _parentEffects[i].transform.localScale = Vector3.one;
                 AddPaths(_effectSettings[i]);
             }
         }
 
-        public void SpawnEffect(string nameEffect, Vector3 pointSpawn, Vector3 pointTarget)
+        public void Spawn(ETypeSpawn typeSpawn, string name, Transform from, Transform to, int num = -1,
+            System.Action onCompleted = null)
         {
-            var effectSetting = _effectSettings.ToList().Find(x => x.name == nameEffect);
-            effectSetting.pointSpawn = pointSpawn;
-            effectSetting.pointTarget = pointTarget;
-
-            if (gameObject.activeInHierarchy)
+            string key = $"{name}_{from.GetInstanceID()}_{to.GetInstanceID()}";
+            if (_activeCoroutines.ContainsKey(key))
             {
-                StartCoroutine(IESpawnEffect(effectSetting));
+                StopCoroutine(_activeCoroutines[key]);
+                _activeCoroutines.Remove(key);
             }
+
+            Coroutine coroutine = StartCoroutine(SpawnCoroutine(typeSpawn, name, from, to, num, onCompleted));
+            _activeCoroutines[key] = coroutine;
         }
 
-        public void SpawnEffect(string nameEffect, Vector3 pointSpawn, Vector3 pointTarget, int numberOfEffects,
-            System.Action OnCompleted)
+        private IEnumerator SpawnCoroutine(ETypeSpawn typeSpawn, string name, Transform from, Transform to, int num,
+            System.Action onCompleted)
         {
-            var effectSetting = _effectSettings.ToList().Find(x => x.name == nameEffect);
+            Vector3 fromPosition = from.position;
+            Vector3 toPosition = to.position;
+            bool is3D = false;
+
+            switch (typeSpawn)
+            {
+                case ETypeSpawn.UIToWorld:
+                    toPosition = ConvertToUICameraSpace(to);
+                    break;
+                case ETypeSpawn.WorldToUI:
+                    fromPosition = ConvertToUICameraSpace(from);
+                    break;
+                case ETypeSpawn.WorldToWorld:
+                    fromPosition = ConvertToUICameraSpace(from);
+                    toPosition = ConvertToUICameraSpace(to);
+                    break;
+                case ETypeSpawn.WorldToWorld3D:
+                    is3D = true;
+                    break;
+            }
+
+            SpawnEffect(is3D, name, fromPosition, toPosition, num, onCompleted);
+            yield return null;
+        }
+
+        private void SpawnEffect(bool is3D, string nameEffect, Vector3 pointSpawn, Vector3 pointTarget,
+            int numberOfEffects,
+            System.Action onCompleted)
+        {
+            var effectSetting = _effectSettings.ToList().Find(x => x.name == nameEffect).Clone();
             effectSetting.pointSpawn = pointSpawn;
             effectSetting.pointTarget = pointTarget;
 
             if (numberOfEffects > 0)
                 effectSetting.numberOfEffects = numberOfEffects;
-            effectSetting.OnCompleted = OnCompleted;
+            effectSetting.OnCompleted = onCompleted;
 
             if (gameObject.activeInHierarchy)
             {
-                StartCoroutine(IESpawnEffect(effectSetting));
+                StartCoroutine(IESpawnEffect(is3D, effectSetting));
             }
         }
 
-        private IEnumerator IESpawnEffect(EffectSetting effectSetting)
+        private IEnumerator IESpawnEffect(bool is3D, EffectSetting effectSetting)
         {
             var parent = _parentEffects.Find(x => x.name == effectSetting.name)?.transform;
             if (parent == null || !parent.gameObject.activeInHierarchy)
@@ -75,10 +118,14 @@ namespace OSK
             for (int i = 0; i < effectSetting.numberOfEffects; i++)
             {
                 var effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, effectSetting.icon, 1);
-                effect.gameObject.GetOrAdd<RectTransform>();
                 effect.transform.SetParent(parent);
-                effect.transform.localScale = Vector3.one;
                 effect.transform.position = effectSetting.pointSpawn;
+
+                if (!is3D)
+                {
+                    effect.transform.localScale = Vector3.one;
+                    effect.gameObject.GetOrAdd<RectTransform>();
+                }
 
                 if (effectSetting.isDrop)
                 {
@@ -183,21 +230,26 @@ namespace OSK
                     break;
                 case TypeMove.Around:
                     // Calculate a control point to define the curvature at the spawn point
-                    Vector3 controlPoint = effectSetting.pointSpawn + new Vector3(effectSetting.midPointOffsetX.RandomValue, effectSetting.height.RandomValue, effectSetting.midPointOffsetZ.RandomValue);
+                    Vector3 controlPoint = effectSetting.pointSpawn +
+                                           new Vector3(effectSetting.midPointOffsetX.RandomValue,
+                                               effectSetting.height.RandomValue,
+                                               effectSetting.midPointOffsetZ.RandomValue);
 
                     // Create the path
-                    Vector3[] path = new Vector3[] { effectSetting.pointSpawn, controlPoint, effectSetting.pointTarget };
+                    Vector3[] path = new Vector3[]
+                        { effectSetting.pointSpawn, controlPoint, effectSetting.pointTarget };
                     tween = effect.transform.DOPath(path, timeMove, PathType.CatmullRom)
                         .SetDelay(timeMoveDelay);
                     break;
-                case TypeMove.Sin: 
+                case TypeMove.Sin:
                     Vector3[] path1 = new Vector3[effectSetting.pointsCount];
 
                     for (int i = 0; i < effectSetting.pointsCount; i++)
                     {
                         float t = (float)i / (effectSetting.pointsCount - 1);
                         Vector3 point = Vector3.Lerp(effectSetting.pointSpawn, effectSetting.pointTarget, t);
-                        point.y += Mathf.Sin(t * Mathf.PI * 2) * effectSetting.height.RandomValue; // Apply sine wave offset
+                        point.y += Mathf.Sin(t * Mathf.PI * 2) *
+                                   effectSetting.height.RandomValue; // Apply sine wave offset
                         path1[i] = point;
                     }
 
@@ -215,8 +267,8 @@ namespace OSK
                 else
                     tween.SetEase(Ease.Linear);
 
-                effect.transform.DOScale(effectSetting.scaleTarget, timeMove)
-                    .SetDelay(timeMoveDelay);
+                // effect.transform.DOScale(effectSetting.scaleTarget, timeMove)
+                //     .SetDelay(timeMoveDelay);
                 tween.OnComplete(() => { Main.Pool.Despawn(effect); });
             }
         }
@@ -244,85 +296,37 @@ namespace OSK
             Main.Pool.DestroyGroup(KeyGroupPool.UIEffect);
         }
 
-
-#if UNITY_EDITOR
-        private void OnDrawGizmos()
+        public static Vector3 ConvertToUICameraSpace(Transform pointTarget)
         {
-            // if (Application.isEditor)
-            //     return;
-
-            if (_effectSettings == null)
-                return;
-            if (_effectSettings.Length == 0)
-                return;
-
-            Color color = Color.magenta;
-            for (int i = 0; i < _effectSettings.Length; i++)
+            Vector3 uiWorldPosition;
+            Camera mainCamera = Camera.main;
+            if (mainCamera == null)
             {
-                if (_effectSettings[i].isDrop)
-                {
-                    if (_effectSettings[i].pointSpawn == null)
-                        continue;
+                Logg.LogWarning("Main camera is not found, unable to convert position.");
+                return Vector3.zero;
+            }
 
-                    Gizmos.color = color;
-                    Gizmos.DrawWireSphere(_effectSettings[i].pointSpawn, _effectSettings[i].sphereRadius);
+            Camera uiCamera = Main.UI.GetCanvas.worldCamera;
+
+            if (Main.UI.GetCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            {
+                RectTransformUtility.ScreenPointToWorldPointInRectangle(pointTarget.GetRectTransform(),
+                    pointTarget.position, uiCamera, out uiWorldPosition);
+            }
+            else
+            {
+                Vector3 screenPoint = mainCamera.WorldToScreenPoint(pointTarget.position);
+                if (screenPoint.z < 0)
+                {
+                    Logg.LogWarning("Object is behind the main camera, unable to convert position.");
+                    return Vector3.zero;
                 }
 
-                switch (_effectSettings[i].typeMove)
-                {
-                    case TypeMove.Straight:
-                        Gizmos.color = color;
-                        if (_effectSettings[i].pointSpawn == null)
-                            continue;
-                        Gizmos.DrawLine(_effectSettings[i].pointSpawn, _effectSettings[i].pointTarget);
-                        break;
-                    case TypeMove.Beziers:
-                        if (_effectSettings[i].pointSpawn == null)
-                            continue;
-                        for (int j = 0; j < _effectSettings[i].paths.Count - 3; j += 3)
-                        {
-                            Vector3 startPoint = _effectSettings[i].paths[j];
-                            Vector3 controlPoint1 = _effectSettings[i].paths[j + 1];
-                            Vector3 controlPoint2 = _effectSettings[i].paths[j + 2];
-                            Vector3 endPoint = _effectSettings[i].paths[j + 3];
-
-                            DrawCubicBezierCurve(startPoint, controlPoint1, controlPoint2, endPoint, Gizmos.color);
-                        }
-
-                        break;
-                    case TypeMove.Path:
-                        if (_effectSettings[i].pointSpawn == null)
-                            continue;
-                        if (_effectSettings[i].paths.Count < 2)
-                        {
-                            Logg.LogError("Path is not enough");
-                        }
-
-                        for (int j = 0; j < _effectSettings[i].paths.Count - 1; j++)
-                        {
-                            Gizmos.color = color;
-                            Gizmos.DrawLine(_effectSettings[i].paths[j],
-                                _effectSettings[i].paths[j + 1]);
-                        }
-
-                        break;
-                }
+                uiWorldPosition = uiCamera.ScreenToWorldPoint(screenPoint);
+                uiWorldPosition.z = 0;
             }
-        }
 
-        private void DrawCubicBezierCurve(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Color color,
-            int segments = 20)
-        {
-            Vector3 previousPoint = p0;
-
-            for (int i = 1; i <= segments; i++)
-            {
-                float t = i / (float)segments;
-                Vector3 pointOnCurve = OSK.MathUtils.CalculateCubicBezierPoint(t, p0, p1, p2, p3);
-                Gizmos.DrawLine(previousPoint, pointOnCurve);
-                previousPoint = pointOnCurve;
-            }
+            return uiWorldPosition;
         }
-#endif
     }
 }

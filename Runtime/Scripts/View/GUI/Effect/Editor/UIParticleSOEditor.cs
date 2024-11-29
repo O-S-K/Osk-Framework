@@ -5,8 +5,8 @@ using UnityEditor;
 
 namespace OSK
 {
-    [CustomEditor(typeof(UIImageSO))]
-    public class UIImageSOEditor : Editor
+    [CustomEditor(typeof(UIParticleSO))]
+    public class UIParticleSOEditor : Editor
     {
         private SerializedProperty _effectSettingsProperty;
 

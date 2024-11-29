@@ -106,11 +106,11 @@ namespace OSK
                 return;
             }
 
-            List<UIImageSO> imageEffectDatas = new List<UIImageSO>();
+            List<UIParticleSO> imageEffectDatas = new List<UIParticleSO>();
             foreach (var guid in guids)
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                UIImageSO v = UnityEditor.AssetDatabase.LoadAssetAtPath<UIImageSO>(path);
+                UIParticleSO v = UnityEditor.AssetDatabase.LoadAssetAtPath<UIParticleSO>(path);
                 imageEffectDatas.Add(v);
             }
 
@@ -121,10 +121,10 @@ namespace OSK
             }
             else
             {
-                foreach (UIImageSO v in imageEffectDatas)
+                foreach (UIParticleSO v in imageEffectDatas)
                 {
                     Debug.Log("ImageEffectData found: " + v.name);
-                    data.uiImageSO = v;
+                    data.uiParticleSO = v;
                 }
             }
         }
@@ -150,7 +150,7 @@ namespace OSK
         public bool isUseSound;
         [ShowIf(nameof(isUseSound), true)] public SoundDataSO soundDataSO;
         public bool isUseUIImage;
-        [ShowIf(nameof(isUseUIImage), true)] public UIImageSO uiImageSO;
+        [ShowIf(nameof(isUseUIImage), true)] public UIParticleSO uiParticleSO;
     }
 
     [System.Serializable]

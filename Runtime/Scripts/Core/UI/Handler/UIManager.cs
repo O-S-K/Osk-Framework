@@ -8,7 +8,7 @@ namespace OSK
     public class UIManager : GameFrameworkComponent
     {
         [ReadOnly, SerializeField] private RootUI _rootUI;
-        public UIImageEffect ImageEffectUI => _rootUI.ImageEffect;
+        public UIParticle UIParticle => _rootUI.Particle;
         public Canvas GetCanvas => _rootUI.GetCanvas;
         public Camera GetUICamera => _rootUI.GetUICamera;
 
