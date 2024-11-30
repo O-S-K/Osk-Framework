@@ -16,17 +16,12 @@ namespace OSK
 #endif
 
 
-        private string _label;
-        private long _startTime;
-        private PerforInfo info;
-
-        public void StartTest(string label)
+        public static void StartTest(PerforInfo info)
         {
-            info = new PerforInfo(label, _startTime);
-            info.StartTest(label);
+            info.StartTest(info.label);
         }
 
-        public void StopTest()
+        public static void StopTest(PerforInfo info)
         {
             info.StopTest();
         }

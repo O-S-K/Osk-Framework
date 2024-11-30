@@ -9,6 +9,7 @@ namespace OSK
     /// </summary>
     public partial class Main
     {
+        public static MonoManager Mono { get; private set; }
         public static ServiceLocator Service { get; private set; }
         public static Observer Observer { get; private set; }
         public static EventBus EventBus { get; private set; }
@@ -28,6 +29,7 @@ namespace OSK
         public static EntityManager Entity { get; private set; }
         public static TimeManager Time { get; private set; }
         public static NativeManager Native { get; private set; }
+        
         public bool isDestroyingOnLoad = false;
  
         public void Awake()
@@ -41,6 +43,7 @@ namespace OSK
 
         private static void InitComponents()
         {
+            Mono         = Main.GetModule<MonoManager>();
             Configs      = Main.GetModule<GameConfigs>();
             Save         = Main.GetModule<SaveManager>();
             Data         = Main.GetModule<DataManager>();
@@ -62,8 +65,6 @@ namespace OSK
             Sound        = Main.GetModule<SoundManager>();
             Entity       = Main.GetModule<EntityManager>();
             Native       = Main.GetModule<NativeManager>();
-            
-            OSK.Logg.Log("Init Components Done!");
         }
          
         public static void InitDataComponents()
@@ -80,6 +81,8 @@ namespace OSK
         
         public void CheckNullComponents()
         {
+             Logg.Log("Check Null Components...");
+             Logg.CheckNullRef(Mono== null, "Mono");
              Logg.CheckNullRef(Configs == null, "Configs");
              Logg.CheckNullRef(Save== null, "Save");
              Logg.CheckNullRef(Data== null, "Data");

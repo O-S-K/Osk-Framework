@@ -15,35 +15,51 @@ namespace OSK
 
         public Entity Create(string name)
         {
-            var entity = new Entity();
-            entity.gameObject = new GameObject("E." + name);
+            var existingEntity = _listEntitiesActive.FirstOrDefault(e => e.name == name);
+            if (existingEntity != null)
+            {
+                return existingEntity;
+            }
+
+            var entity = new GameObject(name).AddComponent<Entity>();
             _listEntitiesActive.Add(entity);
             return entity;
         }
 
         public Entity Create(IEntity entity, int id)
         {
-            if (_listEntitiesActive.Any(e => e.ID == id))
+            var existingEntity = _listEntitiesActive.FirstOrDefault(e => e.ID == id);
+            if (existingEntity != null)
             {
-                OSK.Logg.LogError("Entity with ID " + id + " already exists");
-                return null;
+                return existingEntity;
             }
 
-            var newEntity = new Entity();
-            newEntity.ID = id;
-            newEntity.gameObject = Instantiate(entity.gameObject);
-            _listEntitiesActive.Add(newEntity);
-            return newEntity;
+            var newEntity = entity as Entity;
+            if (newEntity != null)
+            {
+                newEntity.ID = id;
+                _listEntitiesActive.Add(newEntity);
+                return newEntity;
+            }
+            return null;
         }
 
-        public T Create<T>(string name, Action onCreate = null) where T : Component
+        public Entity Create<T>(string name) where T : Component
         {
-            var entity = new Entity();
-            entity.gameObject = new GameObject("E." + name);
-            entity.gameObject.AddComponent<T>();
+            var existingEntity = _listEntitiesActive.FirstOrDefault(e => e.name == name);
+            if (existingEntity != null)
+            {
+                return existingEntity;
+            }
+
+            var entity = new GameObject(name).gameObject.AddComponent<Entity>();
             _listEntitiesActive.Add(entity);
-            onCreate?.Invoke();
-            return entity.gameObject.GetComponent<T>();
+            return entity;
+        }
+        
+        public bool Has(int id)
+        {
+            return _listEntitiesActive.Any(e => e.ID == id);
         }
 
         public Entity Get(int id)
