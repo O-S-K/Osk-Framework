@@ -35,23 +35,7 @@ namespace OSK
             go.transform.SetParent(parent);
             return go;
         }
-
-
-        public static void DestroyAllChildren(this Transform parent)
-        {
-            for (int i = parent.childCount - 1; i >= 0; i--)
-            {
-                GameObject.Destroy(parent.GetChild(i).gameObject);
-            }
-        }
-
-        public static void DeActiveAllGameObject(this GameObject[] gameObjects)
-        {
-            for (int i = 0; i < gameObjects.Length; i++)
-            {
-                gameObjects[i].SetActive(false);
-            }
-        }
+ 
 
         public static void RefreshList<T>(this List<T> list) where T : class
         {

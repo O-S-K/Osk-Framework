@@ -58,5 +58,29 @@ namespace OSK
         {
             return new Vector3(vector3.x + (x ?? 0), vector3.y + (y ?? 0), vector3.z + (z ?? 0));
         }
+        
+        public static void DestroyAllChildren(this Transform transform)
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+            {
+                Object.Destroy(transform.GetChild(i).gameObject);
+            }
+        }
+        
+        public static void DestroyAllChildren(this GameObject gameObject)
+        {
+            for (int i = gameObject.transform.childCount - 1; i >= 0; i--)
+            {
+                Object.Destroy(gameObject.transform.GetChild(i).gameObject);
+            }
+        }
+        
+        public static void DeActiveAllGameObject(this GameObject[] gameObjects)
+        {
+            for (int i = 0; i < gameObjects.Length; i++)
+            {
+                gameObjects[i].SetActive(false);
+            }
+        }
     }
 }
