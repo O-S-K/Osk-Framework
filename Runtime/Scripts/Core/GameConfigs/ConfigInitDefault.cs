@@ -99,7 +99,7 @@ namespace OSK
 
         private void FindImageDataSOAssets()
         {
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UIImageSO");
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UIParticleSO");
             if (guids.Length == 0)
             {
                 Debug.LogError("No ImageEffectData found in the project.");

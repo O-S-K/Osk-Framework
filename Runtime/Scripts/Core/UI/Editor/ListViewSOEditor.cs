@@ -101,9 +101,9 @@ namespace OSK
                 switch (data.view.viewType)
                 {
                     case EViewType.None: data.depth = (0 + data.view.depth).ToString(); break;
-                    case EViewType.Popup: data.depth = (100 + data.view.depth).ToString(); break;
-                    case EViewType.Overlay: data.depth = (1000 + data.view.depth).ToString(); break;
-                    case EViewType.Screen: data.depth = (-100 + data.view.depth).ToString(); break;
+                    case EViewType.Popup: data.depth = (1000 + data.view.depth).ToString(); break;
+                    case EViewType.Overlay: data.depth = (10000 + data.view.depth).ToString(); break;
+                    case EViewType.Screen: data.depth = (-1000 + data.view.depth).ToString(); break;
                 }
                 listViewSO.Views.Add(data);
             }

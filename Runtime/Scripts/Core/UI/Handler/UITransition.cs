@@ -30,8 +30,7 @@ namespace OSK
         [ShowIf(nameof(useEase))] public Ease ease = Ease.OutQuad;
 
         [ShowIf(nameof(transition), TransitionType.Scale)]
-        public float initScale = 0;
-
+        public Vector3 initScale;
 
         [HideIf(nameof(transition), TransitionType.None), HideIf(nameof(useEase), true)]
         public bool useCustomCurve = false;
@@ -94,7 +93,7 @@ namespace OSK
                     break;
 
                 case TransitionType.Scale:
-                    TargetRectTransform.localScale = Vector3.one * _openingTweenSettings.initScale;
+                    TargetRectTransform.localScale = _openingTweenSettings.initScale;
                     ApplyTween(TargetRectTransform.DOScale(Vector3.one, _openingTweenSettings.time), true);
                     break;
 
