@@ -6,15 +6,17 @@ namespace OSK
 {
     public class PoolManager : GameFrameworkComponent
     {
-        [SerializeReference] 
-        public Dictionary<string, Dictionary<Object, ObjectPool<Object>>> k_GroupPrefabLookup = new  Dictionary<string, Dictionary<Object, ObjectPool<Object>>>();
+        [SerializeReference] public Dictionary<string, Dictionary<Object, ObjectPool<Object>>> k_GroupPrefabLookup =
+            new Dictionary<string, Dictionary<Object, ObjectPool<Object>>>();
 
         [SerializeReference]
         public Dictionary<Object, ObjectPool<Object>> k_InstanceLookup = new Dictionary<Object, ObjectPool<Object>>();
 
         private Dictionary<string, GameObject> k_GroupObjects = new Dictionary<string, GameObject>();
 
-        public override void OnInit() {}
+        public override void OnInit()
+        {
+        }
 
         public void Preload(string groupName, Object prefab, int size)
         {
@@ -30,15 +32,37 @@ namespace OSK
 
             return null;
         }
-    
+
+        public T Spawn<T>(string groupName, T prefab, Transform position) where T : Object
+        {
+            return Spawn(groupName, prefab, position.position, Quaternion.identity);
+        }
+
+        public T Spawn<T>(string groupName, T prefab, Transform position, Quaternion rotation) where T : Object
+        {
+            return Spawn(groupName, prefab, position.position, rotation);
+        }
+
+        public T Spawn<T>(string groupName, T prefab, Vector3 position, Quaternion rotation) where T : Object
+        {
+            var s = Spawn(groupName, prefab, 1);
+            if (s is Component component)
+            {
+                component.transform.position = position;
+                component.transform.rotation = rotation;
+            }
+            else if (s is GameObject go)
+            {
+                go.transform.position = position;
+                go.transform.rotation = rotation;
+            }
+
+            return s;
+        }
+
         public T Spawn<T>(string groupName, T prefab, int size = 1) where T : Object
         {
-#if UNITY_EDITOR
-            var group = GetOrCreateGroup(groupName);
-            group.transform.position = new Vector2(0, -5.5f);
-#else
             GetOrCreateGroup(groupName);
-#endif
             if (!IsGroupAndPrefabExist(groupName, prefab))
             {
                 WarmPool(groupName, prefab, size);
@@ -62,6 +86,7 @@ namespace OSK
                 Logg.LogWarning($"This object pool already contains the item provided: {instance}");
                 return instance;
             }
+
             return instance;
         }
 
@@ -121,6 +146,14 @@ namespace OSK
             }
         }
 
+        public void Despawn(Object instance, float delay, bool unscaleTime = false)
+        {
+            this.DoDelay(delay, () =>
+            {
+                if (instance != null) Despawn(instance);
+            }, unscaleTime);
+        }
+
         public void DespawnAllInGroup(string groupName)
         {
             if (k_GroupPrefabLookup.TryGetValue(groupName, out var prefabPools))
@@ -167,7 +200,7 @@ namespace OSK
                 k_GroupPrefabLookup.Remove(groupName);
             }
         }
- 
+
         public void DestroyAllGroups()
         {
             foreach (var group in k_GroupObjects.Values)

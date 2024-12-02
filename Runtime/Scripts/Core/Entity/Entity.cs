@@ -12,10 +12,6 @@ namespace OSK
 
         public List<EComponent> components = new List<EComponent>();
 
-        public Entity()
-        {
-        }
-
         public virtual void OnEnable()
         {
             Main.Mono.AddTickProcess(this);

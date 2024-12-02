@@ -1,3 +1,4 @@
+using System.Linq;
 using OSK;
 using UnityEditor;
 using UnityEngine;
@@ -11,16 +12,16 @@ namespace OSK
         { 
             if (FindObjectOfType<Main>() == null)
             {
-                PrefabUtility.InstantiatePrefab(Resources.Load<Main>("OSK-Framework"));
+                PrefabUtility.InstantiatePrefab(Resources.LoadAll<Main>("").First());
             }
         }
 
-        [MenuItem("OSK-Framework/Create HUD")]
+        [MenuItem("OSK-Framework/Create UIRoot")]
         public static void CreateHUDOnScene()
         {
             if (FindObjectOfType<RootUI>() == null)
             {
-                PrefabUtility.InstantiatePrefab(Resources.Load<RootUI>("HUD/HUD"));
+                PrefabUtility.InstantiatePrefab(Resources.LoadAll<RootUI>("").First());
             }
         }
 
