@@ -53,7 +53,7 @@ namespace OSK
         [Button]
         public void GetConfig()
         {
-            game = Resources.LoadAll<ConfigInitDefault>().FirstOrDefault();
+            game = Resources.LoadAll<ConfigInitDefault>("").FirstOrDefault();
             if (game == null)
             {
                 Logg.Log("Not found ConfigInitDefault in Resources");
