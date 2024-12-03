@@ -27,7 +27,7 @@ namespace OSK
             long endTime = System.Diagnostics.Stopwatch.GetTimestamp();
             Profiler.EndSample();
             double elapsedTime = (endTime - startTime) * 1000.0 / System.Diagnostics.Stopwatch.Frequency;
-            //OSK.Logger.Log($"{startTime} took {elapsedTime:F2} ms");
+            OSK.Logg.Log($"{startTime} took {elapsedTime:F2} ms");
         }
     } 
 }

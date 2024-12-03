@@ -326,7 +326,7 @@ namespace OSK
 
         private AudioSource CreateAudioSource(string id)
         {
-            var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject);
+            var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, null);
             if (Camera.main != null)
                 audioSource.transform.position = Camera.main.transform.position;
             audioSource.name = id;

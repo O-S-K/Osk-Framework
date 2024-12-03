@@ -6,6 +6,11 @@ namespace OSK
 {
     public static class TransformExtentions
     {
+        public static void SetParent(this Transform transform, Transform parent)
+        {
+            if(transform.parent != parent)
+                transform.SetParent(parent);
+        } 
         public static void SetPosRect(this Transform rectTransform, Vector3 pos)
         {
             var r = rectTransform as RectTransform;

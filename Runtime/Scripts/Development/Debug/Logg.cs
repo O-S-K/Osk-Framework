@@ -1,5 +1,3 @@
-//#define  JsonConvert
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,28 +6,17 @@ namespace OSK
 {
     public class Logg
     {
-        private static Dictionary<string, DateTime> _timesDictionary = new();
-#if UNITY_EDITOR
-        public static bool isLogEnabled = true;
-#else
-        public static bool isLogEnabled = false;
-#endif
+        private static bool IsLogEnabled => Main.Configs.Game.logTest;
 
-
-        public static void StartTest(PerforInfo info)
-        {
-            info.StartTest(info.label);
-        }
-
-        public static void StopTest(PerforInfo info)
-        {
-            info.StopTest();
-        }
+        
+        // Test time
+        public static void StartTest(PerforInfo info) =>  info.StartTest(info.label);
+        public static void StopTest(PerforInfo info) =>  info.StopTest();
 
         // Log
         public static void Log(object log, Color color = default, int size = 12)
         {
-            if (!isLogEnabled)
+            if (!IsLogEnabled)
                 return;
 
             Debug.Log(($"[OSK] {log}").Color(color).Size(size));
@@ -38,7 +25,7 @@ namespace OSK
         // Log warning
         public static void LogWarning(string log)
         {
-            if (!isLogEnabled)
+            if (!IsLogEnabled)
                 return;
             Debug.Log(($"[OSK] Warning {log}").Color(Color.yellow).Size(14));
         }
@@ -46,7 +33,7 @@ namespace OSK
         // Log format
         public static void LogFormat(string format, params object[] args)
         {
-            if (!isLogEnabled)
+            if (!IsLogEnabled)
                 return;
             Debug.Log(($"[OSK] {string.Format(format, args)}").Color(Color.green).Size(12));
         }
@@ -54,7 +41,7 @@ namespace OSK
         // Log error
         public static void LogError(string log)
         {
-            if (!isLogEnabled)
+            if (!IsLogEnabled)
                 return;
             Debug.Log(($"[OSK] Error {log}").Color(Color.red).Size(14).Bold());
         }
@@ -62,7 +49,7 @@ namespace OSK
         // Log exception
         public static void LogException(Exception ex)
         {
-            if (!isLogEnabled)
+            if (!IsLogEnabled)
                 return;
             Debug.Log(($"[OSK] Exception {ex.Message}").Color(Color.red).Size(14).Bold());
         }
@@ -70,9 +57,9 @@ namespace OSK
         // Log object
         public static void LogObject(object obj)
         {
-            if (!isLogEnabled)
+            if (!IsLogEnabled)
                 return;
-            #if JsonConvert
+            #if LogObjectNewtonsoft
             Debug.Log($"[OSK] " + Newtonsoft.Json.JsonConvert.SerializeObject(obj).Color(ColorCustom.Cyan).Size(12));
             #endif
         }
@@ -80,7 +67,7 @@ namespace OSK
         // Log format time
         public static void LogFormatTime(string format, params object[] args)
         {
-            if (!isLogEnabled)
+            if (!IsLogEnabled)
                 return;
             Debug.Log(($"[OSK] {string.Format(format, args)}").Color(Color.green).Size(12));
         }

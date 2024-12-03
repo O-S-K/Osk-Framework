@@ -28,6 +28,7 @@ namespace OSK
     {
         [Header("Setup")]
         public string name;
+        public int id { get; set; }
         public GameObject icon;
         [Min(1)]
         public int numberOfEffects = 10;

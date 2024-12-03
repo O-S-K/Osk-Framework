@@ -8,9 +8,13 @@ namespace OSK
 {
     public class UIParticle : MonoBehaviour
     {
-        private EffectSetting[] _effectSettings;
-        private List<GameObject> _parentEffects;
         private Dictionary<string, Coroutine> _activeCoroutines = new Dictionary<string, Coroutine>();
+        private List<GameObject> _parentEffects = new List<GameObject>();
+        private List<EffectSetting> _effectSettings = new List<EffectSetting>();
+
+        private Transform _canvasTransform;
+        private Camera _mainCamera;
+        private Camera _uiCamera;
 
         public enum ETypeSpawn
         {
@@ -21,10 +25,8 @@ namespace OSK
             WorldToWorld3D,
         }
 
-        private void Start()
-        {
-            Initialize();
-        }
+        private void Start() => Initialize();
+
 
         private void Initialize()
         {
@@ -33,19 +35,27 @@ namespace OSK
             if (Main.Configs.Game.data.uiParticleSO == null)
                 return;
 
-            _effectSettings = Main.Configs.Game.data.uiParticleSO.EffectSettings;
-            if (_effectSettings.Length == 0)
+            _mainCamera = Camera.main;
+            _uiCamera = Main.UI.GetCanvas.worldCamera;
+            _canvasTransform = Main.UI.GetCanvas.transform;
+
+            _effectSettings = Main.Configs.Game.data.uiParticleSO.EffectSettings.ToList();
+            if (_effectSettings.Count == 0)
                 return;
 
             _parentEffects = new List<GameObject>();
-            for (int i = 0; i < _effectSettings.Length; i++)
+            for (int i = 0; i < _effectSettings.Count; i++)
             {
                 _parentEffects.Add(new GameObject(_effectSettings[i].name));
-                // _parentEffects[i].gameObject.GetOrAdd<RectTransform>();
-                // _parentEffects[i].SetLayer("UI");
-                _parentEffects[i].transform.SetParent(Main.UI.GetCanvas.transform);
+                _parentEffects[i].transform.SetParent(_canvasTransform);
                 _parentEffects[i].transform.localScale = Vector3.one;
-                AddPaths(_effectSettings[i]);
+
+                if (_effectSettings[i].typeMove == TypeMove.Beziers ||
+                    _effectSettings[i].typeMove == TypeMove.CatmullRom ||
+                    _effectSettings[i].typeMove == TypeMove.Path)
+                {
+                    AddPaths(_effectSettings[i]);
+                }
             }
         }
 
@@ -91,16 +101,14 @@ namespace OSK
             yield return null;
         }
 
-        private void SpawnEffect(bool is3D, string nameEffect, Vector3 pointSpawn, Vector3 pointTarget,
-            int numberOfEffects,
-            System.Action onCompleted)
+        private void SpawnEffect(bool is3D, string name, Vector3 from, Vector3 to, int num, System.Action onCompleted)
         {
-            var effectSetting = _effectSettings.ToList().Find(x => x.name == nameEffect).Clone();
-            effectSetting.pointSpawn = pointSpawn;
-            effectSetting.pointTarget = pointTarget;
+            var effectSetting = _effectSettings.Find(x => x.name == name).Clone();
+            effectSetting.pointSpawn = from;
+            effectSetting.pointTarget = to;
 
-            if (numberOfEffects > 0)
-                effectSetting.numberOfEffects = numberOfEffects;
+            if (num > 0)
+                effectSetting.numberOfEffects = num;
             effectSetting.OnCompleted = onCompleted;
 
             if (gameObject.activeInHierarchy)
@@ -109,6 +117,7 @@ namespace OSK
             }
         }
 
+    
         private IEnumerator IESpawnEffect(bool is3D, EffectSetting effectSetting)
         {
             var parent = _parentEffects.Find(x => x.name == effectSetting.name)?.transform;
@@ -117,15 +126,13 @@ namespace OSK
 
             for (int i = 0; i < effectSetting.numberOfEffects; i++)
             {
-                var effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, effectSetting.icon, 1);
-                effect.transform.SetParent(parent);
+                 var effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, effectSetting.icon, _canvasTransform, 1);
+                if (effect.transform.parent != parent)
+                    effect.transform.SetParent(parent);
+                
                 effect.transform.position = effectSetting.pointSpawn;
 
-                if (!is3D)
-                {
-                    effect.transform.localScale = Vector3.one;
-                    effect.gameObject.GetOrAdd<RectTransform>();
-                }
+                if (!is3D) effect.transform.localScale = Vector3.one;
 
                 if (effectSetting.isDrop)
                 {
@@ -137,26 +144,20 @@ namespace OSK
                 }
             }
 
-            var timedrop = (effectSetting.timeDrop.max + effectSetting.timeDrop.min) / 2;
-            var timeDropDelay = (effectSetting.delayDrop.max + effectSetting.delayDrop.min) / 2;
-            var timeMove = (effectSetting.timeMove.max + effectSetting.timeMove.min) / 2;
-            var timeMoveDelay = (effectSetting.delayMove.max + effectSetting.delayMove.min) / 2;
-
-            var totalTimeOnCompleted = timedrop + timeDropDelay + timeMove + timeMoveDelay;
+            float totalTimeOnCompleted = effectSetting.timeDrop.TimeAverage +
+                                         effectSetting.delayDrop.TimeAverage +
+                                         effectSetting.timeMove.TimeAverage +
+                                         effectSetting.delayMove.TimeAverage;
             yield return new WaitForSeconds(totalTimeOnCompleted - 0.1f);
             effectSetting.OnCompleted?.Invoke();
         }
 
         private void DoDropEffect(GameObject effect, EffectSetting effectSetting)
-        {
-            Vector3 randomOffset = Random.insideUnitSphere * effectSetting.sphereRadius;
-            Vector3 target = effectSetting.pointSpawn + randomOffset;
-            var timeDrop = effectSetting.timeDrop.RandomValue;
-            var timeDropDelay = effectSetting.delayDrop.RandomValue;
-
+        { 
             Tween tween = effect.transform
-                .DOMove(target, timeDrop)
-                .SetDelay(timeDropDelay);
+                .DOMove(effectSetting.pointSpawn +
+                        Random.insideUnitSphere * effectSetting.sphereRadius, effectSetting.timeDrop.RandomValue)
+                .SetDelay( effectSetting.delayDrop.RandomValue);
 
             if (tween != null)
             {
@@ -248,14 +249,13 @@ namespace OSK
                     {
                         float t = (float)i / (effectSetting.pointsCount - 1);
                         Vector3 point = Vector3.Lerp(effectSetting.pointSpawn, effectSetting.pointTarget, t);
-                        point.y += Mathf.Sin(t * Mathf.PI * 2) *
-                                   effectSetting.height.RandomValue; // Apply sine wave offset
+                        point.y += Mathf.Sin(t * Mathf.PI * 2) * effectSetting.height.RandomValue;  
                         path1[i] = point;
                     }
 
                     tween = effect.transform.DOPath(path1, timeMove, PathType.CatmullRom)
                         .SetDelay(timeMoveDelay);
-                    break;
+                    break; 
             }
 
             if (tween != null)
@@ -285,10 +285,10 @@ namespace OSK
 
         public void DestroyEffect(string nameEffect)
         {
-            var parent = _parentEffects.Find(x => x.name == nameEffect)?.transform;
-            if (parent == null)
-                return;
-            Main.Pool.DestroyGroup(nameEffect);
+            if (Main.Pool.HasGroup(nameEffect))
+            {
+                Main.Pool.DestroyGroup(nameEffect);
+            }
         }
 
         public void DestroyAllEffects()
@@ -296,36 +296,30 @@ namespace OSK
             Main.Pool.DestroyGroup(KeyGroupPool.UIEffect);
         }
 
-        public static Vector3 ConvertToUICameraSpace(Transform pointTarget)
+        private Vector3 ConvertToUICameraSpace(Transform pointTarget)
         {
             Vector3 uiWorldPosition;
-            Camera mainCamera = Camera.main;
-            if (mainCamera == null)
-            {
-                Logg.LogWarning("Main camera is not found, unable to convert position.");
-                return Vector3.zero;
-            }
-
-            Camera uiCamera = Main.UI.GetCanvas.worldCamera;
-
             if (Main.UI.GetCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
             {
-                RectTransformUtility.ScreenPointToWorldPointInRectangle(pointTarget.GetRectTransform(),
-                    pointTarget.position, uiCamera, out uiWorldPosition);
+                if (pointTarget is RectTransform rectTarget)
+                {
+                    RectTransformUtility.ScreenPointToWorldPointInRectangle(
+                        rectTarget, rectTarget.position, _uiCamera, out uiWorldPosition);
+                }
+                else uiWorldPosition = _mainCamera.WorldToScreenPoint(pointTarget.position);
             }
             else
             {
-                Vector3 screenPoint = mainCamera.WorldToScreenPoint(pointTarget.position);
+                Vector3 screenPoint = _mainCamera.WorldToScreenPoint(pointTarget.position);
                 if (screenPoint.z < 0)
                 {
                     Logg.LogWarning("Object is behind the main camera, unable to convert position.");
                     return Vector3.zero;
                 }
 
-                uiWorldPosition = uiCamera.ScreenToWorldPoint(screenPoint);
+                uiWorldPosition = _uiCamera.ScreenToWorldPoint(screenPoint);
                 uiWorldPosition.z = 0;
             }
-
             return uiWorldPosition;
         }
     }

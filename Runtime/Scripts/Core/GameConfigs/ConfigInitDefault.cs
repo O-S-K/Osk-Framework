@@ -9,6 +9,7 @@ namespace OSK
     {
         public int targetFrameRate = 60;
         public int vSyncCount = 0;
+        public bool logTest = true;
 
         public string packageName = "";
         public string appstoreID = "";

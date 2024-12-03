@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Sirenix.OdinInspector;
 
 namespace OSK
 {
@@ -15,15 +16,35 @@ namespace OSK
         internal event Action OnGameQuit;
         internal event Action<bool> OnGameFocus;
 
-        readonly List<IEntity> tickProcesses = new List<IEntity>(1024);
-        readonly List<IEntity> fixedTickProcesses = new List<IEntity>(512);
-        readonly List<IEntity> lateTickProcesses = new List<IEntity>(256);
+        [ShowInInspector] private readonly List<IEntity> tickProcesses = new List<IEntity>(1024);
+        [ShowInInspector] private readonly List<IEntity> fixedTickProcesses = new List<IEntity>(512);
+        [ShowInInspector] private readonly List<IEntity> lateTickProcesses = new List<IEntity>(256);
 
-        public bool IsPause;
+        [ShowInInspector] public bool IsPause { get; private set; }
+        [ShowInInspector] public float TimeScale { get; private set; }
+
+        #region Set
 
         public override void OnInit()
         {
+            IsPause = false;
+            TimeScale = 1f;
         }
+
+        public MonoManager SetTimeScale(float timeScale)
+        {
+            TimeScale = timeScale;
+            Time.timeScale = TimeScale;
+            return this;
+        }
+
+        public MonoManager SetPause(bool isPause, bool isSetTimeScale = true)
+        {
+            IsPause = isPause;
+            return this;
+        }
+
+        #endregion
 
         #region Sub / UnSub For Update Procresses
 
@@ -56,7 +77,7 @@ namespace OSK
         {
             lateTickProcesses.Remove(lateTick);
         }
-        
+
         internal void RemoveAllTickProcess()
         {
             tickProcesses.Clear();
@@ -86,7 +107,7 @@ namespace OSK
                 _isToMainThreadQueueEmpty = true;
             }
 
-            for (int i = 0; i < _localToMainThreads.Count; i++)
+            for (var i = 0; i < _localToMainThreads.Count; i++)
             {
                 _localToMainThreads[i].Invoke();
             }
@@ -118,22 +139,17 @@ namespace OSK
 
         private void OnApplicationFocus(bool hasFocus)
         {
-            OnGamePause?.Invoke(hasFocus);
+            OnGamePause?.Invoke(hasFocus); // hasFocus = true when game is focus
         }
 
         private void OnApplicationPause(bool pauseStatus)
         {
-            OnGamePause?.Invoke(pauseStatus);
-            if (pauseStatus)
-            {
-                // Save data
-            }
+            OnGamePause?.Invoke(pauseStatus); // pauseStatus = true when game is pause
         }
 
         private void OnApplicationQuit()
         {
-            OnGameQuit?.Invoke();
-            // Save data
+            OnGameQuit?.Invoke(); // Game is quit
         }
 
         #endregion
@@ -224,26 +240,6 @@ namespace OSK
         {
             if (action == null) return delegate { };
             return (arg) => RunOnMainThreadImpl(() => action(arg));
-        }
-
-        /// <summary>
-        /// Converts the specified action to one that runs on the main thread.
-        /// The converted action will be invoked upon the next Unity Update event.
-        /// </summary>
-        internal Action<T1, T2> ToMainThreadImpl<T1, T2>(Action<T1, T2> action)
-        {
-            if (action == null) return delegate { };
-            return (arg1, arg2) => RunOnMainThreadImpl(() => action(arg1, arg2));
-        }
-
-        /// <summary>
-        /// Converts the specified action to one that runs on the main thread.
-        /// The converted action will be invoked upon the next Unity Update event.
-        /// </summary>
-        internal Action<T1, T2, T3> ToMainThreadImpl<T1, T2, T3>(Action<T1, T2, T3> action)
-        {
-            if (action == null) return delegate { };
-            return (arg1, arg2, arg3) => RunOnMainThreadImpl(() => action(arg1, arg2, arg3));
         }
 
         #endregion
