@@ -27,7 +27,7 @@ namespace OSK
             {
                 FindViewDataSOAssets();
             }
-            
+
             if (GUILayout.Button("Select Data UIImage Effect SO"))
             {
                 FindDataImageEffectAssets();
@@ -37,9 +37,9 @@ namespace OSK
             DrawBackground(Color.green);
             EditorGUILayout.LabelField("--- List Views  ---", EditorStyles.boldLabel);
             DisplayViews();
-            
+
             GUILayout.Space(10);
-            
+
             EditorGUILayout.LabelField("--- List Views History ---", EditorStyles.boldLabel);
             ShowListViewHistory();
 
@@ -48,10 +48,12 @@ namespace OSK
                 EditorUtility.SetDirty(target);
             }
         }
-        
+
         private void ShowListViewHistory()
         {
             List<View> views = uiManager.ListViews.ListViewHistory.ToList();
+            if (views.Count == 0)
+                return;
             foreach (var view in views)
             {
                 EditorGUILayout.LabelField(view.name);
@@ -90,7 +92,7 @@ namespace OSK
                 }
             }
         }
-        
+
         private void FindViewDataSOAssets()
         {
             string[] guids = AssetDatabase.FindAssets("t:ListViewSO");

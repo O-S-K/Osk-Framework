@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace OSK
 {
-    public class ViewManager : MonoBehaviour
+    public class ViewContainer : MonoBehaviour
     {
         [ShowInInspector, ReadOnly] [SerializeField]
         private List<View> _listViewInit = new List<View>();
@@ -341,6 +341,40 @@ namespace OSK
         }
 
         #endregion
+        
+        public List<View> GetSortedChildPages(Transform container)
+        {
+            List<View> childPages = new List<View>();
+            for (int i = 0; i < container.childCount; i++)
+            {
+                var childPage = container.GetChild(i).GetComponent<View>();
+                if (childPage != null)
+                    childPages.Add(childPage);
+            }
+            return childPages;
+        }
+        
+        public int FindInsertIndex(List<View> childPages, int depth)
+        {
+            int left = 0, right = childPages.Count - 1;
+            int insertIndex = childPages.Count;
+
+            while (left <= right)
+            {
+                int mid = (left + right) / 2;
+                if (depth < childPages[mid].depth)
+                {
+                    insertIndex = mid; 
+                    right = mid - 1;
+                }
+                else
+                {
+                    left = mid + 1;
+                }
+            }
+
+            return insertIndex;
+        }
 
         #region Private
 
@@ -363,5 +397,7 @@ namespace OSK
         }
 
         #endregion
+        
+        
     }
 }

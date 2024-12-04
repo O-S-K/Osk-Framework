@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
@@ -17,47 +16,53 @@ namespace OSK
 
     public class View : MonoBehaviour
     {
-        [Header("View")] public EViewType viewType = EViewType.Popup;
+        [Header("Settings")]
+        [EnumToggleButtons]
+        public EViewType viewType = EViewType.Popup;
         public int depth;
-        public bool isAddToViewManager = true;
-        public bool isPreloadSpawn = true;
-        public bool isRemoveOnHide = false;
-        [ReadOnly] public bool isInitOnScene = false;
+        
+        [Space]
+        [ToggleLeft] public bool isAddToViewManager = true;
+        [ToggleLeft] public bool isPreloadSpawn = true;
+        [ToggleLeft] public bool isRemoveOnHide = false;
+        
+        [ReadOnly] 
+        [ToggleLeft] public bool isInitOnScene;
         public bool IsShowing => _isShowing;
-        [ShowInInspector, ReadOnly] private bool _isShowing;
+        [ShowInInspector, ReadOnly] 
+        [ToggleLeft] private bool _isShowing;
+        private UITransition _uiTransition;
+        private ViewContainer _viewContainer;
 
-        protected UITransition _uiTransition;
-        protected ViewManager _viewManager;
-
-        public bool isShowEvent = false;
+        [Space]
+        [ToggleLeft] public bool isShowEvent = false;
         [ShowIf(nameof(isShowEvent))] public UnityEvent EventAfterInit;
         [ShowIf(nameof(isShowEvent))] public UnityEvent EventBeforeOpened;
         [ShowIf(nameof(isShowEvent))] public UnityEvent EventAfterOpened;
         [ShowIf(nameof(isShowEvent))] public UnityEvent EventBeforeClosed;
         [ShowIf(nameof(isShowEvent))] public UnityEvent EventAfterClosed;
-
+        
         [Button]
         public void AddUITransition()
         {
             _uiTransition = gameObject.GetOrAdd<UITransition>();
         }
 
-        public virtual void Initialize(ViewManager viewManager)
+        public virtual void Initialize(ViewContainer viewContainer)
         {
+            if (isInitOnScene) return;
+
             isInitOnScene = true;
-            _viewManager = viewManager;
+            _viewContainer = viewContainer ??
+                             throw new ArgumentNullException(nameof(viewContainer), "ViewContainer cannot be null.");
 
-            if (GetComponent<UITransition>())
-            {
-                _uiTransition = GetComponent<UITransition>();
-                _uiTransition.Initialize();
-            }
+            _uiTransition = GetComponent<UITransition>();
+            _uiTransition?.Initialize();
 
-            if (_viewManager == null)
+            if (_viewContainer == null)
             {
                 Logg.LogError("View Manager is still null after initialization.");
             }
-
 
             SetOderInLayer(depth);
             EventAfterInit?.Invoke();
@@ -73,114 +78,99 @@ namespace OSK
             var canvas = GetComponent<Canvas>();
             if (canvas != null)
             {
-                switch (viewType)
+                canvas.sortingOrder = viewType switch
                 {
-                    case EViewType.None:
-                        canvas.sortingOrder = (0 + canvas.sortingOrder);
-                        break;
-                    case EViewType.Popup:
-                        canvas.sortingOrder = (1000 + canvas.sortingOrder);
-                        break;
-                    case EViewType.Overlay:
-                        canvas.sortingOrder = (10000 + canvas.sortingOrder);
-                        break;
-                    case EViewType.Screen:
-                        canvas.sortingOrder = (-1000 + canvas.sortingOrder);
-                        break;
-                }
-            }
-        }
-
-        public virtual void Open(object data = null)
-        {
-            if (_viewManager == null)
-            {
-                Logg.LogError("View Manager is null. Ensure that the View has been initialized before calling Open.");
-                return;
-            }
-
-            if (_isShowing)
-            {
-                Logg.LogWarning("View is already showing");
-                return;
-            }
-
-            _isShowing = true;
-            EventBeforeOpened?.Invoke();
-
-            gameObject.SetActive(true);
-
-            if (_uiTransition == null)
-            {
-                EventAfterOpened?.Invoke();
+                    EViewType.None => (0 + canvas.sortingOrder),
+                    EViewType.Popup => (1000 + canvas.sortingOrder),
+                    EViewType.Overlay => (10000 + canvas.sortingOrder),
+                    EViewType.Screen => (-1000 + canvas.sortingOrder),
+                    _ => canvas.sortingOrder
+                };
             }
             else
             {
-                _uiTransition.OpenTrans(() =>
-                {
-                    if (_isShowing)
-                    {
-                        EventAfterOpened?.Invoke();
-                    }
-                });
+                var childPages = _viewContainer.GetSortedChildPages(_viewContainer.transform);
+                if (childPages.Count == 0)
+                    return;
+
+                var insertIndex = _viewContainer.FindInsertIndex(childPages, order);
+                if (insertIndex == childPages.Count) transform.SetAsLastSibling();
+                else transform.SetSiblingIndex(insertIndex);
             }
+        }
+
+
+        public virtual void Open(object data = null)
+        {
+            if (!IsViewContainerInitialized() || IsAlreadyShowing()) return;
+
+            _isShowing = true;
+            EventBeforeOpened?.Invoke();
+            gameObject.SetActive(true);
+
+            if (_uiTransition != null) _uiTransition.OpenTrans(() => EventAfterOpened?.Invoke());
+            else EventAfterOpened?.Invoke();
         }
 
         public virtual void Hide()
         {
-            if (_isShowing == false)
-                return;
+            if (!_isShowing) return;
 
             _isShowing = false;
             EventBeforeClosed?.Invoke();
 
-            if (_uiTransition == null)
-            {
-                gameObject.SetActive(false);
-                EventAfterClosed?.Invoke();
-
-                if (isRemoveOnHide)
-                    _viewManager.Delete(this);
-                else
-                    _viewManager.RemovePopup(this);
-            }
-            else
-            {
-                _uiTransition.CloseTrans(() =>
-                {
-                    gameObject.SetActive(false);
-                    EventAfterClosed?.Invoke();
-
-                    if (isRemoveOnHide)
-                        _viewManager.Delete(this);
-                    else
-                        _viewManager.RemovePopup(this);
-                });
-            }
+            if (_uiTransition != null) _uiTransition.CloseTrans(FinalizeHide);
+            else FinalizeHide();
         }
 
         public void CloseImmediately()
         {
             _isShowing = false;
 
-            if (_uiTransition == null)
+            if (_uiTransition != null) _uiTransition.AnyClose(FinalizeImmediateClose);
+            else FinalizeImmediateClose();
+        }
+
+        private bool IsViewContainerInitialized()
+        {
+            if (_viewContainer == null)
             {
-                gameObject.SetActive(false);
-                _viewManager.RemovePopup(this);
+                Logg.LogError("View Manager is null. Ensure that the View has been initialized before calling Open.");
+                return false;
             }
-            else
+
+            return true;
+        }
+
+        private bool IsAlreadyShowing()
+        {
+            if (_isShowing)
             {
-                _uiTransition.AnyClose(() =>
-                {
-                    gameObject.SetActive(false);
-                    _viewManager.RemovePopup(this);
-                });
+                Logg.LogWarning("View is already showing");
+                return true;
             }
+
+            return false;
+        }
+
+        private void FinalizeHide()
+        {
+            gameObject.SetActive(false);
+            EventAfterClosed?.Invoke();
+
+            if (isRemoveOnHide) _viewContainer.Delete(this);
+            else _viewContainer.RemovePopup(this);
+        }
+
+        private void FinalizeImmediateClose()
+        {
+            gameObject.SetActive(false);
+            _viewContainer.RemovePopup(this);
         }
 
         public void Delete()
         {
-            _viewManager.Delete(this);
+            _viewContainer.Delete(this);
         }
     }
 }
