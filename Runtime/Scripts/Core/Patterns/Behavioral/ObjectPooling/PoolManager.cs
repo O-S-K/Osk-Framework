@@ -35,7 +35,7 @@ namespace OSK
             return null;
         }
         
-        public T Spawn<T>(string groupName, T prefab, Transform parent) where T : Object
+        public T Spawn<T>(string groupName, T prefab, Transform parent = null) where T : Object
         {
             return Spawn(groupName, prefab, parent, Vector3.zero, Quaternion.identity);
         }
