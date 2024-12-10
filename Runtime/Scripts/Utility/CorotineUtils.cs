@@ -1,66 +1,121 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using System;
+
+#if CYSHARP_UNITASK
+using Cysharp.Threading.Tasks;
+#endif
 
 namespace OSK
 {
     public static class CoroutineExtension
     {
-        public static CoroutineHandler Run(this IEnumerator enumerator)
+        // Run Coroutine
+        public static LazyCoroutine Run(this IEnumerator enumerator)
         {
-            var handler = new CoroutineHandler(enumerator);
+            var handler = new LazyCoroutine(enumerator);
             handler.Start();
             return handler;
         }
+
+        // Run Delayed Coroutine
+        public static LazyCoroutine RunDelay(this IEnumerator enumerator, float delay)
+        {
+            var handler = new LazyCoroutine(DelayedCoroutine(enumerator, delay));
+            handler.Start();
+            return handler;
+        }
+        
+        // Run Until Coroutine
+        public static LazyCoroutine RunUtil(this IEnumerator enumerator, Func<bool> condition)
+        { 
+            var handler = new LazyCoroutine(UntilCoroutine(enumerator, condition));
+            handler.Start();
+            return handler;
+        }
+        
+        // Run Until Coroutine
+        private static IEnumerator UntilCoroutine(IEnumerator enumerator, Func<bool> condition)
+        {
+            while (!condition())
+            {
+                yield return null;
+            }
+            yield return enumerator;
+        }
+        private static IEnumerator DelayedCoroutine(IEnumerator enumerator, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            yield return enumerator;
+        }
+        
+        
+#if CYSHARP_UNITASK
+        // Run Coroutine as UniTask
+        public static UniTask RunAsUniTask(this IEnumerator enumerator)
+        {
+            return enumerator.ToUniTask();
+        }
+
+        // Run Delayed Coroutine as UniTask
+        public static async UniTask RunDelayAsUniTask(this IEnumerator enumerator, float delay)
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(delay));
+            await enumerator.ToUniTask();
+        }
+
+        // Run Until Coroutine as UniTask
+        public static async UniTask RunUntilAsUniTask(this IEnumerator enumerator, Func<bool> condition)
+        {
+            while (!condition())
+            {
+                await UniTask.Yield();
+            }
+            await enumerator.ToUniTask();
+        }
+#endif
     }
 
-    public class CoroutineHandler
+    public class LazyCoroutine
     {
-        public IEnumerator Coroutine { get; private set; }
-        public bool Paused { get; private set; }
-        public bool Running { get; private set; }
-        public bool Stopped { get; private set; }
+        private IEnumerator _coroutine;
+        private bool _paused;
+        private bool _running;
+        private bool _stopped;
 
         // Event for Completion
-        public UnityEvent<bool> OnCompleted { get; } = new UnityEvent<bool>();
+        private readonly UnityEvent<bool> _completed = new UnityEvent<bool>();
 
-        public CoroutineHandler(IEnumerator coroutine)
+        public LazyCoroutine(IEnumerator coroutine)
         {
-            Coroutine = coroutine ?? throw new System.ArgumentNullException(nameof(coroutine));
+            _coroutine = coroutine ?? throw new ArgumentNullException(nameof(coroutine));
         }
 
         // Control Methods
         public void Start()
         {
-            if (!Running && Coroutine != null)
+            if (!_running && _coroutine != null)
             {
-                Running = true;
+                _running = true;
                 CoroutineDriver.Run(CallWrapper());
             }
         }
-
         public void Stop()
         {
-            Stopped = true;
-            Running = false;
+            _stopped = true;
+            _running = false;
         }
-
-        public void Pause() => Paused = true;
-
-        public void Resume() => Paused = false;
-
-        public CoroutineHandler OnComplete(UnityAction<bool> action)
-        {
-            OnCompleted.AddListener(action);
-            return this;
-        }
+        public void Pause() => _paused = true;
+        public void Resume() => _paused = false;
+        public void OnComplete(UnityAction<bool> action) => _completed.AddListener(action);
 
         // Cleanup Method
         private void Finish()
         {
-            OnCompleted.Invoke(Stopped);
-            OnCompleted.RemoveAllListeners();
-            Coroutine = null;
+            _completed.Invoke(_stopped);
+            _completed.RemoveAllListeners();
+            _coroutine = null;
         }
 
         // Internal Coroutine Wrapper
@@ -68,19 +123,19 @@ namespace OSK
         {
             yield return null;
 
-            while (Running)
+            while (_running)
             {
-                if (Paused)
+                if (_paused)
                 {
                     yield return null;
                 }
-                else if (Coroutine?.MoveNext() == true)
+                else if (_coroutine?.MoveNext() == true)
                 {
-                    yield return Coroutine.Current;
+                    yield return _coroutine.Current;
                 }
                 else
                 {
-                    Running = false;
+                    _running = false;
                 }
             }
 
@@ -103,6 +158,7 @@ namespace OSK
                         instance = go.AddComponent<CoroutineDriver>();
                         DontDestroyOnLoad(go);
                     }
+
                     return instance;
                 }
             }
