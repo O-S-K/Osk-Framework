@@ -7,15 +7,14 @@ using UnityEngine;
 namespace OSK
 {
     [DefaultExecutionOrder(-1000)]
-    public class Injector : MonoBehaviour
+    public class Injector : GameFrameworkComponent
     {
-        [SerializeReference]
-        private const BindingFlags k_BindingFlags =
+        [SerializeReference] private const BindingFlags k_BindingFlags =
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-        [SerializeReference] private readonly Dictionary<Type, object> k_Registry = new();
+        [SerializeReference] private Dictionary<Type, object> k_Registry = new();
 
-        private void Awake()
+        public override void OnInit()
         {
             var monoBehaviours = FindMonoBehaviours();
             // Find all modules implementing IDependencyProvider and register the dependencies they provide
@@ -23,7 +22,7 @@ namespace OSK
 
             foreach (var provider in providers)
             {
-                Register(provider);
+                Bind(provider);
             }
 
             // Find all injectable objects and inject their dependencies
@@ -34,13 +33,17 @@ namespace OSK
             }
         }
 
-        // Register an instance of a type outside of the normal dependency injection process
-        public void Register<T>(T instance)
+        // Inject dependencies into the given instance
+        public void InjectAll()
         {
-            k_Registry[typeof(T)] = instance;
+            var monoBehaviours = FindMonoBehaviours();
+            var injectables = monoBehaviours.Where(IsInjectable);
+            foreach (var injectable in injectables)
+            {
+                Inject(injectable);
+            }
         }
-
-        private void Inject(object instance)
+        public void Inject(object instance)
         {
             var type = instance.GetType();
 
@@ -104,7 +107,7 @@ namespace OSK
             }
         }
 
-        private void Register(IProvider provider)
+        public void Bind(IProvider provider)
         {
             var methods = provider.GetType().GetMethods(k_BindingFlags);
 
@@ -117,8 +120,9 @@ namespace OSK
                 var providedInstance = method.Invoke(provider, null);
                 if (providedInstance != null)
                 {
-                    Debug.Log(
-                        $"[Injector] Registered provider method '{method.Name}' in class '{provider.GetType().Name}' providing type '{returnType.Name}'.".Color(Color.green));
+                    Debug.Log( 
+                        $"[Injector] Registered provider method '{method.Name}' in class '{provider.GetType().Name}' providing type '{returnType.Name}'."
+                            .Color(Color.green));
                     k_Registry.Add(returnType, providedInstance);
                 }
                 else
@@ -145,7 +149,7 @@ namespace OSK
             var invalidDependencyList = invalidDependencies.ToList();
 
             if (!invalidDependencyList.Any())
-            {  
+            {
                 Debug.Log("[Validation] All dependencies are valid.".Color(Color.green));
             }
             else
@@ -202,7 +206,11 @@ namespace OSK
 
         private static MonoBehaviour[] FindMonoBehaviours()
         {
+#if UNITY_2022_1_OR_NEWER
             return FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.InstanceID);
+#else
+            return FindObjectsOfType<MonoBehaviour>();
+#endif
         }
 
         private static bool IsInjectable(MonoBehaviour obj)

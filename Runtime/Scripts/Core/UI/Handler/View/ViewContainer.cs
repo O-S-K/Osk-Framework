@@ -23,7 +23,7 @@ namespace OSK
 
         public void Initialize()
         {
-            if (Main.Configs.Game.data.isUseUI == false)
+            if (Main.Configs.Game == null || !Main.Configs.Game.data.isUseUI)
                 return;
             Preload();
         }

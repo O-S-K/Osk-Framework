@@ -27,7 +27,7 @@ namespace OSK
           
         public override void OnInit()
         {
-            if(Main.Configs.Game.data.isUseSound == false)
+            if(Main.Configs.Game == null || !Main.Configs.Game.data.isUseSound)
                 return;
             
             _soundObject = new GameObject("AudioSource").AddComponent<AudioSource>();

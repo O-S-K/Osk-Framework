@@ -50,7 +50,9 @@ namespace OSK
                 { SystemLanguage.Vietnamese, "VI" },
                 { SystemLanguage.ChineseSimplified, "ZH-Hans" },
                 { SystemLanguage.ChineseTraditional, "ZH-Hant" },
+                #if UNITY_2022_1_OR_NEWER
                 { SystemLanguage.Hindi, "HI" },
+                #endif
                 { SystemLanguage.Unknown, "XX" },
             };
 

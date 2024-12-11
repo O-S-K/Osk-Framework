@@ -6,8 +6,7 @@ namespace OSK
 {
     public class Logg
     {
-        private static bool IsLogEnabled => Main.Configs.Game.logTest;
-
+        private static bool IsLogEnabled  = false;
         
         // Test time
         public static void StartTest(PerforInfo info) =>  info.StartTest(info.label);

@@ -9,6 +9,7 @@ namespace OSK
     /// </summary>
     public partial class Main
     {
+        public static Injector Injector { get; private set; }
         public static MonoManager Mono { get; private set; }
         public static ServiceLocator Service { get; private set; }
         public static Observer Observer { get; private set; }
@@ -43,6 +44,7 @@ namespace OSK
 
         private static void InitComponents()
         {
+            Injector     = Main.GetModule<Injector>();
             Mono         = Main.GetModule<MonoManager>();
             Configs      = Main.GetModule<GameConfigs>();
             Save         = Main.GetModule<SaveManager>();
@@ -82,6 +84,7 @@ namespace OSK
         public void CheckNullComponents()
         {
              Logg.Log("Check Null Components...");
+             Logg.CheckNullRef(Injector== null, "Injector");
              Logg.CheckNullRef(Mono== null, "Mono");
              Logg.CheckNullRef(Configs == null, "Configs");
              Logg.CheckNullRef(Save== null, "Save");

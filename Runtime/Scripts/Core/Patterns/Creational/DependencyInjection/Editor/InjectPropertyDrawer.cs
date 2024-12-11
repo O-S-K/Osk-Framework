@@ -31,7 +31,7 @@ namespace OSK
             else
             {
                 var oldColor = GUI.color;
-                GUI.color = property.objectReferenceValue == null ? Color.red : Color.green;
+                GUI.color = property.objectReferenceValue != null ? Color.green : Color.red;
                 GUI.DrawTexture(iconRect, LoadIcon());
                 GUI.color = oldColor;
             }
