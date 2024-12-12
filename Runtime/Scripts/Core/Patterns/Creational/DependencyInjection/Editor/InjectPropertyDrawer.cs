@@ -13,28 +13,27 @@ namespace OSK
             if (icon == null) icon = Resources.Load<Texture2D>("Sprites/InjectIcon");
             return icon;
         }
-
+        
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var iconRect = new Rect(position.x, position.y, 20, 20);
             position.xMin += 24;
 
-            // Check if the field is null or an interface and handle accordingly.
-            if (fieldInfo.FieldType.IsInterface)
-            {
-                var oldColor = GUI.color;
-                var c = fieldInfo.FieldType.IsInterface ? Color.green : Color.red;
-                GUI.color = c;
-                GUI.DrawTexture(iconRect, LoadIcon());
-                GUI.color = oldColor;
+            var isInterface = fieldInfo.FieldType.IsInterface;
+            var oldColor = GUI.color;
+ 
+            // Use Odin's Show Inspector to display the icon in the inspector
+            if (isInterface)
+            { 
+                GUI.color = Color.green;
             }
             else
-            {
-                var oldColor = GUI.color;
+            { 
                 GUI.color = property.objectReferenceValue != null ? Color.green : Color.red;
-                GUI.DrawTexture(iconRect, LoadIcon());
-                GUI.color = oldColor;
             }
+ 
+            GUI.DrawTexture(iconRect, LoadIcon());
+            GUI.color = oldColor; 
             EditorGUI.PropertyField(position, property, label);
         }
     }

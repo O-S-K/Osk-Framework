@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace OSK
 {
-    [DefaultExecutionOrder(-1000)]
-    public class Injector : GameFrameworkComponent
+    [DefaultExecutionOrder(-999)]
+    public static class DIContainer
     {
         [SerializeReference] private const BindingFlags k_BindingFlags =
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-        [SerializeReference] private Dictionary<Type, object> k_Registry = new();
+        [SerializeReference] private static Dictionary<Type, object> k_Registry = new();
 
-        public override void OnInit()
+        public static void InstallBindAndInjects()
         {
-            var monoBehaviours = FindMonoBehaviours();
             // Find all modules implementing IDependencyProvider and register the dependencies they provide
+            var monoBehaviours = FindMonoBehaviours();
             var providers = monoBehaviours.OfType<IProvider>();
 
             foreach (var provider in providers)
@@ -32,43 +33,90 @@ namespace OSK
                 Inject(injectable);
             }
         }
-
-        // Inject dependencies into the given instance
-        public void InjectAll()
+        
+        public static void Bind<T>(T instance)
         {
-            var monoBehaviours = FindMonoBehaviours();
-            var injectables = monoBehaviours.Where(IsInjectable);
-            foreach (var injectable in injectables)
+            if (instance == null)
             {
-                Inject(injectable);
+                Logg.LogError("Instance cannot be null.");
+            }
+
+            if (instance is not IProvider)
+            {
+                Logg.LogError("Instance does not contain the required component has IProvider.");
             }
         }
-        public void Inject(object instance)
+
+        public static void BindFromPrefab(GameObject mono)
+        {
+            if (mono == null)
+            {
+                Logg.LogError("Prefab cannot be null.");
+            }
+
+            var instance = Object.Instantiate(mono).GetComponent<IProvider>();
+            if (instance == null)
+            {
+                Logg.LogError("Prefab does not contain the required component has IProvider.");
+            }
+            else
+            {
+                Logg.Log($"[BindFromPrefab]: {mono.GetType().Name} ->>> '{instance.GetType().Name}'.", Color.green);
+            }
+        }
+
+        public static T BindFromPrefab<T>(T prefab) where T : MonoBehaviour, IProvider
+        {
+            if (prefab == null)
+            {
+                Logg.LogError("Prefab cannot be null.");
+            }
+
+            var instance = Object.Instantiate(prefab).GetComponent<T>();
+            if (instance == null)
+            {
+                Logg.LogError("Prefab does not contain the required component has IProvider.");
+            }
+
+            return instance;
+        }
+
+        public static T BindAsSingle<T>(T instance) where T : MonoBehaviour, IProvider
+        {
+            if (instance == null)
+            {
+                Logg.LogError("Instance cannot be null.");
+            }
+
+            if (instance is not IProvider provider)
+                return null;
+
+            Bind(provider);
+            Inject(instance);
+            return instance;
+        }
+
+        public static void Inject(object instance)
         {
             var type = instance.GetType();
-
-            // Inject into fields
             var injectableFields = type.GetFields(k_BindingFlags)
                 .Where(member => Attribute.IsDefined(member, typeof(InjectAttribute)));
 
             foreach (var injectableField in injectableFields)
             {
-                if (injectableField.GetValue(instance) != null)
-                {
-                    Debug.LogWarning(
-                        $"[Injector] Field '{injectableField.Name}' of class '{type.Name}' is already set.");
-                    continue;
-                }
-
                 var fieldType = injectableField.FieldType;
                 var resolvedInstance = Resolve(fieldType);
+
                 if (resolvedInstance == null)
                 {
-                    throw new Exception(
-                        $"Failed to inject dependency into field '{injectableField.Name}' of class '{type.Name}'.");
+                    Logg.LogError(
+                        $"[Injecting] Dependency '{fieldType.Name}' not bind and injected into '{type.Name}.{injectableField.Name}'.");
                 }
-
-                injectableField.SetValue(instance, resolvedInstance);
+                else
+                {
+                    Logg.Log($"[Injecting]: {fieldType.Name} ->>> {type.Name}.{injectableField.Name}", Color.green);
+                    injectableField.SetValue(instance, resolvedInstance);
+                }
             }
 
             // Inject into methods
@@ -83,7 +131,7 @@ namespace OSK
                 var resolvedInstances = requiredParameters.Select(Resolve).ToArray();
                 if (resolvedInstances.Any(resolvedInstance => resolvedInstance == null))
                 {
-                    throw new Exception(
+                    Logg.LogError(
                         $"Failed to inject dependencies into method '{injectableMethod.Name}' of class '{type.Name}'.");
                 }
 
@@ -99,7 +147,7 @@ namespace OSK
                 var resolvedInstance = Resolve(propertyType);
                 if (resolvedInstance == null)
                 {
-                    throw new Exception(
+                    Logg.LogError(
                         $"Failed to inject dependency into property '{injectableProperty.Name}' of class '{type.Name}'.");
                 }
 
@@ -107,7 +155,7 @@ namespace OSK
             }
         }
 
-        public void Bind(IProvider provider)
+        private static void Bind(IProvider provider)
         {
             var methods = provider.GetType().GetMethods(k_BindingFlags);
 
@@ -120,20 +168,18 @@ namespace OSK
                 var providedInstance = method.Invoke(provider, null);
                 if (providedInstance != null)
                 {
-                    Debug.Log( 
-                        $"[Injector] Registered provider method '{method.Name}' in class '{provider.GetType().Name}' providing type '{returnType.Name}'."
-                            .Color(Color.green));
+                    Logg.Log($"[Bind]: {provider.GetType().Name} ->>> '{returnType.Name}'.", Color.green);
                     k_Registry.Add(returnType, providedInstance);
                 }
                 else
                 {
-                    throw new Exception(
-                        $"Provider method '{method.Name}' in class '{provider.GetType().Name}' returned null when providing type '{returnType.Name}'.");
+                    Logg.LogError(
+                        $"[Bind] method '{method.Name}' in class '{provider.GetType().Name}' returned null when providing type '{returnType.Name}'.");
                 }
             }
         }
 
-        public void ValidateDependencies()
+        public static void ValidateDependencies()
         {
             var monoBehaviours = FindMonoBehaviours();
             var providers = monoBehaviours.OfType<IProvider>();
@@ -150,19 +196,19 @@ namespace OSK
 
             if (!invalidDependencyList.Any())
             {
-                Debug.Log("[Validation] All dependencies are valid.".Color(Color.green));
+                Logg.Log("[Validation] All dependencies are valid.", Color.green);
             }
             else
             {
-                Debug.LogError($"[Validation] {invalidDependencyList.Count} dependencies are invalid:");
+                Logg.LogError($"[Validation] {invalidDependencyList.Count} dependencies are invalid:");
                 foreach (var invalidDependency in invalidDependencyList)
                 {
-                    Debug.LogError(invalidDependency);
+                    Logg.LogError(invalidDependency);
                 }
             }
         }
 
-        private HashSet<Type> GetProvidedDependencies(IEnumerable<IProvider> providers)
+        private static HashSet<Type> GetProvidedDependencies(IEnumerable<IProvider> providers)
         {
             var providedDependencies = new HashSet<Type>();
             foreach (var provider in providers)
@@ -181,7 +227,17 @@ namespace OSK
             return providedDependencies;
         }
 
-        public void ClearDependencies()
+        public static Dictionary<Type, object> GetRegisteredDependencies()
+        {
+            return new Dictionary<Type, object>(k_Registry);
+        }
+
+        public static bool IsDependencyRegistered<T>()
+        {
+            return k_Registry.ContainsKey(typeof(T));
+        }
+
+        public static void ClearDependencies()
         {
             foreach (var monoBehaviour in FindMonoBehaviours())
             {
@@ -195,21 +251,32 @@ namespace OSK
                 }
             }
 
-            Debug.Log("[Injector] All injectable fields cleared.");
+            Logg.Log("[Injector] All injectable fields cleared.", Color.green);
         }
 
-        private object Resolve(Type type)
+        public static T Resolve<T>()
         {
-            k_Registry.TryGetValue(type, out var resolvedInstance);
-            return resolvedInstance;
+            return (T)Resolve(typeof(T));
+        }
+
+        private static object Resolve(Type type)
+        {
+            if (k_Registry.TryGetValue(type, out var instance))
+            {
+                return instance;
+            }
+
+            Logg.LogError(
+                $"[Resolve] Dependency '{type.Name}' not found in registry. Please add IProvider to the class.");
+            return null;
         }
 
         private static MonoBehaviour[] FindMonoBehaviours()
         {
 #if UNITY_2022_1_OR_NEWER
-            return FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.InstanceID);
+            return Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.InstanceID);
 #else
-            return FindObjectsOfType<MonoBehaviour>();
+            return Object.FindObjectsOfType<MonoBehaviour>();
 #endif
         }
 

@@ -1,5 +1,3 @@
-using System;
-using OSK;
 using UnityEngine;
 
 namespace OSK
@@ -9,7 +7,6 @@ namespace OSK
     /// </summary>
     public partial class Main
     {
-        public static Injector Injector { get; private set; }
         public static MonoManager Mono { get; private set; }
         public static ServiceLocator Service { get; private set; }
         public static Observer Observer { get; private set; }
@@ -33,7 +30,7 @@ namespace OSK
         
         public bool isDestroyingOnLoad = false;
  
-        public void Awake()
+        private void Awake()
         {
             if (isDestroyingOnLoad)
                 DontDestroyOnLoad(gameObject);
@@ -44,29 +41,28 @@ namespace OSK
 
         private static void InitComponents()
         {
-            Injector     = Main.GetModule<Injector>();
-            Mono         = Main.GetModule<MonoManager>();
-            Configs      = Main.GetModule<GameConfigs>();
-            Save         = Main.GetModule<SaveManager>();
-            Data         = Main.GetModule<DataManager>();
-            Localization = Main.GetModule<LocalizationManager>();
-            Time         = Main.GetModule<TimeManager>();
+            Mono         = GetModule<MonoManager>();
+            Configs      = GetModule<GameConfigs>();
+            Save         = GetModule<SaveManager>();
+            Data         = GetModule<DataManager>();
+            Localization = GetModule<LocalizationManager>();
+            Time         = GetModule<TimeManager>();
 
-            Service      = Main.GetModule<ServiceLocator>();
-            Pool         = Main.GetModule<PoolManager>();
-            Observer     = Main.GetModule<Observer>();
-            EventBus     = Main.GetModule<EventBus>();
-            Fsm          = Main.GetModule<FSMManager>();
-            Command      = Main.GetModule<CommandManager>();
+            Service      = GetModule<ServiceLocator>();
+            Pool         = GetModule<PoolManager>();
+            Observer     = GetModule<Observer>();
+            EventBus     = GetModule<EventBus>();
+            Fsm          = GetModule<FSMManager>();
+            Command      = GetModule<CommandManager>();
 
-            Scene        = Main.GetModule<SceneManager>();
-            Res          = Main.GetModule<ResourceManager>();
-            Network      = Main.GetModule<NetworkManager>();
-            WebRequest   = Main.GetModule<WebRequestManager>();
-            UI           = Main.GetModule<UIManager>();
-            Sound        = Main.GetModule<SoundManager>();
-            Entity       = Main.GetModule<EntityManager>();
-            Native       = Main.GetModule<NativeManager>();
+            Scene        = GetModule<SceneManager>();
+            Res          = GetModule<ResourceManager>();
+            Network      = GetModule<NetworkManager>();
+            WebRequest   = GetModule<WebRequestManager>();
+            UI           = GetModule<UIManager>();
+            Sound        = GetModule<SoundManager>();
+            Entity       = GetModule<EntityManager>();
+            Native       = GetModule<NativeManager>();
         }
          
         public static void InitDataComponents()
@@ -84,7 +80,7 @@ namespace OSK
         public void CheckNullComponents()
         {
              Logg.Log("Check Null Components...");
-             Logg.CheckNullRef(Injector== null, "Injector");
+             //Logg.CheckNullRef(DI == null, "Injector");
              Logg.CheckNullRef(Mono== null, "Mono");
              Logg.CheckNullRef(Configs == null, "Configs");
              Logg.CheckNullRef(Save== null, "Save");
