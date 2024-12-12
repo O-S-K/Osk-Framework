@@ -12,21 +12,6 @@ namespace OSK
 
         public List<EComponent> components = new List<EComponent>();
 
-        public virtual void OnEnable()
-        {
-            Main.Mono.AddTickProcess(this);
-            Main.Mono.AddLateTickProcess(this);
-            Main.Mono.AddFixedTickProcess(this);
-        }
-
-        public virtual void OnDisable()
-        {
-            Main.Mono.RemoveTickProcess(this);
-            Main.Mono.RemoveLateTickProcess(this);
-            Main.Mono.RemoveFixedTickProcess(this);
-        }
-
-
         public T Add<T>() where T : EComponent
         {
             if (components.Any(c => c.GetType() == typeof(T)))

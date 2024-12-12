@@ -12,9 +12,8 @@ namespace OSK
         private volatile bool _isToMainThreadQueueEmpty = true;
         private List<Action> _localToMainThreads = new();
 
-        internal event Action<bool> OnGamePause;
-        internal event Action OnGameQuit;
-        internal event Action<bool> OnGameFocus;
+        internal event Action<bool> OnGamePause= null;
+        internal event Action OnGameQuit = null;
 
         [ShowInInspector] private readonly List<IEntity> tickProcesses = new List<IEntity>(1024);
         [ShowInInspector] private readonly List<IEntity> fixedTickProcesses = new List<IEntity>(512);

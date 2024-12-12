@@ -9,10 +9,13 @@ namespace OSK
         private Dictionary<string, Object> k_ResourceCache = new Dictionary<string, Object>();
         private Dictionary<string, int> k_ReferenceCount = new Dictionary<string, int>();
         private Dictionary<string, AssetBundle> k_AssetBundleCache = new Dictionary<string, AssetBundle>();
- 
-        public override void OnInit() {}
 
-        // Load from Resources folder
+        public override void OnInit()
+        {
+        }
+
+        #region Load from Resources folder
+
         public T Load<T>(string path) where T : Object
         {
             if (k_ResourceCache.TryGetValue(path, out var value))
@@ -30,7 +33,8 @@ namespace OSK
             else
             {
                 Logg.LogError("Resource not found at path: " + path);
-            } 
+            }
+
             return resource;
         }
 
@@ -52,6 +56,7 @@ namespace OSK
             {
                 Logg.LogError("Resource not found at path: " + path);
             }
+
             return resource;
         }
 
@@ -67,14 +72,16 @@ namespace OSK
                 OSK.Logg.LogError("Failed to spawn resource at path: " + path);
                 return null;
             }
-        } 
-        
-        // Load from AssetBundle
+        }
+
+        #endregion
+
+        #region Load from AssetBundle
+
         public IEnumerator LoadAssetFromBundle<T>(string bundlePath, string assetName, System.Action<T> onLoaded)
             where T : Object
         {
-            AssetBundle bundle = null;
-            if (!k_AssetBundleCache.TryGetValue(bundlePath, out bundle))
+            if (!k_AssetBundleCache.TryGetValue(bundlePath, out var bundle))
             {
                 var bundleRequest = AssetBundle.LoadFromFileAsync(bundlePath);
                 yield return bundleRequest;
@@ -104,7 +111,6 @@ namespace OSK
             onLoaded?.Invoke(asset);
         }
 
-        // Unload an asset
         public void Unload(string path)
         {
             if (k_ResourceCache.TryGetValue(path, out var value))
@@ -119,7 +125,6 @@ namespace OSK
             }
         }
 
-        // Unload an entire AssetBundle
         public void UnloadAssetBundle(string bundlePath, bool unloadAllLoadedObjects = false)
         {
             if (k_AssetBundleCache.ContainsKey(bundlePath))
@@ -129,7 +134,6 @@ namespace OSK
             }
         }
 
-        // Clear all caches
         public void ClearCache()
         {
             foreach (var resource in k_ResourceCache.Values)
@@ -146,5 +150,10 @@ namespace OSK
             k_ReferenceCount.Clear();
             k_AssetBundleCache.Clear();
         }
+
+        #endregion
+
+        #region Load from Addressables
+        #endregion
     }
 }
