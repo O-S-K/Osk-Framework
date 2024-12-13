@@ -47,37 +47,37 @@ namespace OSK
 
         #region Sub / UnSub For Update Procresses
 
-        internal void AddTickProcess(IEntity tick)
+        public void AddTickProcess(IEntity tick)
         {
             tickProcesses.Add(tick);
         }
 
-        internal void AddFixedTickProcess(IEntity fixedTick)
+        public void AddFixedTickProcess(IEntity fixedTick)
         {
             fixedTickProcesses.Add(fixedTick);
         }
 
-        internal void AddLateTickProcess(IEntity lateTick)
+        public void AddLateTickProcess(IEntity lateTick)
         {
             lateTickProcesses.Add(lateTick);
         }
 
-        internal void RemoveTickProcess(IEntity tick)
+        public void RemoveTickProcess(IEntity tick)
         {
             tickProcesses.Remove(tick);
         }
 
-        internal void RemoveFixedTickProcess(IEntity fixedTick)
+        public void RemoveFixedTickProcess(IEntity fixedTick)
         {
             fixedTickProcesses.Remove(fixedTick);
         }
 
-        internal void RemoveLateTickProcess(IEntity lateTick)
+        public void RemoveLateTickProcess(IEntity lateTick)
         {
             lateTickProcesses.Remove(lateTick);
         }
 
-        internal void RemoveAllTickProcess()
+        public void RemoveAllTickProcess()
         {
             tickProcesses.Clear();
             fixedTickProcesses.Clear();
@@ -155,7 +155,7 @@ namespace OSK
 
         #region Effective
 
-        internal Coroutine StartCoroutineImpl(IEnumerator routine)
+        public Coroutine StartCoroutineImpl(IEnumerator routine)
         {
             if (routine != null)
             {
@@ -165,7 +165,7 @@ namespace OSK
             return null;
         }
 
-        internal Coroutine StartCoroutineImpl(string methodName, object value)
+        public Coroutine StartCoroutineImpl(string methodName, object value)
         {
             if (!string.IsNullOrEmpty(methodName))
             {
@@ -175,7 +175,7 @@ namespace OSK
             return null;
         }
 
-        internal Coroutine StartCoroutineImpl(string methodName)
+        public Coroutine StartCoroutineImpl(string methodName)
         {
             if (!string.IsNullOrEmpty(methodName))
             {
@@ -185,17 +185,17 @@ namespace OSK
             return null;
         }
 
-        internal void StopCoroutineImpl(IEnumerator routine)
+        public void StopCoroutineImpl(IEnumerator routine)
         {
             if (routine != null) StopCoroutine(routine);
         }
 
-        internal void StopCoroutineImpl(Coroutine routine)
+        public void StopCoroutineImpl(Coroutine routine)
         {
             if (routine != null) StopCoroutine(routine);
         }
 
-        internal void StopCoroutineImpl(string methodName)
+        public void StopCoroutineImpl(string methodName)
         {
             if (!string.IsNullOrEmpty(methodName))
             {
@@ -203,7 +203,7 @@ namespace OSK
             }
         }
 
-        internal void StopAllCoroutinesImpl()
+        public void StopAllCoroutinesImpl()
         {
             StopAllCoroutines();
         }
@@ -212,7 +212,7 @@ namespace OSK
         /// Schedules the specifies action to be run on the main thread (game thread).
         /// The action will be invoked upon the next Unity Update event.
         /// </summary>
-        internal void RunOnMainThreadImpl(Action action)
+        public void RunOnMainThreadImpl(Action action)
         {
             lock (_toMainThreads)
             {
@@ -225,7 +225,7 @@ namespace OSK
         /// Converts the specified action to one that runs on the main thread.
         /// The converted action will be invoked upon the next Unity Update event.
         /// </summary>
-        internal Action ToMainThreadImpl(Action action)
+        public Action ToMainThreadImpl(Action action)
         {
             if (action == null) return delegate { };
             return () => RunOnMainThreadImpl(action);
@@ -235,7 +235,7 @@ namespace OSK
         /// Converts the specified action to one that runs on the main thread.
         /// The converted action will be invoked upon the next Unity Update event.
         /// </summary>
-        internal Action<T> ToMainThreadImpl<T>(Action<T> action)
+        public Action<T> ToMainThreadImpl<T>(Action<T> action)
         {
             if (action == null) return delegate { };
             return (arg) => RunOnMainThreadImpl(() => action(arg));
