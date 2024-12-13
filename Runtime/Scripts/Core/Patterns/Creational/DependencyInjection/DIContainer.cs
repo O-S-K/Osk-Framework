@@ -13,11 +13,11 @@ namespace OSK
         [SerializeReference] private const BindingFlags k_BindingFlags =
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-        [SerializeReference] private static Dictionary<Type, object> k_Registry = new();
+        private static Dictionary<Type, Dictionary<string, object>> k_Registry = new();
+
 
         public static void InstallBindAndInjects()
         {
-            // Find all modules implementing IDependencyProvider and register the dependencies they provide
             var monoBehaviours = FindMonoBehaviours();
             var providers = monoBehaviours.OfType<IProvider>();
 
@@ -26,25 +26,28 @@ namespace OSK
                 Bind(provider);
             }
 
-            // Find all injectable objects and inject their dependencies
             var injectables = monoBehaviours.Where(IsInjectable);
             foreach (var injectable in injectables)
             {
                 Inject(injectable);
             }
         }
-        
+
         public static void Bind<T>(T instance)
         {
             if (instance == null)
             {
                 Logg.LogError("Instance cannot be null.");
+                return;
             }
 
             if (instance is not IProvider)
             {
-                Logg.LogError("Instance does not contain the required component has IProvider.");
+                Logg.LogError("Instance does not contain the required component IProvider.");
+                return;
             }
+
+            Bind((IProvider)instance);
         }
 
         public static void BindFromPrefab(GameObject mono)
@@ -52,16 +55,13 @@ namespace OSK
             if (mono == null)
             {
                 Logg.LogError("Prefab cannot be null.");
+                return;
             }
 
             var instance = Object.Instantiate(mono).GetComponent<IProvider>();
             if (instance == null)
             {
-                Logg.LogError("Prefab does not contain the required component has IProvider.");
-            }
-            else
-            {
-                Logg.Log($"[BindFromPrefab]: {mono.GetType().Name} ->>> '{instance.GetType().Name}'.", Color.green);
+                Logg.LogError("Prefab does not contain the required component IProvider.");
             }
         }
 
@@ -70,113 +70,159 @@ namespace OSK
             if (prefab == null)
             {
                 Logg.LogError("Prefab cannot be null.");
+                return null;
             }
 
-            var instance = Object.Instantiate(prefab).GetComponent<T>();
+            var instance = Object.Instantiate(prefab);
             if (instance == null)
             {
-                Logg.LogError("Prefab does not contain the required component has IProvider.");
+                Logg.LogError("Prefab does not contain the required component IProvider.");
+                return null;
             }
 
             return instance;
         }
 
-        public static T BindAsSingle<T>(T instance) where T : MonoBehaviour, IProvider
+        public static void Bind(IProvider provider)
         {
-            if (instance == null)
+            foreach (var method in provider.GetType().GetMethods(k_BindingFlags)
+                         .Where(m => Attribute.IsDefined(m, typeof(ProvideAttribute))))
             {
-                Logg.LogError("Instance cannot be null.");
+                var provideAttribute = (ProvideAttribute)Attribute.GetCustomAttribute(method, typeof(ProvideAttribute));
+                var key = provideAttribute?.Key;
+                var returnType = method.ReturnType;
+                var providedInstance = method.Invoke(provider, null);
+
+                if (providedInstance != null)
+                {
+                    if (!k_Registry.ContainsKey(returnType))
+                    {
+                        k_Registry[returnType] = new Dictionary<string, object>();
+                    }
+
+                    if (key != null && k_Registry[returnType].ContainsKey(key))
+                    {
+                        Logg.LogWarning(
+                            $"[Bind]: Duplicate binding detected for '{returnType.Name}' with key '{key}'. Skipping registration.");
+                        continue; // Skip adding this entry to avoid duplicate key error
+                    }
+
+                    k_Registry[returnType][key ?? string.Empty] = providedInstance;
+                    Logg.Log($"[Bind]: {provider.GetType().Name} -> '{returnType.Name}' with key '{key}'.");
+                }
+                else
+                {
+                    Logg.LogError($"[Bind]: {provider.GetType().Name} -> '{returnType.Name}' with key '{key}' failed.");
+                }
             }
+        }
 
-            if (instance is not IProvider provider)
-                return null;
-
-            Bind(provider);
-            Inject(instance);
-            return instance;
+        public static void UnBind<T>(string key = null)
+        {
+            var type = typeof(T);
+            if (k_Registry.ContainsKey(type))
+            {
+                if (string.IsNullOrEmpty(key))
+                {
+                    k_Registry[type].Clear();
+                    Logg.Log($"Unbound all instances of {type.Name}", Color.green);
+                }
+                else if (k_Registry[type].ContainsKey(key))
+                {
+                    k_Registry[type].Remove(key);
+                    Logg.Log($"Unbound {type.Name} with key {key}", Color.green);
+                }
+                else
+                {
+                    Logg.LogWarning($"No binding found for {type.Name} with key '{key}'.");
+                }
+            }
+            else
+            {
+                Logg.LogWarning($"No registry found for {type.Name}.");
+            }
         }
 
         public static void Inject(object instance)
         {
-            var type = instance.GetType();
-            var injectableFields = type.GetFields(k_BindingFlags)
-                .Where(member => Attribute.IsDefined(member, typeof(InjectAttribute)));
-
-            foreach (var injectableField in injectableFields)
+            if (instance == null)
             {
-                var fieldType = injectableField.FieldType;
-                var resolvedInstance = Resolve(fieldType);
+                Logg.LogError("Instance cannot be null.");
+                return;
+            }
 
+            var type = instance.GetType();
+
+            // Inject fields
+            foreach (var field in type.GetFields(k_BindingFlags).Where(f => Attribute.IsDefined(f, typeof(InjectAttribute))))
+            {
+                var injectAttribute = (InjectAttribute)Attribute.GetCustomAttribute(field, typeof(InjectAttribute));
+                var resolvedInstance = Resolve(field.FieldType, injectAttribute.Key);
                 if (resolvedInstance == null)
                 {
                     Logg.LogError(
-                        $"[Injecting] Dependency '{fieldType.Name}' not bind and injected into '{type.Name}.{injectableField.Name}'.");
+                        $"[Injecting] Dependency '{field.FieldType.Name}' with key '{injectAttribute.Key}' not found for '{type.Name}.{field.Name}'.");
                 }
                 else
                 {
-                    Logg.Log($"[Injecting]: {fieldType.Name} ->>> {type.Name}.{injectableField.Name}", Color.green);
-                    injectableField.SetValue(instance, resolvedInstance);
+                    field.SetValue(instance, resolvedInstance);
+                    Logg.Log(
+                        $"[Injecting]: {field.FieldType.Name} -> {type.Name}.{field.Name} (Key: {injectAttribute.Key})",
+                        Color.green);
                 }
             }
 
-            // Inject into methods
-            var injectableMethods = type.GetMethods(k_BindingFlags)
-                .Where(member => Attribute.IsDefined(member, typeof(InjectAttribute)));
-
-            foreach (var injectableMethod in injectableMethods)
+            // Inject methods
+            foreach (var method in type.GetMethods(k_BindingFlags) .Where(m => Attribute.IsDefined(m, typeof(InjectAttribute))))
             {
-                var requiredParameters = injectableMethod.GetParameters()
-                    .Select(parameter => parameter.ParameterType)
+                var injectAttribute = (InjectAttribute)Attribute.GetCustomAttribute(method, typeof(InjectAttribute));
+                var parameters = method.GetParameters().Select(p => Resolve(p.ParameterType, injectAttribute.Key))
                     .ToArray();
-                var resolvedInstances = requiredParameters.Select(Resolve).ToArray();
-                if (resolvedInstances.Any(resolvedInstance => resolvedInstance == null))
+                if (parameters.Any(p => p == null))
                 {
-                    Logg.LogError(
-                        $"Failed to inject dependencies into method '{injectableMethod.Name}' of class '{type.Name}'.");
+                    Logg.LogError($"Failed to inject dependencies into method '{method.Name}' of class '{type.Name}'.");
                 }
-
-                injectableMethod.Invoke(instance, resolvedInstances);
+                else
+                {
+                    method.Invoke(instance, parameters);
+                }
             }
 
-            // Inject into properties
-            var injectableProperties = type.GetProperties(k_BindingFlags)
-                .Where(member => Attribute.IsDefined(member, typeof(InjectAttribute)));
-            foreach (var injectableProperty in injectableProperties)
+            // Inject properties
+            foreach (var property in type.GetProperties(k_BindingFlags)
+                         .Where(p => Attribute.IsDefined(p, typeof(InjectAttribute))))
             {
-                var propertyType = injectableProperty.PropertyType;
-                var resolvedInstance = Resolve(propertyType);
+                var injectAttribute = (InjectAttribute)Attribute.GetCustomAttribute(property, typeof(InjectAttribute));
+                var resolvedInstance = Resolve(property.PropertyType, injectAttribute.Key);
                 if (resolvedInstance == null)
                 {
-                    Logg.LogError(
-                        $"Failed to inject dependency into property '{injectableProperty.Name}' of class '{type.Name}'.");
+                    Logg.LogError($"Failed to inject dependency into property '{property.Name}' of class '{type.Name}'.");
                 }
-
-                injectableProperty.SetValue(instance, resolvedInstance);
+                else
+                {
+                    property.SetValue(instance, resolvedInstance);
+                }
             }
         }
 
-        private static void Bind(IProvider provider)
+        public static T Resolve<T>(string key = null)
         {
-            var methods = provider.GetType().GetMethods(k_BindingFlags);
+            return (T)Resolve(typeof(T), key);
+        }
+        
 
-            foreach (var method in methods)
+        private static object Resolve(Type type, string key)
+        {
+            if (string.IsNullOrEmpty(key))
+                key = string.Empty;
+            
+            if (k_Registry.ContainsKey(type) && k_Registry[type].ContainsKey(key))
             {
-                if (!Attribute.IsDefined(method, typeof(ProvideAttribute)))
-                    continue;
-
-                var returnType = method.ReturnType;
-                var providedInstance = method.Invoke(provider, null);
-                if (providedInstance != null)
-                {
-                    Logg.Log($"[Bind]: {provider.GetType().Name} ->>> '{returnType.Name}'.", Color.green);
-                    k_Registry.Add(returnType, providedInstance);
-                }
-                else
-                {
-                    Logg.LogError(
-                        $"[Bind] method '{method.Name}' in class '{provider.GetType().Name}' returned null when providing type '{returnType.Name}'.");
-                }
+                return k_Registry[type][key];
             }
+
+            Logg.LogError($"[Resolve]: {type.Name} with key '{key}' not found.");
+            return null;
         }
 
         public static void ValidateDependencies()
@@ -227,48 +273,20 @@ namespace OSK
             return providedDependencies;
         }
 
-        public static Dictionary<Type, object> GetRegisteredDependencies()
-        {
-            return new Dictionary<Type, object>(k_Registry);
-        }
 
-        public static bool IsDependencyRegistered<T>()
+        public static Dictionary<Type, List<object>> GetRegisteredDependencies()
         {
-            return k_Registry.ContainsKey(typeof(T));
+            return k_Registry.ToDictionary(k => k.Key, v => v.Value.Values.ToList());
         }
 
         public static void ClearDependencies()
         {
-            foreach (var monoBehaviour in FindMonoBehaviours())
-            {
-                var type = monoBehaviour.GetType();
-                var injectableFields = type.GetFields(k_BindingFlags)
-                    .Where(member => Attribute.IsDefined(member, typeof(InjectAttribute)));
-
-                foreach (var injectableField in injectableFields)
-                {
-                    injectableField.SetValue(monoBehaviour, null);
-                }
-            }
-
-            Logg.Log("[Injector] All injectable fields cleared.", Color.green);
+            k_Registry?.Clear();
         }
 
-        public static T Resolve<T>()
+        public static void ClearDependencies<T>()
         {
-            return (T)Resolve(typeof(T));
-        }
-
-        private static object Resolve(Type type)
-        {
-            if (k_Registry.TryGetValue(type, out var instance))
-            {
-                return instance;
-            }
-
-            Logg.LogError(
-                $"[Resolve] Dependency '{type.Name}' not found in registry. Please add IProvider to the class.");
-            return null;
+            k_Registry.Remove(typeof(T));
         }
 
         private static MonoBehaviour[] FindMonoBehaviours()

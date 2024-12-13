@@ -26,7 +26,7 @@ namespace OSK
             // Use Odin's Show Inspector to display the icon in the inspector
             if (isInterface)
             { 
-                GUI.color = Color.green;
+                GUI.color = fieldInfo.FieldType.IsInterface ? Color.green : Color.red;
             }
             else
             { 
