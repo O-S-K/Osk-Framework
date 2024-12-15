@@ -7,9 +7,11 @@ namespace OSK
     [CreateAssetMenu(fileName = "SoundData", menuName = "OSK/Sound/SoundData")]
     public class SoundDataSO : ScriptableID
     {
-        [SerializeField] private List<SoundInfo> _listSoundInfos = new List<SoundInfo>();
-        public List<SoundInfo> ListSoundInfos => _listSoundInfos;
-
+        [SerializeField] private List<SoundData> _listSoundInfos = new List<SoundData>();
+        public List<SoundData> ListSoundInfos => _listSoundInfos;
+        
+        public int maxCapacityMusic = 5;
+        public int maxCapacitySFX = 25;
 
 #if UNITY_EDITOR
         [Button]

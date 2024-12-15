@@ -1,48 +1,77 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace OSK
 {
     public class PlayingSound
     {
-        public SoundInfo soundInfo = null;
-        public AudioSource audioSource = null;
-        public bool isPaused = false;
+        public SoundData SoundData = null;
+        public AudioSource AudioSource = null;
+        public bool IsPaused = false;
+        public bool IsPlaying => AudioSource.isPlaying;
     }
 
-    public class SoundManager : GameFrameworkComponent
-    { 
-        [SerializeField, ReadOnly] private List<SoundInfo> _listSoundInfos = new List<SoundInfo>();
-        private List<PlayingSound> _listMusicInfos = new List<PlayingSound>();
-        public List<SoundInfo> GetListSoundInfos => _listSoundInfos;
+    public partial class SoundManager : GameFrameworkComponent
+    {
+        [ShowInInspector] private List<SoundData> _listSoundInfos = new List<SoundData>();
+        [ShowInInspector] private List<PlayingSound> _listMusicInfos = new List<PlayingSound>();
+        
+        public List<SoundData> GetListSoundInfos => _listSoundInfos;
         public List<PlayingSound> GetListMusicInfos => _listMusicInfos;
-        private AudioSource _soundObject;
+        
+        [SerializeField] private int maxCapacityMusic = 5;
+        [SerializeField] private int maxCapacitySoundEffects = 10;
 
-        public bool isMusic { get; private set; }
-        public bool isSoundEffects { get; private set; }
-          
+        public bool IsMusic
+        {
+            get => PlayerPrefs.GetInt("IsMusic", 1) == 1;
+            set => PlayerPrefs.SetInt("IsMusic", value ? 1 : 0);
+        }
+
+        public bool IsSoundSFX
+        {
+            get => PlayerPrefs.GetInt("IsSoundSFX", 1) == 1;
+            set => PlayerPrefs.SetInt("IsSoundSFX", value ? 1 : 0);
+        }
+        
+        
+        private AudioSource _soundObject;
+        private Transform cameraTransform
+        {
+            get
+            {
+                if (Camera.main == null)
+                {
+                    OSK.Logg.LogError("Camera.main is null");
+                    return null;
+                }
+
+                return Camera.main.transform;
+            }
+        }
+
+
         public override void OnInit()
         {
-            if(Main.Configs.Game == null || !Main.Configs.Game.data.isUseSound)
+            if (Main.Configs.Game == null || !Main.Configs.Game.data.isUseSound)
                 return;
-            
-            _soundObject = new GameObject("AudioSource").AddComponent<AudioSource>();
-            _soundObject.transform.parent = transform;
-            _listMusicInfos = new List<PlayingSound>();
 
-            isMusic = true;
-            isSoundEffects = true; 
-            
             _listSoundInfos = Main.Configs.Game.data.soundDataSO.ListSoundInfos;
             if (_listSoundInfos == null || _listSoundInfos.Count == 0)
             {
                 OSK.Logg.LogError("SoundInfos is empty");
                 return;
             }
+            
+            _soundObject = new GameObject("AudioSource").AddComponent<AudioSource>();
+            _soundObject.transform.parent = transform;
+            _listMusicInfos = new List<PlayingSound>();
+
+            maxCapacityMusic = Main.Configs.Game.data.soundDataSO.maxCapacityMusic;
+            maxCapacitySoundEffects = Main.Configs.Game.data.soundDataSO.maxCapacitySFX;
         }
 
         private void Update()
@@ -57,10 +86,10 @@ namespace OSK
 
             for (int i = 0; i < _listMusicInfos.Count; i++)
             {
-                AudioSource audioSource = _listMusicInfos[i].audioSource;
+                AudioSource audioSource = _listMusicInfos[i].AudioSource;
 
                 // If the Audio Source is no longer playing then return it to the pool so it can be re-used
-                if (audioSource != null && !audioSource.isPlaying && !_listMusicInfos[i].isPaused)
+                if (audioSource != null && !audioSource.isPlaying && !_listMusicInfos[i].IsPaused)
                 {
                     Main.Pool.Despawn(audioSource);
                     _listMusicInfos.RemoveAt(i);
@@ -69,249 +98,83 @@ namespace OSK
             }
         }
 
-        public void Play(string id)
-        {
-            Play(id, false, 0, 0);
-        }
-
-
-        public void Play(string id, bool loop)
-        {
-            Play(id, loop, 0, 0);
-        }
-
-        public void Play(string id, bool loop, float playDelay)
-        {
-            Play(id, loop, playDelay, 0);
-        }
-
-        public void Play(string id, bool loop, int priority)
-        {
-            Play(id, loop, 0, priority);
-        }
-
-        public void Play(string id, float pitch)
-        {
-            Play(id, false, 0, 0, pitch);
-        }
-
-        public void SetVolume(float volume)
-        {
-            if (_listSoundInfos == null || _listSoundInfos.Count == 0)
-                return;
-            for (int i = 0; i < _listSoundInfos.Count; i++)
-            {
-                _listSoundInfos[i].clipVolume = volume;
-                return;
-            }
-        }
-
-        public void SetVolume(SoundType type, float volume)
-        {
-            if (_listSoundInfos == null || _listSoundInfos.Count == 0)
-                return;
-
-            foreach (var s in _listSoundInfos)
-            {
-                if (s.type == type)
-                {
-                    s.clipVolume = volume;
-                    return;
-                }
-            }
-        }
-
-        public void PlayAudioClip(AudioClip audioClip, float volume = 1, bool loop = false, float playDelay = 0,
-            int priority = 0, float pitch = 1)
-        {
-            if ((loop && !isMusic) || (!isSoundEffects))
-            {
-                return;
-            }
-
-            AudioSource audioSource = CreateAudioSource(audioClip.name);
-
-            audioSource.clip = audioClip;
-            audioSource.loop = loop;
-            audioSource.time = 0;
-            audioSource.volume = volume;
-            audioSource.priority = priority;
-            audioSource.pitch = pitch;
-
-            if (playDelay > 0)
-            {
-                audioSource.PlayDelayed(playDelay);
-            }
-            else
-            {
-                audioSource.Play();
-            }
-
-            _listMusicInfos.Add(new PlayingSound
-                { audioSource = audioSource, soundInfo = new SoundInfo { audioClip = audioClip } });
-        }
-
-        public void ReleaseDelayedAudioSource(AudioSource audioSource, float delay)
-        {
-            StartCoroutine(ReleaseAudioSource(audioSource, delay));
-        }
-
-        private IEnumerator ReleaseAudioSource(AudioSource audioSource, float delay)
+        private IEnumerator DespawnAudioSource(AudioSource audioSource, float delay)
         {
             yield return new WaitForSeconds(delay);
             Main.Pool.Despawn(audioSource);
         }
 
-        public void Play(string id, bool loop, float playDelay, int priority, float pitch = 1)
+        public void PlayAudioClip(AudioClip audioClip, float volume, bool loop, float playDelay, int priority,
+            float pitch, Transform transform, int minDistance = 1, int maxDistance = 500)
         {
-            SoundInfo soundInfo = GetSoundInfo(id);
+            if (loop && !IsMusic || !IsSoundSFX)
+            {
+                return;
+            }
 
-            if (soundInfo == null)
+            //  check capacity
+            if (_listMusicInfos.Count >= maxCapacitySoundEffects)
+            {
+                RemoveOldestSound(SoundType.SFX);
+            }
+
+            AudioSource audioSource = CreateAudioSource(audioClip.name, audioClip, volume, loop, playDelay, priority,
+                pitch, transform, minDistance, maxDistance);
+
+            _listMusicInfos.Add(new PlayingSound
+            {
+                AudioSource = audioSource,
+                SoundData = new SoundData { audioClip = audioClip }
+            });
+        }
+
+        public void Play(string id, bool loop, float playDelay, int priority, float pitch, Transform transform,
+            int minDistance = 1, int maxDistance = 500)
+        {
+            SoundData soundData = GetSoundInfo(id);
+
+            if (soundData == null)
             {
                 OSK.Logg.LogError("[Sound] There is no Sound Info with the given id: " + id);
-
                 return;
             }
 
-            if ((soundInfo.type == SoundType.Music && !isMusic) ||
-                (soundInfo.type == SoundType.SFX && !isSoundEffects))
+            if (soundData.type == SoundType.Music && !IsMusic || soundData.type == SoundType.SFX && !IsSoundSFX)
             {
                 return;
             }
 
-            AudioSource audioSource = CreateAudioSource(id);
-
-            audioSource.clip = soundInfo.audioClip;
-            audioSource.loop = loop;
-            audioSource.time = 0;
-            audioSource.volume = soundInfo.clipVolume;
-            audioSource.priority = priority;
-            audioSource.pitch = pitch;
-
-            if (playDelay > 0)
+            //  check capacity
+            if (soundData.type == SoundType.Music &&  _listMusicInfos.Count(s => s.SoundData.type == SoundType.Music) >= maxCapacityMusic)
             {
-                audioSource.PlayDelayed(playDelay);
+                RemoveOldestSound(SoundType.Music);
             }
-            else
+            else if (soundData.type == SoundType.SFX && _listMusicInfos.Count(s => s.SoundData.type == SoundType.SFX) >= maxCapacitySoundEffects)
             {
-                audioSource.Play();
+                RemoveOldestSound(SoundType.SFX);
             }
+
+            AudioSource audioSource = CreateAudioSource(id, soundData.audioClip, soundData.volume, loop, playDelay,
+                priority, pitch, transform, minDistance, maxDistance);
 
             PlayingSound playingSound = new PlayingSound();
-
-            playingSound.soundInfo = soundInfo;
-            playingSound.audioSource = audioSource;
-
+            playingSound.SoundData = soundData;
+            playingSound.AudioSource = audioSource;
             _listMusicInfos.Add(playingSound);
         }
 
-        public void Stop(string id)
+        private void RemoveOldestSound(SoundType soundType)
         {
-            for (int i = 0; i < _listMusicInfos.Count; i++)
+            PlayingSound oldestSound = _listMusicInfos.FirstOrDefault(s => s.SoundData.type == soundType);
+            if (oldestSound != null && oldestSound.IsPlaying)
             {
-                if (_listMusicInfos[i].soundInfo.id == id)
-                {
-                    _listMusicInfos[i].audioSource.Stop();
-                    Main.Pool.Despawn(_listMusicInfos[i].audioSource);
-                    _listMusicInfos.RemoveAt(i);
-                    i--;
-                }
+                oldestSound.AudioSource.Stop();
+                Destroy(oldestSound.AudioSource.gameObject);
+                _listMusicInfos.Remove(oldestSound);
             }
         }
 
-        public void Stop(SoundType type)
-        {
-            for (int i = 0; i < _listMusicInfos.Count; i++)
-            {
-                if (_listMusicInfos[i].soundInfo.type == type)
-                {
-                    _listMusicInfos[i].audioSource.Stop();
-                    Main.Pool.Despawn(_listMusicInfos[i].audioSource);
-                    _listMusicInfos.RemoveAt(i);
-                    i--;
-                }
-            }
-        }
-
-        public void SetStatusSoundType(SoundType type, bool isOn)
-        {
-            switch (type)
-            {
-                case SoundType.Music:
-                    isMusic = isOn;
-                    if (isMusic)
-                        Resume(SoundType.Music);
-                    else
-                        Pause(SoundType.Music);
-                    break;
-                case SoundType.SFX:
-                    isSoundEffects = isOn;
-                    if (isSoundEffects)
-                        Resume(SoundType.SFX);
-                    else
-                        Pause(SoundType.SFX);
-                    break;
-            }
-        }
-
-        public void SetStatusAllSound(bool isOn)
-        {
-            isMusic = isOn;
-            isSoundEffects = isOn;
-
-            if (!isOn)
-            {
-                PauseAll();
-            }
-            else
-            {
-                ResumeAll();
-            }
-        }
-
-        public void PauseAll()
-        {
-            foreach (var playingSound in _listMusicInfos)
-            {
-                playingSound.audioSource.Pause();
-                playingSound.isPaused = true;
-            }
-        }
-
-        public void Pause(SoundType type)
-        {
-            foreach (var playingSound in _listMusicInfos)
-            {
-                if (playingSound.soundInfo.type == type)
-                {
-                    playingSound.audioSource.Pause();
-                    playingSound.isPaused = true;
-                }
-            }
-        }
-
-        public void ResumeAll()
-        {
-            foreach (var playingSound in _listMusicInfos)
-            {
-                playingSound.audioSource.UnPause();
-                playingSound.isPaused = false;
-            }
-        }
-
-        public void Resume(SoundType type)
-        {
-            foreach (var playingSound in _listMusicInfos)
-            {
-                if (playingSound.soundInfo.type == type)
-                {
-                    playingSound.audioSource.UnPause();
-                    playingSound.isPaused = false;
-                }
-            }
-        }
-
-        private SoundInfo GetSoundInfo(string id)
+        private SoundData GetSoundInfo(string id)
         {
             for (int i = 0; i < _listSoundInfos.Count; i++)
             {
@@ -324,24 +187,54 @@ namespace OSK
             return null;
         }
 
-        private AudioSource CreateAudioSource(string id)
+        private AudioSource CreateAudioSource(string id, AudioClip audioClip, float volume, bool loop, float playDelay,
+            int priority, float pitch, Transform transform, int minDistance, int maxDistance)
         {
             var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, null);
-            if (Camera.main != null)
-                audioSource.transform.position = Camera.main.transform.position;
-            audioSource.name = id;
-            return audioSource;
-        }
-
-        public void DestroyAll()
-        {
-            foreach (var playingSound in _listMusicInfos)
+            if (transform == null)
             {
-                Destroy(playingSound.audioSource.gameObject);
+                audioSource.spatialBlend = 0;
+                audioSource.transform.position = cameraTransform.position;
+            }
+            else
+            {
+                audioSource.spatialBlend = 1;
+                audioSource.transform.position = transform.position;
             }
 
-            _listMusicInfos.Clear();
-            Main.Pool.DestroyGroup(KeyGroupPool.AudioSound);
+            audioSource.minDistance = minDistance;
+            audioSource.maxDistance = maxDistance;
+
+            audioSource.name = id;
+            audioSource.clip = audioClip;
+            audioSource.loop = loop;
+            audioSource.time = 0;
+            audioSource.volume = volume;
+            audioSource.priority = priority;
+            audioSource.pitch = pitch;
+            
+            /*audioSource.outputAudioMixerGroup = data.mixerGroup;
+            audioSource.mute = data.mute;
+            audioSource.bypassEffects = data.bypassEffects;
+            audioSource.bypassListenerEffects = data.bypassListenerEffects;
+            audioSource.bypassReverbZones = data.bypassReverbZones;
+            audioSource.panStereo = data.panStereo;
+            audioSource.reverbZoneMix = data.reverbZoneMix;
+            audioSource.dopplerLevel = data.dopplerLevel;
+            audioSource.spread = data.spread;
+            audioSource.ignoreListenerVolume = data.ignoreListenerVolume;
+            audioSource.ignoreListenerPause = data.ignoreListenerPause;*/
+
+            if (playDelay > 0)
+            {
+                audioSource.PlayDelayed(playDelay);
+            }
+            else
+            {
+                audioSource.Play();
+            }
+
+            return audioSource;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace OSK
             {
                 GameObject audioObject = new GameObject("EditorAudioSource");
                 audioObject.hideFlags = HideFlags.HideAndDontSave;  // Hide the GameObject from hierarchy
-                _editorAudioSource = audioObject.AddComponent<AudioSource>();
+                _editorAudioSource = audioObject.GetOrAdd<AudioSource>();
             }
 
             // Set the clip and play
@@ -45,7 +45,7 @@ namespace OSK
         public static bool IsClipPlaying(AudioClip clip)
         {
             return _editorAudioSource != null && _editorAudioSource.isPlaying && _editorAudioSource.clip == clip;
-        }
+        } 
     }
 }
 #endif

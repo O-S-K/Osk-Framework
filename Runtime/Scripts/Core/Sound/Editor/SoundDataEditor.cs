@@ -16,11 +16,12 @@ namespace OSK
             DrawDefaultInspector();
             SoundDataSO soundDataSo = (SoundDataSO)target;
             EditorGUILayout.Space();
+            
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("----------------------------------------------------------------------------------------------");
 
             showTable = EditorGUILayout.Foldout(showTable, "Show Sound Info Table");
             if (!showTable) return;
-
-            EditorGUILayout.Space(50);
 
             foreach (SoundType type in System.Enum.GetValues(typeof(SoundType)))
             {
@@ -37,15 +38,15 @@ namespace OSK
 
                     for (int i = 0; i < soundDataSo.ListSoundInfos.Count; i++)
                     {
-                        SoundInfo soundInfo = soundDataSo.ListSoundInfos[i];
+                        SoundData soundData = soundDataSo.ListSoundInfos[i];
 
-                        if (soundInfo.type == type)
+                        if (soundData.type == type)
                         {
                             DrawRowBorder();
                             EditorGUILayout.BeginHorizontal();
 
-                            AudioClip newAudioClip = (AudioClip)EditorGUILayout.ObjectField(soundInfo.audioClip, typeof(AudioClip), false, GUILayout.Width(150));
-                            if (newAudioClip != soundInfo.audioClip)
+                            AudioClip newAudioClip = (AudioClip)EditorGUILayout.ObjectField(soundData.audioClip, typeof(AudioClip), false, GUILayout.Width(150));
+                            if (newAudioClip != soundData.audioClip)
                             {
                                 if (IsDuplicateAudioClip(soundDataSo, newAudioClip))
                                 {
@@ -53,23 +54,23 @@ namespace OSK
                                 }
                                 else
                                 {
-                                    soundInfo.audioClip = newAudioClip;
-                                    soundInfo.UpdateId();
+                                    soundData.audioClip = newAudioClip;
+                                    soundData.UpdateId();
                                 }
                             }
 
-                            soundInfo.type = (SoundType)EditorGUILayout.EnumPopup(soundInfo.type, GUILayout.Width(75));
+                            soundData.type = (SoundType)EditorGUILayout.EnumPopup(soundData.type, GUILayout.Width(75));
 
-                            GUI.enabled = soundInfo.audioClip != null && !soundInfo.IsPlaying();
+                            GUI.enabled = soundData.audioClip != null && !soundData.IsPlaying();
                             if (GUILayout.Button("Play", GUILayout.Width(50)))
                             {
-                                soundInfo.Play();
+                                soundData.Play();
                             }
 
-                            GUI.enabled = soundInfo.audioClip != null && soundInfo.IsPlaying();
+                            GUI.enabled = soundData.audioClip != null && soundData.IsPlaying();
                             if (GUILayout.Button("Stop", GUILayout.Width(50)))
                             {
-                                soundInfo.Stop();
+                                soundData.Stop();
                             }
 
                             GUI.enabled = true;
@@ -93,7 +94,7 @@ namespace OSK
             EditorGUILayout.Space(50);
             if (GUILayout.Button("Add New Sound Info", GUILayout.Width(200)))
             {
-                soundDataSo.ListSoundInfos.Add(new SoundInfo());
+                soundDataSo.ListSoundInfos.Add(new SoundData());
             }
             EditorGUILayout.Space();
             EditorGUILayout.EndHorizontal();

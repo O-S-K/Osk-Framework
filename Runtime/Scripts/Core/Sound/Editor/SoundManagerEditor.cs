@@ -20,8 +20,8 @@ namespace OSK
             DrawDefaultInspector();
 
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("- Status Music : " + soundManager.isMusic.ToString());
-            EditorGUILayout.LabelField("- Status SFX : " + soundManager.isSoundEffects.ToString());
+            EditorGUILayout.LabelField("- Status Music : " + soundManager.IsMusic.ToString());
+            EditorGUILayout.LabelField("- Status SFX : " + soundManager.IsSoundSFX.ToString());
 
             // Play button
             if (GUILayout.Button("Select Data SO"))
@@ -41,7 +41,7 @@ namespace OSK
                 {
                     foreach (var playingSound in soundManager.GetListMusicInfos)
                     {
-                        if (playingSound.soundInfo.type == SoundType.Music) // Giả sử có SoundType
+                        if (playingSound.SoundData.type == SoundType.Music) // Giả sử có SoundType
                         {
                             DrawSoundInfo(playingSound);
                         }
@@ -54,7 +54,7 @@ namespace OSK
                 {
                     foreach (var playingSound in soundManager.GetListMusicInfos)
                     {
-                        if (playingSound.soundInfo.type == SoundType.SFX) // Giả sử có SoundType
+                        if (playingSound.SoundData.type == SoundType.SFX) // Giả sử có SoundType
                         {
                             DrawSoundInfo(playingSound);
                         }
@@ -73,25 +73,25 @@ namespace OSK
             EditorGUILayout.BeginHorizontal();
 
             // Display sound name
-            EditorGUILayout.LabelField(playingSound.audioSource.name, GUILayout.Width(200));
+            EditorGUILayout.LabelField(playingSound.AudioSource.name, GUILayout.Width(200));
 
             // Play button
             if (GUILayout.Button("Play"))
             {
-                playingSound.audioSource.Play();
+                playingSound.AudioSource.Play();
             }
 
             // Pause button
             if (GUILayout.Button("Pause"))
             {
-                playingSound.audioSource.Pause();
+                playingSound.AudioSource.Pause();
             }
 
             // Delete button
             if (GUILayout.Button("Delete"))
             {
-                playingSound.audioSource.Stop();
-                DestroyImmediate(playingSound.audioSource.gameObject);
+                playingSound.AudioSource.Stop();
+                DestroyImmediate(playingSound.AudioSource.gameObject);
                 ((SoundManager)target).GetListMusicInfos.Remove(playingSound);
                 ((SoundManager)target).GetListMusicInfos.RefreshList();
             }
