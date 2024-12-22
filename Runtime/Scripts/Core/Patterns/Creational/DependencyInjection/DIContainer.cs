@@ -37,13 +37,13 @@ namespace OSK
         {
             if (instance == null)
             {
-                Logg.LogError("Instance cannot be null.");
+                Logg.LogError("Instance cannot be null." + instance.GetType());
                 return;
             }
 
             if (instance is not IProvider)
             {
-                Logg.LogError("Instance does not contain the required component IProvider.");
+                Logg.LogError("Instance does not contain the required component IProvider." + instance.GetType());
                 return;
             }
 

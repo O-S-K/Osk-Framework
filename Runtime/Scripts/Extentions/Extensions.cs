@@ -10,6 +10,17 @@ namespace OSK
             T component = gameObject.GetComponent<T>();
             return component != null ? component : gameObject.AddComponent<T>();
         }
+        public static T GetOrAdd<T>(this Transform transform) where T : Component
+        {
+            T component = transform.GetComponent<T>();
+            return component != null ? component : transform.gameObject.AddComponent<T>();
+        }
+        
+        public static T GetOrAdd<T>(this MonoBehaviour mono) where T : Component
+        {
+            T component = mono.GetComponent<T>();
+            return component != null ? component : mono.gameObject.AddComponent<T>();
+        }
 
         public static float Remap(this float value, float from1, float to1, float from2, float to2)
         {
