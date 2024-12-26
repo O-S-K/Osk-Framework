@@ -14,6 +14,8 @@ namespace OSK
         public string packageName = "";
         public string appstoreID = "";
 
+        public string EncryptKey = "b14ca5898a4e4133bbce2ea2315a1916";
+
         public DataConfigs data;
         public SettingConfigs setting;
         public PathConfigs path;

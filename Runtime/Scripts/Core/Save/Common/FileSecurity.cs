@@ -7,9 +7,8 @@ namespace OSK
 {
     public class FileSecurity  
     {
-        private static readonly string key = "b14ca5898a4e4133bbce2ea2315a1916";
 
-        public static byte[] Encrypt(byte[] data)
+        public static byte[] Encrypt(byte[] data, string key)
         {
             using (Aes aes = Aes.Create())
             {
@@ -28,7 +27,7 @@ namespace OSK
             }
         }
 
-        public static byte[] Decrypt(FileStream fileStream)
+        public static byte[] Decrypt(FileStream fileStream, string key)
         {
             using (Aes aes = Aes.Create())
             {

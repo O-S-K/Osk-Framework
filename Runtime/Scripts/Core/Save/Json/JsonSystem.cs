@@ -8,38 +8,36 @@ using System.Text.RegularExpressions;
 
 namespace OSK
 {
-    public class JsonSystem
+    public class JsonSystem : IFile
     {
         // Todo: Call For Mobile Devices
         // onApplicationPause() => SaveJson
 
-        public void Save<T>(string fileName, T obj, bool ableEncrypt = false, int decimalPlaces = 4)
+        public void Save<T>(string fileName, T data, bool ableEncrypt = false)
         {
-            var filePath = IOUtility.FilePath(fileName);
+            var filePath = IOUtility.FilePath(fileName + ".json");
             try
             {
-                // Serialize object to JSON
-                string saveJson = JsonUtility.ToJson(obj);
+                string saveJson = JsonUtility.ToJson(data);
 
                 // Format numeric values to specified decimal places
-                saveJson = FormatJsonDecimals(saveJson, decimalPlaces);
+                saveJson = FormatJsonDecimals(saveJson, 4);
 
                 if (ableEncrypt)
                 {
                     var saveBytes = Encoding.UTF8.GetBytes(saveJson);
-                    File.WriteAllBytes(filePath, Obfuscator.Encrypt(saveBytes));
+                    File.WriteAllBytes(filePath, Obfuscator.Encrypt(saveBytes, Main.Configs.Game.EncryptKey));
                 }
                 else
                 {
                     File.WriteAllText(filePath, saveJson);
                 }
 
-                OSK.Logg.Log($"Successfully saved JSON to: {filePath}", Color.green);
-                OSK.Logg.Log("SaveJson: " + saveJson, Color.green);
+                OSK.Logg.Log($"[Save File Success]: {fileName + ".json"} \n {filePath}", Color.green);
             }
             catch (System.Exception ex)
             {
-                OSK.Logg.LogError($"Error saving JSON to {filePath}: {ex.Message}");
+                OSK.Logg.LogError($"[Save File Exception]: {fileName + ".json"}  {ex.Message}");
             }
         }
 
@@ -52,26 +50,26 @@ namespace OSK
                 {
                     return System.Math.Round(number, decimalPlaces).ToString("F" + decimalPlaces);
                 }
+
                 return match.Value;
             });
         }
 
 
-        public void Load<T>(string fileName, T obj, bool ableEncrypt = false)
+        public T Load<T>(string fileName, bool ableEncrypt = false)
         {
-            var filePath = IOUtility.FilePath(fileName);
-
+            var filePath = IOUtility.FilePath(fileName + ".json");
             if (!File.Exists(filePath))
             {
-                OSK.Logg.LogError($"File not found at path: {filePath}");
-                return;
-            }
+                OSK.Logg.LogError($"[Load File Error]: {fileName + ".json"} NOT found");
+                return default;
+            } 
             try
             {
                 string loadJson;
                 if (ableEncrypt)
                 {
-                    var loadBytes = Obfuscator.Decrypt(File.ReadAllBytes(filePath));
+                    var loadBytes = Obfuscator.Decrypt(File.ReadAllBytes(filePath), Main.Configs.Game.EncryptKey);
                     loadJson = Encoding.UTF8.GetString(loadBytes);
                 }
                 else
@@ -79,19 +77,21 @@ namespace OSK
                     loadJson = File.ReadAllText(filePath);
                 }
 
-                // Validate JSON format
-                if (string.IsNullOrEmpty(loadJson) || !IsValidJson(loadJson))
+                if (!IsValidJson(loadJson))
                 {
-                    OSK.Logg.LogError("Invalid JSON format in file: " + filePath);
-                    return;
+                    OSK.Logg.LogError($"[Load File Error]: {fileName + ".json"} contains invalid JSON");
+                    return default;
                 }
 
-                JsonUtility.FromJsonOverwrite(loadJson, obj);
-                OSK.Logg.Log("LoadJson: " + loadJson, Color.green);
+                // Deserialize JSON to object
+                T data = JsonUtility.FromJson<T>(loadJson);
+                OSK.Logg.Log($"[Load File Success]: {fileName + ".json"} \n {filePath}", Color.green);
+                return data;
             }
             catch (System.Exception ex)
             {
-                OSK.Logg.LogError($"Error loading file: {ex.Message}");
+                OSK.Logg.LogError($"[Load File Exception]: {fileName + ".json"}  {ex.Message}");
+                return default;
             }
         }
 
@@ -124,6 +124,12 @@ namespace OSK
             }
 
             return savedFiles;
+        }
+
+        public void Delete(string fileName)
+        {
+            IOUtility.DeleteFile(fileName + ".json");
+            Logg.Log($"[Delete File Success]: {fileName + ".json"}");
         }
 
         private void RefreshEditor()

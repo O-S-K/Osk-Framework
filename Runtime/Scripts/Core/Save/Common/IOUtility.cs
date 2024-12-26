@@ -78,12 +78,30 @@ namespace OSK
 
         public static string FilePath(string name)
         {
-            var filePath = Path.Combine(Application.streamingAssetsPath, $"{name}.json");
+            var filePath = Path.Combine(Application.streamingAssetsPath, $"{name}");
             if (!File.Exists(filePath))
             {
-                filePath = Path.Combine(Application.persistentDataPath, $"{name}.json");
+                filePath = Path.Combine(Application.persistentDataPath, $"{name}");
             }
             return filePath;
+        }
+        
+        
+        public static List<string> GetAll(string fileName)
+        {
+            List<string> allFiles = new List<string>();
+            var path = IOUtility.GetPath(fileName);
+
+            if (Directory.Exists(path))
+            {
+                var files = Directory.GetFiles(path);
+                foreach (var file in files)
+                {
+                    allFiles.Add(Path.GetFileName(file));
+                }
+            }
+
+            return allFiles;
         }
 
 #if UNITY_EDITOR

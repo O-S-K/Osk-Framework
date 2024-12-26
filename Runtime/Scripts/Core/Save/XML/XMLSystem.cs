@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -7,61 +8,82 @@ using UnityEngine;
 
 namespace OSK
 {
-    public class XMLSystem
+    public class XMLSystem : IFile
     {
-        public void Save<T>(string nameFile, T data, bool isEncrypt = false)
+        public void Save<T>(string fileName, T data, bool isEncrypt = false)
         {
-            string path = IOUtility.GetPath(nameFile + ".xml");
+            string path = IOUtility.GetPath(fileName + ".xml");
 
-            using (FileStream stream = File.Open(path, FileMode.OpenOrCreate))
+            try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(T));
+                using (FileStream stream = File.Open(path, FileMode.OpenOrCreate))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(T));
 
-                if (isEncrypt)
-                {
-                    using (MemoryStream memoryStream = new MemoryStream())
+                    if (isEncrypt)
                     {
-                        serializer.Serialize(memoryStream, data);
-                        byte[] encryptedData = FileSecurity.Encrypt(memoryStream.ToArray());
-                        stream.Write(encryptedData, 0, encryptedData.Length);
+                        using (MemoryStream memoryStream = new MemoryStream())
+                        {
+                            serializer.Serialize(memoryStream, data);
+                            byte[] encryptedData = FileSecurity.Encrypt(memoryStream.ToArray(), Main.Configs.Game.EncryptKey);
+                            stream.Write(encryptedData, 0, encryptedData.Length);
+                        }
                     }
+                    else
+                    {
+                        serializer.Serialize(stream, data);
+                    }
+
+                    Logg.Log($"[Save File Success]: {fileName + ".xml"} \n {path} ", Color.green);
                 }
-                else
-                {
-                    serializer.Serialize(stream, data);
-                }
-                Logg.Log($"[Save File Success]: {nameFile}  {path} ");
+            }
+            catch (System.Exception ex)
+            {
+                OSK.Logg.LogError($"[Save File Exception]: {fileName + ".xml"}  {ex.Message}");
             }
         }
-        
-        public T Load<T>(string nameFile, bool isEncrypt = false)
+
+        public T Load<T>(string fileName, bool isEncrypt = false)
         {
-            string path = IOUtility.GetPath(nameFile + ".xml");
+            string path = IOUtility.GetPath(fileName + ".xml");
             if (!File.Exists(path))
             {
-                Debug.LogError($"File not found at path: {path}");
+                Logg.LogError($"[Load File Error]: {fileName + ".xml"}  {path}");
                 return default(T);
             }
 
-            using (FileStream stream = File.Open(path, FileMode.Open))
+            try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(T));
-
-                if (isEncrypt)
+                using (FileStream stream = File.Open(path, FileMode.Open))
                 {
-                    byte[] decryptedData = FileSecurity.Decrypt(stream);
-                    using (MemoryStream memoryStream = new MemoryStream(decryptedData))
+                    XmlSerializer serializer = new XmlSerializer(typeof(T));
+
+                    if (isEncrypt)
                     {
-                        Logg.Log($"[Load File Success]: {nameFile}  {path} ");
-                        return (T)serializer.Deserialize(memoryStream);
+                        byte[] decryptedData = FileSecurity.Decrypt(stream, Main.Configs.Game.EncryptKey);
+                        using (MemoryStream memoryStream = new MemoryStream(decryptedData))
+                        {
+                            Logg.Log($"[Load File Success]: {fileName + ".xml"} \n {path}", Color.green);
+                            return (T)serializer.Deserialize(memoryStream);
+                        }
+                    }
+                    else
+                    {
+                        Logg.Log($"[Load File Success]: {fileName + ".xml"} \n {path}", Color.green);
+                        return (T)serializer.Deserialize(stream);
                     }
                 }
-                else
-                {
-                    Logg.Log($"[Load File Success]: {nameFile}  {path} ");
-                    return (T)serializer.Deserialize(stream);
-                }
             }
+            catch (System.Exception ex)
+            {
+                OSK.Logg.LogError($"[Load File Exception]: {fileName + ".xml"}  {ex.Message}");
+                return default;
+            }
+        }
+
+        public void Delete(string fileName)
+        {
+            IOUtility.DeleteFile(fileName + ".xml");
         }
     }
 }

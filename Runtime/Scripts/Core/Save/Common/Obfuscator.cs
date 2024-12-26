@@ -6,10 +6,8 @@ using System.Security.Cryptography;
 namespace OSK
 {
     internal static class Obfuscator
-    {
-        private static readonly string key = "0123456789ABCDEF";
-
-        public static byte[] Encrypt(byte[] data)
+    { 
+        public static byte[] Encrypt(byte[] data, string key)
         {
             using var aes = Aes.Create();
             aes.Key = Encoding.UTF8.GetBytes(key);
@@ -28,7 +26,7 @@ namespace OSK
             return ms.ToArray();
         }
 
-        public static byte[] Decrypt(byte[] data)
+        public static byte[] Decrypt(byte[] data, string key)
         {
             using var aes = Aes.Create();
             aes.Key = Encoding.UTF8.GetBytes(key);
@@ -46,7 +44,7 @@ namespace OSK
             return rs.ToArray();
         }
 
-        public static async Task<byte[]> EncryptAsync(byte[] data)
+        public static async Task<byte[]> EncryptAsync(byte[] data, string key)
         {
             using var aes = Aes.Create();
             aes.Key = Encoding.UTF8.GetBytes(key);
@@ -65,7 +63,7 @@ namespace OSK
             return ms.ToArray();
         }
 
-        public static async Task<byte[]> DecryptAsync(byte[] data)
+        public static async Task<byte[]> DecryptAsync(byte[] data, string key)
         {
             using var aes = Aes.Create();
             aes.Key = Encoding.UTF8.GetBytes(key);
