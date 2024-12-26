@@ -1,92 +1,94 @@
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace OSK
 {
     public class FileSystem
-    {
-        public string GetPath(string fileName, bool isSaveToDocument = true)
-        {
-            return PathUtility.GetPath($"{fileName}");
-        }
-
-        public void SaveData<T>(string fileName, object data, bool isSaveToDocument = true)
+    { 
+        
+        public void Save<T>(string fileName, T data, bool isEncrypt = false)
         {
             try
             {
-                if (data == null) return;
-                var path = GetPath(fileName, isSaveToDocument);
-                OSK.Logg.Log("Path File" + path);
+                var path = IOUtility.GetPath(fileName);
+                OSK.Logg.Log("Path File: " + path);
 
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 using (FileStream file = File.Open(path, FileMode.OpenOrCreate))
                 {
-                    binaryFormatter.Serialize(file, (T)data);
-                    //Utils.Utilities.CalculateMD5Hash(file.ToString());
-                    file.Close();
-                    RefreshEditor();
-                    OSK.Logg.Log("[Save File Success]: " + fileName + " " + DateTime.Now + "\n" + path);
+                    if (isEncrypt)
+                    {
+                        using (MemoryStream memoryStream = new MemoryStream())
+                        {
+                            binaryFormatter.Serialize(memoryStream, data);
+                            var encryptedData = FileSecurity.Encrypt(memoryStream.ToArray());
+                            file.Write(encryptedData, 0, encryptedData.Length);
+                        }
+                    }
+                    else
+                    {
+                        binaryFormatter.Serialize(file, data);
+                    }
                 }
+
+                RefreshEditor();
+                OSK.Logg.Log($"[Save File Success]: {fileName} {DateTime.Now}\n{path}");
             }
             catch (Exception ex)
             {
-                OSK.Logg.LogError("[Save File Exception]: " + fileName + " " + ex.Message);
-            }
-            finally
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
+                OSK.Logg.LogError($"[Save File Exception]: {fileName} {ex.Message}");
             }
         }
-
-        public T Load<T>(string fileName, bool isSaveToDocument = true)
+        
+        public T Load<T>(string fileName, bool isDecrypt = false)
         {
             try
             {
-                var data = default(T);
-                var path = GetPath(fileName, isSaveToDocument);
-                if (File.Exists(path))
+                var path = IOUtility.GetPath(fileName);
+                if (!File.Exists(path))
                 {
-                    BinaryFormatter binaryFormatter = new BinaryFormatter();
-                    using (FileStream file = File.Open(path, FileMode.Open))
-                    {
-                        data = (T)binaryFormatter.Deserialize(file);
-                        file.Close();
-                        OSK.Logg.Log("[Load File Success]: " + fileName + ".txt");
-                        OSK.Logg.Log("Path File" + path);
-                    }
-
-                    return data;
+                    OSK.Logg.LogError("[Load File Error]: " + fileName + " NOT found");
+                    return default;
                 }
-                else
+
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                using (FileStream file = File.Open(path, FileMode.Open))
                 {
-                    OSK.Logg.LogError("[Load File Error]: " + fileName + " " + "NOT found");
-                    return default(T);
+                    if (isDecrypt)
+                    {
+                        using (MemoryStream memoryStream = new MemoryStream(FileSecurity.Decrypt(file)))
+                        {
+                            return (T)binaryFormatter.Deserialize(memoryStream);
+                        }
+                    }
+                    else
+                    {
+                        return (T)binaryFormatter.Deserialize(file);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 OSK.Logg.LogError("[Load File Exception]: " + fileName + " " + ex.Message);
-                return default(T);
+                return default;
             }
             finally
             {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-                GC.Collect();
             }
         }
         
-        public List<string> GetAllFiles(string fileName, bool isSaveToDocument = true)
+        public List<string> GetAll(string fileName)
         {
             List<string> allFiles = new List<string>();
+            var path = IOUtility.GetPath(fileName);
 
-            if (Directory.Exists(GetPath(fileName, isSaveToDocument)))
+            if (Directory.Exists(path))
             {
-                var files = Directory.GetFiles(GetPath(fileName, isSaveToDocument));
+                var files = Directory.GetFiles(path);
                 foreach (var file in files)
                 {
                     allFiles.Add(Path.GetFileName(file));
@@ -96,10 +98,9 @@ namespace OSK
             return allFiles;
         }
 
-        public void WriteToFile(string fileName, string json, bool isSaveToDocument = true)
+        public void Write(string fileName, string json)
         {
-            var path = GetPath(fileName, isSaveToDocument);
-
+            var path = IOUtility.GetPath(fileName);
             OSK.Logg.Log("Path Save: " + path);
             FileStream fileStream = new FileStream(path, FileMode.Create);
             using (StreamWriter writer = new StreamWriter(fileStream))
@@ -108,9 +109,9 @@ namespace OSK
             }
         }
 
-        public string ReadFromFile(string fileName, bool isSaveToDocument = true)
+        public string Read(string fileName)
         {
-            var path = GetPath(fileName, isSaveToDocument);
+            var path =  IOUtility.GetPath(fileName);
             if (File.Exists(path))
             {
                 var reader = new StreamReader(path);
@@ -122,34 +123,6 @@ namespace OSK
             }
 
             return null;
-        }
-
-        public void DeleteFile(string fileName, bool isSaveToDocument = true)
-        {
-            try
-            {
-                var path = GetPath(fileName, isSaveToDocument);
-                if (File.Exists(path))
-                {
-                    OSK.Logg.Log("[Delete File Success]: " + fileName);
-                    File.Delete(path);
-                    RefreshEditor();
-                }
-                else
-                {
-                    OSK.Logg.LogError("[Delete File Error]: " + fileName + " " + "NOT found");
-                }
-            }
-            catch (Exception ex)
-            {
-                OSK.Logg.LogError("[Delete File Exception]: " + fileName + " " + ex.Message);
-            }
-            finally
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-            }
         }
 
         private void RefreshEditor()

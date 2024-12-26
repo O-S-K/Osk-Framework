@@ -53,8 +53,7 @@ namespace OSK
             if (isInitOnScene) return;
 
             isInitOnScene = true;
-            _viewContainer = viewContainer ??
-                             throw new ArgumentNullException(nameof(viewContainer), "ViewContainer cannot be null.");
+            _viewContainer = viewContainer; 
 
             _uiTransition = GetComponent<UITransition>();
             _uiTransition?.Initialize();

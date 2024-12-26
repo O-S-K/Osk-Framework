@@ -19,11 +19,7 @@ namespace OSK
         
         public XMLSystem XML => _xml ??= new XMLSystem();
         private XMLSystem _xml = new XMLSystem();
-
-        private ScriptableObjectManager _scriptableObjectManager;
-        public ScriptableObjectManager SOData => _scriptableObjectManager ??= new ScriptableObjectManager();
-
-
+        
         public override void OnInit() {}
     }
 }

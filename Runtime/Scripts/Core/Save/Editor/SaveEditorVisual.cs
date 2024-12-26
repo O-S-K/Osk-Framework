@@ -42,7 +42,7 @@ namespace OSK
         {
             EditorGUILayout.LabelField("FileSystem", EditorStyles.boldLabel, GUILayout.Width(400));
 
-            var files = manager.File.GetAllFiles(Application.persistentDataPath);
+            var files = manager.File.GetAll(Application.persistentDataPath);
             foreach (var file in files)
             {
                 EditorGUILayout.BeginHorizontal();

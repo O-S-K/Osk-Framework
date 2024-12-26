@@ -96,7 +96,7 @@ namespace OSK
 
                 var data = new DataViewUI();
                 data.view = popup;
-                data.path = PathUtility.GetPathAfterResources(popup);
+                data.path = IOUtility.GetPathAfterResources(popup);
 
                 switch (data.view.viewType)
                 {

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace OSK
 {
     [CreateAssetMenu(fileName = "SoundData", menuName = "OSK/Sound/SoundData")]
-    public class SoundDataSO : ScriptableID
+    public class SoundDataSO : ScriptableObject
     {
         [SerializeField] private List<SoundData> _listSoundInfos = new List<SoundData>();
         public List<SoundData> ListSoundInfos => _listSoundInfos;
