@@ -11,8 +11,8 @@ namespace OSK
     {
         public static MonoManager Mono { get; private set; }
         public static ServiceLocatorManager Service { get; private set; }
-        public static ObserverManager ObserverManager { get; private set; }
-        public static EventBusManager EventBusManager { get; private set; }
+        public static ObserverManager Observer { get; private set; }
+        public static EventBusManager Event { get; private set; }
         public static FSMManager Fsm { get; private set; }
         public static PoolManager Pool { get; private set; }
         public static CommandManager Command { get; private set; }
@@ -22,7 +22,7 @@ namespace OSK
         public static DataManager Data { get; private set; }
         public static NetworkManager Network { get; private set; }
         public static WebRequestManager WebRequest { get; private set; }
-        public static GameConfigsManager ConfigsManager { get; private set; }
+        public static GameConfigsManager Configs { get; private set; }
         public static UIManager UI { get; private set; }
         public static SoundManager Sound { get; private set; }
         public static LocalizationManager Localization { get; private set; }
@@ -59,8 +59,8 @@ namespace OSK
                         var _module = newObject.AddComponent(componentType) as GameFrameworkComponent;
                         if (_module is MonoManager manager) Mono = manager;
                         else if (_module is ServiceLocatorManager locator) Service = locator;
-                        else if (_module is ObserverManager observer) ObserverManager = observer;
-                        else if (_module is EventBusManager eventBus) EventBusManager = eventBus;
+                        else if (_module is ObserverManager observer) Observer = observer;
+                        else if (_module is EventBusManager eventBus) Event = eventBus;
                         else if (_module is FSMManager fsm) Fsm = fsm;
                         else if (_module is PoolManager pool) Pool = pool;
                         else if (_module is CommandManager command) Command = command;
@@ -70,7 +70,7 @@ namespace OSK
                         else if (_module is DataManager data) Data = data;
                         else if (_module is NetworkManager network) Network = network;
                         else if (_module is WebRequestManager webRequest) WebRequest = webRequest;
-                        else if (_module is GameConfigsManager configs) ConfigsManager = configs;
+                        else if (_module is GameConfigsManager configs) Configs = configs;
                         else if (_module is UIManager ui) UI = ui;
                         else if (_module is SoundManager sound) Sound = sound;
                         else if (_module is LocalizationManager localization) Localization = localization;

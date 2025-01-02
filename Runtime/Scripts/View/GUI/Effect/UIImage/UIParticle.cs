@@ -29,14 +29,14 @@ namespace OSK
          
         private void Initialize()
         {
-            if (Main.ConfigsManager.init == null|| Main.ConfigsManager.init.data == null || Main.ConfigsManager.init.data.uiParticleSO == null)
+            if (Main.Configs.init == null|| Main.Configs.init.data == null || Main.Configs.init.data.uiParticleSO == null)
                 return;
 
             _mainCamera = Camera.main;
             _uiCamera = Main.UI.GetCanvas.worldCamera;
             _canvasTransform = Main.UI.GetCanvas.transform;
 
-            _effectSettings = Main.ConfigsManager.init.data.uiParticleSO.EffectSettings.ToList();
+            _effectSettings = Main.Configs.init.data.uiParticleSO.EffectSettings.ToList();
             if (_effectSettings.Count == 0)
                 return;
 

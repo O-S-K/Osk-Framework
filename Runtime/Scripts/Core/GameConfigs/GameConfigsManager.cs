@@ -1,7 +1,5 @@
 using System;
 using UnityEngine;
-using Sirenix.OdinInspector;
-using System.Linq;
 
 namespace OSK
 {
@@ -53,17 +51,6 @@ namespace OSK
 #elif UNITY_IOS
             Application.OpenURL(GetUrlAppstore);
 #endif
-        }
-
-
-        [Button]
-        public void GetConfig()
-        {
-            init = Resources.LoadAll<ConfigInit>("").FirstOrDefault();
-            if (init == null)
-            {
-                Logg.Log("Not found ConfigInitDefault in Resources");
-            }
         }
     }
 }

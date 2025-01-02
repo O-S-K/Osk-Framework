@@ -56,10 +56,10 @@ namespace OSK
  
         public override void OnInit()
         {
-            if (Main.ConfigsManager.init == null || Main.ConfigsManager.init.data == null || Main.ConfigsManager.init.data.soundDataSO == null)
+            if (Main.Configs.init == null || Main.Configs.init.data == null || Main.Configs.init.data.soundDataSO == null)
                 return;
 
-            _listSoundInfos = Main.ConfigsManager.init.data.soundDataSO.ListSoundInfos;
+            _listSoundInfos = Main.Configs.init.data.soundDataSO.ListSoundInfos;
             if (_listSoundInfos == null || _listSoundInfos.Count == 0)
             {
                 OSK.Logg.LogError("SoundInfos is empty");
@@ -70,8 +70,8 @@ namespace OSK
             _soundObject.transform.parent = transform;
             _listMusicInfos = new List<PlayingSound>();
 
-            maxCapacityMusic = Main.ConfigsManager.init.data.soundDataSO.maxCapacityMusic;
-            maxCapacitySoundEffects = Main.ConfigsManager.init.data.soundDataSO.maxCapacitySFX;
+            maxCapacityMusic = Main.Configs.init.data.soundDataSO.maxCapacityMusic;
+            maxCapacitySoundEffects = Main.Configs.init.data.soundDataSO.maxCapacitySFX;
         }
 
         private void Update()

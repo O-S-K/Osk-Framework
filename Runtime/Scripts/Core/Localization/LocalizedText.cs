@@ -34,12 +34,12 @@ namespace OSK
                 UpdateText();
             }
              
-            Main.ObserverManager.Add("UpdateLanguage", UpdateText);
+            Main.Observer.Add("UpdateLanguage", UpdateText);
         }
 
         private void OnDestroy()
         {
-            Main.ObserverManager.Remove("UpdateLanguage", UpdateText);
+            Main.Observer.Remove("UpdateLanguage", UpdateText);
         }
 
         private void OnEnable()

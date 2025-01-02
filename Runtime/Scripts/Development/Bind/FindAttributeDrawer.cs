@@ -20,9 +20,7 @@ public class FindAttributeDrawer : PropertyDrawer
             var mono = property.serializedObject.targetObject as MonoBehaviour;
             if (mono != null)
             {
-                // Gọi phương thức AutoAssignComponents để gán các component
                 ComponentFinder.AutoAssignComponents(mono);
-                // Đánh dấu MonoBehaviour là dirty để Unity biết cần lưu thay đổi
                 EditorUtility.SetDirty(mono);
                 Debug.Log($"Updated {property.name} in {mono.name}.");
             }

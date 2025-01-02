@@ -35,7 +35,7 @@ namespace OSK
 
         private static void OpenURL()
         {
-            Main.ConfigsManager.GetLinkURL();
+            Main.Configs.GetLinkURL();
         }
     }
 }

@@ -43,12 +43,12 @@ namespace OSK
         public void SwitchLanguage(SystemLanguage language)
         {
             SetLanguage(language);
-            Main.ObserverManager.Notify("UpdateLanguage");
+            Main.Observer.Notify("UpdateLanguage");
         }
 
         public void SetLanguageConfigs()
         {
-            SetLanguage(Main.ConfigsManager.init.setting.languageDefault);
+            SetLanguage(Main.Configs.init.setting.languageDefault);
         }
 
 
@@ -78,7 +78,7 @@ namespace OSK
 
         private void LoadLocalizationData(SystemLanguage languageCode)
         {
-            var path = Main.ConfigsManager.init.path.pathLoadFileCsv;
+            var path = Main.Configs.init.path.pathLoadFileCsv;
             if (path.StartsWith("Resources/"))
             {
                 path = path["Resources/".Length..];

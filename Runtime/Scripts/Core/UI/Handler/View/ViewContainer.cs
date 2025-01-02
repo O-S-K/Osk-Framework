@@ -24,14 +24,14 @@ namespace OSK
 
         public void Initialize()
         {
-            if (Main.ConfigsManager.init == null || Main.ConfigsManager.init.data == null || Main.ConfigsManager.init.data.listViewS0 == null)
+            if (Main.Configs.init == null || Main.Configs.init.data == null || Main.Configs.init.data.listViewS0 == null)
                 return;
             Preload();
         }
 
         private void Preload()
         {
-            var listUIPopupSo = Main.ConfigsManager.init.data.listViewS0.Views;
+            var listUIPopupSo = Main.Configs.init.data.listViewS0.Views;
             if (listUIPopupSo == null)
             {
                 Logg.LogError("[View] is null");

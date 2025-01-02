@@ -21,7 +21,7 @@ namespace OSK
                         using (MemoryStream memoryStream = new MemoryStream())
                         {
                             binaryFormatter.Serialize(memoryStream, data);
-                            var encryptedData = FileSecurity.Encrypt(memoryStream.ToArray(), Main.ConfigsManager.init.EncryptKey);
+                            var encryptedData = FileSecurity.Encrypt(memoryStream.ToArray(), Main.Configs.init.EncryptKey);
                             file.Write(encryptedData, 0, encryptedData.Length);
                         }
                     }
@@ -58,7 +58,7 @@ namespace OSK
                 {
                     if (isDecrypt)
                     {
-                        using (MemoryStream memoryStream = new MemoryStream(FileSecurity.Decrypt(file, Main.ConfigsManager.init.EncryptKey)))
+                        using (MemoryStream memoryStream = new MemoryStream(FileSecurity.Decrypt(file, Main.Configs.init.EncryptKey)))
                         {
                             return (T)binaryFormatter.Deserialize(memoryStream);
                         }
