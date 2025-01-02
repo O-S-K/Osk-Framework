@@ -5,12 +5,22 @@ using System.Linq;
 
 namespace OSK
 {
-    public class GameConfigs : GameFrameworkComponent
+    public class GameConfigsManager : GameFrameworkComponent
     {
-        public ConfigInitDefault Game => game;
-        [SerializeField] private ConfigInitDefault game;
-        
+        public ConfigInit init {get; private set;}
+         
         public string VersionApp => Application.version;
+
+        
+        public override void OnInit()
+        {
+            if (Main.Instance.configInit == null)
+            {
+                Logg.LogError("Not found ConfigInit in Main");
+                return;
+            }
+            init = Main.Instance.configInit;
+        }
 
         public void CheckVersion(Action onNewVersion)
         {
@@ -33,8 +43,8 @@ namespace OSK
             PlayerPrefs.Save();
         }
 
-        public string GetUrlAppstore => "https://apps.apple.com/app/id" + game.appstoreID;
-        public string GetUrlGooglePlay => "https://play.google.com/store/apps/details?id=" + game.packageName;
+        public string GetUrlAppstore => "https://apps.apple.com/app/id" + init.appstoreID;
+        public string GetUrlGooglePlay => "https://play.google.com/store/apps/details?id=" + init.packageName;
 
         public void GetLinkURL()
         {
@@ -45,17 +55,12 @@ namespace OSK
 #endif
         }
 
-        public override void OnInit()
-        {
-            
-        }
-
 
         [Button]
         public void GetConfig()
         {
-            game = Resources.LoadAll<ConfigInitDefault>("").FirstOrDefault();
-            if (game == null)
+            init = Resources.LoadAll<ConfigInit>("").FirstOrDefault();
+            if (init == null)
             {
                 Logg.Log("Not found ConfigInitDefault in Resources");
             }

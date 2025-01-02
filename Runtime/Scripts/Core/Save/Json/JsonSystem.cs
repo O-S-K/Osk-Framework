@@ -26,7 +26,7 @@ namespace OSK
                 if (ableEncrypt)
                 {
                     var saveBytes = Encoding.UTF8.GetBytes(saveJson);
-                    File.WriteAllBytes(filePath, Obfuscator.Encrypt(saveBytes, Main.Configs.Game.EncryptKey));
+                    File.WriteAllBytes(filePath, Obfuscator.Encrypt(saveBytes, Main.ConfigsManager.init.EncryptKey));
                 }
                 else
                 {
@@ -69,7 +69,7 @@ namespace OSK
                 string loadJson;
                 if (ableEncrypt)
                 {
-                    var loadBytes = Obfuscator.Decrypt(File.ReadAllBytes(filePath), Main.Configs.Game.EncryptKey);
+                    var loadBytes = Obfuscator.Decrypt(File.ReadAllBytes(filePath), Main.ConfigsManager.init.EncryptKey);
                     loadJson = Encoding.UTF8.GetString(loadBytes);
                 }
                 else

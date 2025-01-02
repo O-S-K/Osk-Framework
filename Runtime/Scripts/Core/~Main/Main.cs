@@ -11,16 +11,16 @@ namespace OSK
     }
 
     [DefaultExecutionOrder(-1000)]
-    public partial class Main : MonoBehaviour
+    public partial class Main : SingletonMono<Main>
     {
         public static readonly GameFrameworkLinkedList<GameFrameworkComponent> SGameFrameworkComponents = new();
 
         public static T GetModule<T>() where T : GameFrameworkComponent
         {
-            return (T)Get(typeof(T));
+            return (T)GetModule(typeof(T));
         }
 
-        private static GameFrameworkComponent Get(Type type)
+        private static GameFrameworkComponent GetModule(Type type)
         {
             var current = SGameFrameworkComponents.First;
             while (current != null)
@@ -36,7 +36,7 @@ namespace OSK
             return null;
         } 
 
-        public static GameFrameworkComponent Get(string typeName)
+        public static GameFrameworkComponent GetModule(string typeName)
         {
             var current = SGameFrameworkComponents.First;
             while (current != null)
@@ -52,34 +52,7 @@ namespace OSK
 
             return null;
         }
-         
-        public static void Shutdown(ShutdownType shutdownType)
-        {
-            OSK.Logg.Log($"Shutdown Game Framework ({shutdownType})...");
-            SGameFrameworkComponents.Clear();
-
-            if (shutdownType == ShutdownType.None)
-            {
-                return;
-            }
-
-            if (shutdownType == ShutdownType.Restart)
-            {
-                UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager
-                    .GetActiveScene().buildIndex);
-                return;
-            }
-
-            if (shutdownType == ShutdownType.Quit)
-            {
-                Application.Quit();
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#endif
-                return;
-            }
-        }
-
+    
         internal static void Register(GameFrameworkComponent gameFrameworkComponent)
         {
             if (gameFrameworkComponent == null)
@@ -125,6 +98,33 @@ namespace OSK
                 }
 
                 current = current.Next;
+            }
+        }
+        
+        public static void Shutdown(ShutdownType shutdownType)
+        {
+            OSK.Logg.Log($"Shutdown Game Framework ({shutdownType})...");
+            SGameFrameworkComponents.Clear();
+
+            if (shutdownType == ShutdownType.None)
+            {
+                return;
+            }
+
+            if (shutdownType == ShutdownType.Restart)
+            {
+                var currentScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                UnityEngine.SceneManagement.SceneManager.LoadScene(currentScene.buildIndex);
+                return;
+            }
+
+            if (shutdownType == ShutdownType.Quit)
+            {
+                Application.Quit();
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#endif
+                return;
             }
         }
     }

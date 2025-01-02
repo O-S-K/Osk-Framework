@@ -43,12 +43,12 @@ namespace OSK
         public void SwitchLanguage(SystemLanguage language)
         {
             SetLanguage(language);
-            Main.Observer.Notify("UpdateLanguage");
+            Main.ObserverManager.Notify("UpdateLanguage");
         }
 
         public void SetLanguageConfigs()
         {
-            SetLanguage(Main.Configs.Game.setting.languageDefault);
+            SetLanguage(Main.ConfigsManager.init.setting.languageDefault);
         }
 
 
@@ -78,7 +78,7 @@ namespace OSK
 
         private void LoadLocalizationData(SystemLanguage languageCode)
         {
-            var path = Main.Configs.Game.path.pathLoadFileCsv;
+            var path = Main.ConfigsManager.init.path.pathLoadFileCsv;
             if (path.StartsWith("Resources/"))
             {
                 path = path["Resources/".Length..];

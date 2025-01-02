@@ -43,7 +43,7 @@ namespace OSK
                 foreach (ListViewSO v in viewDatas)
                 {
                     Debug.Log("ViewData found: " + v.name);
-                    var data = ScriptableObject.CreateInstance<ConfigInitDefault>().data;
+                    var data = ScriptableObject.CreateInstance<ConfigInit>().data;
                     data.listViewS0 = v;
                 }
             }
@@ -75,7 +75,7 @@ namespace OSK
                 foreach (SoundDataSO v in soundDatas)
                 {
                     Debug.Log("SoundData found: " + v.name);
-                    var data = ScriptableObject.CreateInstance<ConfigInitDefault>().data;
+                    var data = ScriptableObject.CreateInstance<ConfigInit>().data;
                     data.soundDataSO = v;
                 }
             }
@@ -107,7 +107,7 @@ namespace OSK
                 foreach (UIParticleSO v in imageEffectDatas)
                 {
                     Debug.Log("ImageEffectData found: " + v.name);
-                    var data = ScriptableObject.CreateInstance<ConfigInitDefault>().data;
+                    var data = ScriptableObject.CreateInstance<ConfigInit>().data;
                     data.uiParticleSO = v;
                 }
             }

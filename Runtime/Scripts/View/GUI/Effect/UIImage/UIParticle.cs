@@ -8,7 +8,7 @@ namespace OSK
 {
     public class UIParticle : MonoBehaviour
     {
-        private Dictionary<string, Coroutine> _activeCoroutines = new Dictionary<string, Coroutine>();
+        private readonly Dictionary<string, Coroutine> _activeCoroutines = new Dictionary<string, Coroutine>();
         private List<GameObject> _parentEffects = new List<GameObject>();
         private List<EffectSetting> _effectSettings = new List<EffectSetting>();
 
@@ -26,20 +26,17 @@ namespace OSK
         }
 
         private void Start() => Initialize();
-
-
+         
         private void Initialize()
         {
-            if (Main.Configs.Game.data.isUseUIImage == false)
-                return;
-            if (Main.Configs.Game.data.uiParticleSO == null)
+            if (Main.ConfigsManager.init == null|| Main.ConfigsManager.init.data == null || Main.ConfigsManager.init.data.uiParticleSO == null)
                 return;
 
             _mainCamera = Camera.main;
             _uiCamera = Main.UI.GetCanvas.worldCamera;
             _canvasTransform = Main.UI.GetCanvas.transform;
 
-            _effectSettings = Main.Configs.Game.data.uiParticleSO.EffectSettings.ToList();
+            _effectSettings = Main.ConfigsManager.init.data.uiParticleSO.EffectSettings.ToList();
             if (_effectSettings.Count == 0)
                 return;
 

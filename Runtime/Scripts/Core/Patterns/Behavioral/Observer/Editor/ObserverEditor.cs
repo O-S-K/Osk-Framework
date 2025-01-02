@@ -5,14 +5,14 @@ using OSK;
 
 namespace OSK
 {
-    [CustomEditor(typeof(Observer))]
+    [CustomEditor(typeof(ObserverManager))]
     public class ObserverEditor : Editor
     {
-        private Observer observer;
+        private ObserverManager _observerManager;
 
         private void OnEnable()
         {
-            observer = (Observer)target;
+            _observerManager = (ObserverManager)target;
         }
 
         public override void OnInspectorGUI()
@@ -26,9 +26,9 @@ namespace OSK
 
         private void DisplayActiveObservers()
         {
-            if (observer == null) return;
+            if (_observerManager == null) return;
 
-            foreach (var topic in observer.k_ObserverCallBack)
+            foreach (var topic in _observerManager.k_ObserverCallBack)
             {
                 EditorGUILayout.LabelField(topic.Key, EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;

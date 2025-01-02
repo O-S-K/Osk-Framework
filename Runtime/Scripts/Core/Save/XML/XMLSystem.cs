@@ -25,7 +25,7 @@ namespace OSK
                         using (MemoryStream memoryStream = new MemoryStream())
                         {
                             serializer.Serialize(memoryStream, data);
-                            byte[] encryptedData = FileSecurity.Encrypt(memoryStream.ToArray(), Main.Configs.Game.EncryptKey);
+                            byte[] encryptedData = FileSecurity.Encrypt(memoryStream.ToArray(), Main.ConfigsManager.init.EncryptKey);
                             stream.Write(encryptedData, 0, encryptedData.Length);
                         }
                     }
@@ -60,7 +60,7 @@ namespace OSK
 
                     if (isEncrypt)
                     {
-                        byte[] decryptedData = FileSecurity.Decrypt(stream, Main.Configs.Game.EncryptKey);
+                        byte[] decryptedData = FileSecurity.Decrypt(stream, Main.ConfigsManager.init.EncryptKey);
                         using (MemoryStream memoryStream = new MemoryStream(decryptedData))
                         {
                             Logg.Log($"[Load File Success]: {fileName + ".xml"} \n {path}", Color.green);

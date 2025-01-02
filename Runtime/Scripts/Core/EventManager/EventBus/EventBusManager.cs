@@ -16,7 +16,7 @@ namespace OSK
 {
     public class GameEvent { }
 
-    public class EventBus : GameFrameworkComponent
+    public class EventBusManager : GameFrameworkComponent
     {
         private Dictionary<Type, List<Action<GameEvent>>> k_Subscribers = new Dictionary<Type, List<Action<GameEvent>>>();
 

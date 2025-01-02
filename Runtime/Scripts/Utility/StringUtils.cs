@@ -76,6 +76,20 @@ namespace OSK
 
             return new string(stringChars);
         }
+        
+        public static string ShuffleString(string input)
+        {
+            char[] characters = input.ToCharArray();
+            for (int i = 0; i < characters.Length; i++)
+            {
+                char temp = characters[i];
+                int randomIndex = UnityEngine.Random.Range(0, characters.Length);
+                characters[i] = characters[randomIndex];
+                characters[randomIndex] = temp;
+            }
+
+            return new string(characters);
+        }
 
         public static int ConvertExcelToInt(string input)
         {
@@ -111,26 +125,6 @@ namespace OSK
             }
         }
 
-        public static string NumericToCurrency(float number)
-        {
-            // url: https://en.wikipedia.org/wiki/Names_of_large_numbers
-            if (number >= 1000000000)
-            {
-                return (number / 1000000000).ToString() + "B";
-            }
-
-            if (number >= 1000000)
-            {
-                return (number / 1000000).ToString() + "M";
-            }
-
-            if (number >= 100000)
-            {
-                return (number / 1000).ToString() + "K";
-            }
-
-            return number.ToString();
-        }
 
         public static string ShortenString(string input, int length)
         {

@@ -5,47 +5,9 @@ public static class MoneyUtils
 {
     public static string[] StringUnits = new string[41]
     {
-        string.Empty,
-        "k",
-        "m",
-        "b",
-        "t",
-        "q",
-        "Q",
-        "u",
-        "U",
-        "s",
-        "S",
-        "p",
-        "P",
-        "o",
-        "O",
-        "n",
-        "N",
-        "d",
-        "D",
-        "g",
-        "G",
-        "h",
-        "H",
-        "l",
-        "L",
-        "i",
-        "I",
-        "j",
-        "J",
-        "n",
-        "N",
-        "c",
-        "C",
-        "x",
-        "X",
-        "w",
-        "W",
-        "y",
-        "Y",
-        "z",
-        "Z"
+        string.Empty, "k", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc", "Ud", "Dd", "Td", "Qad", "Qid",
+        "Sxd", "Spd", "Od", "Nd", "V", "Uv", "Dv", "Tv", "Qav", "Qiv", "Sxv", "Spv", "Ov", "Nv", 
+        "Tg", "Utg", "Dtg", "Ttg", "Qatg", "Qitg", "Sxtg", "Sptg", "Otg", "Ntg"
     };
 
     public static string GetNewIndex(int index)
@@ -103,6 +65,28 @@ public static class MoneyUtils
             >= 1000 => (number / 1000f).ToString("0.#") + "K",
             _ => number.ToString()
         };
+    }
+    
+    
+    public static string FormatCurrency(float number)
+    {
+        // url: https://en.wikipedia.org/wiki/Names_of_large_numbers
+        if (number >= 1000000000)
+        {
+            return (number / 1000000000).ToString() + "B";
+        }
+
+        if (number >= 1000000)
+        {
+            return (number / 1000000).ToString() + "M";
+        }
+
+        if (number >= 100000)
+        {
+            return (number / 1000).ToString() + "K";
+        }
+
+        return number.ToString();
     }
 
 }

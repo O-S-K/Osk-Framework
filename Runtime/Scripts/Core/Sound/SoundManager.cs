@@ -18,10 +18,10 @@ namespace OSK
     {
         [ShowInInspector] private List<SoundData> _listSoundInfos = new List<SoundData>();
         [ShowInInspector] private List<PlayingSound> _listMusicInfos = new List<PlayingSound>();
-        
+
         public List<SoundData> GetListSoundInfos => _listSoundInfos;
         public List<PlayingSound> GetListMusicInfos => _listMusicInfos;
-        
+
         [SerializeField] private int maxCapacityMusic = 5;
         [SerializeField] private int maxCapacitySoundEffects = 10;
 
@@ -36,9 +36,10 @@ namespace OSK
             get => PlayerPrefs.GetInt("IsSoundSFX", 1) == 1;
             set => PlayerPrefs.SetInt("IsSoundSFX", value ? 1 : 0);
         }
-        
-        
+
+
         private AudioSource _soundObject;
+
         private Transform cameraTransform
         {
             get
@@ -52,26 +53,25 @@ namespace OSK
                 return Camera.main.transform;
             }
         }
-
-
+ 
         public override void OnInit()
         {
-            if (Main.Configs.Game == null || !Main.Configs.Game.data.isUseSound)
+            if (Main.ConfigsManager.init == null || Main.ConfigsManager.init.data == null || Main.ConfigsManager.init.data.soundDataSO == null)
                 return;
 
-            _listSoundInfos = Main.Configs.Game.data.soundDataSO.ListSoundInfos;
+            _listSoundInfos = Main.ConfigsManager.init.data.soundDataSO.ListSoundInfos;
             if (_listSoundInfos == null || _listSoundInfos.Count == 0)
             {
                 OSK.Logg.LogError("SoundInfos is empty");
                 return;
             }
-            
+
             _soundObject = new GameObject("AudioSource").AddComponent<AudioSource>();
             _soundObject.transform.parent = transform;
             _listMusicInfos = new List<PlayingSound>();
 
-            maxCapacityMusic = Main.Configs.Game.data.soundDataSO.maxCapacityMusic;
-            maxCapacitySoundEffects = Main.Configs.Game.data.soundDataSO.maxCapacitySFX;
+            maxCapacityMusic = Main.ConfigsManager.init.data.soundDataSO.maxCapacityMusic;
+            maxCapacitySoundEffects = Main.ConfigsManager.init.data.soundDataSO.maxCapacitySFX;
         }
 
         private void Update()
@@ -145,11 +145,13 @@ namespace OSK
             }
 
             //  check capacity
-            if (soundData.type == SoundType.Music &&  _listMusicInfos.Count(s => s.SoundData.type == SoundType.Music) >= maxCapacityMusic)
+            if (soundData.type == SoundType.Music &&
+                _listMusicInfos.Count(s => s.SoundData.type == SoundType.Music) >= maxCapacityMusic)
             {
                 RemoveOldestSound(SoundType.Music);
             }
-            else if (soundData.type == SoundType.SFX && _listMusicInfos.Count(s => s.SoundData.type == SoundType.SFX) >= maxCapacitySoundEffects)
+            else if (soundData.type == SoundType.SFX && _listMusicInfos.Count(s => s.SoundData.type == SoundType.SFX) >=
+                     maxCapacitySoundEffects)
             {
                 RemoveOldestSound(SoundType.SFX);
             }
@@ -212,7 +214,7 @@ namespace OSK
             audioSource.volume = volume;
             audioSource.priority = priority;
             audioSource.pitch = pitch;
-            
+
             /*audioSource.outputAudioMixerGroup = data.mixerGroup;
             audioSource.mute = data.mute;
             audioSource.bypassEffects = data.bypassEffects;

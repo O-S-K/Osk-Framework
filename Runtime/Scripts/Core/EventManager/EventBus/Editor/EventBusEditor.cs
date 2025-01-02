@@ -6,14 +6,14 @@ using UnityEditor;
 
 namespace OSK
 {
-    [CustomEditor(typeof(EventBus))]
+    [CustomEditor(typeof(EventBusManager))]
     public class EventBusEditor : Editor
     {
-        private EventBus eventBus;
+        private EventBusManager _eventBusManager;
 
         private void OnEnable()
         {
-            eventBus = (EventBus)target;
+            _eventBusManager = (EventBusManager)target;
         }
 
         public override void OnInspectorGUI()
@@ -27,10 +27,10 @@ namespace OSK
 
         private void DisplayEventListeners()
         {
-            var eventField = typeof(EventBus).GetField("_subscribers", BindingFlags.NonPublic | BindingFlags.Instance);
+            var eventField = typeof(EventBusManager).GetField("_subscribers", BindingFlags.NonPublic | BindingFlags.Instance);
             if (eventField != null)
             {
-                var subscribers = eventField.GetValue(eventBus) as Dictionary<Type, List<Action<GameEvent>>>;
+                var subscribers = eventField.GetValue(_eventBusManager) as Dictionary<Type, List<Action<GameEvent>>>;
 
                 if (subscribers != null && subscribers.Count > 0)
                 {

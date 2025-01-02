@@ -6,14 +6,14 @@ using UnityEditor;
 
 namespace OSK
 {
-    [CustomEditor(typeof(ServiceLocator))]
+    [CustomEditor(typeof(ServiceLocatorManager))]
     public class ServiceLocatorEditor : Editor
     {
-        private ServiceLocator serviceLocator;
+        private ServiceLocatorManager _serviceLocatorManager;
 
         private void OnEnable()
         {
-            serviceLocator = (ServiceLocator)target;
+            _serviceLocatorManager = (ServiceLocatorManager)target;
         }
 
         public override void OnInspectorGUI()
@@ -32,10 +32,10 @@ namespace OSK
         private void DisplayRegisteredServices()
         {
             // Using reflection to access the private field "k_Services"
-            var servicesField = typeof(ServiceLocator).GetField("k_Services", BindingFlags.NonPublic | BindingFlags.Instance);
+            var servicesField = typeof(ServiceLocatorManager).GetField("k_Services", BindingFlags.NonPublic | BindingFlags.Instance);
             if (servicesField != null)
             {
-                var services = servicesField.GetValue(serviceLocator) as Dictionary<Type, IService>;
+                var services = servicesField.GetValue(_serviceLocatorManager) as Dictionary<Type, IService>;
 
                 if (services != null && services.Count > 0)
                 {
@@ -55,10 +55,10 @@ namespace OSK
         private void DisplayServiceListeners()
         {
             // Using reflection to access the private field "k_Callbacks"
-            var callbacksField = typeof(ServiceLocator).GetField("k_Callbacks", BindingFlags.NonPublic | BindingFlags.Instance);
+            var callbacksField = typeof(ServiceLocatorManager).GetField("k_Callbacks", BindingFlags.NonPublic | BindingFlags.Instance);
             if (callbacksField != null)
             {
-                var callbacks = callbacksField.GetValue(serviceLocator) as Dictionary<Type, Action<IService>>;
+                var callbacks = callbacksField.GetValue(_serviceLocatorManager) as Dictionary<Type, Action<IService>>;
 
                 if (callbacks != null && callbacks.Count > 0)
                 {

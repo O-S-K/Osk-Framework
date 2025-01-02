@@ -4,8 +4,8 @@ using Sirenix.OdinInspector;
 
 namespace OSK
 {
-    [CreateAssetMenu(fileName = "ConfigInitDefault", menuName = "OSK/Configs/ConfigInitDefault", order = 0)]
-    public class ConfigInitDefault : ScriptableObject
+    [CreateAssetMenu(fileName = "ConfigInit", menuName = "OSK/Configs/ConfigInitDefault", order = 0)]
+    public class ConfigInit : ScriptableObject
     {
         public int targetFrameRate = 60;
         public int vSyncCount = 0;
@@ -30,7 +30,8 @@ namespace OSK
 
             FindViewDataSOAssets();
             FindSoundDataSOAssets();
-            FindImageDataSOAssets();
+            FindParticleDataSOAssets();
+
             UnityEditor.EditorUtility.SetDirty(this);
             UnityEditor.AssetDatabase.SaveAssets();
             UnityEditor.AssetDatabase.Refresh();
@@ -100,7 +101,7 @@ namespace OSK
             }
         }
 
-        private void FindImageDataSOAssets()
+        private void FindParticleDataSOAssets()
         {
             string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UIParticleSO");
             if (guids.Length == 0)
@@ -131,6 +132,16 @@ namespace OSK
                 }
             }
         }
+
+
+        [Button]
+        private void ShuffleEncryptKey()
+        {
+            EncryptKey = StringUtils.ShuffleString(EncryptKey);
+            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.AssetDatabase.SaveAssets();
+            UnityEditor.AssetDatabase.Refresh();
+        }
 #endif
     }
 
@@ -148,18 +159,14 @@ namespace OSK
     [System.Serializable]
     public class DataConfigs
     {
-        public bool isUseUI;
-        [ShowIf(nameof(isUseUI), true)] public ListViewSO listViewS0;
-        public bool isUseSound;
-        [ShowIf(nameof(isUseSound), true)] public SoundDataSO soundDataSO;
-        public bool isUseUIImage;
-        [ShowIf(nameof(isUseUIImage), true)] public UIParticleSO uiParticleSO;
+        public ListViewSO listViewS0;
+        public SoundDataSO soundDataSO;
+        public UIParticleSO uiParticleSO;
     }
 
     [System.Serializable]
     public class PathConfigs
     {
-        [FolderPath]
-        public string pathLoadFileCsv = "Localization/Localization";
+        [FolderPath] public string pathLoadFileCsv = "Localization/Localization";
     }
 }

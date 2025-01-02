@@ -62,10 +62,10 @@ namespace OSK
 
         private void FindDataImageEffectAssets()
         {
-            string[] guids = AssetDatabase.FindAssets("t:UIImageSO");
+            string[] guids = AssetDatabase.FindAssets("t:UIParticleSO");
             if (guids.Length == 0)
             {
-                Debug.LogError("No ImageEffectData found in the project.");
+                Debug.LogError("No UIParticleSO found in the project.");
                 return;
             }
 
@@ -79,14 +79,14 @@ namespace OSK
 
             if (imageEffectDatas.Count == 0)
             {
-                Debug.LogError("No ImageEffectData found in the project.");
+                Debug.LogError("No UIParticleSO found in the project.");
                 return;
             }
             else
             {
                 foreach (UIParticleSO v in imageEffectDatas)
                 {
-                    Debug.Log("ImageEffectData found: " + v.name);
+                    Debug.Log("UIParticleSO found: " + v.name);
                     Selection.activeObject = v;
                     EditorGUIUtility.PingObject(v);
                 }
@@ -98,7 +98,7 @@ namespace OSK
             string[] guids = AssetDatabase.FindAssets("t:ListViewSO");
             if (guids.Length == 0)
             {
-                Debug.LogError("No ViewData found in the project.");
+                Debug.LogError("No ListViewSO found in the project.");
                 return;
             }
 
@@ -112,14 +112,14 @@ namespace OSK
 
             if (viewDatas.Count == 0)
             {
-                Debug.LogError("No ViewData found in the project.");
+                Debug.LogError("No ListViewSO found in the project.");
                 return;
             }
             else
             {
                 foreach (ListViewSO v in viewDatas)
                 {
-                    Debug.Log("ViewData found: " + v.name);
+                    Debug.Log("ListViewSO found: " + v.name);
                     Selection.activeObject = v;
                     EditorGUIUtility.PingObject(v);
                 }

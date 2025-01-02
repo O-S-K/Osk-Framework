@@ -6,7 +6,7 @@ namespace OSK
 {
     public interface IService { }
 
-    public class ServiceLocator : GameFrameworkComponent
+    public class ServiceLocatorManager : GameFrameworkComponent
     {
         private readonly Dictionary<Type, IService> k_Services = new Dictionary<Type, IService>();
         private readonly Dictionary<Type, Action<IService>> k_Callbacks = new Dictionary<Type, Action<IService>>();

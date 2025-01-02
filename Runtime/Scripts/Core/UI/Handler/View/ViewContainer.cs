@@ -20,17 +20,18 @@ namespace OSK
 
 
         #region Init
+         
 
         public void Initialize()
         {
-            if (Main.Configs.Game == null || !Main.Configs.Game.data.isUseUI)
+            if (Main.ConfigsManager.init == null || Main.ConfigsManager.init.data == null || Main.ConfigsManager.init.data.listViewS0 == null)
                 return;
             Preload();
         }
 
         private void Preload()
         {
-            var listUIPopupSo = Main.Configs.Game.data.listViewS0.Views;
+            var listUIPopupSo = Main.ConfigsManager.init.data.listViewS0.Views;
             if (listUIPopupSo == null)
             {
                 Logg.LogError("[View] is null");
