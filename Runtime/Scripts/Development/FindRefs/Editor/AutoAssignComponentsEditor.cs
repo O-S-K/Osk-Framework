@@ -27,6 +27,20 @@ namespace OSK
             if (IsAutoAssignEnabled)
                 AutoAssignForAllMonoBehaviours();
         }
+        
+        [MenuItem("OSK-Framework/FindRefs/Update References")]
+        public static void UpdateReferences()
+        {
+            AutoAssignForAllMonoBehaviours();
+            Debug.Log("All references updated");
+        }
+        
+        [MenuItem("OSK-Framework/FindRefs/Enable Auto-Assign")]
+        public static void OnOffAutoAssign()
+        {
+            IsAutoAssignEnabled = !IsAutoAssignEnabled;
+            Debug.Log($"Auto-Assign is {IsAutoAssignEnabled}");
+        }
 
         private static void AutoAssignForAllMonoBehaviours()
         {
@@ -43,7 +57,6 @@ namespace OSK
                         {
                             //Debug.Log($"Auto-assigning for {mono.name} in Prefab Instance {go.name}");
                             ComponentFinder.AutoAssignComponents(mono);
-                            EditorUtility.SetDirty(go);
                         }
                     }
                 }
@@ -57,7 +70,6 @@ namespace OSK
                         {
                             //Debug.Log($"Auto-assigning for {mono.name} in GameObject {go.name}");
                             ComponentFinder.AutoAssignComponents(mono);
-                            EditorUtility.SetDirty(go);
                         }
                     }
                 }
@@ -76,13 +88,12 @@ namespace OSK
                     {
                         //Debug.Log($"Auto-assigning for {mono.name} in Prefab Asset {prefabRoot.name}");
                         ComponentFinder.AutoAssignComponents(mono);
-                        EditorUtility.SetDirty(prefabRoot);
                     }
                 }
             }
 
-            if (!Application.isPlaying)
-                EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
+           // if (!Application.isPlaying)
+           //     EditorSceneManager.MarkSceneDirty(UnityEngine.SceneManagement.SceneManager.GetActiveScene());
         }
     }
 }

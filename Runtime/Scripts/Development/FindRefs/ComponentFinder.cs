@@ -1,6 +1,4 @@
 #if UNITY_EDITOR
-
-
 using System;
 using System.Linq;
 using System.Reflection;
@@ -9,6 +7,7 @@ using UnityEngine;
 
 namespace OSK
 {
+    
     public static class ComponentFinder
     {
         public static void AutoAssignComponents(Component script)
@@ -51,7 +50,7 @@ namespace OSK
                     targetObject = FindInScene(findAttribute.name, findAttribute.type);
                     break;
 
-                case EFindType.Slibling:
+                case EFindType.Sibling:
                     targetObject = string.IsNullOrEmpty(findAttribute.name)
                         ? FindInSiblings(script.transform, findAttribute.type)
                         : script.transform.parent?.Find(findAttribute.name)?.gameObject;
