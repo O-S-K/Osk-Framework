@@ -31,4 +31,17 @@ namespace OSK
             this.findType = findType;
         }
     }
+    
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    public class FindsAttribute : Attribute
+    {
+        public EFindType findType;
+        public string name;
+
+        public FindsAttribute(EFindType findType = EFindType.Self, string name = "")
+        {
+            this.findType = findType;
+            this.name = name;
+        } 
+    }
 }

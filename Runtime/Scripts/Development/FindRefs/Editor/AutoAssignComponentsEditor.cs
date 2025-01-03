@@ -32,6 +32,7 @@ namespace OSK
         public static void UpdateReferences()
         {
             AutoAssignForAllMonoBehaviours();
+            AutoFinds.GetAutoRefs();
             Debug.Log("All references updated");
         }
         
