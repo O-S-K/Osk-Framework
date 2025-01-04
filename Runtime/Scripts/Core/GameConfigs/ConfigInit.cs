@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 
 namespace OSK
 {
-    [CreateAssetMenu(fileName = "ConfigInit", menuName = "OSK/Configs/ConfigInitDefault", order = 0)]
+    [CreateAssetMenu(fileName = "ConfigInit", menuName = "OSK/Configs/ConfigInit", order = 0)]
     public class ConfigInit : ScriptableObject
     {
         public int targetFrameRate = 60;
