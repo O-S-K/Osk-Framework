@@ -36,68 +36,93 @@ namespace OSK
                 EditorUtility.DisplayDialog("Error", "Script name cannot be empty.", "OK");
                 return;
             }
+            
+            // create forlder
+            string folderPath = "Assets/ViewsCreator";
+            if (!AssetDatabase.IsValidFolder(folderPath))
+            {
+                AssetDatabase.CreateFolder("Assets", "Views");
+            }
 
             // Create the script if it doesn't exist
-            string scriptPath = $"Assets/{scriptName}.cs";
+            string scriptPath = $"Assets/ViewsCreator/{scriptName}.cs";
             if (!File.Exists(scriptPath))
             {
                 CreateScriptFile(scriptPath, scriptName);
                 AssetDatabase.Refresh();
             }
 
-            // Wait for Unity to compile the script
-            EditorApplication.delayCall += () =>
+            // Đợi biên dịch hoàn tất
+            EditorApplication.delayCall += () => WaitForCompilationAndAttach(scriptPath, scriptName);
+        }
+
+        private static void WaitForCompilationAndAttach(string scriptPath, string scriptName)
+        {
+            if (EditorApplication.isCompiling)
             {
-                string[] guids = AssetDatabase.FindAssets(scriptName + " t:MonoScript");
-                if (guids.Length > 0)
-                {
-                    string scriptPath = AssetDatabase.GUIDToAssetPath(guids[0]);
-                    MonoScript monoScript = AssetDatabase.LoadAssetAtPath<MonoScript>(scriptPath);
+                Debug.Log("Waiting for Unity to finish compiling...");
+                EditorApplication.delayCall += () => WaitForCompilationAndAttach(scriptPath, scriptName);
+                return;
+            }
 
-                    if (monoScript == null)
-                    {
-                        EditorUtility.DisplayDialog("Error",
-                            "Failed to create or load the script. Check for compilation errors.", "OK");
-                        return;
-                    }
+            // Tìm MonoScript
+            MonoScript monoScript = AssetDatabase.LoadAssetAtPath<MonoScript>(scriptPath);
+            if (monoScript == null)
+            {
+                Debug.LogError($"Failed to load MonoScript at '{scriptPath}'.");
+                return;
+            }
 
-                    // Create a new GameObject and attach the script
-                    var viewContainer = FindObjectOfType<ViewContainer>();
-                    GameObject view = new GameObject(scriptName);
-                    view.GetOrAdd<RectTransform>();
-                    view.GetOrAdd<CanvasRenderer>();
-                    view.AddComponent(monoScript.GetClass());
+            System.Type scriptType = monoScript.GetClass();
+            if (scriptType == null)
+            {
+                Debug.LogError($"Failed to get class type for script '{scriptName}'. Check for compilation errors.");
+                return;
+            }
 
-                    if (viewContainer != null)
-                        view.transform.SetParent(viewContainer.transform);
+            // Tạo GameObject và gắn script
+            AttachScriptToGameObject(scriptName, scriptType);
+        }
+        
+        private static void AttachScriptToGameObject(string scriptName, System.Type scriptType)
+        {
+            var viewContainer = FindObjectOfType<ViewContainer>();
+            GameObject view = new GameObject(scriptName);
 
-                    view.transform.localPosition = Vector3.zero;
-                    view.transform.localScale = Vector3.one;
-                    view.transform.Get<RectTransform>().sizeDelta = Vector2.zero;
-                    view.transform.Get<RectTransform>().anchorMin = Vector2.zero;
-                    view.transform.Get<RectTransform>().anchorMax = Vector2.one;
-                    view.transform.Get<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            // Thêm các component cần thiết
+            view.GetOrAdd<RectTransform>();
+            view.GetOrAdd<CanvasRenderer>();
+            view.AddComponent(scriptType); 
 
-                    var container = new GameObject("Container");
-                    container.transform.SetParent(view.transform);
-                    container.transform.localPosition = Vector3.zero;
-                    container.transform.localScale = Vector3.one;
+            // Đặt làm con của ViewContainer nếu có
+            if (viewContainer != null)
+                view.transform.SetParent(viewContainer.transform);
 
-                    container.GetOrAdd<RectTransform>();
-                    container.transform.Get<RectTransform>().sizeDelta = Vector2.zero;
-                    container.transform.Get<RectTransform>().anchorMin = Vector2.zero;
-                    container.transform.Get<RectTransform>().anchorMax = Vector2.one;
-                    container.transform.Get<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
+            // Cài đặt vị trí và kích thước
+            var rectTransform = view.transform.Get<RectTransform>();
+            rectTransform.localPosition = Vector3.zero;
+            rectTransform.localScale = Vector3.one;
+            rectTransform.sizeDelta = Vector2.zero;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.pivot = new Vector2(0.5f, 0.5f);
 
-                    Selection.activeGameObject = view;
+            // Tạo container con
+            var container = new GameObject("Container");
+            container.transform.SetParent(view.transform);
+            container.transform.localPosition = Vector3.zero;
+            container.transform.localScale = Vector3.one;
 
-                    Debug.Log($"Created GameObject '{scriptName}' with script '{scriptName}' attached.");
-                }
-                else
-                {
-                    Debug.LogError($"MonoScript '{scriptName}' not found.");
-                }
-            };
+            var containerRect = container.GetOrAdd<RectTransform>();
+            containerRect.sizeDelta = Vector2.zero;
+            containerRect.anchorMin = Vector2.zero;
+            containerRect.anchorMax = Vector2.one;
+            containerRect.pivot = new Vector2(0.5f, 0.5f);
+
+            // Chọn GameObject trong Hierarchy
+            Selection.activeGameObject = view;
+
+            Debug.Log($"Created GameObject '{scriptName}' with script '{scriptName}' attached.");
         }
 
         private static void CreateScriptFile(string path, string scriptName)

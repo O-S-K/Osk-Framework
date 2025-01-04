@@ -53,7 +53,17 @@ namespace OSK
         private CanvasGroup _canvasGroup;
         private RectTransform _rectTransform;
 
-        
+
+        [Button]
+        public void AutoRefContent()
+        {
+            if(transform.GetChild(0) != null)
+            {
+                contentUI = transform.GetChild(0).GetComponent<RectTransform>();
+            }
+        }
+
+
         [Button]
         private void AddImageBlackFade()
         {
