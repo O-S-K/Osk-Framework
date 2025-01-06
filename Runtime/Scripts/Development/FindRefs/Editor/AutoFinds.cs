@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Reflection;
@@ -26,7 +27,7 @@ namespace OSK
                 MonoBehaviour[] acMonoBehaviours = cGameObject.GetComponents<MonoBehaviour>();
 
                 // Register the MonoBehaviours with the Undo system.
-                Undo.RecordObjects(acMonoBehaviours, "AutoRefs MonoBehaviours");
+                //Undo.RecordObjects(acMonoBehaviours, "AutoRefs MonoBehaviours");
 
                 for (int nMonoBehaviour = 0; nMonoBehaviour < acMonoBehaviours.Length; nMonoBehaviour++)
                 {
@@ -240,7 +241,7 @@ namespace OSK
                 GameObject[] acSceneGameObjects = FindObjectsOfType<GameObject>();
 
                 lstAutoRefTargets.AddRange(acSceneGameObjects);
-            } 
+            }
             return lstAutoRefTargets;
         }
 
@@ -265,3 +266,5 @@ namespace OSK
         }
     }
 }
+
+#endif
