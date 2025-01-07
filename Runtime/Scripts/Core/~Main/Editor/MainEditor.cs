@@ -9,7 +9,6 @@ namespace OSK
     [CustomEditor(typeof(Main))]
     public class MainEditor : Editor
     {
-        
     }
 }
 #endif

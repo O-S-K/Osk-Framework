@@ -8,7 +8,6 @@ namespace OSK
     [CustomEditor(typeof(SoundManager))]
     public class SoundManagerEditor : Editor
     {
-        // Các biến lưu trữ trạng thái mở/đóng của từng nhóm
         private bool showMusic = true;
         private bool showSFX = true;
 
@@ -35,7 +34,7 @@ namespace OSK
             if (soundManager.GetListSoundInfos != null &&
                 (soundManager.GetListMusicInfos != null && soundManager.GetListMusicInfos.Count > 0))
             {
-                // Sổ nhóm Music
+                // dropdown menu to select sound type
                 showMusic = EditorGUILayout.Foldout(showMusic, "Music");
                 if (showMusic)
                 {
@@ -48,7 +47,7 @@ namespace OSK
                     }
                 }
 
-                // Sổ nhóm SFX
+                //  dropdown menu to select sound type
                 showSFX = EditorGUILayout.Foldout(showSFX, "SFX");
                 if (showSFX)
                 {
@@ -67,7 +66,7 @@ namespace OSK
             }
         }
 
-        // Hàm phụ để vẽ thông tin về sound và các nút Play, Pause, Delete
+        //  Draw sound info
         private void DrawSoundInfo(PlayingSound playingSound)
         {
             EditorGUILayout.BeginHorizontal();
@@ -101,7 +100,7 @@ namespace OSK
         
         public static void FindSoundDataSOAssets()
         {
-            // Lấy tất cả đường dẫn của các assets có kiểu SoundDataSO trong thư mục Assets
+            // get all SoundDataSO assets
             string[] guids = AssetDatabase.FindAssets("t:SoundDataSO");
             List<SoundDataSO> soundDataAssets = new List<SoundDataSO>();
 
@@ -116,20 +115,20 @@ namespace OSK
                 }
             }
 
-            // Hiển thị kết quả tìm thấy trong console
+            // show all SoundDataSO assets
             if (soundDataAssets.Count > 0)
             {
-                Debug.Log("Found " + soundDataAssets.Count + " SoundDataSO assets:");
+                Logg.Log("Found " + soundDataAssets.Count + " SoundDataSO assets:");
                 foreach (SoundDataSO data in soundDataAssets)
                 {
-                    Debug.Log(" - " + AssetDatabase.GetAssetPath(data));
+                    Logg.Log(" - " + AssetDatabase.GetAssetPath(data));
                     Selection.activeObject = data;
                     EditorGUIUtility.PingObject(data);
                 }
             }
             else
             {
-                Debug.Log("No SoundDataSO assets found.");
+                Logg.Log("No SoundDataSO assets found.");
             }
         }
     }

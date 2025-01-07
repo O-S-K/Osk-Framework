@@ -59,10 +59,12 @@ namespace OSK
             return PlayerPrefs.GetString(key, defaultValue);
         }
 
-        public static void SetString(string key, string value)
+        public void SetString(string key, string value)
         {
             PlayerPrefs.SetString(key, value);
         }
+        
+        
 
         #endregion
 

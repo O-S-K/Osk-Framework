@@ -27,7 +27,7 @@ namespace OSK
 
         private void DisplayEventListeners()
         {
-            var eventField = typeof(EventBusManager).GetField("_subscribers", BindingFlags.NonPublic | BindingFlags.Instance);
+            var eventField = typeof(EventBusManager).GetField("k_Subscribers", BindingFlags.NonPublic | BindingFlags.Instance);
             if (eventField != null)
             {
                 var subscribers = eventField.GetValue(_eventBusManager) as Dictionary<Type, List<Action<GameEvent>>>;

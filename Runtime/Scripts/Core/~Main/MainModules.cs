@@ -74,6 +74,7 @@ namespace OSK
         LocalizationManager = 1 << 16,
         EntityManager = 1 << 17,
         TimeManager = 1 << 18,
-        NativeManager = 1 << 19
+        NativeManager = 1 << 19,
+        BlackboardManager = 1 << 20,
     }
 }

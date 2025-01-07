@@ -47,6 +47,51 @@ namespace OSK
         }
         
         
+        public static string Encrypt(string plainText, string Key)
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(Key);
+                aes.IV = new byte[16]; // Initialization vector (IV) set to 0s for simplicity
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (var ms = new System.IO.MemoryStream())
+                {
+                    using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (var writer = new System.IO.StreamWriter(cs))
+                        {
+                            writer.Write(plainText);
+                        }
+                    }
+
+                    return System.Convert.ToBase64String(ms.ToArray());
+                }
+            }
+        }
+
+        public static string Decrypt(string cipherText , string Key)
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(Key);
+                aes.IV = new byte[16]; // Initialization vector (IV) set to 0s for simplicity
+
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (var ms = new System.IO.MemoryStream(System.Convert.FromBase64String(cipherText)))
+                {
+                    using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (var reader = new System.IO.StreamReader(cs))
+                        {
+                            return reader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+        }
         public static string CalculateMD5Hash(string input)
         {
             var md5 = MD5.Create();

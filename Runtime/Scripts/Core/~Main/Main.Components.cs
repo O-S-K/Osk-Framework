@@ -29,6 +29,7 @@ namespace OSK
         public static EntityManager Entity { get; private set; }
         public static TimeManager Time { get; private set; }
         public static NativeManager Native { get; private set; }
+        public static BlackboardManager Blackboard { get; private set; }
 
 
         public MainModules mainModules;
@@ -77,6 +78,7 @@ namespace OSK
                         else if (_module is EntityManager entity) Entity = entity;
                         else if (_module is TimeManager time) Time = time;
                         else if (_module is NativeManager native) Native = native;
+                        else if (_module is BlackboardManager blackboard) Blackboard = blackboard; 
                         else
                         {
                             Logg.LogError($"Module {_module} not found");
