@@ -50,18 +50,18 @@ namespace OSK
         }
         private void FindSoundDataSOAssets()
         {
-            string[] guids = AssetDatabase.FindAssets("t:SoundDataSO");
+            string[] guids = AssetDatabase.FindAssets("t:ListSoundSO");
             if (guids.Length == 0)
             {
                 Debug.LogError("No SoundData found in the project.");
                 return;
             }
 
-            List<SoundDataSO> soundDatas = new List<SoundDataSO>();
+            List<ListSoundSO> soundDatas = new List<ListSoundSO>();
             foreach (var guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                SoundDataSO v = AssetDatabase.LoadAssetAtPath<SoundDataSO>(path);
+                ListSoundSO v = AssetDatabase.LoadAssetAtPath<ListSoundSO>(path);
                 soundDatas.Add(v);
             }
 
@@ -72,11 +72,11 @@ namespace OSK
             }
             else
             {
-                foreach (SoundDataSO v in soundDatas)
+                foreach (ListSoundSO v in soundDatas)
                 {
                     Debug.Log("SoundData found: " + v.name);
                     var data = ScriptableObject.CreateInstance<ConfigInit>().data;
-                    data.soundDataSO = v;
+                    data.listSoundSo = v;
                 }
             }
         }

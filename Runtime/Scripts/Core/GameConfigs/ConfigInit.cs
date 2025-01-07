@@ -78,11 +78,11 @@ namespace OSK
                 return;
             }
 
-            List<SoundDataSO> soundDatas = new List<SoundDataSO>();
+            List<ListSoundSO> soundDatas = new List<ListSoundSO>();
             foreach (var guid in guids)
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                SoundDataSO v = UnityEditor.AssetDatabase.LoadAssetAtPath<SoundDataSO>(path);
+                ListSoundSO v = UnityEditor.AssetDatabase.LoadAssetAtPath<ListSoundSO>(path);
                 soundDatas.Add(v);
             }
 
@@ -93,10 +93,10 @@ namespace OSK
             }
             else
             {
-                foreach (SoundDataSO v in soundDatas)
+                foreach (ListSoundSO v in soundDatas)
                 {
                     Debug.Log("SoundData found: " + v.name);
-                    data.soundDataSO = v;
+                    data.listSoundSo = v;
                 }
             }
         }
@@ -160,7 +160,7 @@ namespace OSK
     public class DataConfigs
     {
         public ListViewSO listViewS0;
-        public SoundDataSO soundDataSO;
+        public ListSoundSO listSoundSo;
         public UIParticleSO uiParticleSO;
     }
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace OSK
 {
-    [CustomEditor(typeof(SoundDataSO))]
+    [CustomEditor(typeof(ListSoundSO))]
     public class SoundDataEditor : Editor
     {
         private bool showTable = true;
@@ -14,7 +14,7 @@ namespace OSK
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
-            SoundDataSO soundDataSo = (SoundDataSO)target;
+            ListSoundSO listSoundSo = (ListSoundSO)target;
             EditorGUILayout.Space();
             
             EditorGUILayout.Space(10);
@@ -36,9 +36,9 @@ namespace OSK
                     DrawTableHeaders();
                     EditorGUILayout.Space();
 
-                    for (int i = 0; i < soundDataSo.ListSoundInfos.Count; i++)
+                    for (int i = 0; i < listSoundSo.ListSoundInfos.Count; i++)
                     {
-                        SoundData soundData = soundDataSo.ListSoundInfos[i];
+                        SoundData soundData = listSoundSo.ListSoundInfos[i];
 
                         if (soundData.type == type)
                         {
@@ -48,7 +48,7 @@ namespace OSK
                             AudioClip newAudioClip = (AudioClip)EditorGUILayout.ObjectField(soundData.audioClip, typeof(AudioClip), false, GUILayout.Width(150));
                             if (newAudioClip != soundData.audioClip)
                             {
-                                if (IsDuplicateAudioClip(soundDataSo, newAudioClip))
+                                if (IsDuplicateAudioClip(listSoundSo, newAudioClip))
                                 {
                                     Logg.LogError($"AudioClip {newAudioClip.name} already exists in the list. Cannot add duplicate.");
                                 }
@@ -76,7 +76,7 @@ namespace OSK
                             GUI.enabled = true;
                             if (GUILayout.Button("Remove", GUILayout.Width(60)))
                             {
-                                soundDataSo.ListSoundInfos.RemoveAt(i);
+                                listSoundSo.ListSoundInfos.RemoveAt(i);
                                 i--;
                                 continue;
                             }
@@ -94,7 +94,7 @@ namespace OSK
             EditorGUILayout.Space(50);
             if (GUILayout.Button("Add New Sound Info", GUILayout.Width(200)))
             {
-                soundDataSo.ListSoundInfos.Add(new SoundData());
+                listSoundSo.ListSoundInfos.Add(new SoundData());
             }
             EditorGUILayout.Space();
             EditorGUILayout.EndHorizontal();
@@ -133,11 +133,11 @@ namespace OSK
             }
         }
 
-        private bool IsDuplicateAudioClip(SoundDataSO soundDataSo, AudioClip clipToCheck)
+        private bool IsDuplicateAudioClip(ListSoundSO listSoundSo, AudioClip clipToCheck)
         {
             if (clipToCheck == null) return false;
 
-            foreach (var soundInfo in soundDataSo.ListSoundInfos)
+            foreach (var soundInfo in listSoundSo.ListSoundInfos)
             {
                 if (soundInfo.audioClip == clipToCheck)
                 {

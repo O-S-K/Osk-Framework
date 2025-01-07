@@ -102,16 +102,16 @@ namespace OSK
         {
             // get all SoundDataSO assets
             string[] guids = AssetDatabase.FindAssets("t:SoundDataSO");
-            List<SoundDataSO> soundDataAssets = new List<SoundDataSO>();
+            List<ListSoundSO> soundDataAssets = new List<ListSoundSO>();
 
             foreach (string guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
-                SoundDataSO soundData = AssetDatabase.LoadAssetAtPath<SoundDataSO>(path);
+                ListSoundSO listSound = AssetDatabase.LoadAssetAtPath<ListSoundSO>(path);
 
-                if (soundData != null)
+                if (listSound != null)
                 {
-                    soundDataAssets.Add(soundData);
+                    soundDataAssets.Add(listSound);
                 }
             }
 
@@ -119,7 +119,7 @@ namespace OSK
             if (soundDataAssets.Count > 0)
             {
                 Logg.Log("Found " + soundDataAssets.Count + " SoundDataSO assets:");
-                foreach (SoundDataSO data in soundDataAssets)
+                foreach (ListSoundSO data in soundDataAssets)
                 {
                     Logg.Log(" - " + AssetDatabase.GetAssetPath(data));
                     Selection.activeObject = data;
