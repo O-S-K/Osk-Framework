@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    [CreateAssetMenu(menuName = "OSK/MainModules")]
+    [CreateAssetMenu(fileName = "MainModules", menuName = "OSK/MainModules")]
     public class MainModules : ScriptableObject
     {
         private Dictionary<string, Type> componentTypeCache = new Dictionary<string, Type>();

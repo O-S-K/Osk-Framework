@@ -47,6 +47,7 @@ namespace OSK
         {
             _uiTransition = gameObject.GetOrAdd<UITransition>();
         }
+        
 
         public virtual void Initialize(ViewContainer viewContainer)
         {

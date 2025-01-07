@@ -166,6 +166,13 @@ namespace OSK
                 EditorGUILayout.EndHorizontal();
             }
         }
+        
+        
+        [MenuItem("OSK-Framework/UI/Create view")]
+        public static void CreateView()
+        {
+             
+        }
     }
 }
 #endif

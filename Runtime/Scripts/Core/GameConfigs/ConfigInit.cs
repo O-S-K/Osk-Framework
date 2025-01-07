@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 
 namespace OSK
 {
-    [CreateAssetMenu(fileName = "ConfigInit", menuName = "OSK/Configs/ConfigInitDefault", order = 0)]
+    [CreateAssetMenu(fileName = "ConfigInit", menuName = "OSK/Configs/ConfigInit", order = 0)]
     public class ConfigInit : ScriptableObject
     {
         public int targetFrameRate = 60;
@@ -71,7 +71,7 @@ namespace OSK
 
         private void FindSoundDataSOAssets()
         {
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:SoundDataSO");
+            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ListSoundSO");
             if (guids.Length == 0)
             {
                 Debug.LogError("No SoundData found in the project.");
