@@ -1,79 +1,74 @@
-# Framework Overview
+# **OSK Framework Overview for Realme**
 
-This framework is designed to manage various aspects of a Unity project through a modular and organized structure. It provides comprehensive systems for game functionalities such as game data management, events, localization, networking, sound management, and more. Each module is encapsulated for maintainability, performance, and scalability.
+The **OSK Framework** is a modular Unity framework designed to streamline game development, optimized for Realme devices. It provides tools to manage game systems like events, localization, sound, and more, ensuring high performance, scalability, and maintainability.
 
-The framework includes systems like:
-- **Object Pooling**: Efficiently reuses objects to reduce memory allocation and improve performance.
-- **Observer Pattern**: Implements an event system for decoupled event handling, allowing flexible communication between components.
-- **State Machines**: Supports state-driven behavior, making it easier to manage game logic and transitions.
-- **Event Handling**: A powerful event system for managing interactions and communication between different game components.
-- **Data Management**: Handles persistent data storage and retrieval, including saving/loading game states, player preferences, and more.
-- **Entity Management**: Manages in-game entities (characters, NPCs, etc.) with dynamic and reusable object systems.
-- **Game Configuration**: Stores and manages game settings and parameters via ScriptableObjects, making them easily adjustable.
-- **Localization**: Simplifies managing translations for multiple languages, with support for importing/exporting from CSV/Excel files.
-- **Platform-Specific Functionality**: Includes features like vibration, GPS, and notifications, tailored for specific platforms.
-- **Networking**: Handles multiplayer, leaderboards, and cloud synchronization to support online game features.
-- **Performance Optimization**: Provides utilities like memory management, framerate monitoring, and object pooling to optimize game performance.
-- **Procedural Content Generation**: Allows for dynamic generation of levels, environments, or other game content.
-- **Resource Management**: Manages assets and resources to optimize memory usage and improve loading times.
-- **Sound Management**: Controls background music, sound effects, and audio events with ScriptableObject-based configuration.
-- **UI Management**: Simplifies user interface management, including screens, popups, HUDs, and input handling with dynamic transitions.
-- **Timer System**: A flexible system for managing countdowns, events, and time-based logic, with support for pausing and looping.
-- **Save/Load System**: Robust saving and loading mechanisms for both local and cloud storage.
-- **Scene Management**: Handles scene transitions, loading, and unloading of levels and menus, ensuring smooth gameplay flow.
-
-These systems are designed to improve the modularity, maintainability, and performance of your Unity project.
+**version 2.0
 
 ---
 
-## How to Use
+## **🌟 Key Features**
 
-### 1. **Install Required Packages**
+// **link: https://github.com/O-S-K/Osk-Framework/tree/main/Runtime/Scripts/Core
 
-Before using the framework, install the following essential packages:
-- Odin Inspector (Requirements)
-- DOTween (Requirements)
-- UIFeel (optional)
-- UIParticle (optional)
-
-### 2. **Initialize the Framework**
-
-Once the required packages are installed, follow these steps to initialize the framework in your Unity project:
-
-- Go to **Window** -> **OSK-Framework** -> **CreateFramework** to generate the framework structure for your project.
-- Then click **Create Module** and **Create Config** to create the initial modules and configurations for the system.
-
-### 3. **Enable Modules**
-
-- Go to **MainModules** in `OSK-Framework` and enable the modules you want to use in your game.
-
-### 4. **Configure Init Settings**
-
-- In **ConfigInit**, create and configure **ScriptableObject (SO)** for managing resources like **ListMusicSO**, **ListSoundSO**, and **UIParticleSO** for the game:
-  - Right-click in the `Assets` folder -> **Create** -> **OSK** to create these SOs.
-  - You can then edit initial values for these components directly in the SOs, allowing you to customize settings for your game.
-
-### 5. **Using the Main Object**
-
-The `Main` object is the central access point for all systems within the framework. After enabling the necessary modules, you can use the following methods to interact with the various systems in your game:
-
-- **Object Pooling**: Use `Main.Pool.Spawn<T>()` to spawn objects from the pool, optimizing memory usage.
-- **UI Management**: Use `Main.UI.Open<T>()` to open UI screens or popups in the game.
-- **Event Handling**: Use `Main.Event.Add("EventName", callback)` to register and handle events in the game.
-- **Sound Management**: Use `Main.Sound.Play()` to play sound effects or background music in the game.
-- **Storage Management**: Use `Main.Storage.Save<T, U>()` to save game data to disk.
-more module .....
-    
+1. [**MonoManager**]: Centralized management for MonoBehaviours, enabling streamlined execution and lifecycle control.  
+2. [**ServiceLocatorManager**]: Provides a service locator pattern for dependency resolution.  
+3. [**ObserverManager**]: Implements the Observer Pattern for decoupled event-driven communication.  
+4. [**EventBusManager**]: Facilitates event broadcasting and subscription across systems.  
+5. [**FSMManager**]: Manages Finite State Machines for state-driven behaviors.  
+6. [**PoolManager**]: Efficiently handles object pooling to improve memory usage and performance.  
+7. [**CommandManager**]: Supports command pattern for undoable actions and player input recording.  
+8. [**SceneManager**]: Manages smooth scene transitions and scene-specific logic.  
+9. [**ResourceManager**]: Handles resource loading, caching, and unloading.  
+10. [**StorageManager**]: Provides mechanisms for saving and loading persistent data.  
+11. [**DataManager**]: Manages runtime and persistent game data.  
+12. [**NetworkManager**]: Handles networking, multiplayer, and server communication.  
+13. [**WebRequestManager**](: Simplifies making HTTP requests and processing responses.  
+14. [**GameConfigsManager**]: Centralized management of game configuration settings.  
+15. [**UIManager**]: Manages UI screens, transitions, and dynamic content.  
+16. [**SoundManager**]: Controls background music, sound effects, and audio events.  
+17. [**LocalizationManager**]: Handles multi-language support and localization.  
+18. [**EntityManager**]: Manages game entities and their lifecycle.  
+19. [**TimeManager**]: Provides advanced time tracking, countdowns, and scheduling.  
+20. [**NativeManager**]: Supports platform-specific features like vibration, GPS, and notifications.  
+21. [**BlackboardManager**]: Facilitates shared data storage for AI and gameplay logic.  
+22. [**ProcedureManager**]: Manages game procedures and workflows for structured gameplay logic.  
 
 ---
 
-### **Benefits of Using This Framework:**
+## **🚀 Quick Start**
 
-- **Flexibility**: The framework can be extended and customized for various types of games.
-- **Reusability**: Modules can be reused across different projects.
-- **Efficient Management**: The framework helps manage different game components (like UI, sound, events) in an organized and modular way.
+### **1. Install Dependencies**
+- Required: **Odin Inspector**, **DOTween**  
+- Optional: **UIFeel**, **UIParticle**
 
-By following the above steps, you can effectively utilize this framework to develop your Unity game, ensuring a well-structured and maintainable project.
- 
-@support : gamecoding1999@gmail.com
-@facebook: https://www.facebook.com/xOskx/
+### **2. Initialize Framework**
+1. Go to **Window → OSK-Framework → CreateFramework** to set up the structure.  
+2. Use **Create Module** and **Create Config** to enable and configure modules.
+
+### **3. Enable Modules**
+- Navigate to **MainModules** and activate the features you need.
+
+### **4. Configure Settings**
+- Create ScriptableObjects for resources:
+  - Right-click in `Assets` → **Create → OSK** → Select the desired SO type (e.g., **ListMusicSO**, **ListSoundSO**).
+
+### **5. Access Framework**
+Use the `Main` object to interact with the systems:
+- **Pooling**: `Main.Pool.Spawn<T>()`  
+- **UI**: `Main.UI.Open<T>()`  
+- **Events**: `Main.Event.Add("EventName", callback)`  
+- **Sound**: `Main.Sound.Play()`  
+- **Storage**: `Main.Storage.Save<T, U>()`  
+
+---
+
+## **🎯 Benefits**
+- **Modular**: Enable only the features you need for your project.  
+- **Reusable**: Modules can be reused across multiple games.  
+- **Optimized**: Organized management of game systems for better performance.  
+
+---
+
+## **📞 Support**
+- **Email**: gamecoding1999@gmail.com  
+- **Facebook**: [OSK Framework](https://www.facebook.com/xOskx/)
