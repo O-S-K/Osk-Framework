@@ -8,7 +8,7 @@ The **OSK Framework** is a modular Unity framework designed to streamline game d
 
 ## **🌟 Key Features**
 
-// **link: https://github.com/O-S-K/Osk-Framework/tree/main/Runtime/Scripts/Core
+**link: https://github.com/O-S-K/Osk-Framework/tree/main/Runtime/Scripts/Core
 
 1. [**MonoManager**]: Centralized management for MonoBehaviours, enabling streamlined execution and lifecycle control.  
 2. [**ServiceLocatorManager**]: Provides a service locator pattern for dependency resolution.  
