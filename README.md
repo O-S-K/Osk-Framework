@@ -1,77 +1,79 @@
-### Framework Overview
+# Framework Overview
 
-This framework is designed to manage various aspects of a Unity project through a modular, organized structure. It provides comprehensive systems for game functionalities such as abilities, data management, events, localization, networking, and more. Each module is encapsulated for maintainability, performance, and scalability.
+This framework is designed to manage various aspects of a Unity project through a modular and organized structure. It provides comprehensive systems for game functionalities such as game data management, events, localization, networking, sound management, and more. Each module is encapsulated for maintainability, performance, and scalability.
 
-#### **Modules**
+The framework includes systems like:
+- **Object Pooling**: Efficiently reuses objects to reduce memory allocation and improve performance.
+- **Observer Pattern**: Implements an event system for decoupled event handling, allowing flexible communication between components.
+- **State Machines**: Supports state-driven behavior, making it easier to manage game logic and transitions.
+- **Event Handling**: A powerful event system for managing interactions and communication between different game components.
+- **Data Management**: Handles persistent data storage and retrieval, including saving/loading game states, player preferences, and more.
+- **Entity Management**: Manages in-game entities (characters, NPCs, etc.) with dynamic and reusable object systems.
+- **Game Configuration**: Stores and manages game settings and parameters via ScriptableObjects, making them easily adjustable.
+- **Localization**: Simplifies managing translations for multiple languages, with support for importing/exporting from CSV/Excel files.
+- **Platform-Specific Functionality**: Includes features like vibration, GPS, and notifications, tailored for specific platforms.
+- **Networking**: Handles multiplayer, leaderboards, and cloud synchronization to support online game features.
+- **Performance Optimization**: Provides utilities like memory management, framerate monitoring, and object pooling to optimize game performance.
+- **Procedural Content Generation**: Allows for dynamic generation of levels, environments, or other game content.
+- **Resource Management**: Manages assets and resources to optimize memory usage and improve loading times.
+- **Sound Management**: Controls background music, sound effects, and audio events with ScriptableObject-based configuration.
+- **UI Management**: Simplifies user interface management, including screens, popups, HUDs, and input handling with dynamic transitions.
+- **Timer System**: A flexible system for managing countdowns, events, and time-based logic, with support for pausing and looping.
+- **Save/Load System**: Robust saving and loading mechanisms for both local and cloud storage.
+- **Scene Management**: Handles scene transitions, loading, and unloading of levels and menus, ensuring smooth gameplay flow.
 
-1. **Main**  
-    The main manager that oversees the entire game system. Provides access to core functionalities like the Object Pool, Observer, Event System, and more.
+These systems are designed to improve the modularity, maintainability, and performance of your Unity project.
 
-2. **Data**  
-   Handles persistent data storage and retrieval. Supports player preferences, game saves, and general data management.
+---
 
-3. **DesignPattern**  
-   Implements commonly used design patterns like Singleton, Object Pooling, Dependency Injection, and State Machines to organize and streamline game code.
+## How to Use
 
-4. **Entity**  
-   Manages game entities such as characters, NPCs, enemies, and other in-game objects. Entities are represented in a dynamic, reusable way.
+### 1. **Install Required Packages**
 
-5. **EventManager**  
-   A centralized system for handling game events using an Observer pattern. This allows for loosely coupled communication between different game components.
+Before using the framework, install the following essential packages:
+- Odin Inspector (Requirements)
+- DOTween (Requirements)
+- UIFeel (optional)
+- UIParticle (optional)
 
-6. **GameConfigs**  
-   Stores configuration settings and gameplay-related parameters. Use ScriptableObjects to manage and tweak game variables without hardcoding them in scripts.
+### 2. **Initialize the Framework**
 
-7. **Localization**  
-   Manages translations and localization for different languages. Supports importing/exporting localization data from files, like Excel or CSV.
+Once the required packages are installed, follow these steps to initialize the framework in your Unity project:
 
-8. **Native**  
-   Provides platform-specific functionalities for handling native device features such as vibration, GPS, or notifications.
+- Go to **Window** -> **OSK-Framework** -> **CreateFramework** to generate the framework structure for your project.
+- Then click **Create Module** and **Create Config** to create the initial modules and configurations for the system.
 
-9. **Networking**  
-   Manages online features such as multiplayer, leaderboards, and cloud synchronization.
+### 3. **Enable Modules**
 
-10. **Performance**  
-    Optimizes game performance with utilities like Object Pooling, memory management, and framerate monitoring.
+- Go to **MainModules** in `OSK-Framework` and enable the modules you want to use in your game.
 
-11. **Procedure**  
-    Manages procedural generation techniques, allowing for the dynamic creation of levels, environments, or other game content.
+### 4. **Configure Init Settings**
 
-12. **Resources**  
-    Handles resource loading and asset management, optimizing memory usage by managing resource lifecycle efficiently.
+- In **ConfigInit**, create and configure **ScriptableObject (SO)** for managing resources like **ListMusicSO**, **ListSoundSO**, and **UIParticleSO** for the game:
+  - Right-click in the `Assets` folder -> **Create** -> **OSK** to create these SOs.
+  - You can then edit initial values for these components directly in the SOs, allowing you to customize settings for your game.
 
-13. **Save**  
-    Provides a robust system for saving and loading game states, both locally and via cloud storage.
+### 5. **Using the Main Object**
 
-14. **Scene**  
-    Manages scene transitions, loading, and unloading of game levels or menus, providing smooth flow between scenes.
+The `Main` object is the central access point for all systems within the framework. After enabling the necessary modules, you can use the following methods to interact with the various systems in your game:
 
-15. **Sound**  
-    Manages game audio, including background music, sound effects, and environmental sounds. Easily integrate and manage audio using ScriptableObjects.
+- **Object Pooling**: Use `Main.Pool.Spawn<T>()` to spawn objects from the pool, optimizing memory usage.
+- **UI Management**: Use `Main.UI.Open<T>()` to open UI screens or popups in the game.
+- **Event Handling**: Use `Main.Event.Add("EventName", callback)` to register and handle events in the game.
+- **Sound Management**: Use `Main.Sound.Play()` to play sound effects or background music in the game.
+- **Storage Management**: Use `Main.Storage.Save<T, U>()` to save game data to disk.
+more module .....
+    
 
-16. **Timer**  
-    Provides a flexible system for managing timers, countdowns, and in-game time-based events. Supports features like pausing, resuming, and looping timers.
+---
 
-17. **UI**  
-    Manages user interface components like popups, screens, and HUD elements. Provides functions for dynamic UI transitions and input handling.
+### **Benefits of Using This Framework:**
 
-#### **System** 
-- Ability, Inventory, Quest, Daily, Spin, and more.
+- **Flexibility**: The framework can be extended and customized for various types of games.
+- **Reusability**: Modules can be reused across different projects.
+- **Efficient Management**: The framework helps manage different game components (like UI, sound, events) in an organized and modular way.
 
-### **How to Use**
-
-1. **Drag Prefab to Scene**  
-   To initialize the framework in your project, drag the `Main` prefab into your scene.
-
-2. **Create ScriptableObject (SO) Data**  
-   - **Screens and Popups**: Create ScriptableObjects to define different screens (e.g., MainMenu, GameOver) and popups (e.g., Settings, Notifications).
-   - **Sound and Music**: Create SO for sound effects and music tracks, linking them to corresponding events in your game.
-
-3. **Using the Main Functionality**  
-   The `Main` object is the central hub for accessing various systems.  
-   - **Object Pooling**: Use `Main.Pool.Create<T>()` to instantiate objects using the pooling system, ensuring optimal performance.
-   - **Observer**: Use `Main.Observer.Add("ScoreUpdate", callback)` to subscribe to game events and manage the flow of information between game components.
-   
-   You can also use `Main.Command`, `Main.Timer`, and other `Main` systems for advanced game management.
-
-This framework provides a structured, reusable foundation for managing various game systems efficiently. The flexibility and modularity of the framework ensure that it can be tailored to different game genres and requirements.
+By following the above steps, you can effectively utilize this framework to develop your Unity game, ensuring a well-structured and maintainable project.
+ 
+@support : gamecoding1999@gmail.com
+@facebook: https://www.facebook.com/xOskx/
