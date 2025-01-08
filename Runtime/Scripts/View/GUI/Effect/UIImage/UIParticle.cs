@@ -24,10 +24,8 @@ namespace OSK
             WorldToWorld,
             WorldToWorld3D,
         }
-
-        private void Start() => Initialize();
-         
-        private void Initialize()
+ 
+        public void Initialize()
         {
             if (Main.Configs.init == null|| Main.Configs.init.data == null || Main.Configs.init.data.uiParticleSO == null)
                 return;
@@ -110,7 +108,7 @@ namespace OSK
 
             if (gameObject.activeInHierarchy)
             {
-                StartCoroutine(IESpawnEffect(is3D, effectSetting));
+                 IESpawnEffect(is3D, effectSetting).Run();
             }
         }
 

@@ -83,7 +83,7 @@ namespace OSK
  
         public void StartCooldown(Ability ability)
         {
-            StartCoroutine(CooldownRoutine(ability));
+            CooldownRoutine(ability).Run();
         }
 
         private IEnumerator CooldownRoutine(Ability ability)

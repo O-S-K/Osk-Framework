@@ -105,8 +105,7 @@ namespace OSK
 
         public void ShowResult(int resultIndex)
         {
-            StartCoroutine(_ShowResult(resultIndex));
-            
+             _ShowResult(resultIndex).Run();
             Debug.Log("Result: " + resultIndex);
             //SoundController.instance.PlaySoundEffect("collection", false, 1);
         }

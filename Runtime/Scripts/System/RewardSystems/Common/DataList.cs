@@ -93,7 +93,7 @@ namespace OSK
 
         private void UpdateHeight()
         {
-            StartCoroutine(_UpdateHeight());
+             _UpdateHeight().Run();
         }
 
         private IEnumerator _UpdateHeight()

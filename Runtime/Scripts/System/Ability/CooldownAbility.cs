@@ -13,7 +13,7 @@ public class CooldownAbility : MonoBehaviour
         if (!cooldownTimers.ContainsKey(ability))
         {
             cooldownTimers[ability] = ability.cooldownTime;
-            StartCoroutine(CooldownRoutine(ability));
+            CooldownRoutine(ability).Run();
         }
     }
 

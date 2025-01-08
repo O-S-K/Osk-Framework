@@ -1,6 +1,4 @@
 #if UNITY_EDITOR
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -39,8 +37,8 @@ namespace OSK
         
         private void CreateConfigAndModule()
         {
-            ConfigInit configInit = ScriptableObject.CreateInstance<ConfigInit>();
-            MainModules mainModules = ScriptableObject.CreateInstance<MainModules>();
+            ConfigInit configInit   = CreateInstance<ConfigInit>();
+            MainModules mainModules = CreateInstance<MainModules>();
             
             string path = "Assets/OSK/Resources/Configs";
             if (!AssetDatabase.IsValidFolder(path))
@@ -82,7 +80,6 @@ namespace OSK
             {
                 string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                 mainModules = UnityEditor.AssetDatabase.LoadAssetAtPath<MainModules>(path);
-                
             }
             
             if (configInit == null)
@@ -97,6 +94,9 @@ namespace OSK
             
             main.configInit = configInit;
             main.mainModules = mainModules;
+            
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
     }
 }

@@ -85,7 +85,7 @@ namespace OSK
             var priorityProp = entryProperty.FindPropertyRelative("priority");
             var categoryProp = entryProperty.FindPropertyRelative("category");
             var readOnlyProp = entryProperty.FindPropertyRelative("isReadOnly");
-            var descriptionProp = entryProperty.FindPropertyRelative("description");
+            var descriptionProp = entryProperty.FindPropertyRelative("description"); 
 
             // Set background color based on priority and readonly status
             var originalColor = GUI.backgroundColor;
@@ -147,17 +147,12 @@ namespace OSK
                 }
             }
 
-            // Category field
             categoryProp.stringValue = EditorGUILayout.TextField("Category", categoryProp.stringValue);
-
-            // Priority field
             priorityProp.intValue = EditorGUILayout.IntField("Priority", priorityProp.intValue);
-
-            // Read Only toggle
             readOnlyProp.boolValue = EditorGUILayout.Toggle("Read Only", readOnlyProp.boolValue);
-
-            // Description field
-            descriptionProp.stringValue = EditorGUILayout.TextField("Description", descriptionProp.stringValue);
+            descriptionProp.stringValue = EditorGUILayout.TextField("Description", descriptionProp.stringValue); 
+            
+            
 
             // Type field (read-only)
             EditorGUI.BeginDisabledGroup(true);
@@ -219,6 +214,7 @@ namespace OSK
                 newEntryReadOnly = EditorGUILayout.Toggle("Read Only", newEntryReadOnly);
                 newEntryDescription = EditorGUILayout.TextField("Description", newEntryDescription);
 
+                EditorGUILayout.Space(10);
                 EditorGUI.BeginDisabledGroup(string.IsNullOrEmpty(newEntryKey) || !IsKeyUnique(newEntryKey, -1));
                 if (GUILayout.Button("Add Entry"))
                 {

@@ -33,7 +33,7 @@ namespace OSK
         {
             UnityWebRequest webRequest = UnityWebRequest.Get(url);
             ApplyDefaultHeaders(webRequest);
-            StartCoroutine(HandleRequest(webRequest, onSuccess, onError));
+            HandleRequest(webRequest, onSuccess, onError).Run();
         }
 
         // POST request with WWWForm
@@ -41,7 +41,7 @@ namespace OSK
         {
             UnityWebRequest webRequest = UnityWebRequest.Post(url, formData);
             ApplyDefaultHeaders(webRequest);
-            StartCoroutine(HandleRequest(webRequest, onSuccess, onError));
+            HandleRequest(webRequest, onSuccess, onError).Run();
         }
 
         // POST request with JSON
@@ -53,8 +53,7 @@ namespace OSK
             webRequest.downloadHandler = new DownloadHandlerBuffer();
             webRequest.SetRequestHeader("Content-Type", "application/json");
             ApplyDefaultHeaders(webRequest);
-
-            StartCoroutine(HandleRequest(webRequest, onSuccess, onError));
+            HandleRequest(webRequest, onSuccess, onError).Run();
         }
 
         // PUT request with JSON
@@ -63,8 +62,7 @@ namespace OSK
             UnityWebRequest webRequest = UnityWebRequest.Put(url, jsonData);
             webRequest.SetRequestHeader("Content-Type", "application/json");
             ApplyDefaultHeaders(webRequest);
-
-            StartCoroutine(HandleRequest(webRequest, onSuccess, onError));
+            HandleRequest(webRequest, onSuccess, onError).Run();
         }
 
         // DELETE request
@@ -72,8 +70,7 @@ namespace OSK
         {
             UnityWebRequest webRequest = UnityWebRequest.Delete(url);
             ApplyDefaultHeaders(webRequest);
-
-            StartCoroutine(HandleRequest(webRequest, onSuccess, onError));
+            HandleRequest(webRequest, onSuccess, onError).Run();
         }
 
         //  Apply default headers to request

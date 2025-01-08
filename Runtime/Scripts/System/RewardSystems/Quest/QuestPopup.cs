@@ -71,7 +71,7 @@ namespace OSK
             if(quest != null)
             {
                 QuestSystem.Instance.ClaimQuest(quest.index, true);
-                StartCoroutine(_ShowRewardClaiming(quest.rewards));
+                _ShowRewardClaiming(quest.rewards).Run();
                 this.Refresh();
             }
         }

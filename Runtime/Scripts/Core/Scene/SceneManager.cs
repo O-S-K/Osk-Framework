@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System.Collections;
@@ -8,55 +9,48 @@ namespace OSK
 {
     public class SceneManager : GameFrameworkComponent
     {
-        public System.Action OnLoadingStart { get; set; }
-        public System.Action<float> OnLoadingProgress { get; set; }
-        public System.Action OnLoadingComplete { get; set; }
-        public System.Action<string> OnLoadingFailed { get; set; }
-        
+        public enum State
+        {
+            Loading,
+            Complete,
+            Failed
+        }
+
         [ReadOnly, SerializeField] private string _currentSceneName = "";
 
-        public override void OnInit() {}
+        public override void OnInit() { }
 
-        public void LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode)
+        public void LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode, Action<State> onLoadComplete)
         {
             if (HasScene(sceneName))
             {
                 OSK.Logg.Log("Scene already loaded: " + sceneName);
-                OnLoadingFailed?.Invoke("Scene already loaded: " + sceneName);
+                onLoadComplete?.Invoke(State.Failed);
             }
             else
             {
-                StartCoroutine(LoadSceneAsyncCoroutine(sceneName, loadSceneMode));
+                LoadSceneAsyncCoroutine(sceneName, loadSceneMode, onLoadComplete).Run();
             }
         }
 
-        public void LoadSceneOnTime(string sceneName, float timeCompleted)
+        public void LoadSceneOnTime(string sceneName, float timeCompleted, Action<State, float> onLoadComplete)
         {
-            StartCoroutine(IELoadSceneOnTime(sceneName, timeCompleted));
-
-            IEnumerator IELoadSceneOnTime(string sceneName, float timeCompleted)
-            {
-                OnLoadingStart?.Invoke();
-                yield return new WaitForSeconds(timeCompleted);
-                OnLoadingComplete?.Invoke();
-            }
+            LoadSceneFakeTime(sceneName, timeCompleted, LoadSceneMode.Single, onLoadComplete).Run();
         }
 
-        public void LoadScene(string sceneName, LoadSceneMode loadSceneMode)
+        public void LoadScene(string sceneName, LoadSceneMode loadSceneMode, Action<State> onLoadComplete)
         {
-            OnLoadingStart?.Invoke();
             if (HasScene(sceneName))
             {
                 OSK.Logg.Log("Scene already loaded: " + sceneName);
-                OnLoadingFailed?.Invoke("Scene already loaded: " + sceneName);
+                onLoadComplete?.Invoke(State.Failed);
             }
             else
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName, loadSceneMode);
-                OnLoadingComplete?.Invoke();
+                LoadSceneAsyncCoroutine(sceneName, loadSceneMode, onLoadComplete).Run();
             }
         }
-        
+
         public void LoadAllScenes()
         {
             for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
@@ -82,110 +76,64 @@ namespace OSK
 
             return false;
         }
-
-        private IEnumerator LoadSceneAsyncCoroutine(string sceneName, LoadSceneMode loadSceneMode)
+        
+        public IEnumerator LoadSceneFakeTime(string sceneName, float timeCompleted, LoadSceneMode loadSceneMode, Action<State, float> onLoadComplete)
         {
-            // Trigger start loading event
-            OnLoadingStart?.Invoke();
+              float percent = timeCompleted / 100;
+              while (percent < 1)
+              {
+                  percent += Time.deltaTime / timeCompleted;
+                  onLoadComplete?.Invoke(State.Loading, percent);
+                  yield return null;
+              } 
+              
+              onLoadComplete?.Invoke(State.Complete, 1);
+              UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName, loadSceneMode);
+        }
 
-            AsyncOperation asyncLoad =
-                UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
+        private IEnumerator LoadSceneAsyncCoroutine(string sceneName, LoadSceneMode loadSceneMode, Action<State> onLoadComplete)
+        {
+            onLoadComplete?.Invoke(State.Loading);
+            AsyncOperation asyncLoad = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
+            asyncLoad.allowSceneActivation = false;
 
-            // Check if the operation is done
             while (!asyncLoad.isDone)
             {
-                // You can add progress feedback here if needed
-                OnLoadingProgress?.Invoke(asyncLoad.progress);
                 OSK.Logg.Log("Loading progress: " + asyncLoad.progress);
                 yield return null;
-            }
 
-            // Check if scene loaded successfully
+                if (asyncLoad.progress >= 0.9f) 
+                    asyncLoad.allowSceneActivation = true; 
+            }
             if (asyncLoad.isDone)
             {
-                // Trigger complete loading event
-                OnLoadingComplete?.Invoke();
+                OSK.Logg.Log("Scene loaded and activated: " + sceneName);
+                onLoadComplete?.Invoke(State.Complete);
             }
             else
             {
-                // Trigger failed loading event
-                OnLoadingFailed?.Invoke("Failed to load scene: " + sceneName);
+                OSK.Logg.Log("Scene failed to load: " + sceneName);
+                onLoadComplete?.Invoke(State.Failed);
             }
         }
 
-private IEnumerator LoadSceneAsyncFake(string sceneName, LoadSceneMode loadSceneMode)
-{
-    // Trigger start loading event
-    OnLoadingStart?.Invoke();
-
-    AsyncOperation asyncLoad =
-        UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
-    
-    // Prevent the scene from activating immediately
-    asyncLoad.allowSceneActivation = false;
-
-    // Fake progress
-    float fakeProgress = 0f;
-
-    // While the operation is not done
-    while (!asyncLoad.isDone)
-    {
-        // Increase fake progress over time (example: 1% per frame)
-        if (fakeProgress < 0.9f) // You can adjust the limit as needed
+        public void UnloadScene(string sceneName, Action<State> onUnloadComplete)
         {
-            fakeProgress += Time.deltaTime * 0.1f; // Speed of progress increment
-        }
-        else if (asyncLoad.progress >= 0.9f)
-        {
-            // When real asyncLoad.progress is almost done, finish fake progress
-            fakeProgress = 1f;
+            UnloadSceneAsyncCoroutine(sceneName, onUnloadComplete).Run();
         }
 
-        // Update progress feedback with the fake progress value
-        OnLoadingProgress?.Invoke(fakeProgress);
-        OSK.Logg.Log("Fake loading progress: " + fakeProgress);
-
-        yield return null;
-
-        // Once the scene is ready and fake progress reaches 1, activate it
-        if (fakeProgress >= 1f && asyncLoad.progress >= 0.9f)
-        {
-            asyncLoad.allowSceneActivation = true;
-        }
-    }
-
-    // Check if scene loaded successfully
-    if (asyncLoad.isDone)
-    {
-        // Trigger complete loading event
-        OnLoadingComplete?.Invoke();
-    }
-    else
-    {
-        // Trigger failed loading event
-        OnLoadingFailed?.Invoke("Failed to load scene: " + sceneName);
-    }
-}
-
-        public void UnloadScene(string sceneName)
-        {
-            StartCoroutine(UnloadSceneAsyncCoroutine(sceneName));
-        }
-
-        private IEnumerator UnloadSceneAsyncCoroutine(string sceneName)
+        private IEnumerator UnloadSceneAsyncCoroutine(string sceneName, Action<State> onUnloadComplete)
         {
             AsyncOperation asyncUnload = UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(sceneName);
 
-            // Wait for the scene to be unloaded
             while (!asyncUnload.isDone)
             {
-                // You can add progress feedback here if needed
                 OSK.Logg.Log("Unloading progress: " + asyncUnload.progress);
                 yield return null;
             }
 
-            // Scene successfully unloaded
             OSK.Logg.Log("Scene unloaded: " + sceneName);
+            onUnloadComplete?.Invoke(State.Complete);
         }
     }
 }

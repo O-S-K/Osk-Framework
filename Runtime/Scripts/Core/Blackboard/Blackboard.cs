@@ -17,12 +17,11 @@ namespace OSK
 
             public BlackboardValue(object value, int priority, bool isReadOnly = false)
             {
-                this.value = JsonUtility.ToJson(value); // Serialize object to JSON string
+                this.value = value;
                 this.priority = priority;
                 this.isReadOnly = isReadOnly;
             }
         }
-
 
         private Dictionary<string, BlackboardValue> k_DataBlackboard = new Dictionary<string, BlackboardValue>();
         private Dictionary<string, List<Action<object>>> k_Callbacks = new Dictionary<string, List<Action<object>>>();

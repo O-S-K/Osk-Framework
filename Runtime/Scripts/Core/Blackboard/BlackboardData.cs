@@ -132,10 +132,5 @@ namespace OSK
                 }
             }
         }
-        
-        public List<BlackboardEntry> GetAllEntries()
-        {
-            return entries;
-        }
     }
 }

@@ -33,7 +33,7 @@ namespace OSK
         {
             _counter = 0;
             var tcs = new TaskCompletionSource<bool>();
-            StartCoroutine(Ping(tcs));
+            Ping(tcs).Run();
             await tcs.Task;
             return tcs.Task.Result;
         }
@@ -55,7 +55,7 @@ namespace OSK
                     task.SetResult(false);
                 }
                 else
-                    StartCoroutine(Ping(task));
+                     Ping(task).Run();
             }
             else
             {

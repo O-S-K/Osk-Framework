@@ -13,6 +13,26 @@ namespace OSK
         public Canvas GetCanvas => _rootUI.GetCanvas;
         public Camera GetUICamera => _rootUI.GetUICamera;
 
+        public RootUI RootUI
+        {
+            get
+            {
+                if (_rootUI == null)
+                {
+                    _rootUI = FindObjectOfType<RootUI>();
+                    if (_rootUI != null)
+                    {
+                        _rootUI.Initialize();
+                    }
+                    return _rootUI;
+                }
+                else
+                {
+                    return _rootUI;
+                }
+            }
+        }
+
 
         public override void OnInit()
         {
@@ -36,17 +56,17 @@ namespace OSK
             RenderMode renderMode = RenderMode.ScreenSpaceOverlay, bool pixelPerfect = false,
             UnityEngine.Camera camera = null)
         {
-            _rootUI.GetCanvas.renderMode = renderMode;
-            _rootUI.GetCanvas.sortingOrder = sortOrder;
-            _rootUI.GetCanvas.sortingLayerName = sortingLayerName;
-            _rootUI.GetCanvas.pixelPerfect = pixelPerfect;
-            _rootUI.GetCanvas.worldCamera = camera;
+            RootUI.GetCanvas.renderMode = renderMode;
+            RootUI.GetCanvas.sortingOrder = sortOrder;
+            RootUI.GetCanvas.sortingLayerName = sortingLayerName;
+            RootUI.GetCanvas.pixelPerfect = pixelPerfect;
+            RootUI.GetCanvas.worldCamera = camera;
         }
 
-        private void SetupCanvasScalerForRatio()
+        public void SetupCanvasScaleForRatio()
         {
             float newRatio = (float)Screen.width / Screen.height;
-            _rootUI.GetCanvasScaler.matchWidthOrHeight = newRatio > 0.65f ? 1 : 0;
+            RootUI.GetCanvasScaler.matchWidthOrHeight = newRatio > 0.65f ? 1 : 0;
         }
 
         public void SetCanvasScaler(
@@ -54,9 +74,9 @@ namespace OSK
             float scaleFactor = 1f,
             float referencePixelsPerUnit = 100f)
         {
-            _rootUI.GetCanvasScaler.uiScaleMode = scaleMode;
-            _rootUI.GetCanvasScaler.scaleFactor = scaleFactor;
-            _rootUI.GetCanvasScaler.referencePixelsPerUnit = referencePixelsPerUnit;
+            RootUI.GetCanvasScaler.uiScaleMode = scaleMode;
+            RootUI.GetCanvasScaler.scaleFactor = scaleFactor;
+            RootUI.GetCanvasScaler.referencePixelsPerUnit = referencePixelsPerUnit;
         }
 
         public void SetCanvasScaler(
@@ -66,11 +86,11 @@ namespace OSK
             float matchWidthOrHeight = 0f,
             float referencePixelsPerUnit = 100f)
         {
-            _rootUI.GetCanvasScaler.uiScaleMode = scaleMode;
-            _rootUI.GetCanvasScaler.referenceResolution = referenceResolution ?? new Vector2(1920, 1080);
-            _rootUI.GetCanvasScaler.screenMatchMode = screenMatchMode;
-            _rootUI.GetCanvasScaler.matchWidthOrHeight = matchWidthOrHeight;
-            _rootUI.GetCanvasScaler.referencePixelsPerUnit = referencePixelsPerUnit;
+            RootUI.GetCanvasScaler.uiScaleMode = scaleMode;
+            RootUI.GetCanvasScaler.referenceResolution = referenceResolution ?? new Vector2(1920, 1080);
+            RootUI.GetCanvasScaler.screenMatchMode = screenMatchMode;
+            RootUI.GetCanvasScaler.matchWidthOrHeight = matchWidthOrHeight;
+            RootUI.GetCanvasScaler.referencePixelsPerUnit = referencePixelsPerUnit;
         }
 
         public void SetCanvasScaler(
@@ -94,73 +114,74 @@ namespace OSK
         {
             GetCanvas.Get<GraphicRaycaster>().ignoreReversedGraphics = false;
         }
+
         #endregion
 
         #region Views
 
         public T Spawn<T>(string path, bool isCache = true, bool isHidePrevPopup = true) where T : View
         {
-            return _rootUI.ListViews.Spawn<T>(path, isCache, isHidePrevPopup);
+            return RootUI.ListViews.Spawn<T>(path, isCache, isHidePrevPopup);
         }
 
         public T SpawnCache<T>(T view, bool isHidePrevPopup = true) where T : View
         {
-            return _rootUI.ListViews.Spawn(view, isHidePrevPopup);
+            return RootUI.ListViews.Spawn(view, isHidePrevPopup);
         }
 
         public void Delete<T>(T popup) where T : View
         {
-            _rootUI.ListViews.Delete<T>(popup);
+            RootUI.ListViews.Delete<T>(popup);
         }
 
         public T Open<T>(bool isHidePrevPopup = false) where T : View
         {
-            return _rootUI.ListViews.Open<T>(isHidePrevPopup);
+            return RootUI.ListViews.Open<T>(isHidePrevPopup);
         }
 
         public void OpenPrevious()
         {
-            _rootUI.ListViews.OpenPrevious();
+            RootUI.ListViews.OpenPrevious();
         }
 
         public T TryOpen<T>(bool isHidePrevPopup = false) where T : View
         {
-            return _rootUI.ListViews.TryOpen<T>(isHidePrevPopup);
+            return RootUI.ListViews.TryOpen<T>(isHidePrevPopup);
         }
 
         public void Open(View view)
         {
-            //_rootUI.ListViews.Open(view, true);
+            //RootUI.ListViews.Open(view, true);
         }
 
         public void Hide(View view)
         {
-            _rootUI.ListViews.Hide(view);
+            RootUI.ListViews.Hide(view);
         }
 
         public void HideAll()
         {
-            _rootUI.ListViews.HideAll();
+            RootUI.ListViews.HideAll();
         }
 
         public void HideAllIgnoreView<T>() where T : View
         {
-            _rootUI.ListViews.HideIgnore<T>();
+            RootUI.ListViews.HideIgnore<T>();
         }
 
         public void HideAllIgnoreView<T>(T[] viewsToKeep) where T : View
         {
-            _rootUI.ListViews.HideIgnore(viewsToKeep);
+            RootUI.ListViews.HideIgnore(viewsToKeep);
         }
 
         public T Get<T>(bool isInitOnScene = true) where T : View
         {
-            return _rootUI.ListViews.Get<T>(isInitOnScene);
+            return RootUI.ListViews.Get<T>(isInitOnScene);
         }
 
         public T GetOrOpen<T>() where T : View
         {
-            var view = _rootUI.ListViews.Get<T>();
+            var view = RootUI.ListViews.Get<T>();
             if (view == null)
             {
                 if (!view.IsShowing)
@@ -177,12 +198,12 @@ namespace OSK
 
         public bool IsShowing(View view)
         {
-            return _rootUI.ListViews.Get<View>().IsShowing;
+            return RootUI.ListViews.Get<View>().IsShowing;
         }
 
         public List<View> GetAll(bool isInitOnScene)
         {
-            return _rootUI.ListViews.GetAll(isInitOnScene);
+            return RootUI.ListViews.GetAll(isInitOnScene);
         }
 
         #endregion
