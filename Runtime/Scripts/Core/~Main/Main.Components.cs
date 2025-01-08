@@ -20,7 +20,7 @@ namespace OSK
         public static CommandManager Command { get; private set; }
         public static SceneManager Scene { get; private set; }
         public static ResourceManager Res { get; private set; }
-        public static SaveManager Save { get; private set; }
+        public static StorageManager Storage { get; private set; }
         public static DataManager Data { get; private set; }
         public static NetworkManager Network { get; private set; }
         public static WebRequestManager WebRequest { get; private set; }
@@ -69,7 +69,7 @@ namespace OSK
                         else if (_module is CommandManager command) Command = command;
                         else if (_module is SceneManager scene) Scene = scene;
                         else if (_module is ResourceManager res) Res = res;
-                        else if (_module is SaveManager save) Save = save;
+                        else if (_module is StorageManager save) Storage = save;
                         else if (_module is DataManager data) Data = data;
                         else if (_module is NetworkManager network) Network = network;
                         else if (_module is WebRequestManager webRequest) WebRequest = webRequest;

@@ -14,8 +14,13 @@ namespace OSK
 
         public override void OnInit()
         {
+            procedureProcessor = new ProcedureProcessor();
+            procedureProcessor.OnProcedureNodeAdd += ProcedureNodeAddCallback;
+            procedureProcessor.OnProcedureNodeRemove += ProcedureNodeRemoveCallback;
+            procedureProcessor.OnProcedureNodeChange += ProcedureNodeChangedCallback;
+            procedureProcessor.FindAllProcedureNode();
         }
-
+        
         /// <summary>
         /// Gets the total number of procedure nodes.
         /// </summary>
@@ -160,16 +165,7 @@ namespace OSK
                 throw new NotImplementedException($"Type: {type} is not derived from ProcedureNode.");
             return procedureProcessor.RemoveNode(type);
         }
-
-        public void OnInit(object createParam)
-        {
-            procedureProcessor = new ProcedureProcessor();
-            procedureProcessor.OnProcedureNodeAdd += ProcedureNodeAddCallback;
-            procedureProcessor.OnProcedureNodeRemove += ProcedureNodeRemoveCallback;
-            procedureProcessor.OnProcedureNodeChange += ProcedureNodeChangedCallback;
-            procedureProcessor.FindAllProcedureNode();
-        }
-
+ 
         public void SetPause(bool pause)
         {
             isPause = pause;

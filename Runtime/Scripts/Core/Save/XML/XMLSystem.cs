@@ -25,7 +25,8 @@ namespace OSK
                         using (MemoryStream memoryStream = new MemoryStream())
                         {
                             serializer.Serialize(memoryStream, data);
-                            byte[] encryptedData = FileSecurity.Encrypt(memoryStream.ToArray(), Main.Configs.init.EncryptKey);
+                            byte[] encryptedData =
+                                FileSecurity.Encrypt(memoryStream.ToArray(), Main.Configs.init.encryptKey);
                             stream.Write(encryptedData, 0, encryptedData.Length);
                         }
                     }
@@ -60,7 +61,7 @@ namespace OSK
 
                     if (isEncrypt)
                     {
-                        byte[] decryptedData = FileSecurity.Decrypt(stream, Main.Configs.init.EncryptKey);
+                        byte[] decryptedData = FileSecurity.Decrypt(stream, Main.Configs.init.encryptKey);
                         using (MemoryStream memoryStream = new MemoryStream(decryptedData))
                         {
                             Logg.Log($"[Load File Success]: {fileName + ".xml"} \n {path}", Color.green);
@@ -84,6 +85,15 @@ namespace OSK
         public void Delete(string fileName)
         {
             IOUtility.DeleteFile(fileName + ".xml");
+        }
+
+        public T Query<T>(string fileName, bool condition)
+        {
+            if (condition)
+            {
+                return Load<T>(fileName);
+            }
+            return default;
         }
     }
 }

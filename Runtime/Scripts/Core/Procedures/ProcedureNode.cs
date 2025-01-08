@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    public abstract class ProcedureNode : MonoBehaviour
+    public abstract class ProcedureNode 
     {
         /// <summary>
         /// Called when the node is initialized.

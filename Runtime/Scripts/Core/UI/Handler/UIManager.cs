@@ -32,8 +32,9 @@ namespace OSK
 
         #region Canvas
 
-         
-        public void SetCanvas(int sortOrder = 0, string sortingLayerName = "Default", RenderMode renderMode = RenderMode.ScreenSpaceOverlay, bool pixelPerfect = false, UnityEngine.Camera camera = null)
+        public void SetCanvas(int sortOrder = 0, string sortingLayerName = "Default",
+            RenderMode renderMode = RenderMode.ScreenSpaceOverlay, bool pixelPerfect = false,
+            UnityEngine.Camera camera = null)
         {
             _rootUI.GetCanvas.renderMode = renderMode;
             _rootUI.GetCanvas.sortingOrder = sortOrder;
@@ -41,13 +42,13 @@ namespace OSK
             _rootUI.GetCanvas.pixelPerfect = pixelPerfect;
             _rootUI.GetCanvas.worldCamera = camera;
         }
-        
+
         private void SetupCanvasScalerForRatio()
         {
             float newRatio = (float)Screen.width / Screen.height;
             _rootUI.GetCanvasScaler.matchWidthOrHeight = newRatio > 0.65f ? 1 : 0;
         }
-        
+
         public void SetCanvasScaler(
             CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize,
             float scaleFactor = 1f,
@@ -57,7 +58,7 @@ namespace OSK
             _rootUI.GetCanvasScaler.scaleFactor = scaleFactor;
             _rootUI.GetCanvasScaler.referencePixelsPerUnit = referencePixelsPerUnit;
         }
-        
+
         public void SetCanvasScaler(
             CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize,
             Vector2? referenceResolution = null,
@@ -71,7 +72,7 @@ namespace OSK
             _rootUI.GetCanvasScaler.matchWidthOrHeight = matchWidthOrHeight;
             _rootUI.GetCanvasScaler.referencePixelsPerUnit = referencePixelsPerUnit;
         }
-        
+
         public void SetCanvasScaler(
             CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize,
             Vector2? referenceResolution = null,
@@ -80,7 +81,18 @@ namespace OSK
             float referencePixelsPerUnit = 100f)
         {
             float newRatio = (float)Screen.width / Screen.height;
-            SetCanvasScaler(scaleMode, referenceResolution, screenMatchMode, newRatio > 0.65f ? 1 : 0, referencePixelsPerUnit);
+            SetCanvasScaler(scaleMode, referenceResolution, screenMatchMode, newRatio > 0.65f ? 1 : 0,
+                referencePixelsPerUnit);
+        }
+
+        public void ShowRayCast()
+        {
+            GetCanvas.Get<GraphicRaycaster>().ignoreReversedGraphics = true;
+        }
+
+        public void HideRayCast()
+        {
+            GetCanvas.Get<GraphicRaycaster>().ignoreReversedGraphics = false;
         }
         #endregion
 
@@ -159,6 +171,7 @@ namespace OSK
                 if (!view.IsShowing)
                     view.Open();
             }
+
             return view;
         }
 

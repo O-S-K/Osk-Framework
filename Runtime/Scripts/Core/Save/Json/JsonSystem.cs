@@ -26,7 +26,7 @@ namespace OSK
                 if (ableEncrypt)
                 {
                     var saveBytes = Encoding.UTF8.GetBytes(saveJson);
-                    File.WriteAllBytes(filePath, Obfuscator.Encrypt(saveBytes, Main.Configs.init.EncryptKey));
+                    File.WriteAllBytes(filePath, Obfuscator.Encrypt(saveBytes, Main.Configs.init.encryptKey));
                 }
                 else
                 {
@@ -55,7 +55,6 @@ namespace OSK
             });
         }
 
-
         public T Load<T>(string fileName, bool ableEncrypt = false)
         {
             var filePath = IOUtility.FilePath(fileName + ".json");
@@ -69,7 +68,7 @@ namespace OSK
                 string loadJson;
                 if (ableEncrypt)
                 {
-                    var loadBytes = Obfuscator.Decrypt(File.ReadAllBytes(filePath), Main.Configs.init.EncryptKey);
+                    var loadBytes = Obfuscator.Decrypt(File.ReadAllBytes(filePath), Main.Configs.init.encryptKey);
                     loadJson = Encoding.UTF8.GetString(loadBytes);
                 }
                 else
@@ -109,27 +108,19 @@ namespace OSK
             }
         }
 
-        public List<string> Get(string name)
-        {
-            List<string> savedFiles = new List<string>();
-            var filePath = IOUtility.FilePath(name);
-
-            if (Directory.Exists(filePath))
-            {
-                var files = Directory.GetFiles(filePath, "*.json");
-                foreach (var file in files)
-                {
-                    savedFiles.Add(Path.GetFileName(file));
-                }
-            }
-
-            return savedFiles;
-        }
-
         public void Delete(string fileName)
         {
             IOUtility.DeleteFile(fileName + ".json");
             Logg.Log($"[Delete File Success]: {fileName + ".json"}");
+        }
+        
+        public T Query<T>(string fileName, bool condition)
+        {
+            if (condition)
+            {
+                return Load<T>(fileName);
+            }
+            return default;
         }
 
         private void RefreshEditor()

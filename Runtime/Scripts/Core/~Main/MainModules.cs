@@ -64,7 +64,7 @@ namespace OSK
         CommandManager = 1 << 6,
         SceneManager = 1 << 7,
         ResourceManager = 1 << 8,
-        SaveManager = 1 << 9,
+        StorageManager = 1 << 9,
         DataManager = 1 << 10,
         NetworkManager = 1 << 11,
         WebRequestManager = 1 << 12,

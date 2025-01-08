@@ -7,14 +7,14 @@ using System.IO;
 
 namespace OSK
 {
-    [CustomEditor(typeof(SaveManager))]
+    [CustomEditor(typeof(StorageManager))]
     public class SaveEditorVisual : Editor
     {
-        private SaveManager manager;
+        private StorageManager manager;
 
         private void OnEnable()
         {
-            manager = (SaveManager)target;
+            manager = (StorageManager)target;
         }
 
         public override void OnInspectorGUI()

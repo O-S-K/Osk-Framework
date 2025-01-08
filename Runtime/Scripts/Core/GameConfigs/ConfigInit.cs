@@ -14,7 +14,8 @@ namespace OSK
         public string packageName = "";
         public string appstoreID = "";
 
-        public string EncryptKey = "b14ca5898a4e4133bbce2ea2315a1916";
+        public bool isEncrypt = false;
+        public string encryptKey = "b14ca5898a4e4133bbce2ea2315a1916";
 
         public DataConfigs data;
         public SettingConfigs setting;
@@ -137,7 +138,7 @@ namespace OSK
         [Button]
         private void ShuffleEncryptKey()
         {
-            EncryptKey = StringUtils.ShuffleString(EncryptKey);
+            encryptKey = StringUtils.ShuffleString(encryptKey);
             UnityEditor.EditorUtility.SetDirty(this);
             UnityEditor.AssetDatabase.SaveAssets();
             UnityEditor.AssetDatabase.Refresh();
