@@ -76,5 +76,6 @@ namespace OSK
         TimeManager = 1 << 18,
         NativeManager = 1 << 19,
         BlackboardManager = 1 << 20,
+        ProcedureManager = 1 << 21,
     }
 }

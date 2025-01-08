@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace OSK
@@ -30,8 +32,9 @@ namespace OSK
         public static TimeManager Time { get; private set; }
         public static NativeManager Native { get; private set; }
         public static BlackboardManager Blackboard { get; private set; }
+        public static ProcedureManager Procedure { get; private set; }
 
-
+        // Modules
         public MainModules mainModules;
         public ConfigInit configInit;
         public bool isDestroyingOnLoad = false;
@@ -43,7 +46,6 @@ namespace OSK
             InitModules();
             InitDataComponents();
         }
-
         public void InitModules()
         {
             foreach (ModuleType module in Enum.GetValues(typeof(ModuleType)))
@@ -79,6 +81,7 @@ namespace OSK
                         else if (_module is TimeManager time) Time = time;
                         else if (_module is NativeManager native) Native = native;
                         else if (_module is BlackboardManager blackboard) Blackboard = blackboard; 
+                        else if (_module is ProcedureManager procedure) Procedure = procedure;
                         else
                         {
                             Logg.LogError($"Module {_module} not found");
@@ -91,7 +94,6 @@ namespace OSK
                 }
             }
         }
-
         private void InitDataComponents()
         {
             var current = SGameFrameworkComponents.First;

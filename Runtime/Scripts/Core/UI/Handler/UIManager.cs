@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace OSK
 {
@@ -28,6 +29,60 @@ namespace OSK
                 }
             }
         }
+
+        #region Canvas
+
+         
+        public void SetCanvas(int sortOrder = 0, string sortingLayerName = "Default", RenderMode renderMode = RenderMode.ScreenSpaceOverlay, bool pixelPerfect = false, UnityEngine.Camera camera = null)
+        {
+            _rootUI.GetCanvas.renderMode = renderMode;
+            _rootUI.GetCanvas.sortingOrder = sortOrder;
+            _rootUI.GetCanvas.sortingLayerName = sortingLayerName;
+            _rootUI.GetCanvas.pixelPerfect = pixelPerfect;
+            _rootUI.GetCanvas.worldCamera = camera;
+        }
+        
+        private void SetupCanvasScalerForRatio()
+        {
+            float newRatio = (float)Screen.width / Screen.height;
+            _rootUI.GetCanvasScaler.matchWidthOrHeight = newRatio > 0.65f ? 1 : 0;
+        }
+        
+        public void SetCanvasScaler(
+            CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize,
+            float scaleFactor = 1f,
+            float referencePixelsPerUnit = 100f)
+        {
+            _rootUI.GetCanvasScaler.uiScaleMode = scaleMode;
+            _rootUI.GetCanvasScaler.scaleFactor = scaleFactor;
+            _rootUI.GetCanvasScaler.referencePixelsPerUnit = referencePixelsPerUnit;
+        }
+        
+        public void SetCanvasScaler(
+            CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize,
+            Vector2? referenceResolution = null,
+            CanvasScaler.ScreenMatchMode screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight,
+            float matchWidthOrHeight = 0f,
+            float referencePixelsPerUnit = 100f)
+        {
+            _rootUI.GetCanvasScaler.uiScaleMode = scaleMode;
+            _rootUI.GetCanvasScaler.referenceResolution = referenceResolution ?? new Vector2(1920, 1080);
+            _rootUI.GetCanvasScaler.screenMatchMode = screenMatchMode;
+            _rootUI.GetCanvasScaler.matchWidthOrHeight = matchWidthOrHeight;
+            _rootUI.GetCanvasScaler.referencePixelsPerUnit = referencePixelsPerUnit;
+        }
+        
+        public void SetCanvasScaler(
+            CanvasScaler.ScaleMode scaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize,
+            Vector2? referenceResolution = null,
+            CanvasScaler.ScreenMatchMode screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight,
+            bool autoMatchForRatio = true,
+            float referencePixelsPerUnit = 100f)
+        {
+            float newRatio = (float)Screen.width / Screen.height;
+            SetCanvasScaler(scaleMode, referenceResolution, screenMatchMode, newRatio > 0.65f ? 1 : 0, referencePixelsPerUnit);
+        }
+        #endregion
 
         #region Views
 

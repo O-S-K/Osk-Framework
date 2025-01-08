@@ -18,10 +18,6 @@ namespace OSK
         private Stack<View> _viewHistory = new Stack<View>();
         public Stack<View> ListViewHistory => _viewHistory;
 
-
-        #region Init
-         
-
         public void Initialize()
         {
             if (Main.Configs.init == null || Main.Configs.init.data == null || Main.Configs.init.data.listViewS0 == null)
@@ -44,6 +40,10 @@ namespace OSK
             for (int i = 0; i < _listViewInit.Count; i++)
             {
                 if (_listViewInit[i].isPreloadSpawn)
+
+
+        #region Init
+         
                 {
                     SpawnViewCache(_listViewInit[i]);
                 }
