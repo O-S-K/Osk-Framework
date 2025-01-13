@@ -8,7 +8,7 @@ namespace OSK
     [InitializeOnLoad]
     public static class AutoAssignComponentsEditor
     {
-        public static bool IsAutoAssignEnabled = true;
+        public static bool IsAutoAssignEnabled = false;
 
         static AutoAssignComponentsEditor()
         {

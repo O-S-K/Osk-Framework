@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    public static class ComponentExtensions
+    public static class ComponentExtension
     {
         private static List<Component> componentCache = new List<Component>();
 
@@ -39,6 +39,26 @@ namespace OSK
         {
             return obj.GetComponents<T>();
         }
+        
+        
+        public static T GetOrAdd<T>(this GameObject gameObject) where T : Component
+        {
+            T component = gameObject.GetComponent<T>();
+            return component != null ? component : gameObject.AddComponent<T>();
+        }
+        public static T GetOrAdd<T>(this Transform transform) where T : Component
+        {
+            T component = transform.GetComponent<T>();
+            return component != null ? component : transform.gameObject.AddComponent<T>();
+        }
+        
+        public static T GetOrAdd<T>(this MonoBehaviour mono) where T : Component
+        {
+            T component = mono.GetComponent<T>();
+            return component != null ? component : mono.gameObject.AddComponent<T>();
+        }
+
+
 
         public static bool HasComponentOrInterface<T>(this GameObject obj) where T : class
         {

@@ -25,21 +25,11 @@ namespace OSK
         [SerializeField] private int maxCapacityMusic = 5;
         [SerializeField] private int maxCapacitySoundEffects = 10;
 
-        public bool IsMusic
-        {
-            get => PlayerPrefs.GetInt("IsMusic", 1) == 1;
-            set => PlayerPrefs.SetInt("IsMusic", value ? 1 : 0);
-        }
+        public bool IsMusic;
+        public bool IsSoundSFX;
 
-        public bool IsSoundSFX
-        {
-            get => PlayerPrefs.GetInt("IsSoundSFX", 1) == 1;
-            set => PlayerPrefs.SetInt("IsSoundSFX", value ? 1 : 0);
-        }
-
-
+ 
         private AudioSource _soundObject;
-
         private Transform cameraTransform
         {
             get
@@ -74,11 +64,8 @@ namespace OSK
             maxCapacitySoundEffects = Main.Configs.init.data.listSoundSo.maxCapacitySFX;
         }
 
-        private void Update()
-        {
-            CheckForStoppedMusic();
-        }
-
+        private void Update() => CheckForStoppedMusic();
+        
         private void CheckForStoppedMusic()
         {
             if (_listMusicInfos == null || _listMusicInfos.Count == 0)

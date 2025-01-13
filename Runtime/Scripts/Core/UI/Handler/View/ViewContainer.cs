@@ -18,6 +18,8 @@ namespace OSK
         private Stack<View> _viewHistory = new Stack<View>();
         public Stack<View> ListViewHistory => _viewHistory;
 
+        
+        #region Init
         public void Initialize()
         {
             if (Main.Configs.init == null || Main.Configs.init.data == null || Main.Configs.init.data.listViewS0 == null)
@@ -42,14 +44,12 @@ namespace OSK
                 if (_listViewInit[i].isPreloadSpawn)
 
 
-        #region Init
          
                 {
                     SpawnViewCache(_listViewInit[i]);
                 }
             }
         }
-
         #endregion
 
         #region Spawn
@@ -342,7 +342,9 @@ namespace OSK
         }
 
         #endregion
-        
+
+        #region Sort oder
+
         public List<View> GetSortedChildPages(Transform container)
         {
             List<View> childPages = new List<View>();
@@ -376,6 +378,8 @@ namespace OSK
 
             return insertIndex;
         }
+
+        #endregion
 
         #region Private
 

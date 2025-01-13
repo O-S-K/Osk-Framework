@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Object = UnityEngine.Object;
 
 namespace OSK
@@ -14,7 +15,7 @@ namespace OSK
             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         private static Dictionary<Type, Dictionary<string, object>> k_Registry = new();
-
+        private static List<object> _injectedObjects = new List<object>();
 
         public static void InstallBindAndInjects()
         {
@@ -143,15 +144,16 @@ namespace OSK
             }
         }
 
-        public static void Inject(object instance)
+        public static void Inject(object target)
         {
-            if (instance == null)
+            if (target == null)
             {
                 Logg.LogError("Instance cannot be null.");
                 return;
             }
+            
 
-            var type = instance.GetType();
+            var type = target.GetType();
 
             // Inject fields
             foreach (var field in type.GetFields(k_BindingFlags).Where(f => Attribute.IsDefined(f, typeof(InjectAttribute))))
@@ -165,7 +167,7 @@ namespace OSK
                 }
                 else
                 {
-                    field.SetValue(instance, resolvedInstance);
+                    field.SetValue(target, resolvedInstance);
                     Logg.Log(
                         $"[Injecting]: {field.FieldType.Name} -> {type.Name}.{field.Name} (Key: {injectAttribute.Key})",
                         Color.green);
@@ -184,7 +186,7 @@ namespace OSK
                 }
                 else
                 {
-                    method.Invoke(instance, parameters);
+                    method.Invoke(target, parameters);
                 }
             }
 
@@ -200,8 +202,26 @@ namespace OSK
                 }
                 else
                 {
-                    property.SetValue(instance, resolvedInstance);
+                    property.SetValue(target, resolvedInstance);
                 }
+            }
+            
+            
+            if (!_injectedObjects.Contains(target))
+            {
+                _injectedObjects.Add(target);
+            }
+        }
+
+        public static void ProvideAndBind(object instance)
+        {
+            Bind(instance);
+            Inject(instance);
+            
+            foreach (var obj in _injectedObjects)
+            {
+                Logg.Log($"[Injected]: {obj.GetType().Name}");
+                Inject(obj);
             }
         }
 
