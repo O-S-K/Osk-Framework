@@ -1,9 +1,11 @@
-﻿#if UNITY_EDITOR
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+
+
+#if UNITY_EDITOR
 using System.Reflection;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 
@@ -29,16 +31,15 @@ namespace OSK
                 // Register the MonoBehaviours with the Undo system.
                 //Undo.RecordObjects(acMonoBehaviours, "AutoRefs MonoBehaviours");
 
-                for (int nMonoBehaviour = 0; nMonoBehaviour < acMonoBehaviours.Length; nMonoBehaviour++)
+                for (int i = 0; i < acMonoBehaviours.Length; i++)
                 {
-                    MonoBehaviour cMonoBehaviour = acMonoBehaviours[nMonoBehaviour];
+                    MonoBehaviour cMonoBehaviour = acMonoBehaviours[i];
 
                     // Get the type of the MonoBehaviour.
                     Type cType = cMonoBehaviour.GetType();
 
                     // Get each of the fields.
-                    FieldInfo[] acFieldInfos =
-                        cType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    FieldInfo[] acFieldInfos = cType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
                     for (int nFieldInfo = 0; nFieldInfo < acFieldInfos.Length; nFieldInfo++)
                     {
@@ -85,8 +86,7 @@ namespace OSK
                                             // Create an array of the element type with the same length as the array of components which were found.
                                             // This is necessary to convert the Component[] type array into an array of the type specified in the FieldInfo.
                                             // i.e. The FieldInfo may be an array MyClass[]. You cannot set the value of a MyClass[] to a Component[].
-                                            Array cArrayObject =
-                                                Array.CreateInstance(cFieldElementType, acComponents.Length);
+                                            Array cArrayObject = Array.CreateInstance(cFieldElementType, acComponents.Length);
 
                                             // For each component which was found, copy it into the correctly typed array.
                                             for (int nComponent = 0; nComponent < acComponents.Length; nComponent++)
