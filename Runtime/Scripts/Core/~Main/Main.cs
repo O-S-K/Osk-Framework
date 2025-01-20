@@ -29,7 +29,6 @@ namespace OSK
                 {
                     return current.Value;
                 }
-
                 current = current.Next;
             }
 
@@ -46,7 +45,6 @@ namespace OSK
                 {
                     return current.Value;
                 }
-
                 current = current.Next;
             }
 

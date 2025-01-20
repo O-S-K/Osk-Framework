@@ -33,9 +33,15 @@ namespace OSK
                     // New version
                     onNewVersion?.Invoke();
                 }
-                else {  } // No new version
+                else
+                {
+                    Logg.Log("No new version");
+                }
             }
-            else {  } // First time
+            else
+            {
+                Logg.Log("First time version");
+            } 
 
             PlayerPrefs.SetString(key, currentVersion);
             PlayerPrefs.Save();

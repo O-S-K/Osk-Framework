@@ -16,7 +16,7 @@ namespace OSK
 
         #region Load from Resources folder
 
-        public T Load<T>(string path) where T : Object
+        public T Load<T>(string path, bool usePool = false) where T : Object
         {
             if (k_ResourceCache.TryGetValue(path, out var value))
             {
@@ -24,7 +24,9 @@ namespace OSK
                 return (T)value;
             }
 
-            T resource = Resources.Load<T>(path);
+            T resource = usePool
+                ? Main.Pool.Spawn("ResourcesManager", Resources.Load<T>(path), transform)
+                : Resources.Load<T>(path);
             if (resource != null)
             {
                 k_ResourceCache[path] = resource;
@@ -38,7 +40,7 @@ namespace OSK
             return resource;
         }
 
-        public T LoadSO<T>(string path) where T : ScriptableObject
+        public T LoadSO<T>(string path, bool usePool = false) where T : ScriptableObject
         {
             if (k_ResourceCache.TryGetValue(path, out var value))
             {
@@ -46,7 +48,9 @@ namespace OSK
                 return (T)value;
             }
 
-            T resource = Resources.Load<T>(path);
+            T resource = usePool
+                ? Main.Pool.Spawn("ResourcesManager", Resources.Load<T>(path), transform)
+                : Resources.Load<T>(path);
             if (resource != null)
             {
                 k_ResourceCache[path] = resource;
@@ -60,12 +64,14 @@ namespace OSK
             return resource;
         }
 
-        public T Spawn<T>(string path) where T : Object
+        public T Spawn<T>(string path, bool usePool = false) where T : Object
         {
             T resource = Load<T>(path);
             if (resource != null)
             {
-                return Instantiate(resource) as T;
+                return usePool
+                    ? Main.Pool.Spawn("ResourcesManager", Instantiate(resource), transform)
+                    : Instantiate(resource);
             }
             else
             {
@@ -154,6 +160,7 @@ namespace OSK
         #endregion
 
         #region Load from Addressables
+
         #endregion
     }
 }

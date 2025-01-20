@@ -134,5 +134,6 @@ namespace OSK
                 RewardClaimingPanel.SetActive(false);
             }
         }
+         
     }
 }

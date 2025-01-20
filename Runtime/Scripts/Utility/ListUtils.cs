@@ -64,18 +64,45 @@ namespace OSK
             return true;
         }
 
-        public static void PrintList<T>(List<T> list)
+       public static T GetClosest<T>(this T[] collection, Vector3 toPoint) where T : Component
         {
-            string str = "";
-            for (int i = 0; i < list.Count; i++)
+            if (collection == null || collection.Length == 0)
+                return null;
+
+            T closest = null;
+            float closestDistance = Mathf.Infinity;
+            for (int i = 0; i < collection.Length; i++)
             {
-                if (i != 0)
+                float sqrd = (collection[i].transform.position - toPoint).sqrMagnitude;
+                if (sqrd < closestDistance)
                 {
-                    str += ", ";
+                    closestDistance = sqrd;
+                    closest = collection[i];
                 }
-                str += list[i].ToString();
             }
-            Debug.Log(str);
+
+            return closest;
         }
+
+        public static T GetClosest<T>(this IReadOnlyList<T> collection, Vector3 toPoint) where T : Component
+        {
+            if (collection == null || collection.Count == 0)
+                return null;
+
+            T closest = null;
+            float closestDistance = Mathf.Infinity;
+            for (int i = 0; i < collection.Count; i++)
+            {
+                float sqrd = (collection[i].transform.position - toPoint).sqrMagnitude;
+                if (sqrd < closestDistance)
+                {
+                    closestDistance = sqrd;
+                    closest = collection[i];
+                }
+            }
+
+            return closest;
+        }
+
     }
 }

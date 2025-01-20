@@ -6,20 +6,10 @@ using UnityEngine;
 
 namespace OSK
 {
-    public sealed class GameFrameworkLinkedList<T> :
-        ICollection<T>,
-        IEnumerable<T>,
-        IEnumerable,
-        ICollection
+    public sealed class GameFrameworkLinkedList<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ICollection
     {
-        private readonly LinkedList<T> m_LinkedList;
-        private readonly Queue<LinkedListNode<T>> m_CachedNodes;
-
-        public GameFrameworkLinkedList()
-        {
-            this.m_LinkedList = new LinkedList<T>();
-            this.m_CachedNodes = new Queue<LinkedListNode<T>>();
-        }
+        private readonly LinkedList<T> m_LinkedList = new();
+        private readonly Queue<LinkedListNode<T>> m_CachedNodes = new();
 
         public int Count => this.m_LinkedList.Count;
         public int CachedNodeCount => this.m_CachedNodes.Count;
@@ -162,9 +152,7 @@ namespace OSK
 
             internal Enumerator(LinkedList<T> linkedList)
             {
-                this.m_Enumerator = linkedList != null
-                    ? linkedList.GetEnumerator()
-                    : throw new Exception("Linked list is invalid.");
+                this.m_Enumerator = linkedList != null ? linkedList.GetEnumerator()  : throw new Exception("Linked list is invalid.");
             }
 
             public T Current => this.m_Enumerator.Current;
