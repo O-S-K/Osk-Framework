@@ -148,7 +148,7 @@ namespace OSK
                 GUI.enabled = !isVisible;
                 if (GUILayout.Button("Open"))
                 {
-                    uiManager.ListViews.Open(_view, true);
+                    uiManager.ListViews.Open(_view, null, true);
                 }
 
                 GUI.enabled = isVisible;
@@ -166,12 +166,12 @@ namespace OSK
                 EditorGUILayout.EndHorizontal();
             }
         }
-        
-        
+
+
         [MenuItem("OSK-Framework/UI/Create view")]
         public static void CreateView()
         {
-             
+
         }
     }
 }

@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Sirenix.OdinInspector;
+using System.Collections.Generic;
 
 namespace OSK
 {
@@ -119,24 +118,19 @@ namespace OSK
 
         #region Views
 
-        public T Spawn<T>(string path, bool isCache = true, bool isHidePrevPopup = true) where T : View
+        public T Spawn<T>(string path, object[] data = null, bool isCache = true, bool isHidePrevPopup = false) where T : View
         {
-            return RootUI.ListViews.Spawn<T>(path, isCache, isHidePrevPopup);
+            return RootUI.ListViews.Spawn<T>(path, data, isCache, isHidePrevPopup);
         }
 
-        public T SpawnCache<T>(T view, bool isHidePrevPopup = true) where T : View
+        public T SpawnCache<T>(T view, object[] data = null, bool isHidePrevPopup = false) where T : View
         {
-            return RootUI.ListViews.Spawn(view, isHidePrevPopup);
+            return RootUI.ListViews.Spawn(view, data, isHidePrevPopup);
         }
 
-        public void Delete<T>(T popup) where T : View
+        public T Open<T>(object[] data = null, bool isHidePrevPopup = false) where T : View
         {
-            RootUI.ListViews.Delete<T>(popup);
-        }
-
-        public T Open<T>(bool isHidePrevPopup = false) where T : View
-        {
-            return RootUI.ListViews.Open<T>(isHidePrevPopup);
+            return RootUI.ListViews.Open<T>(data, isHidePrevPopup);
         }
 
         public void OpenPrevious()
@@ -144,14 +138,14 @@ namespace OSK
             RootUI.ListViews.OpenPrevious();
         }
 
-        public T TryOpen<T>(bool isHidePrevPopup = false) where T : View
+        public T TryOpen<T>(object[] data = null, bool isHidePrevPopup = false) where T : View
         {
-            return RootUI.ListViews.TryOpen<T>(isHidePrevPopup);
+            return RootUI.ListViews.TryOpen<T>(data, isHidePrevPopup);
         }
 
-        public void Open(View view)
+        public void Open(View view, object[] data = null, bool isHidePrevPopup = false)
         {
-            //RootUI.ListViews.Open(view, true);
+            RootUI.ListViews.Open(view, data, isHidePrevPopup);
         }
 
         public void Hide(View view)
@@ -174,23 +168,29 @@ namespace OSK
             RootUI.ListViews.HideIgnore(viewsToKeep);
         }
 
+        public void Delete<T>(T popup) where T : View
+        {
+            RootUI.ListViews.Delete<T>(popup);
+        }
+
+
         public T Get<T>(bool isInitOnScene = true) where T : View
         {
             return RootUI.ListViews.Get<T>(isInitOnScene);
         }
 
-        public T GetOrOpen<T>() where T : View
+        public T GetOrOpen<T>(object[] data = null, bool hidePrevView = false) where T : View
         {
             var view = RootUI.ListViews.Get<T>();
             if (view == null)
             {
                 if (!view.IsShowing)
-                    view = Open<T>();
+                    view = Open<T>(data, hidePrevView);
             }
             else
             {
                 if (!view.IsShowing)
-                    view.Open();
+                    view.Open(data);
             }
 
             return view;

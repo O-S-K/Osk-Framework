@@ -170,18 +170,19 @@ namespace OSK
 
         private static void CreateScriptFile(string path, string scriptName)
         {
-            string scriptTemplate = $@"
+string scriptTemplate = $@"
 using UnityEngine;
 using OSK;
 
 public class {scriptName} : View
 {{
+
     public override void Initialize(ViewContainer viewContainer)
     {{
         base.Initialize(viewContainer);
     }} 
 
-    public override void Open(object data = null)
+    public override void Open(object[] data = null)
     {{
         base.Open(data);
     }}

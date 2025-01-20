@@ -100,7 +100,7 @@ namespace OSK
         }
 
 
-        public virtual void Open(object data = null)
+        public virtual void Open(object[] data = null)
         {
             if (!IsViewContainerInitialized() || IsAlreadyShowing()) return;
 

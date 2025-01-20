@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+using System; 
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
@@ -9,16 +8,18 @@ namespace OSK
 {
     public class ViewContainer : MonoBehaviour
     {
-        [ShowInInspector, ReadOnly] [SerializeField]
+        [ShowInInspector, ReadOnly]
+        [SerializeField]
         private List<View> _listViewInit = new List<View>();
 
-        [ShowInInspector, ReadOnly] [SerializeField]
+        [ShowInInspector, ReadOnly]
+        [SerializeField]
         private List<View> _listCacheView = new List<View>();
 
         private Stack<View> _viewHistory = new Stack<View>();
         public Stack<View> ListViewHistory => _viewHistory;
 
-        
+
         #region Init
         public void Initialize()
         {
@@ -42,9 +43,6 @@ namespace OSK
             for (int i = 0; i < _listViewInit.Count; i++)
             {
                 if (_listViewInit[i].isPreloadSpawn)
-
-
-         
                 {
                     SpawnViewCache(_listViewInit[i]);
                 }
@@ -54,19 +52,19 @@ namespace OSK
 
         #region Spawn
 
-        public T Spawn<T>(T view, bool hidePrevView) where T : View
+        public T Spawn<T>(T view, object[] data, bool hidePrevView) where T : View
         {
             if (IsExist<T>())
-                return Open<T>(hidePrevView);
+                return Open<T>(data, hidePrevView);
             else
                 return SpawnViewCache(view);
         }
 
-        public T Spawn<T>(string path, bool isCache, bool hidePrevView) where T : View
+        public T Spawn<T>(string path, object[] data, bool isCache, bool hidePrevView) where T : View
         {
             if (IsExist<T>())
             {
-                return Open<T>(hidePrevView);
+                return Open<T>(data, hidePrevView);
             }
             else
             {
@@ -100,7 +98,7 @@ namespace OSK
 
         #region Open
 
-        public View Open(View _view, bool hidePrevView, bool checkShowing = true)
+        public View Open(View _view, object[] data = null, bool hidePrevView = false, bool checkShowing = true)
         {
             var view = _listCacheView.FirstOrDefault(v => v == _view);
             if (hidePrevView && _viewHistory.Count > 0)
@@ -126,13 +124,13 @@ namespace OSK
                 return view;
             }
 
-            view.Open();
+            view.Open(data);
             _viewHistory.Push(view);
             Logg.Log($"[View] Opened view: {view.name}");
             return view;
         }
 
-        public T Open<T>(bool hidePrevView, bool checkShowing = true) where T : View
+        public T Open<T>(object[] data = null, bool hidePrevView = false, bool checkShowing = true) where T : View
         {
             var view = _listCacheView.FirstOrDefault(v => v is T) as T;
             if (hidePrevView && _viewHistory.Count > 0)
@@ -158,23 +156,23 @@ namespace OSK
                 return view;
             }
 
-            view.Open();
+            view.Open(data);
             _viewHistory.Push(view);
             Logg.Log($"[View] Opened view: {view.name}");
             return view;
         }
 
-        public T TryOpen<T>(bool hidePrevView) where T : View
+        public T TryOpen<T>(object[] data = null, bool hidePrevView = false) where T : View
         {
-            return Open<T>(hidePrevView, false);
+            return Open<T>(data, hidePrevView, false);
         }
 
-        public void OpenPrevious()
+        public void OpenPrevious(object[] data = null)
         {
             if (_viewHistory.Count > 0)
             {
                 var prevView = _viewHistory.Pop();
-                prevView.Open();
+                prevView.Open(data);
                 Logg.Log($"[View] Open previous view: {prevView.name}");
             }
         }
@@ -356,7 +354,7 @@ namespace OSK
             }
             return childPages;
         }
-        
+
         public int FindInsertIndex(List<View> childPages, int depth)
         {
             int left = 0, right = childPages.Count - 1;
@@ -367,7 +365,7 @@ namespace OSK
                 int mid = (left + right) / 2;
                 if (depth < childPages[mid].depth)
                 {
-                    insertIndex = mid; 
+                    insertIndex = mid;
                     right = mid - 1;
                 }
                 else
@@ -402,7 +400,7 @@ namespace OSK
         }
 
         #endregion
-        
-        
+
+
     }
 }
