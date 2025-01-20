@@ -37,33 +37,60 @@ namespace OSK
             transform.SetSiblingIndex(0);
         }
 
-        // example : transform.position =  transform.position.With(y: 5);
-        public static Vector3 With(this Vector3 vector3, float? x = null, float? y = null, float? z = null)
+        public static void SetX(this Transform transform, float x)
         {
-            return new Vector3(x ?? vector3.x, y ?? vector3.y, z ?? vector3.z);
+            var position = transform.position;
+            transform.position = new Vector3(x, position.y, position.z);
         }
 
-        public static Vector3 WithX(this Vector3 vector3, float x)
+        public static void SetY(this Transform transform, float y)
         {
-            return new Vector3(x, vector3.y, vector3.z);
+            var position = transform.position;
+            transform.position = new Vector3(position.x, y, position.z);
         }
 
-        public static Vector3 WithY(this Vector3 vector3, float y)
+        public static void SetZ(this Transform transform, float z)
         {
-            return new Vector3(vector3.x, y, vector3.z);
+            var position = transform.position;
+            transform.position = new Vector3(position.x, position.y, z);
         }
 
-        public static Vector3 WithZ(this Vector3 vector3, float z)
+        public static void Reset(this Transform transform, Space space = Space.Self)
         {
-            return new Vector3(vector3.x, vector3.y, z);
+            switch (space)
+            {
+                case Space.Self:
+                    transform.localPosition = Vector3.zero;
+                    transform.localRotation = Quaternion.identity;
+                    break;
+
+                case Space.World:
+                    transform.position = Vector3.zero;
+                    transform.rotation = Quaternion.identity;
+                    break;
+            }
+
+            transform.localScale = Vector3.one;
         }
 
-        // example : transform.position =  transform.position.Add(x: 1, y: 5);
-        public static Vector3 Add(this Vector3 vector3, float? x = null, float? y = null, float? z = null)
+        public static Transform GetClosest(this Transform position, IEnumerable<Transform> otherPositions)
         {
-            return new Vector3(vector3.x + (x ?? 0), vector3.y + (y ?? 0), vector3.z + (z ?? 0));
+            Transform closest = null;
+            float closestDistance = Mathf.Infinity;
+
+            foreach (var otherPosition in otherPositions)
+            {
+                float distance = Vector3.Distance(position.position, otherPosition.position);
+
+                if (distance < closestDistance)
+                {
+                    closest = otherPosition;
+                    closestDistance = distance;
+                }
+            }
+            return closest;
         }
-        
+
         public static void DestroyAllChildren(this Transform transform)
         {
             for (int i = transform.childCount - 1; i >= 0; i--)

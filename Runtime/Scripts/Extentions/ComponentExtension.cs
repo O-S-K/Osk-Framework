@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace OSK
 {
@@ -10,32 +11,32 @@ namespace OSK
     {
         private static List<Component> componentCache = new List<Component>();
 
-        public static bool Has<T>(this GameObject obj) where T : Component
+        public static bool HasComponent<T>(this GameObject obj) where T : Component
         {
             return obj.GetComponent<T>() != null;
         }
 
-        public static T Get<T>(this GameObject obj) where T : Component
+        public static T GetComponent<T>(this GameObject obj) where T : Component
         {
             return obj.GetComponent<T>();
         }
 
-        public static T[] GetAll<T>(this GameObject obj) where T : Component
+        public static T[] GetAllComponent<T>(this GameObject obj) where T : Component
         {
             return obj.GetComponents<T>();
         }
 
-        public static bool Has<T>(this Component obj) where T : Component
+        public static bool HasComponent<T>(this Component obj) where T : Component
         {
             return obj.GetComponent<T>() != null;
         }
 
-        public static T Get<T>(this Component obj) where T : Component
+        public static T GetComponent<T>(this Component obj) where T : Component
         {
             return obj.GetComponent<T>();
         }
 
-        public static T[] GetAll<T>(this Component obj) where T : Component
+        public static T[] GetAllComponent<T>(this Component obj) where T : Component
         {
             return obj.GetComponents<T>();
         }
@@ -57,9 +58,7 @@ namespace OSK
             T component = mono.GetComponent<T>();
             return component != null ? component : mono.gameObject.AddComponent<T>();
         }
-
-
-
+ 
         public static bool HasComponentOrInterface<T>(this GameObject obj) where T : class
         {
             obj.GetComponents<Component>(componentCache);
@@ -138,7 +137,7 @@ namespace OSK
 
         public static GameObject LoadChild(this GameObject parent, string resourcePath)
         {
-            var obj = (GameObject)GameObject.Instantiate(Resources.Load(resourcePath));
+            var obj = (GameObject)Object.Instantiate(Resources.Load(resourcePath));
             if (obj != null && parent != null)
             {
                 if (obj.transform is RectTransform) obj.transform.SetParent(parent.transform, true);
@@ -150,7 +149,7 @@ namespace OSK
 
         public static GameObject LoadChild(this Transform parent, string resourcePath)
         {
-            var obj = (GameObject)GameObject.Instantiate(Resources.Load(resourcePath));
+            var obj = (GameObject)Object.Instantiate(Resources.Load(resourcePath));
             if (obj != null && parent != null)
             {
                 if (obj.transform is RectTransform) obj.transform.SetParent(parent, true);
@@ -168,7 +167,7 @@ namespace OSK
         public static void DestroyAllChildrenImmediately(this Transform trans)
         {
             while (trans.childCount != 0)
-                GameObject.DestroyImmediate(trans.GetChild(0).gameObject);
+                Object.DestroyImmediate(trans.GetChild(0).gameObject);
         }
 
         public static void Deactivate(this Component component)
@@ -185,10 +184,7 @@ namespace OSK
         {
             if (obj.transform.parent == null)
                 return false;
-            if (obj.transform.parent.gameObject == parent)
-                return true;
-
-            return obj.transform.parent.gameObject.IsParentedBy(parent);
+            return obj.transform.parent.gameObject == parent || obj.transform.parent.gameObject.IsParentedBy(parent);
         }
     }
 }

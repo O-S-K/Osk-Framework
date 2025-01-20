@@ -107,12 +107,12 @@ namespace OSK
 
         public void ShowRayCast()
         {
-            GetCanvas.Get<GraphicRaycaster>().ignoreReversedGraphics = true;
+            GetCanvas.GetComponent<GraphicRaycaster>().ignoreReversedGraphics = true;
         }
 
         public void HideRayCast()
         {
-            GetCanvas.Get<GraphicRaycaster>().ignoreReversedGraphics = false;
+            GetCanvas.GetComponent<GraphicRaycaster>().ignoreReversedGraphics = false;
         }
 
         #endregion

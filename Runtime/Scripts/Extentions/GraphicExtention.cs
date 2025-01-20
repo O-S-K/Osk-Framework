@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace OSK
 {
-    public static class GraphicUtils
+    public static class GraphicExtention
     {
         public static Color SetAlpha(this Color color, float alpha)
         {

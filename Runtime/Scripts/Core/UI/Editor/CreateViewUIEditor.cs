@@ -120,7 +120,7 @@ namespace OSK
             view.transform.parent = viewContainer != null ? viewContainer.transform : null;
 
             // set position and scale
-            var rectTransform = view.transform.Get<RectTransform>();
+            var rectTransform = view.transform.GetComponent<RectTransform>();
             rectTransform.localPosition = Vector3.zero;
             rectTransform.localScale = Vector3.one;
             rectTransform.sizeDelta = Vector2.zero;

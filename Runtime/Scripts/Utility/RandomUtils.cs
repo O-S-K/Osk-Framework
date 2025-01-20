@@ -109,9 +109,7 @@ namespace OSK
             for (int i = startIndex; i < endIndex; i++)
             {
                 int rnd = UnityEngine.Random.Range(startIndex, endIndex + 1);
-                T temp = rangeToRandom[rnd];
-                rangeToRandom[rnd] = rangeToRandom[i];
-                rangeToRandom[i] = temp;
+                (rangeToRandom[rnd], rangeToRandom[i]) = (rangeToRandom[i], rangeToRandom[rnd]);
             }
         }
 
@@ -142,9 +140,7 @@ namespace OSK
             {
                 n--;
                 int k = rng.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
+                (list[k], list[n]) = (list[n], list[k]);
             }
         }
 
