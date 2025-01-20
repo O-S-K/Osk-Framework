@@ -35,6 +35,7 @@ namespace OSK
                         serializer.Serialize(stream, data);
                     }
 
+                    RefreshEditor();
                     Logg.Log($"[Save File Success]: {fileName + ".xml"} \n {path} ", Color.green);
                 }
             }
@@ -94,6 +95,13 @@ namespace OSK
                 return Load<T>(fileName);
             }
             return default;
+        }
+
+        private void RefreshEditor()
+        {
+#if UNITY_EDITOR
+            UnityEditor.AssetDatabase.Refresh();
+#endif
         }
     }
 }

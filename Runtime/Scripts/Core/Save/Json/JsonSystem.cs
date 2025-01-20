@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using System.Text.RegularExpressions;
 
 namespace OSK
@@ -32,6 +29,7 @@ namespace OSK
                 {
                     File.WriteAllText(filePath, saveJson);
                 }
+                RefreshEditor();
 
                 OSK.Logg.Log($"[Save File Success]: {fileName + ".json"} \n {filePath}", Color.green);
             }

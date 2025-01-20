@@ -111,7 +111,7 @@ namespace OSK
             if (_uiTransition != null) _uiTransition.OpenTrans(() => EventAfterOpened?.Invoke());
             else EventAfterOpened?.Invoke();
         }
-
+                  
         public virtual void Hide()
         {
             if (!_isShowing) return;

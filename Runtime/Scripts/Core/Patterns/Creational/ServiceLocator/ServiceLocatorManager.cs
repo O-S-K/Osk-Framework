@@ -61,7 +61,7 @@ namespace OSK
             return false;
         }
 
-        public void AddServiceListener<T>(Action<T> serviceCallback) where T : class, IService
+        public void Add<T>(Action<T> serviceCallback) where T : class, IService
         {
             if (k_RegisteredCallbacks.ContainsKey(serviceCallback))
             {
@@ -85,7 +85,7 @@ namespace OSK
             k_RegisteredCallbacks.Add(serviceCallback, newAction);
         }
 
-        public void RemoveServiceListener<T>(Action<T> serviceCallback) where T : class, IService
+        public void Remove<T>(Action<T> serviceCallback) where T : class, IService
         {
             if (!k_RegisteredCallbacks.TryGetValue(serviceCallback, out var action))
                 return;

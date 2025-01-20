@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
+using UnityEditor;
 
 namespace OSK
 {
@@ -22,6 +23,46 @@ namespace OSK
         public PathConfigs path;
 
 #if UNITY_EDITOR
+
+        [Button]
+        public void CreateConfig()
+        {
+            ListViewSO listViewS0 = CreateInstance<ListViewSO>();
+            ListSoundSO listSoundSo = CreateInstance<ListSoundSO>();
+            UIParticleSO uiParticleSO = CreateInstance<UIParticleSO>();
+
+
+            string path = "Assets/OSK/Resources/Configs";
+            if (!AssetDatabase.IsValidFolder(path))
+            {
+                AssetDatabase.CreateFolder("Assets/OSK/Resources", "Configs");
+            }
+
+            IOUtility.CreateDirectory(path);
+            if (data.listSoundSo == null)
+            {
+                AssetDatabase.CreateAsset(listSoundSo, $"{path}/ListSoundSO.asset");
+                data.listSoundSo = listSoundSo;
+            }
+
+            if (data.listViewS0 == null)
+            {
+                AssetDatabase.CreateAsset(listViewS0, $"{path}/ListViewSO.asset");
+                data.listViewS0 = listViewS0;
+            }
+
+            if (data.uiParticleSO == null)
+            {
+                AssetDatabase.CreateAsset(uiParticleSO, $"{path}/UIParticleSO.asset");
+                data.uiParticleSO = uiParticleSO;
+            }
+
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+
+
         [Button]
         private void AddConfigs()
         {
@@ -33,14 +74,14 @@ namespace OSK
             FindSoundDataSOAssets();
             FindParticleDataSOAssets();
 
-            UnityEditor.EditorUtility.SetDirty(this);
-            UnityEditor.AssetDatabase.SaveAssets();
-            UnityEditor.AssetDatabase.Refresh();
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 
         private void FindViewDataSOAssets()
         {
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ListViewSO");
+            string[] guids = AssetDatabase.FindAssets("t:ListViewSO");
             if (guids.Length == 0)
             {
                 Debug.LogError("No ViewData found in the project.");
@@ -50,8 +91,8 @@ namespace OSK
             List<ListViewSO> viewDatas = new List<ListViewSO>();
             foreach (var guid in guids)
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                ListViewSO v = UnityEditor.AssetDatabase.LoadAssetAtPath<ListViewSO>(path);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                ListViewSO v = AssetDatabase.LoadAssetAtPath<ListViewSO>(path);
                 viewDatas.Add(v);
             }
 
@@ -72,7 +113,7 @@ namespace OSK
 
         private void FindSoundDataSOAssets()
         {
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:ListSoundSO");
+            string[] guids = AssetDatabase.FindAssets("t:ListSoundSO");
             if (guids.Length == 0)
             {
                 Debug.LogError("No SoundData found in the project.");
@@ -82,8 +123,8 @@ namespace OSK
             List<ListSoundSO> soundDatas = new List<ListSoundSO>();
             foreach (var guid in guids)
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                ListSoundSO v = UnityEditor.AssetDatabase.LoadAssetAtPath<ListSoundSO>(path);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                ListSoundSO v = AssetDatabase.LoadAssetAtPath<ListSoundSO>(path);
                 soundDatas.Add(v);
             }
 
@@ -104,7 +145,7 @@ namespace OSK
 
         private void FindParticleDataSOAssets()
         {
-            string[] guids = UnityEditor.AssetDatabase.FindAssets("t:UIParticleSO");
+            string[] guids = AssetDatabase.FindAssets("t:UIParticleSO");
             if (guids.Length == 0)
             {
                 Debug.LogError("No ImageEffectData found in the project.");
@@ -114,8 +155,8 @@ namespace OSK
             List<UIParticleSO> imageEffectDatas = new List<UIParticleSO>();
             foreach (var guid in guids)
             {
-                string path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
-                UIParticleSO v = UnityEditor.AssetDatabase.LoadAssetAtPath<UIParticleSO>(path);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                UIParticleSO v = AssetDatabase.LoadAssetAtPath<UIParticleSO>(path);
                 imageEffectDatas.Add(v);
             }
 
@@ -139,9 +180,9 @@ namespace OSK
         private void ShuffleEncryptKey()
         {
             encryptKey = StringUtils.ShuffleString(encryptKey);
-            UnityEditor.EditorUtility.SetDirty(this);
-            UnityEditor.AssetDatabase.SaveAssets();
-            UnityEditor.AssetDatabase.Refresh();
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
         }
 #endif
     }
