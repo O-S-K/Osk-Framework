@@ -35,17 +35,14 @@ namespace OSK
          HideIf(nameof(transition), TransitionType.Animation)]
         public Ease ease = Ease.OutQuad;
 
-        [ShowIf(nameof(transition), TransitionType.Scale),
-         HideIf(nameof(transition), TransitionType.Animation)]
+        [ShowIf(nameof(transition), TransitionType.Scale)]
         public Vector3 initScale;
-
+        
         [HideIf(nameof(transition), TransitionType.None),
-         HideIf(nameof(useEase), true),
-         HideIf(nameof(transition), TransitionType.Animation)]
+         HideIf(nameof(useEase), true)]
         public bool useCustomCurve = false;
 
-        [ShowIf(nameof(useCustomCurve)),
-         HideIf(nameof(transition), TransitionType.Animation)]
+        [ShowIf(nameof(useCustomCurve))]
         public AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
         [ShowIf(nameof(transition), TransitionType.Animation)]

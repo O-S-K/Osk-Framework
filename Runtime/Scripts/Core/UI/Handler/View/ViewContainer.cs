@@ -1,4 +1,4 @@
-using System; 
+using System;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
@@ -8,12 +8,10 @@ namespace OSK
 {
     public class ViewContainer : MonoBehaviour
     {
-        [ShowInInspector, ReadOnly]
-        [SerializeField]
+        [ShowInInspector, ReadOnly] [SerializeField]
         private List<View> _listViewInit = new List<View>();
 
-        [ShowInInspector, ReadOnly]
-        [SerializeField]
+        [ShowInInspector, ReadOnly] [SerializeField]
         private List<View> _listCacheView = new List<View>();
 
         private Stack<View> _viewHistory = new Stack<View>();
@@ -21,9 +19,11 @@ namespace OSK
 
 
         #region Init
+
         public void Initialize()
         {
-            if (Main.Configs.init == null || Main.Configs.init.data == null || Main.Configs.init.data.listViewS0 == null)
+            if (Main.Configs.init == null || Main.Configs.init.data == null ||
+                Main.Configs.init.data.listViewS0 == null)
                 return;
             Preload();
         }
@@ -48,6 +48,7 @@ namespace OSK
                 }
             }
         }
+
         #endregion
 
         #region Spawn
@@ -91,6 +92,19 @@ namespace OSK
             Logg.Log($"[View] Spawn view: {view.name}");
             if (!_listCacheView.Contains(view))
                 _listCacheView.Add(view);
+            return view;
+        }
+
+        public T  SpawnAlert<T>(T _view) where T : View
+        {
+            var view = Instantiate(_view, transform);
+            view.gameObject.SetActive(false);
+            view.Initialize(this);
+
+            view.transform.localPosition = Vector3.zero;
+            view.transform.localScale = Vector3.one;
+
+            Logg.Log($"[View] Spawn Alert view: {view.name}");
             return view;
         }
 
@@ -175,6 +189,22 @@ namespace OSK
                 prevView.Open(data);
                 Logg.Log($"[View] Open previous view: {prevView.name}");
             }
+        }
+
+        public AlertView OpenAlert<T>(AlertSetup setup) where T : AlertView
+        {
+            var viewPrefab = _listViewInit.FirstOrDefault(v => v is T) as T;
+            if (viewPrefab == null)
+            {
+                Logg.LogError($"[View] Can't find view prefab for type: {typeof(T).Name}");
+                return null;
+            }
+
+            var view = SpawnAlert(viewPrefab);
+            view.Open();
+            view.SetData(setup);
+            Logg.Log($"[View] Opened view: {view.name}");
+            return view;
         }
 
         #endregion
@@ -352,6 +382,7 @@ namespace OSK
                 if (childPage != null)
                     childPages.Add(childPage);
             }
+
             return childPages;
         }
 
@@ -400,7 +431,5 @@ namespace OSK
         }
 
         #endregion
-
-
     }
 }

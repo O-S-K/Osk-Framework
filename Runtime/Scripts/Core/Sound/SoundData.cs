@@ -1,4 +1,3 @@
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace OSK
@@ -37,8 +36,7 @@ namespace OSK
 
         public void UpdateId()
         {
-            if (audioClip != null) id = audioClip.name;
-            else id = string.Empty;
+            id = audioClip != null ? audioClip.name : string.Empty;
         }
 #endif
     }

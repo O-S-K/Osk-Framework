@@ -16,37 +16,25 @@ namespace OSK
         {
             get
             {
-                if (_rootUI == null)
-                {
-                    _rootUI = FindObjectOfType<RootUI>();
-                    if (_rootUI != null)
-                    {
-                        _rootUI.Initialize();
-                    }
+                if (_rootUI != null)
                     return _rootUI;
-                }
-                else
-                {
-                    return _rootUI;
-                }
+
+                _rootUI = FindObjectOfType<RootUI>();
+                if (_rootUI != null)
+                    _rootUI.Initialize();
+                return _rootUI;
             }
         }
 
 
         public override void OnInit()
         {
-            if (_rootUI == null)
-            {
-                _rootUI = FindObjectOfType<RootUI>();
-                if (_rootUI != null)
-                {
-                    _rootUI.Initialize();
-                }
-                else
-                {
-                    Logg.LogError("HUD is null");
-                }
-            }
+            if (_rootUI != null)
+                return;
+
+            _rootUI = FindObjectOfType<RootUI>();
+            if (_rootUI != null)
+                _rootUI.Initialize();
         }
 
         #region Canvas
@@ -106,19 +94,24 @@ namespace OSK
 
         public void ShowRayCast()
         {
-            GetCanvas.GetComponent<GraphicRaycaster>().ignoreReversedGraphics = true;
+            var graphicRayCaster = GetCanvas.GetComponent<GraphicRaycaster>();
+            if (graphicRayCaster != null)
+                graphicRayCaster.ignoreReversedGraphics = true;
         }
 
         public void HideRayCast()
         {
-            GetCanvas.GetComponent<GraphicRaycaster>().ignoreReversedGraphics = false;
+            var graphicRayCaster = GetCanvas.GetComponent<GraphicRaycaster>();
+            if (graphicRayCaster != null)
+                graphicRayCaster.ignoreReversedGraphics = false;
         }
 
         #endregion
 
         #region Views
 
-        public T Spawn<T>(string path, object[] data = null, bool isCache = true, bool isHidePrevPopup = false) where T : View
+        public T Spawn<T>(string path, object[] data = null, bool isCache = true, bool isHidePrevPopup = false)
+            where T : View
         {
             return RootUI.ListViews.Spawn<T>(path, data, isCache, isHidePrevPopup);
         }
@@ -148,6 +141,11 @@ namespace OSK
             RootUI.ListViews.Open(view, data, isHidePrevPopup);
         }
 
+        public AlertView OpenAlert<T>(AlertSetup setup) where T : AlertView
+        {
+           return RootUI.ListViews.OpenAlert<T>(setup);
+        } 
+        
         public void Hide(View view)
         {
             RootUI.ListViews.Hide(view);

@@ -172,6 +172,5 @@ namespace OSK
         {
             _viewContainer.Delete(this);
         }
-
     }
 }

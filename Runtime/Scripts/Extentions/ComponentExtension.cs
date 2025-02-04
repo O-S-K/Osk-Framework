@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -62,7 +61,7 @@ namespace OSK
         public static bool HasComponentOrInterface<T>(this GameObject obj) where T : class
         {
             obj.GetComponents<Component>(componentCache);
-            return componentCache.OfType<T>().Count() > 0;
+            return componentCache.OfType<T>().Any();
         }
 
         public static T GetComponentOrInterface<T>(this GameObject obj) where T : class

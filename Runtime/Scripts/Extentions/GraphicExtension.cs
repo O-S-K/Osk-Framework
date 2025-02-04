@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace OSK
 {
-    public static class GraphicExtention
+    public static class GraphicExtension
     {
         public static Color SetAlpha(this Color color, float alpha)
         {
@@ -38,7 +38,6 @@ namespace OSK
             g.color = color;
             return g;
         }
-
         public static void SetTextFade(this Text text, float value)
         {
             Color color = text.color;
