@@ -57,8 +57,8 @@ namespace OSK
         {
             if (IsExist<T>())
                 return Open<T>(data, hidePrevView);
-            else
-                return SpawnViewCache(view);
+            
+            return SpawnViewCache(view);
         }
 
         public T Spawn<T>(string path, object[] data, bool isCache, bool hidePrevView) where T : View
@@ -67,17 +67,15 @@ namespace OSK
             {
                 return Open<T>(data, hidePrevView);
             }
-            else
-            {
-                var view = SpawnFromResource<T>(path);
-                if (isCache)
-                {
-                    if (_listCacheView.Contains(view))
-                        _listCacheView.Add(view);
-                }
 
-                return view;
+            var view = SpawnFromResource<T>(path);
+            if (isCache)
+            {
+                if (_listCacheView.Contains(view))
+                    _listCacheView.Add(view);
             }
+
+            return view;
         }
 
         public T SpawnViewCache<T>(T _view) where T : View
@@ -314,7 +312,8 @@ namespace OSK
 
         public void HideAll()
         {
-            foreach (var view in _listCacheView.Where(view => view.IsShowing))
+            var views = _listCacheView.Where(view => view.IsShowing).ToList();
+            foreach (var view in views)
             {
                 view.Hide();
             }
@@ -416,13 +415,11 @@ namespace OSK
         {
             var view = Instantiate(Resources.Load<T>(path), transform);
 
-            if (view == null)
-            {
-                Logg.LogError($"[Popup] Can't find popup with path: {path}");
-                return null;
-            }
+            if (view != null) 
+                return SpawnViewCache(view);
+            Logg.LogError($"[Popup] Can't find popup with path: {path}");
+            return null;
 
-            return SpawnViewCache(view);
         }
 
         private bool IsExist<T>() where T : View

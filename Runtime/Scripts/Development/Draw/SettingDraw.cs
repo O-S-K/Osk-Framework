@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 using UnityEngine;
 
-namespace FronkonGames.GameWork.Foundation
+namespace OSK
 {
     /// <summary> Configurable Foundation parameters. </summary>
     public static class SettingDraw

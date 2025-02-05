@@ -1,27 +1,17 @@
-using System;
-using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
+using Sirenix.OdinInspector;
 
 namespace OSK
 {
-    public enum EViewType
-    {
-        None,
-        Popup,
-        Overlay,
-        Screen
-    }
-
     public class View : MonoBehaviour
     {
         [Header("Settings")]
         [EnumToggleButtons]
         public EViewType viewType = EViewType.Popup;
         public int depth;
-        
-        [Space]
+    
+        [Space] 
         [ToggleLeft] public bool isAddToViewManager = true;
         [ToggleLeft] public bool isPreloadSpawn = true;
         [ToggleLeft] public bool isRemoveOnHide = false;
@@ -69,11 +59,19 @@ namespace OSK
         }
 
         public void SetSetSiblingIndex(int index)
-        {
+        { 
+            if(_viewContainer.transform.childCount <= index)
+                return;
             transform.SetSiblingIndex(index);
         }
 
-        public void SetOderInLayer(int order)
+        public void SetOderInLayer(EViewType viewType, int order)
+        {
+            this.viewType = viewType;
+            SetOderInLayer(order);
+        }
+        
+        private void SetOderInLayer(int order)
         {
             var canvas = GetComponent<Canvas>();
             if (canvas != null)
@@ -95,7 +93,7 @@ namespace OSK
 
                 var insertIndex = _viewContainer.FindInsertIndex(childPages, order);
                 if (insertIndex == childPages.Count) transform.SetAsLastSibling();
-                else transform.SetSiblingIndex(insertIndex);
+                else SetSetSiblingIndex(insertIndex);
             }
         }
 
@@ -108,7 +106,8 @@ namespace OSK
             EventBeforeOpened?.Invoke();
             gameObject.SetActive(true);
 
-            if (_uiTransition != null) _uiTransition.OpenTrans(() => EventAfterOpened?.Invoke());
+            if (_uiTransition != null) 
+                _uiTransition.OpenTrans(() => EventAfterOpened?.Invoke());
             else EventAfterOpened?.Invoke();
         }
                   
@@ -119,7 +118,8 @@ namespace OSK
             _isShowing = false;
             EventBeforeClosed?.Invoke();
 
-            if (_uiTransition != null) _uiTransition.CloseTrans(FinalizeHide);
+            if (_uiTransition != null) 
+                _uiTransition.CloseTrans(FinalizeHide);
             else FinalizeHide();
         }
 

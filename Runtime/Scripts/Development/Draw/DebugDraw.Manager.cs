@@ -18,7 +18,7 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace FronkonGames.GameWork.Foundation
+namespace OSK
 {
     /// <summary> Drawing of objects for development. </summary>
     /// <remarks> Only available in the Editor. </remarks>

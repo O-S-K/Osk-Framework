@@ -10,11 +10,7 @@ namespace OSK
     public class UIManagerEditor : Editor
     {
         private RootUI uiManager;
-
-        private void OnEnable()
-        {
-            uiManager = (RootUI)target;
-        }
+        private void OnEnable() => uiManager = (RootUI)target;
 
         public override void OnInspectorGUI()
         {
@@ -32,6 +28,8 @@ namespace OSK
             {
                 FindDataImageEffectAssets();
             }
+
+            GUILayout.Space(10);
 
             // Draw background for the views section
             DrawBackground(Color.green);
@@ -51,9 +49,8 @@ namespace OSK
 
         private void ShowListViewHistory()
         {
-            List<View> views = uiManager.ListViews.ListViewHistory.ToList();
-            if (views.Count == 0)
-                return;
+            var views = uiManager.ListViews.ListViewHistory.ToList();
+            if (views.Count == 0) return;
             foreach (var view in views)
             {
                 EditorGUILayout.LabelField(view.name);
@@ -80,7 +77,6 @@ namespace OSK
             if (imageEffectDatas.Count == 0)
             {
                 Logg.LogError("No UIParticleSO found in the project.");
-                return;
             }
             else
             {
@@ -102,22 +98,21 @@ namespace OSK
                 return;
             }
 
-            List<ListViewSO> viewDatas = new List<ListViewSO>();
+            var viewData = new List<ListViewSO>();
             foreach (var guid in guids)
             {
                 string path = AssetDatabase.GUIDToAssetPath(guid);
                 ListViewSO v = AssetDatabase.LoadAssetAtPath<ListViewSO>(path);
-                viewDatas.Add(v);
+                viewData.Add(v);
             }
 
-            if (viewDatas.Count == 0)
+            if (viewData.Count == 0)
             {
                 Logg.LogError("No ListViewSO found in the project.");
-                return;
             }
             else
             {
-                foreach (ListViewSO v in viewDatas)
+                foreach (var v in viewData)
                 {
                     Logg.Log("ListViewSO found: " + v.name);
                     Selection.activeObject = v;
@@ -165,13 +160,6 @@ namespace OSK
                 GUI.enabled = true;
                 EditorGUILayout.EndHorizontal();
             }
-        }
-
-
-        [MenuItem("OSK-Framework/UI/Create view")]
-        public static void CreateView()
-        {
-
         }
     }
 }

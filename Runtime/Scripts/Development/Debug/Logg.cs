@@ -6,11 +6,8 @@ namespace OSK
 {
     public class Logg
     {
-#if UNITY_EDITOR
-        private static readonly bool IsLogEnabled = true;
-#else
-        private static readonly bool IsLogEnabled = false;
-#endif
+        private static bool _isLogEnabled = true; 
+        public void SetLogEnabled(bool value) => _isLogEnabled = value;
 
         // Test time
         public static void StartTest(PerforInfo info) => info.StartTest(info.label);
@@ -19,7 +16,7 @@ namespace OSK
         // Log
         public static void Log(object log, Color color = default, int size = 12)
         {
-            if (!IsLogEnabled)
+            if (!_isLogEnabled)
                 return;
 
             Debug.Log(($"[OSK] {log}".Color(color).Size(size)));
@@ -28,7 +25,7 @@ namespace OSK
         // Log warning
         public static void LogWarning(string log)
         {
-            if (!IsLogEnabled)
+            if (!_isLogEnabled)
                 return;
             Debug.Log(($"[OSK] Warning {log}".Color(Color.yellow).Size(14)));
         }
@@ -36,7 +33,7 @@ namespace OSK
         // Log format
         public static void LogFormat(string format, params object[] args)
         {
-            if (!IsLogEnabled)
+            if (!_isLogEnabled)
                 return;
             Debug.Log(($"[OSK] {string.Format(format, args)}".Color(Color.green).Size(12)));
         }
@@ -44,7 +41,7 @@ namespace OSK
         // Log error
         public static void LogError(string log)
         {
-            if (!IsLogEnabled)
+            if (!_isLogEnabled)
                 return;
             Debug.Log(($"[OSK] Error {log}".Color(Color.red).Size(14).Bold()));
         }
@@ -52,7 +49,7 @@ namespace OSK
         // Log exception
         public static void LogException(Exception ex)
         {
-            if (!IsLogEnabled)
+            if (!_isLogEnabled)
                 return;
             Debug.Log(($"[OSK] Exception {ex.Message}".Color(Color.red).Size(14).Bold()));
         }
@@ -60,7 +57,7 @@ namespace OSK
         // Log object
         public static void LogObject(object obj)
         {
-            if (!IsLogEnabled)
+            if (!_isLogEnabled)
                 return;
 #if LogObjectNewtonsoft
             Debug.Log($"[OSK] " + Newtonsoft.Json.JsonConvert.SerializeObject(obj).Color(ColorCustom.Cyan).Size(12));
@@ -70,14 +67,14 @@ namespace OSK
         // Log format time
         public static void LogFormatTime(string format, params object[] args)
         {
-            if (!IsLogEnabled)
+            if (!_isLogEnabled)
                 return;
             Debug.Log(($"[OSK] {string.Format(format, args)}".Color(Color.green).Size(12)));
         }
 
         public static void CheckNullRef(bool isNull, string name)
         {
-            if (!IsLogEnabled)
+            if (!_isLogEnabled)
                 return;
 
             if (isNull)

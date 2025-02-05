@@ -17,7 +17,7 @@
 using System;
 using UnityEngine;
 
-namespace FronkonGames.GameWork.Foundation
+namespace OSK
 {
   /// <summary>
   /// An expertly-crafted color palette out-of-the-box that is a great starting point if you don’t have your

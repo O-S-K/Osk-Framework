@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,12 +15,19 @@ namespace OSK
                 {
                     Destroy(eventSystems[i].gameObject);
                 }
+                Logg.LogWarning("There are more than one EventSystem in the scene. Destroying all except the first one.");
             }
             else if (eventSystems.Length == 0)
             {
                 GameObject newEventSystem = new GameObject("EventSystem");
                 newEventSystem.AddComponent<EventSystem>();
                 newEventSystem.AddComponent<StandaloneInputModule>(); 
+                
+                #if NEW_INPUT_SYSTEM
+                //
+                #else
+                //
+                #endif
             }
         }
     }
