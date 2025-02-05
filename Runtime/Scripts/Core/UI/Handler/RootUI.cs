@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using Sirenix.OdinInspector;
 
 namespace OSK
 {
@@ -34,10 +33,8 @@ namespace OSK
             uiParticle.Initialize();
         }
         
-        [Button]
-        private void SetupCanvas()
+        public void SetupCanvas()
         {
-#if UNITY_EDITOR
             _canvas.referencePixelsPerUnit = 100;
             _canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
     
@@ -51,6 +48,8 @@ namespace OSK
                 _canvasScaler.referenceResolution = new Vector2(1920, 1080);
                 _canvasScaler.matchWidthOrHeight = 1;
             }
+            
+#if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(_canvas);
 #endif
         }

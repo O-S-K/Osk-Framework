@@ -9,6 +9,7 @@ namespace OSK
         private Dictionary<string, Object> k_ResourceCache = new Dictionary<string, Object>();
         private Dictionary<string, int> k_ReferenceCount = new Dictionary<string, int>();
         private Dictionary<string, AssetBundle> k_AssetBundleCache = new Dictionary<string, AssetBundle>();
+        //private Dictionary<string, AssetAddressable> k_AddressableCache = new Dictionary<string, AssetAddressable>();
 
         public override void OnInit()
         {

@@ -1,36 +1,28 @@
-// This is paid service version of Unity Google Translator script https://gist.github.com/IJEMIN/a48f8f302190044de05e3e3fea342fbd
+/* Limitations */
+// translate.googleapis.com is free, but it only allows about 100 requests per one hour.
+// After that, you will receive 429 error response.
+// You may consider using paid service like google translate v2(https://translation.googleapis.com/language/translate/v2) to remove the limitations.
+// Check here if you want to use paid version : https://gist.github.com/IJEMIN/fdff6db1b1131b91033cbf204247816e
 
+/* // https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+
+English: en
+Korean (Tiếng Hàn): ko
+Vietnamese (Tiếng Việt): vi
+Japanese (Tiếng Nhật): ja
+Chinese (Tiếng Trung): zh
+...
+*/
+	
 using System;
-using System.Collections; 
-using UnityEngine;
+using System.Collections;
+using OSK; 
 using UnityEngine.Networking;
 
-public class GoogleTranslate : MonoBehaviour
-{
-	private void Awake()
-	{
-		DoExample();
-	}
-    
-	// Remove this method after understanding how to use.
-	private void DoExample()
-	{
-		TranslateText("en","ko","I'm a real gangster.", (success, translatedText) =>
-		{
-			if (success)
-			{
-				Debug.Log(translatedText);
-			}
-		});
-        
-		TranslateText("ko","en","나는 리얼 갱스터다.", (success, translatedText) =>
-		{
-			if (success)
-			{
-				Debug.Log(translatedText);
-			}
-		});
-	}
+public class GoogleTranslate : SingletonMono<GoogleTranslate>
+{ 
+
+	//example: TranslateText("en","ko","I'm a real gangster.", (success, translatedText) => { if (success) { Debug.Log(translatedText); } });
 
 	public void TranslateText(string sourceLanguage, string targetLanguage, string sourceText, Action<bool, string> callback)
 	{
@@ -46,15 +38,13 @@ public class GoogleTranslate : MonoBehaviour
 
 		if (webRequest.isHttpError || webRequest.isNetworkError)
 		{
-			Debug.LogError(webRequest.error);
+			Logg.LogError(webRequest.error);
 			callback.Invoke(false, string.Empty);
-
 			yield break;
 		}
 
- 	// 	var parsedTexts = SimpleJSON.JSONNode.Parse(webRequest.downloadHandler.text);
-		// var translatedText = parsedTexts[0][0][0];
-		//
-		// callback.Invoke(true, translatedText);
+ 		var parsedTexts = SimpleJSON.JSONNode.Parse(webRequest.downloadHandler.text);
+		var translatedText = parsedTexts[0][0][0];
+		callback.Invoke(true, translatedText);
     }
 }

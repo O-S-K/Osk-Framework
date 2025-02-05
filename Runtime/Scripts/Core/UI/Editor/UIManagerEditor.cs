@@ -29,6 +29,11 @@ namespace OSK
                 FindDataImageEffectAssets();
             }
 
+            if (GUILayout.Button("Setup Canvas"))
+            {
+                uiManager.SetupCanvas();
+            }
+
             GUILayout.Space(10);
 
             // Draw background for the views section
