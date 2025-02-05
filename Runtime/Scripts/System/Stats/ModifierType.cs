@@ -1,8 +1,8 @@
 namespace OSK
 {
-public enum ModifierType
-{
-    Flat,
-    Percent
-}
+    public enum ModifierType
+    {
+        Flat,
+        Percent
+    }
 }

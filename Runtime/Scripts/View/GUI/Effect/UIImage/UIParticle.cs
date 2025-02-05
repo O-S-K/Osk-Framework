@@ -27,9 +27,6 @@ namespace OSK
  
         public void Initialize()
         {
-            if (Main.Configs.init == null|| Main.Configs.init.data == null || Main.Configs.init.data.uiParticleSO == null)
-                return;
-
             _mainCamera = Camera.main;
             _uiCamera = Main.UI.GetCanvas.worldCamera;
             _canvasTransform = Main.UI.GetCanvas.transform;

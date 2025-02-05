@@ -1,47 +1,45 @@
-using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 
 namespace OSK
 {
-public class Stats
-{
-    public string Name { get; private set; }
-    public float BaseValue { get; private set; }
-    public float FinalValue { get; private set; }
-
-    private List<StatsModifier> modifiers;
-
-    public Stats(string name, float baseValue)
+    public class Stats
     {
-        Name = name;
-        BaseValue = baseValue;
-        modifiers = new List<StatsModifier>();
-    }
+        private List<StatsModifier> modifiers;
+        public string Name { get; private set; }
+        public float BaseValue { get; private set; }
+        public float FinalValue { get; private set; }
 
-    public void AddModifier(StatsModifier modifier)
-    {
-        modifiers.Add(modifier);
-    }
+        public Stats(string name, float baseValue)
+        {
+            Name = name;
+            BaseValue = baseValue;
+            modifiers = new List<StatsModifier>();
+        }
 
-    public void RemoveModifier(StatsModifier modifier)
-    {
-        modifiers.Remove(modifier);
-    }
+        public void AddModifier(StatsModifier modifier)
+        {
+            modifiers.Add(modifier);
+        }
 
-    public float GetFinalValue()
-    {
-        // Tính toán tổng số modifier dạng flat và phần trăm
-        float flatModifierTotal = modifiers.Where(m => m.modifierType == ModifierType.Flat).Sum(m => m.Value);
-        float percentModifierTotal = modifiers.Where(m => m.modifierType == ModifierType.Percent).Sum(m => m.Value);
+        public void RemoveModifier(StatsModifier modifier)
+        {
+            modifiers.Remove(modifier);
+        }
 
-        FinalValue = (BaseValue + flatModifierTotal) * (1 + percentModifierTotal);
-        return FinalValue;
-    }
+        public float GetFinalValue()
+        {
+            // calculate the final value
+            float flatModifierTotal = modifiers.Where(m => m.modifierType == ModifierType.Flat).Sum(m => m.Value);
+            float percentModifierTotal = modifiers.Where(m => m.modifierType == ModifierType.Percent).Sum(m => m.Value);
 
-    public void UpdateBaseValue(float value)
-    {
-        BaseValue = value;
+            FinalValue = (BaseValue + flatModifierTotal) * (1 + percentModifierTotal);
+            return FinalValue;
+        }
+
+        public void UpdateBaseValue(float value)
+        {
+            BaseValue = value;
+        }
     }
-}
 }

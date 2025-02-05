@@ -54,7 +54,7 @@ namespace OSK
 
         private void ShowListViewHistory()
         {
-            var views = uiManager.ListViews.ListViewHistory.ToList();
+            var views = uiManager.ListViewHistory.ToList();
             if (views.Count == 0) return;
             foreach (var view in views)
             {
@@ -137,29 +137,29 @@ namespace OSK
             if (!Application.isPlaying)
                 return;
 
-            List<View> views = uiManager.ListViews.GetAll(true);
+            List<View> views = uiManager.GetAll(true);
             foreach (var _view in views)
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(_view.name, GUILayout.Width(400));
 
-                bool isVisible = uiManager.ListViews.Get(_view).IsShowing;
+                bool isVisible = uiManager.Get(_view).IsShowing;
 
                 GUI.enabled = !isVisible;
                 if (GUILayout.Button("Open"))
                 {
-                    uiManager.ListViews.Open(_view, null, true);
+                    uiManager.Open(_view, null, true);
                 }
 
                 GUI.enabled = isVisible;
                 if (GUILayout.Button("Hide"))
                 {
-                    uiManager.ListViews.Hide(_view);
+                    uiManager.Hide(_view);
                 }
 
                 if (GUILayout.Button("Delete"))
                 {
-                    uiManager.ListViews.Delete(_view);
+                    uiManager.Delete(_view);
                 }
 
                 GUI.enabled = true;

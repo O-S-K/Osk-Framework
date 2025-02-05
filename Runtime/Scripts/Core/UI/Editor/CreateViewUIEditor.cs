@@ -84,8 +84,7 @@ namespace OSK
 
         private static void AttachScriptToGameObject(string scriptName, System.Type scriptType)
         {
-            var viewContainer = FindObjectOfType<ViewContainer>();
-            GameObject view = CreateRootView(scriptName, scriptType, viewContainer);
+            GameObject view = CreateRootView(scriptName, scriptType);
            if(view != null)
             {
                 if (isCreateShield)
@@ -102,7 +101,7 @@ namespace OSK
             Logg.Log($"Created GameObject '{scriptName}' with script '{scriptName}' attached.");
         }
 
-        private static GameObject CreateRootView(string scriptName, System.Type scriptType, ViewContainer viewContainer)
+        private static GameObject CreateRootView(string scriptName, System.Type scriptType)
         {
             if (string.IsNullOrEmpty(scriptName))
             {
@@ -117,7 +116,7 @@ namespace OSK
             view.AddComponent(scriptType);
 
             // set parent
-            view.transform.parent = viewContainer != null ? viewContainer.transform : null;
+            view.transform.parent = Main.UI.RootUI.GetViewContainer ? Main.UI.RootUI.GetViewContainer.transform : null;
 
             // set position and scale
             var rectTransform = view.transform.GetComponent<RectTransform>();

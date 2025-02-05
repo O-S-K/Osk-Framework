@@ -66,8 +66,7 @@ public static class MoneyUtils
             _ => number.ToString()
         };
     }
-    
-    
+     
     public static string FormatCurrency(float number)
     {
         // url: https://en.wikipedia.org/wiki/Names_of_large_numbers
@@ -88,5 +87,8 @@ public static class MoneyUtils
 
         return number.ToString();
     }
+    
+    // https://github.com/DarkNaku/Number
+    
 
 }

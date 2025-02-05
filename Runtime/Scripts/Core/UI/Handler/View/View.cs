@@ -22,7 +22,7 @@ namespace OSK
         [ShowInInspector, ReadOnly] 
         [ToggleLeft] private bool _isShowing;
         private UITransition _uiTransition;
-        private ViewContainer _viewContainer;
+        private RootUI _rootUI;
 
         [Space]
         [ToggleLeft] public bool isShowEvent = false;
@@ -39,19 +39,19 @@ namespace OSK
         }
         
 
-        public virtual void Initialize(ViewContainer viewContainer)
+        public virtual void Initialize(RootUI rootUI)
         {
             if (isInitOnScene) return;
 
             isInitOnScene = true;
-            _viewContainer = viewContainer; 
+            _rootUI = rootUI; 
 
             _uiTransition = GetComponent<UITransition>();
             _uiTransition?.Initialize();
 
-            if (_viewContainer == null)
+            if (_rootUI == null)
             {
-                Logg.LogError("View Manager is still null after initialization.");
+                Logg.LogError("RootUI is still null after initialization.");
             }
 
             SetOderInLayer(depth);
@@ -60,7 +60,7 @@ namespace OSK
 
         public void SetSetSiblingIndex(int index)
         { 
-            if(_viewContainer.transform.childCount <= index)
+            if(_rootUI.transform.childCount <= index)
                 return;
             transform.SetSiblingIndex(index);
         }
@@ -87,11 +87,11 @@ namespace OSK
             }
             else
             {
-                var childPages = _viewContainer.GetSortedChildPages(_viewContainer.transform);
+                var childPages = _rootUI.GetSortedChildPages(_rootUI.transform);
                 if (childPages.Count == 0)
                     return;
 
-                var insertIndex = _viewContainer.FindInsertIndex(childPages, order);
+                var insertIndex = _rootUI.FindInsertIndex(childPages, order);
                 if (insertIndex == childPages.Count) transform.SetAsLastSibling();
                 else SetSetSiblingIndex(insertIndex);
             }
@@ -133,7 +133,7 @@ namespace OSK
 
         private bool IsViewContainerInitialized()
         {
-            if (_viewContainer == null)
+            if (_rootUI == null)
             {
                 Logg.LogError("View Manager is null. Ensure that the View has been initialized before calling Open.");
                 return false;
@@ -158,19 +158,19 @@ namespace OSK
             gameObject.SetActive(false);
             EventAfterClosed?.Invoke();
 
-            if (isRemoveOnHide) _viewContainer.Delete(this);
-            else _viewContainer.RemovePopup(this);
+            if (isRemoveOnHide) _rootUI.Delete(this);
+            else _rootUI.RemovePopup(this);
         }
 
         private void FinalizeImmediateClose()
         {
             gameObject.SetActive(false);
-            _viewContainer.RemovePopup(this);
+            _rootUI.RemovePopup(this);
         }
 
         public void Delete()
         {
-            _viewContainer.Delete(this);
+            _rootUI.Delete(this);
         }
     }
 }

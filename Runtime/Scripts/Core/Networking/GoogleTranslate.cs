@@ -16,35 +16,43 @@ Chinese (Tiếng Trung): zh
 	
 using System;
 using System.Collections;
-using OSK; 
+using SimpleJSON;
 using UnityEngine.Networking;
 
-public class GoogleTranslate : SingletonMono<GoogleTranslate>
-{ 
-
-	//example: TranslateText("en","ko","I'm a real gangster.", (success, translatedText) => { if (success) { Debug.Log(translatedText); } });
-
-	public void TranslateText(string sourceLanguage, string targetLanguage, string sourceText, Action<bool, string> callback)
+namespace OSK
+{
+	public class GoogleTranslate : SingletonMono<GoogleTranslate>
 	{
-		StartCoroutine(TranslateTextRoutine(sourceLanguage, targetLanguage, sourceText, callback));
-	}
 
-	private static IEnumerator TranslateTextRoutine(string sourceLanguage, string targetLanguage, string sourceText, Action<bool, string> callback)
-	{
-		var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl={sourceLanguage}&tl={targetLanguage}&dt=t&q={UnityWebRequest.EscapeURL(sourceText)}";
+		//example: TranslateText("en","ko","I'm a real gangster.", (success, translatedText) => { if (success) { Debug.Log(translatedText); } });
 
-		var webRequest = UnityWebRequest.Get(url);
-		yield return webRequest.SendWebRequest();
-
-		if (webRequest.isHttpError || webRequest.isNetworkError)
+		public void TranslateText(string sourceLanguage, string targetLanguage, string sourceText,
+			Action<bool, string> callback)
 		{
-			Logg.LogError(webRequest.error);
-			callback.Invoke(false, string.Empty);
-			yield break;
+			Main.UI.
+			StartCoroutine(TranslateTextRoutine(sourceLanguage, targetLanguage, sourceText, callback));
 		}
 
- 		var parsedTexts = SimpleJSON.JSONNode.Parse(webRequest.downloadHandler.text);
-		var translatedText = parsedTexts[0][0][0];
-		callback.Invoke(true, translatedText);
-    }
+		private static IEnumerator TranslateTextRoutine(string sourceLanguage, string targetLanguage, string sourceText,
+			Action<bool, string> callback)
+		{
+			var url =
+				$"https://translate.googleapis.com/translate_a/single?client=gtx&sl={sourceLanguage}&tl={targetLanguage}&dt=t&q={UnityWebRequest.EscapeURL(sourceText)}";
+
+			var webRequest = UnityWebRequest.Get(url);
+			yield return webRequest.SendWebRequest();
+
+			if (webRequest.isHttpError || webRequest.isNetworkError)
+			{
+				Logg.LogError(webRequest.error);
+				callback.Invoke(false, string.Empty);
+				yield break;
+			}
+
+			var parsedTexts = JSONNode.Parse(webRequest.downloadHandler.text);
+			var translatedText = parsedTexts[0][0][0];
+			callback.Invoke(true, translatedText);
+		}
+	}
+
 }
