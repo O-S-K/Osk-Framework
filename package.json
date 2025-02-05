@@ -6,6 +6,5 @@
   "author": "QuyLe", 
   "unity": "2022.3",
   "dependencies": {
-    "com.demigiant.dotween": "https://github.com/O-S-K/DOTween.git"
   }
 }
