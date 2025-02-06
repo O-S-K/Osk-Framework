@@ -24,6 +24,15 @@ namespace OSK
                 PrefabUtility.InstantiatePrefab(Resources.LoadAll<RootUI>("").First());
             }
         }
+        
+        [MenuItem("OSK-Framework/Create Console")]
+        public static void CreateConsoleOnScene()
+        {
+            if (FindObjectOfType<ConsoleTool>() == null)
+            {
+                PrefabUtility.InstantiatePrefab(Resources.LoadAll<ConsoleTool>("").First());
+            }
+        }
 
         [MenuItem("OSK-Framework/Install Dependencies/Dotween")]
         public static void InstallDependenciesDotween()
