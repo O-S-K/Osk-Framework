@@ -7,7 +7,7 @@ namespace OSK
     {
         public RectTransform canvasTR;
         public DebugLogWindow popupDebugLog;
-        public bool showConsole = true;
+        public bool isDontDestroyOnLoad = true;
         public float popupOpacity = 1f;
         public bool popupAvoidsScreenCutout = true;
 
@@ -15,7 +15,7 @@ namespace OSK
         public Color BackgroundColor = new Color(0, 0, 0, .65f);
         private bool isConsoleVisible = false;
         private Canvas canvas;
-
+         
         private void OnEnable()
         {
             InputPreprocessor.AddPreprocessor(PreprocessInput);
@@ -28,6 +28,9 @@ namespace OSK
 
         private void Awake()
         {
+            if (isDontDestroyOnLoad)
+                DontDestroyOnLoad(gameObject);
+            
             canvas = GetComponent<Canvas>();
             float newRatio = (float)Screen.width / Screen.height;
             canvas.GetComponent<CanvasScaler>().matchWidthOrHeight = newRatio > 0.65f ? 1 : 0.3f;
