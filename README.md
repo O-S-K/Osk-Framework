@@ -1,6 +1,6 @@
 # ****OSK Framework Overview****
 
-The **OSK Framework** is a modular Unity framework designed to streamline game development, optimized for Realme devices. It provides tools to manage game systems like events, localization, sound, and more, ensuring high performance, scalability, and maintainability.
+The **OSK Framework** is a modular Unity framework designed to streamline game development. It provides tools to manage game systems like events, localization, sound, and more, ensuring high performance, scalability, and maintainability.
 
 **version 2.0
 
