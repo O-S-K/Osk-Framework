@@ -48,16 +48,18 @@ namespace OSK
             gameObject.SetActive(true);
             Canvas.ForceUpdateCanvases();
             _scrollRect.verticalNormalizedPosition = 0;
+            _content.gameObject.SetActive(true);
+            
         }
 
         public void CloseWindow()
         {
+            _content.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }
         
         public void Submit()
         {
-              
         }
         
         public void Refresh()

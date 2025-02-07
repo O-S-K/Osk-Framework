@@ -53,8 +53,25 @@ namespace OSK
             if (logMessages.Count >= logMaxLine) logMessages.RemoveAt(0);
             logMessages.Add(logEntry);
         }
+        
+        [Button, ConsoleCommand("cs_loggs_enable")]
+        public void EnableLog(bool enable)
+        {
+            isLogEnabled = enable;
+            if (isLogEnabled)
+            {
+                Application.logMessageReceived += HandleLog;
+                Logg.Log("Log capture enabled.");
+            }
+            else
+            {
+                Application.logMessageReceived -= HandleLog;
+                Logg.Log("Log capture disabled.");
+            }
+        }
+        
 
-        [Button]
+        [Button, ConsoleCommand("cs_export_loggs_txt")]
         public void ExportLogToFile()
         {
             logFilePath = Path.Combine(Application.persistentDataPath, "LogCapture.txt");
@@ -62,7 +79,7 @@ namespace OSK
             Logg.Log($"Logs exported to: {logFilePath}");
         }
 
-        [Button]
+        [Button, ConsoleCommand("cs_clear_loggs_txt")]
         public void ClearLogs()
         {
             logMessages.Clear();
@@ -71,7 +88,7 @@ namespace OSK
             Logg.Log("Logs cleared.");
         }
 
-        [Button]
+        [Button, ConsoleCommand("cs_open_loggs_txt")]
         public void OpenLogFile()
         {
             logFilePath = Path.Combine(Application.persistentDataPath, "LogCapture.txt");
