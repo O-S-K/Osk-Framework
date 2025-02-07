@@ -28,7 +28,7 @@ namespace OSK
             _openFileButton.onClick.AddListener(OpenFile);
         }
 
-        public void ShowLog(string message)
+        public void AddLog(string message)
         {
             logMessage = message;
             _textMessage.text = message;
@@ -44,7 +44,7 @@ namespace OSK
             gameObject.SetActive(false);
         }
 
-        private void ClearLog()
+        public void ClearLog()
         {
             _textMessage.text = string.Empty;
         }

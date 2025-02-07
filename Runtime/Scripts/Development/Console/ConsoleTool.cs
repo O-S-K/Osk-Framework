@@ -1,13 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace OSK
 {
-    public class ConsoleTool : MonoBehaviour
+    public class ConsoleTool : SingletonMono<ConsoleTool>
     {
         public RectTransform canvasTR;
         public GameObject popupConsole;
@@ -72,14 +68,20 @@ namespace OSK
             }
         }
         
-        public void ShowPopupDebugLog()
+        public void ShowWindowLog(string log)
         {
             popupDebugLog.OpenWindow();
+            popupDebugLog.AddLog(log);
         }
         
-        public void HidePopupDebugLog()
+        public void HideWindowLog(bool isClear)
         {
             popupDebugLog.CloseWindow();
+            if (isClear)
+            {
+                popupDebugLog.ClearLog();
+            }
         }
+         
     }
 }
