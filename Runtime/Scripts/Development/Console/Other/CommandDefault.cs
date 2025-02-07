@@ -107,7 +107,14 @@ namespace OSK
         [ConsoleCommand("cs_show_debug_log")]
         public void ShowDebugLog()
         {
-            FindObjectOfType<ConsoleTool>().popupDebugLog.OpenWindow();
+            ConsoleTool.Instance.popupDebugLog.OpenWindow();
+        }
+         
+        [ConsoleCommand("cs_show_logg")]
+        public void ShowLogg()
+        {
+            ConsoleTool.Instance.popupDebugLog.OpenWindow();
+            ConsoleTool.Instance.popupDebugLog.AddLog(LogCapture.Instance.GetAllLog);
         }
     }
 }

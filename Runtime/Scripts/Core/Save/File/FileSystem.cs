@@ -97,6 +97,13 @@ namespace OSK
                 writer.Write(json);
             }
         }
+        
+        public void WriteAllLines(string fileName, string[] json)
+        {
+            var path = IOUtility.GetPath(fileName + ".txt");
+            OSK.Logg.Log("Path Save: " + path);
+            File.WriteAllLines(path, json);
+        }
 
         public string Read(string fileName)
         {

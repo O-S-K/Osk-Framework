@@ -6,7 +6,6 @@ namespace OSK
     public class ConsoleTool : SingletonMono<ConsoleTool>
     {
         public RectTransform canvasTR;
-        public GameObject popupConsole;
         public DebugLogWindow popupDebugLog;
         public bool showConsole = true;
         public float popupOpacity = 1f;
@@ -36,11 +35,6 @@ namespace OSK
             ConsoleGUI.Font = Font;
             ConsoleGUI.BackgroundColor = BackgroundColor;
             ConsoleGUI.Initialize();
-
-            if (popupConsole != null)
-            {
-                popupConsole.SetActive(showConsole);
-            }
             popupDebugLog.CloseWindow();
         }
 

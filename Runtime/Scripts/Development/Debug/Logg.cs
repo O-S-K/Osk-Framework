@@ -81,7 +81,7 @@ namespace OSK
             {
                 Logg.LogError($"Null Reference: {name}");
             }
-        }
+        } 
     }
 
     public static class ExLog

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace OSK
@@ -22,6 +23,15 @@ namespace OSK
             {
                 fileSystem.Save(fileName, data, Main.Instance.configInit.isEncrypt);
             }
+        }
+
+        /// <summary>
+        ///  Write all text to file, T is the file system type
+        ///  </summary>
+        public void WriteAllText(string fileName,  string[] text)
+        {
+            FileSystem fileSystem = new FileSystem();
+            fileSystem.WriteAllLines(fileName, text);
         }
 
         /// <summary>
