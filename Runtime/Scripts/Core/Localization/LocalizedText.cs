@@ -98,12 +98,12 @@ namespace OSK
                 var split = line.Split(',');
                 if (split[0] == key)
                 {
-                    Logg.Log($"Key found: {split[0]}", Color.green, 15);
+                    Logg.Log($"Key found: {split[0]}", Color.green);
                     return split[1];
                 }
             }
 
-            Logg.Log($"Key Not found: {key}", Color.red, 15);
+            Logg.Log($"Key Not found: {key}", Color.red);
             return null;
         }
 #endif

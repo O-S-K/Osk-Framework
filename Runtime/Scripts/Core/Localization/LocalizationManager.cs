@@ -36,7 +36,7 @@ namespace OSK
             _isSetDefaultLanguage = true;
             LoadLocalizationData(languageCode);
             _currentLanguage = languageCode;
-            Logg.Log($"Set language to: {languageCode}", Color.green, 15);
+            Logg.Log($"Set language to: {languageCode}".Size(15), Color.green);
         }
 
 
@@ -123,7 +123,7 @@ namespace OSK
                 }
             }
 
-            Logg.Log($"Load localization data for language: {languageCode}", Color.green, 15);
+            Logg.Log($"Load localization data for language: {languageCode}".Size(15), Color.green);
         }
 
         private void GetValueFormLanguage(string[] columns, int languageColumnIndex, int i)

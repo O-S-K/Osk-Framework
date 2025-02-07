@@ -14,12 +14,12 @@ namespace OSK
         public static void StopTest(PerforInfo info) => info.StopTest();
 
         // Log
-        public static void Log(object log, Color color = default, int size = 12)
+        public static void Log(object log, Color color = default)
         {
             if (!_isLogEnabled)
                 return;
 
-            Debug.Log(($"[OSK] {log}".Color(color).Size(size)));
+            Debug.Log($"[OSK] {log}".Color(color));
         }
 
         // Log warning
@@ -27,7 +27,7 @@ namespace OSK
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log(($"[OSK] Warning {log}".Color(Color.yellow).Size(14)));
+            Debug.Log($"[OSK] Warning {log}".Color(Color.yellow));
         }
 
         // Log format
@@ -35,7 +35,7 @@ namespace OSK
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log(($"[OSK] {string.Format(format, args)}".Color(Color.green).Size(12)));
+            Debug.Log($"[OSK] {string.Format(format, args)}".Color(Color.green));
         }
 
         // Log error
@@ -43,7 +43,7 @@ namespace OSK
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log(($"[OSK] Error {log}".Color(Color.red).Size(14).Bold()));
+            Debug.Log($"[OSK] Error {log}".Color(Color.red));
         }
 
         // Log exception
@@ -51,7 +51,7 @@ namespace OSK
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log(($"[OSK] Exception {ex.Message}".Color(Color.red).Size(14).Bold()));
+            Debug.Log($"[OSK] Exception {ex.Message}".Color(Color.red));
         }
 
         // Log object
@@ -60,7 +60,7 @@ namespace OSK
             if (!_isLogEnabled)
                 return;
 #if LogObjectNewtonsoft
-            Debug.Log($"[OSK] " + Newtonsoft.Json.JsonConvert.SerializeObject(obj).Color(ColorCustom.Cyan).Size(12));
+            Debug.Log($"[OSK] " + Newtonsoft.Json.JsonConvert.SerializeObject(obj).Color(ColorCustom.Cyan));
 #endif
         }
 
@@ -69,7 +69,7 @@ namespace OSK
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log(($"[OSK] {string.Format(format, args)}".Color(Color.green).Size(12)));
+            Debug.Log($"[OSK] {string.Format(format, args)}".Color(Color.green));
         }
 
         public static void CheckNullRef(bool isNull, string name)
