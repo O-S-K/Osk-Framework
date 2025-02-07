@@ -1,8 +1,13 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
+using UnityEngine.InputSystem.UI;
+#endif
 
 namespace OSK
 {
+    
+    [DefaultExecutionOrder( 1000 )]
     public class EventSystemManager : MonoBehaviour
     {
         private void Awake()
@@ -23,11 +28,14 @@ namespace OSK
                 newEventSystem.AddComponent<EventSystem>();
                 newEventSystem.AddComponent<StandaloneInputModule>(); 
                 
-                #if NEW_INPUT_SYSTEM
-                //
-                #else
-                //
-                #endif
+#if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
+		        StandaloneInputModule legacyInputModule = newEventSystem.GetComponent<StandaloneInputModule>();
+		        if(legacyInputModule)
+		        {
+			        DestroyImmediate(legacyInputModule );
+                    newEventSystem.AddComponent<InputSystemUIInputModule>();
+		        }
+#endif
             }
         }
     }
