@@ -7,10 +7,10 @@ namespace OSK
 {
     public class LogCapture : SingletonMono<LogCapture>
     {
-        private List<string> logMessages = new List<string>();
+        public List<string> logMessages = new List<string>();
         public bool isLogEnabled = false;
         private string logFilePath;
-        private int logMaxLine =  25;
+        private int logMaxLine = 25;
 
         private void Awake()
         {
@@ -29,13 +29,27 @@ namespace OSK
         }
 
         private void HandleLog(string logString, string stackTrace, LogType type)
-        {
-            string logEntry = $"{System.DateTime.Now} [{type}] {logString}\n";
+        { 
+            string color = "";
+            if(type == LogType.Error || type == LogType.Exception)
+            {
+                color= "#FF0000"; // Red
+            }
+            else if(type == LogType.Warning)
+            {
+                color= "#FFFF00"; // Yellow
+            }
+            else
+            {
+                color= "#FFFFFF"; // White
+            } 
+
+            string logEntry = $"<color={color}>{System.DateTime.Now} [{type}] {logString}</color>\n";
+
             if (type == LogType.Error || type == LogType.Exception)
             {
-                logEntry += $"StackTrace: {stackTrace}\n";
+                logEntry += $"<color={color}>StackTrace: {stackTrace}</color>\n";
             }
-            
             if (logMessages.Count >= logMaxLine) logMessages.RemoveAt(0);
             logMessages.Add(logEntry);
         }

@@ -21,6 +21,7 @@ namespace OSK
         [SerializeField] private Button _closeButton;
         [SerializeField] private Button _exportButton;
         [SerializeField] private Button _openFileButton;
+        [SerializeField] private Button _refreshButton;
 
         private string fileName = "DebugWindow.txt";
         private string logMessage;
@@ -33,6 +34,7 @@ namespace OSK
             _closeButton.onClick.AddListener(CloseWindow);
             _exportButton.onClick.AddListener(ExportLog);
             _openFileButton.onClick.AddListener(OpenFile);
+            _refreshButton.onClick.AddListener(Refresh);
         }
 
         public void AddLog(string message)
@@ -57,10 +59,21 @@ namespace OSK
         {
               
         }
+        
+        public void Refresh()
+        {
+            if (string.IsNullOrEmpty(logMessage))
+            {
+                _textMessage.text = "Log is empty";
+                return;
+            } 
+            _textMessage.text = logMessage;
+        }
 
         public void ClearLog()
         {
             _textMessage.text = string.Empty;
+            logMessage = string.Empty;
         }
 
         private void ExportLog()
