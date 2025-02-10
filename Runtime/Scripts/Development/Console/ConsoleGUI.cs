@@ -75,7 +75,7 @@ namespace OSK
             instance = hostObject.GetOrAdd<ConsoleGUI>();
             Scale = ScaleByResolution ? new Vector2(x, y) : Vector2.one;
 
-            Size = new Vector2(Screen.width - 375 * Scale.x, 35 * Scale.y);
+            Size = new Vector2(Screen.width - 375 * Scale.x, 40 * Scale.y);
             consoleRect = new Rect(0, 0, Size.x, Size.y);
             cleanButtonRect = new Rect(Size.x * Scale.x, 0, 125 * Scale.x, Size.y);
             runButtonRect = new Rect(cleanButtonRect.xMax * Scale.x, 0, 125 * Scale.x, Size.y);
@@ -85,7 +85,7 @@ namespace OSK
             {
                 richText = true,
                 normal = new GUIStyleState { background = Texture2D.whiteTexture, textColor = Color.white },
-                contentOffset = new Vector2(5, 20) * Scale,
+                contentOffset = new Vector2(5, 15) * Scale,
                 fontSize = Mathf.FloorToInt(14 * (Scale.x + Scale.y) / 2),
                 font = Font
             };

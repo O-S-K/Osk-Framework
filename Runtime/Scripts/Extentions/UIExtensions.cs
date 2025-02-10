@@ -7,24 +7,21 @@ using UnityEngine.UI;
 
 namespace OSK
 {
-    public static class UIExtension
+    public static class UIExtensions
     {
         public static void SetText(this Text text, string value)
         {
             text.text = value;
         }
-        
         public static void SetText(this TMPro.TMP_Text text, string value)
         {
             text.text = value;
         }
-
         public static void BindButton(this Button button, Action action)
         {
             if(button != null)
                 button.onClick.AddListener(() => action());
         } 
-        
         public static void BindButton(this Button button, Text text, Action action)
         {
             if (button != null)
@@ -34,7 +31,6 @@ namespace OSK
                 button.onClick.AddListener(() => action());
             }
         } 
-        
         public static void BindButton(this Button button, TMPro.TMP_Text text, Action action)
         {
             if (button != null)
@@ -44,7 +40,6 @@ namespace OSK
                 button.onClick.AddListener(() => action());
             }
         } 
-
         public static void BindEventTrigger(this EventTrigger trigger, EventTriggerType type,
             Action<BaseEventData> action)
         {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    public static class TransformExtension
+    public static class TransformExtensions
     {
         public static void SetParent(this Transform transform, Transform parent)
         {

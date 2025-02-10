@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    public static class AnimationExtension
+    public static class AnimationExtensions
     {
         #if UNITY_EDITOR
         public static void AddOrReplaceAnimationEvent(this AnimationClip clip, float time, string functionName)

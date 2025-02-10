@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 
 namespace OSK
 {
-    public static class ComponentExtension
+    public static class ComponentExtensions
     {
         private static List<Component> componentCache = new List<Component>();
 
