@@ -54,26 +54,19 @@ namespace OSK
                 Logg.LogError("RootUI is still null after initialization.");
             }
 
-            SetOderInLayer(depth);
+            SetDepth(depth);
             EventAfterInit?.Invoke();
         }
-
-        public void SetSetSiblingIndex(int index)
-        { 
-            if(_rootUI.transform.childCount <= index)
-                return;
-            transform.SetSiblingIndex(index);
-        }
-
-        public void SetOderInLayer(EViewType viewType, int order)
+  
+        public void SetDepth(EViewType viewType, int order)
         {
             this.viewType = viewType;
-            SetOderInLayer(order);
+            SetDepth(order);
         }
         
-        private void SetOderInLayer(int order)
+        private void SetDepth(int order)
         {
-            var canvas = GetComponent<Canvas>();
+            /*var canvas = GetComponent<Canvas>();
             if (canvas != null)
             {
                 canvas.sortingOrder = viewType switch
@@ -85,15 +78,16 @@ namespace OSK
                     _ => canvas.sortingOrder
                 };
             }
-            else
+            else*/
             {
-                var childPages = _rootUI.GetSortedChildPages(_rootUI.transform);
+                var childPages = _rootUI.GetSortedChildPages(_rootUI.GetViewContainer);
                 if (childPages.Count == 0)
                     return;
 
                 var insertIndex = _rootUI.FindInsertIndex(childPages, order);
                 if (insertIndex == childPages.Count) transform.SetAsLastSibling();
-                else SetSetSiblingIndex(insertIndex);
+                else transform.SetSiblingIndex(insertIndex);
+
             }
         }
 

@@ -11,7 +11,7 @@ namespace OSK
 #if UNITY_EDITOR
         public string path;
 #endif
-        public string depth;
+        public int depth;
         public View view;
     }
 

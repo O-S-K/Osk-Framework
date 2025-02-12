@@ -18,6 +18,7 @@ namespace OSK
 
         private Stack<View> _viewHistory = new Stack<View>();
         public Stack<View> ListViewHistory => _viewHistory;
+        public List<View> ListViewInit => _listViewInit;
 
         [SerializeField] private Camera _uiCamera;
         [SerializeField] private Canvas _canvas;
@@ -456,7 +457,6 @@ namespace OSK
 
             return insertIndex;
         }
-
         #endregion
 
         #region Private

@@ -64,17 +64,7 @@ public static class CurrencyUtils
 
         return number.ToString();
     }
-
-    public static IEnumerator FillCurrencyText<T>(Text text, T current, T target,
-        string format = "0.00", float delay = 0, float time = 1, Action onCompleted = null) where T : struct
-    {
-        yield return FillTextTo(elapsedTime =>
-        {
-            T value = LerpValue(current, target, elapsedTime / time);
-            text.text = CurrencyUtils.FormatCurrency(value, format);
-        }, delay, time, onCompleted);
-    }
-
+ 
     public static IEnumerator FillCurrencyText<T>(TextMeshProUGUI text, T current, T target,
         string format = "0.00", float delay = 0, float time = 1, Action onCompleted = null) where T : struct
     {

@@ -47,12 +47,13 @@ namespace OSK
             EditorGUILayout.Space(10);
             if (GUILayout.Button("Add"))
             {
-                listViewSO.Views.Add(new DataViewUI { depth = "0", view = null });
+                listViewSO.Views.Add(new DataViewUI { depth = 0, view = null });
                 EditorUtility.SetDirty(target);
             }
 
             if (GUILayout.Button("Refresh"))
             {
+                RefreshListUI();
                 EditorUtility.SetDirty(target);
             }
 
@@ -94,37 +95,37 @@ namespace OSK
                 if (listViewSO.Views.Any(x => x.view == popup))
                     continue;
 
-                var data = new DataViewUI();
-                data.view = popup;
-                data.path = IOUtility.GetPathAfterResources(popup);
-
-                switch (data.view.viewType)
+                var data = new DataViewUI
                 {
-                    case EViewType.None: data.depth = (0 + data.view.depth).ToString(); break;
-                    case EViewType.Popup: data.depth = (1000 + data.view.depth).ToString(); break;
-                    case EViewType.Overlay: data.depth = (10000 + data.view.depth).ToString(); break;
-                    case EViewType.Screen: data.depth = (-1000 + data.view.depth).ToString(); break;
-                }
+                    view = popup,
+                    path = IOUtility.GetPathAfterResources(popup)
+                };
+                data.depth = popup.depth;
                 listViewSO.Views.Add(data);
             }
             SortViews(listViewSO);
         }
+        
+        private void RefreshListUI()
+        {
+            SortViews(listViewSO);
+        }
+ 
 
         private void SortViews(ListViewSO listViewSO)
         {
-            listViewSO.Views.Sort((a, b) =>
+            listViewSO.Views.Sort((x, y) =>
             {
-                int viewTypeComparison = a.view.viewType.CompareTo(b.view.viewType);
-                if (viewTypeComparison == 0)
+                int depthComparison = x.depth.CompareTo(y.depth);
+                if (depthComparison != 0)
                 {
-                    return int.Parse(a.depth).CompareTo(int.Parse(b.depth));
+                    return depthComparison;
                 }
-
-                return viewTypeComparison;
+                return x.view.viewType.CompareTo(y.view.viewType);
             });
 
-            EditorUtility.SetDirty(listViewSO);
-            Debug.Log("Sorted views by ViewType and Depth");
+            AssetDatabase.SaveAssets();
+            EditorUtility.SetDirty(target);
         }
 
         private void DisplayGroupedViews(ListViewSO listViewSO)
@@ -175,7 +176,7 @@ namespace OSK
         private void DisplayViewRow(DataViewUI dataView, ListViewSO listViewSO, int index)
         {
             EditorGUILayout.BeginHorizontal();
-            dataView.depth = EditorGUILayout.IntField(int.Parse(dataView.depth), GUILayout.Width(50)).ToString();
+            dataView.depth = EditorGUILayout.IntField(dataView.depth, GUILayout.Width(50));
 
             if (dataView.view != null)
             {
