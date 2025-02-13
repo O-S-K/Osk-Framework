@@ -25,7 +25,7 @@ namespace OSK
         [HideIf(nameof(transition), TransitionType.None),
          HideIf(nameof(transition), TransitionType.Animation)]
         public float time = 0.25f;
-
+         
         [HideIf(nameof(transition), TransitionType.None),
          HideIf(nameof(useCustomCurve), true),
          HideIf(nameof(transition), TransitionType.Animation)]
@@ -56,6 +56,7 @@ namespace OSK
         [Header("Content UI")] [SerializeField]
         private RectTransform contentUI;
 
+        public bool runIgnoreTimeScale = true;
         [SerializeField] private TweenSettings _openingTweenSettings;
         [SerializeField] private TweenSettings _closingTweenSettings;
         [Space(10)] private CanvasGroup _canvasGroup;
@@ -86,6 +87,7 @@ namespace OSK
 
         public void Initialize()
         {
+            DOTween.Init();
             _canvasGroup = GetComponent<CanvasGroup>();
             _rectTransform = GetComponent<RectTransform>();
         }
@@ -196,7 +198,6 @@ namespace OSK
                     _closingTweenSettings.animationClip?.Play();
                     break;
             }
-
             OnCompletedTween(_closingTweenSettings, tween, onComplete, false);
         }
 
@@ -216,6 +217,7 @@ namespace OSK
                 if (tween != null)
                 {
                     ApplyTween(tween, isOpen);
+                    tween.SetUpdate(runIgnoreTimeScale); 
                     tween.OnComplete(() =>
                     {
                         ResetTransitionState();
