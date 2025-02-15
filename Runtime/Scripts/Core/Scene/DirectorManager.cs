@@ -17,14 +17,37 @@ namespace OSK
 
         [ReadOnly, SerializeField] private string _currentSceneName = "";
 
-        public override void OnInit() { }
-
-        public void LoadSceneFake(string sceneName, float timeCompleted, LoadSceneMode loadSceneMode, Action<State, float> onLoadComplete)
+        public override void OnInit()
         {
-            LoadSceneFakeTime(sceneName, timeCompleted, loadSceneMode, onLoadComplete).Run();
         }
-         
+
+        public void LoadSceneFake(string sceneName, bool loadSceneAsync, float timeCompleted,
+            LoadSceneMode loadSceneMode, Action<State, float> onLoadComplete)
+        {
+            LoadSceneFakeTime(sceneName, loadSceneAsync, timeCompleted, loadSceneMode, onLoadComplete).Run();
+        }
+
         public void LoadScene(string sceneName, LoadSceneMode loadSceneMode, Action<State> onLoadComplete)
+        {
+            if (HasScene(sceneName))
+            {
+                Logg.Log("Scene already loaded: " + sceneName);
+                onLoadComplete?.Invoke(State.Failed);
+            }
+            else
+            {
+                string scene = sceneName;
+                if (int.TryParse(sceneName, out int sceneIndex))
+                {
+                    scene = SceneManager.GetSceneByBuildIndex(sceneIndex).name;
+                }
+
+                SceneManager.LoadScene(scene, loadSceneMode);
+                onLoadComplete?.Invoke(State.Complete);
+            }
+        }
+
+        public void LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode, Action<State> onLoadComplete)
         {
             if (HasScene(sceneName))
             {
@@ -64,37 +87,55 @@ namespace OSK
                     return true;
                 }
             }
+
             return false;
         }
-    
-        private IEnumerator LoadSceneFakeTime(string sceneName, float timeCompleted, LoadSceneMode loadSceneMode, Action<State, float> onLoadComplete)
-        {
-              float percent = timeCompleted / 100;
-              while (percent < 1)
-              {
-                  percent += Time.deltaTime / timeCompleted;
-                  onLoadComplete?.Invoke(State.Loading, percent);
-                  yield return null;
-              } 
-              
-              onLoadComplete?.Invoke(State.Complete, 1);
-              string scene = sceneName;
-              if (int.TryParse(sceneName, out int sceneIndex))
-              {
-                  scene =  SceneManager.GetSceneByBuildIndex(sceneIndex).name;
-              } 
-              SceneManager.LoadScene(scene, loadSceneMode);
-        }
 
-        private IEnumerator LoadSceneAsyncCoroutine(string sceneName, LoadSceneMode loadSceneMode, Action<State> onLoadComplete)
+        private IEnumerator LoadSceneFakeTime(string sceneName, bool loadSceneAsync, float timeCompleted,
+            LoadSceneMode loadSceneMode, Action<State, float> onLoadComplete)
         {
-            onLoadComplete?.Invoke(State.Loading);
-            
+            float percent = timeCompleted / 100;
+            // percent Max = 1 (100%)
+            while (percent < 1)
+            {
+                percent += Time.deltaTime / timeCompleted;
+                onLoadComplete?.Invoke(State.Loading, percent);
+                yield return null;
+            }
+
             string scene = sceneName;
             if (int.TryParse(sceneName, out int sceneIndex))
             {
-                scene =  SceneManager.GetSceneByBuildIndex(sceneIndex).name;
-            } 
+                scene = SceneManager.GetSceneByBuildIndex(sceneIndex).name;
+            }
+
+            if (loadSceneAsync)
+            {
+                var _scene = SceneManager.LoadSceneAsync(scene, loadSceneMode);
+                if (_scene.isDone)
+                {
+                    // percent Max = 1 (100%)
+                    onLoadComplete?.Invoke(State.Complete, 1);
+                }
+            }
+            else
+            {
+                // percent Max = 1 (100%)
+                SceneManager.LoadScene(scene, loadSceneMode);
+                onLoadComplete?.Invoke(State.Complete, 1);
+            }
+        }
+
+        private IEnumerator LoadSceneAsyncCoroutine(string sceneName, LoadSceneMode loadSceneMode,
+            Action<State> onLoadComplete)
+        {
+            onLoadComplete?.Invoke(State.Loading);
+
+            string scene = sceneName;
+            if (int.TryParse(sceneName, out int sceneIndex))
+            {
+                scene = SceneManager.GetSceneByBuildIndex(sceneIndex).name;
+            }
 
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene, loadSceneMode);
             asyncLoad.allowSceneActivation = false;
@@ -104,9 +145,10 @@ namespace OSK
                 Logg.Log("Loading progress: " + asyncLoad.progress);
                 yield return null;
 
-                if (asyncLoad.progress >= 0.9f) 
-                    asyncLoad.allowSceneActivation = true; 
+                if (asyncLoad.progress >= 0.9f)
+                    asyncLoad.allowSceneActivation = true;
             }
+
             if (asyncLoad.isDone)
             {
                 Logg.Log("Scene loaded and activated: " + sceneName);
@@ -124,8 +166,9 @@ namespace OSK
             string scene = sceneName;
             if (int.TryParse(sceneName, out int sceneIndex))
             {
-                scene =  SceneManager.GetSceneByBuildIndex(sceneIndex).name;
-            } 
+                scene = SceneManager.GetSceneByBuildIndex(sceneIndex).name;
+            }
+
             AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(scene);
 
             while (!asyncUnload.isDone)
