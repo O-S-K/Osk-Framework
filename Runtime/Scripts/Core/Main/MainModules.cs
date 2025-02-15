@@ -62,7 +62,7 @@ namespace OSK
         FSMManager = 1 << 4,
         PoolManager = 1 << 5,
         CommandManager = 1 << 6,
-        SceneManager = 1 << 7,
+        DirectorManager = 1 << 7,
         ResourceManager = 1 << 8,
         StorageManager = 1 << 9,
         DataManager = 1 << 10,

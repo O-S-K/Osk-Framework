@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using OSK;
 using UnityEditor;
@@ -49,6 +50,8 @@ namespace OSK
         private static void AddPackage(string packageName)
         {
             UnityEditor.PackageManager.Client.Add(packageName);
+            UnityEditor.EditorUtility.DisplayDialog("OSK-Framework", "Package added successfully", "OK");
+            UnityEditor.AssetDatabase.Refresh();
         }
     }
 }

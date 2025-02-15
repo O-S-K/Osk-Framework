@@ -18,7 +18,7 @@ namespace OSK
         public static FSMManager Fsm { get; private set; }
         public static PoolManager Pool { get; private set; }
         public static CommandManager Command { get; private set; }
-        public static SceneManager Scene { get; private set; }
+        public static DirectorManager Director { get; private set; }
         public static ResourceManager Res { get; private set; }
         public static StorageManager Storage { get; private set; }
         public static DataManager Data { get; private set; }
@@ -67,7 +67,7 @@ namespace OSK
                         else if (_module is FSMManager fsm) Fsm = fsm;
                         else if (_module is PoolManager pool) Pool = pool;
                         else if (_module is CommandManager command) Command = command;
-                        else if (_module is SceneManager scene) Scene = scene;
+                        else if (_module is DirectorManager scene) Director = scene;
                         else if (_module is ResourceManager res) Res = res;
                         else if (_module is StorageManager save) Storage = save;
                         else if (_module is DataManager data) Data = data;
