@@ -33,6 +33,7 @@ namespace OSK
         public static NativeManager Native { get; private set; }
         public static BlackboardManager Blackboard { get; private set; }
         public static ProcedureManager Procedure { get; private set; }
+        public static GameInit GameInit { get; private set; }
 
         // Modules
         public MainModules mainModules;
@@ -82,6 +83,7 @@ namespace OSK
                         else if (_module is NativeManager native) Native = native;
                         else if (_module is BlackboardManager blackboard) Blackboard = blackboard; 
                         else if (_module is ProcedureManager procedure) Procedure = procedure;
+                        else if (_module is GameInit gameInit) GameInit = gameInit;
                         else
                         {
                             Logg.LogError($"Module {_module} not found");
