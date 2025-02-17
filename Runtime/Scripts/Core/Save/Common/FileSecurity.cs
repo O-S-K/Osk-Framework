@@ -1,3 +1,4 @@
+using System;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
@@ -27,25 +28,37 @@ namespace OSK
             }
         }
 
-        public static byte[] Decrypt(FileStream fileStream, string key)
+        public static byte[] Decrypt(byte[] encryptedData, string key)
         {
-            using (Aes aes = Aes.Create())
+            try
             {
-                aes.Key = Encoding.UTF8.GetBytes(key.PadRight(32).Substring(0, 32));
-                aes.IV = new byte[16]; 
-
-                using (ICryptoTransform decrypt = aes.CreateDecryptor(aes.Key, aes.IV))
-                using (MemoryStream memoryStream = new MemoryStream())
+                using (Aes aes = Aes.Create())
                 {
-                    using (CryptoStream cryptoStream = new CryptoStream(fileStream, decrypt, CryptoStreamMode.Read))
+                    aes.Key = Encoding.UTF8.GetBytes(key.PadRight(32).Substring(0, 32));
+
+                    // Đọc IV từ encryptedData (16 byte đầu tiên)
+                    byte[] iv = new byte[16];
+                    Array.Copy(encryptedData, 0, iv, 0, iv.Length);
+                    aes.IV = iv;
+
+                    using (ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+                    using (MemoryStream inputMemoryStream = new MemoryStream(encryptedData, iv.Length, encryptedData.Length - iv.Length))
+                    using (MemoryStream outputMemoryStream = new MemoryStream())
                     {
-                        cryptoStream.CopyTo(memoryStream);
+                        using (CryptoStream cryptoStream = new CryptoStream(inputMemoryStream, decryptor, CryptoStreamMode.Read))
+                        {
+                            cryptoStream.CopyTo(outputMemoryStream);
+                        }
+                        return outputMemoryStream.ToArray();
                     }
-                    return memoryStream.ToArray();
                 }
             }
+            catch (Exception ex)
+            {
+                OSK.Logg.LogError($"[Decryption Error]: {ex.Message}");
+                return null;
+            }
         }
-        
         
         public static string Encrypt(string plainText, string Key)
         {

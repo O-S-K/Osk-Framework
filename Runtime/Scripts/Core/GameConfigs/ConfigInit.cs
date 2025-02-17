@@ -15,7 +15,6 @@ namespace OSK
         public string packageName = "";
         public string appstoreID = "";
 
-        public bool isEncrypt = false;
         public string encryptKey = "b14ca5898a4e4133bbce2ea2315a1916";
 
         public DataConfigs data;

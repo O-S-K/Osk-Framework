@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
@@ -16,85 +14,77 @@ namespace OSK
 
             try
             {
-                using (FileStream stream = File.Open(path, FileMode.OpenOrCreate))
+                using (MemoryStream memoryStream = new MemoryStream())
                 {
                     XmlSerializer serializer = new XmlSerializer(typeof(T));
+                    serializer.Serialize(memoryStream, data);
+                    byte[] xmlBytes = memoryStream.ToArray();
 
                     if (isEncrypt)
                     {
-                        using (MemoryStream memoryStream = new MemoryStream())
-                        {
-                            serializer.Serialize(memoryStream, data);
-                            byte[] encryptedData =
-                                FileSecurity.Encrypt(memoryStream.ToArray(), Main.Configs.init.encryptKey);
-                            stream.Write(encryptedData, 0, encryptedData.Length);
-                        }
-                    }
-                    else
-                    {
-                        serializer.Serialize(stream, data);
+                        xmlBytes = FileSecurity.Encrypt(xmlBytes, Main.Configs.init.encryptKey);
                     }
 
-                    RefreshEditor();
-                    Logg.Log($"[Save File Success]: {fileName + ".xml"} \n {path} ", Color.green);
+                    File.WriteAllBytes(path, xmlBytes);
                 }
+
+                RefreshEditor();
+                Logg.Log($"[Save File Success]: {fileName}.xml \n {path} ", Color.green);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                OSK.Logg.LogError($"[Save File Exception]: {fileName + ".xml"}  {ex.Message}");
+                Logg.LogError($"[Save File Exception]: {fileName}.xml {ex.Message}");
             }
         }
 
-        public T Load<T>(string fileName, bool isEncrypt = false)
+        public T Load<T>(string fileName, bool isDecrypt = false)
         {
             string path = IOUtility.GetPath(fileName + ".xml");
             if (!File.Exists(path))
             {
-                Logg.LogError($"[Load File Error]: {fileName + ".xml"}  {path}");
-                return default(T);
+                Logg.LogError($"[Load File Error]: {fileName}.xml NOT found at {path}");
+                return default;
             }
 
             try
             {
-                using (FileStream stream = File.Open(path, FileMode.Open))
+                byte[] fileBytes = File.ReadAllBytes(path);
+                if (isDecrypt)
+                {
+                    fileBytes = FileSecurity.Decrypt(fileBytes, Main.Configs.init.encryptKey);
+                }
+
+                using (MemoryStream memoryStream = new MemoryStream(fileBytes))
                 {
                     XmlSerializer serializer = new XmlSerializer(typeof(T));
-
-                    if (isEncrypt)
-                    {
-                        byte[] decryptedData = FileSecurity.Decrypt(stream, Main.Configs.init.encryptKey);
-                        using (MemoryStream memoryStream = new MemoryStream(decryptedData))
-                        {
-                            Logg.Log($"[Load File Success]: {fileName + ".xml"} \n {path}", Color.green);
-                            return (T)serializer.Deserialize(memoryStream);
-                        }
-                    }
-                    else
-                    {
-                        Logg.Log($"[Load File Success]: {fileName + ".xml"} \n {path}", Color.green);
-                        return (T)serializer.Deserialize(stream);
-                    }
+                    Logg.Log($"[Load File Success]: {fileName}.xml \n {path}", Color.green);
+                    return (T)serializer.Deserialize(memoryStream);
                 }
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                OSK.Logg.LogError($"[Load File Exception]: {fileName + ".xml"}  {ex.Message}");
+                Logg.LogError($"[Load File Exception]: {fileName}.xml {ex.Message}");
                 return default;
             }
         }
 
         public void Delete(string fileName)
         {
-            IOUtility.DeleteFile(fileName + ".xml");
+            string path = IOUtility.GetPath(fileName + ".xml");
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+                Logg.Log($"[Delete File Success]: {fileName}.xml");
+            }
+            else
+            {
+                Logg.LogError($"[Delete File Error]: {fileName}.xml NOT found");
+            }
         }
 
         public T Query<T>(string fileName, bool condition)
         {
-            if (condition)
-            {
-                return Load<T>(fileName);
-            }
-            return default;
+            return condition ? Load<T>(fileName) : default;
         }
 
         private void RefreshEditor()

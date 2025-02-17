@@ -59,9 +59,7 @@ namespace OSK
         {
             if (!_isLogEnabled)
                 return;
-#if LogObjectNewtonsoft
-            Debug.Log($"[OSK] " + Newtonsoft.Json.JsonConvert.SerializeObject(obj).Color(ColorCustom.Cyan));
-#endif
+            Debug.Log($"[OSK] " + Newtonsoft.Json.JsonConvert.SerializeObject(obj));
         }
 
         // Log format time

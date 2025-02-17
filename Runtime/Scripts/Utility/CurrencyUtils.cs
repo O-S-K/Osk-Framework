@@ -2,8 +2,6 @@ using System;
 using UnityEngine;
 using System.Collections;
 using System.Globalization;
-using System.Numerics;
-using OSK;
 using TMPro;
 using UnityEngine.UI;
 
@@ -18,7 +16,7 @@ public static class CurrencyUtils
         "Tg", "Utg", "Dtg", "Ttg", "Qatg", "Qitg", "Sxtg", "Sptg", "Otg", "Ntg"
     };
 
-    public static string FormatCurrency<T>(T number, string format = "0.00") where T : struct
+    public static string FormatCurrency<T>(T number, string format = "0.00") where T : struct// IConvertible
     {
         double num = Convert.ToDouble(number);
         return num switch

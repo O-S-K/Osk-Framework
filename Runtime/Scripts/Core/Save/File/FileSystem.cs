@@ -1,7 +1,8 @@
 using System;
 using System.IO;
 using UnityEngine;
-using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace OSK
 {
@@ -11,32 +12,30 @@ namespace OSK
         {
             try
             {
-                var path = IOUtility.GetPath(fileName + ".txt");
-
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                using (FileStream file = File.Open(path, FileMode.OpenOrCreate))
+                var path = IOUtility.GetPath(fileName + ".dat");
+                using (FileStream fileStream = File.Open(path, FileMode.Create))
+                using (BinaryWriter writer = new BinaryWriter(fileStream))
                 {
-                    if (isEncrypt)
-                    {
-                        using (MemoryStream memoryStream = new MemoryStream())
-                        {
-                            binaryFormatter.Serialize(memoryStream, data);
-                            var encryptedData = FileSecurity.Encrypt(memoryStream.ToArray(), Main.Configs.init.encryptKey);
-                            file.Write(encryptedData, 0, encryptedData.Length);
-                        }
-                    }
-                    else
-                    {
-                        binaryFormatter.Serialize(file, data);
-                    }
+                    string json = JsonConvert.SerializeObject(data, Formatting.None);
+                    byte[] jsonBytes = Encoding.UTF8.GetBytes(json);
+
+                    // Ghi độ dài của dữ liệu trước (để kiểm tra khi đọc)
+                    writer.Write(jsonBytes.Length);
+                    writer.Write(jsonBytes);
+                }
+
+                if (isEncrypt)
+                {
+                    byte[] encryptedData = FileSecurity.Encrypt(File.ReadAllBytes(path), Main.Configs.init.encryptKey);
+                    File.WriteAllBytes(path, encryptedData);
                 }
 
                 RefreshEditor();
-                OSK.Logg.Log($"[Save File Success]: {fileName + ".txt"} {DateTime.Now}\n{path}", Color.green);
+                OSK.Logg.Log($"[Save File Success]: {fileName + ".dat"} {DateTime.Now}\n{path}", Color.green);
             }
             catch (Exception ex)
             {
-                OSK.Logg.LogError($"[Save File Exception]: {fileName + ".txt"} {ex.Message}");
+                OSK.Logg.LogError($"[Save File Exception]: {fileName + ".dat"} {ex.Message}");
             }
         }
 
@@ -44,81 +43,39 @@ namespace OSK
         {
             try
             {
-                var path = IOUtility.GetPath(fileName + ".txt");
+                var path = IOUtility.GetPath(fileName + ".dat");
                 if (!File.Exists(path))
                 {
-                    OSK.Logg.LogError("[Load File Error]: " + fileName + ".txt" + " NOT found");
+                    OSK.Logg.LogError($"[Load File Error]: {fileName + ".dat"} NOT found");
                     return default;
                 }
 
-                Logg.Log($"[Load File Success]: {fileName + ".txt"} \n {path}", Color.green);
-
-                BinaryFormatter binaryFormatter = new BinaryFormatter();
-                using (FileStream file = File.Open(path, FileMode.Open))
+                byte[] fileBytes = File.ReadAllBytes(path);
+                if (isDecrypt)
                 {
-                    if (isDecrypt)
-                    {
-                        using (MemoryStream memoryStream = new MemoryStream(FileSecurity.Decrypt(file, Main.Configs.init.encryptKey)))
-                        {
-                            return (T)binaryFormatter.Deserialize(memoryStream);
-                        }
-                    }
-                    else
-                    {
-                        return (T)binaryFormatter.Deserialize(file);
-                    }
+                    fileBytes = FileSecurity.Decrypt(fileBytes, Main.Configs.init.encryptKey);
+                }
+
+                using (MemoryStream memoryStream = new MemoryStream(fileBytes))
+                using (BinaryReader reader = new BinaryReader(memoryStream))
+                {
+                    int dataLength = reader.ReadInt32();
+                    byte[] jsonBytes = reader.ReadBytes(dataLength);
+                    string json = Encoding.UTF8.GetString(jsonBytes);
+                    return JsonConvert.DeserializeObject<T>(json);
                 }
             }
             catch (Exception ex)
             {
-                OSK.Logg.LogError("[Load File Exception]: " + fileName + ".txt" + " " + ex.Message);
+                OSK.Logg.LogError($"[Load File Exception]: {fileName + ".dat"} {ex.Message}");
                 return default;
-            }
-            finally
-            {
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
             }
         }
 
         public void Delete(string fileName)
         {
-            IOUtility.DeleteFile(fileName + ".txt");
-            OSK.Logg.Log($"[Delete File Success]: {fileName}.txt");
-        }
-        
-        public void Write(string fileName, string json)
-        {
-            var path = IOUtility.GetPath(fileName + ".txt");
-            OSK.Logg.Log("Path Save: " + path);
-            FileStream fileStream = new FileStream(path, FileMode.Create);
-            using (StreamWriter writer = new StreamWriter(fileStream))
-            {
-                writer.Write(json);
-            }
-        }
-        
-        public void WriteAllLines(string fileName, string[] json)
-        {
-            var path = IOUtility.GetPath(fileName + ".txt");
-            OSK.Logg.Log("Path Save: " + path);
-            File.WriteAllLines(path, json);
-        }
-
-        public string Read(string fileName)
-        {
-            var path = IOUtility.GetPath(fileName + ".txt");
-            if (File.Exists(path))
-            {
-                var reader = new StreamReader(path);
-                return reader.ReadToEnd();
-            }
-            else
-            {
-                OSK.Logg.LogError("File Not Found !");
-            }
-
-            return null;
+            IOUtility.DeleteFile(fileName + ".dat");
+            OSK.Logg.Log($"[Delete File Success]: {fileName}.dat");
         }
         
         public T Query<T>(string fileName, bool condition)
@@ -129,7 +86,14 @@ namespace OSK
             }
             return default;
         }
-
+        
+              
+        public void WriteAllLines(string fileName, string[] json)
+        {
+            var path = IOUtility.GetPath(fileName + ".txt");
+            OSK.Logg.Log("Path Save: " + path);
+            File.WriteAllLines(path, json);
+        }
 
         private void RefreshEditor()
         {

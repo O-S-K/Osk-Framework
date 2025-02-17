@@ -5,6 +5,7 @@ namespace OSK
 {
     public class StorageManager : GameFrameworkComponent
     {
+        public bool isEncrypt = false;
         private JsonSystem _json = new JsonSystem();
         private FileSystem _file = new FileSystem();
         private XMLSystem _xml = new XMLSystem();
@@ -21,7 +22,7 @@ namespace OSK
             IFile fileSystem = GetFileSystem<T>();
             if (fileSystem != null)
             {
-                fileSystem.Save(fileName, data, Main.Instance.configInit.isEncrypt);
+                fileSystem.Save(fileName, data, isEncrypt);
             }
         }
 
@@ -42,7 +43,7 @@ namespace OSK
             IFile fileSystem = GetFileSystem<T>();
             if (fileSystem != null)
             {
-                return fileSystem.Load<U>(fileName, Main.Instance.configInit.isEncrypt);
+                return fileSystem.Load<U>(fileName, isEncrypt);
             }
 
             return default(U);

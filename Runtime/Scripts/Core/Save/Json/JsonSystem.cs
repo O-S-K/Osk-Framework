@@ -2,6 +2,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace OSK
 {
@@ -15,9 +16,7 @@ namespace OSK
             var filePath = IOUtility.FilePath(fileName + ".json");
             try
             {
-                string saveJson = JsonUtility.ToJson(data);
-
-                // Format numeric values to specified decimal places
+                string saveJson = JsonConvert.SerializeObject(data, Formatting.Indented);
                 saveJson = FormatJsonDecimals(saveJson, 4);
 
                 if (ableEncrypt)
@@ -39,7 +38,6 @@ namespace OSK
             }
         }
 
-        // Helper method to format JSON numbers to specified decimal places
         private string FormatJsonDecimals(string json, int decimalPlaces)
         {
             return Regex.Replace(json, @"\d+\.\d+", match =>
@@ -60,7 +58,7 @@ namespace OSK
             {
                 OSK.Logg.LogError($"[Load File Error]: {fileName + ".json"} NOT found");
                 return default;
-            } 
+            }
             try
             {
                 string loadJson;
@@ -81,7 +79,7 @@ namespace OSK
                 }
 
                 // Deserialize JSON to object
-                T data = JsonUtility.FromJson<T>(loadJson);
+                T data = JsonConvert.DeserializeObject<T>(loadJson);
                 OSK.Logg.Log($"[Load File Success]: {fileName + ".json"} \n {filePath}", Color.green);
                 return data;
             }
@@ -92,12 +90,11 @@ namespace OSK
             }
         }
 
-        // Helper method to validate JSON format
         private bool IsValidJson(string json)
         {
             try
             {
-                var temp = JsonUtility.FromJson<object>(json);
+                JsonConvert.DeserializeObject<object>(json);
                 return true;
             }
             catch
