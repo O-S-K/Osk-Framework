@@ -28,8 +28,8 @@ namespace OSK
     {
         [Header("Setup")]
         public string name;
-        public int id { get; set; }
-        public GameObject icon;
+        //public int id { get; set; }
+        //public GameObject icon;
         [Min(1)]
         public int numberOfEffects = 10;
         public bool isDrop = true;
@@ -47,6 +47,12 @@ namespace OSK
 
         [ShowIf(nameof(isDrop), true)]
         public MinMaxFloat timeDrop;
+        
+        
+        // scale
+        public bool isScaleDrop = false;
+        public float scaleDropStart = 1;
+        public float scaleDropEnd = 1;
 
         [ShowIf(nameof(isDrop), true)] 
         public TypeAnimation typeAnimationDrop = TypeAnimation.Ease;
@@ -73,7 +79,11 @@ namespace OSK
  
         public Ease easeMove = Ease.Linear;
         public AnimationCurve curveMove;
-
+        
+        // scale
+        public bool isScaleMove = false;
+        public float scaleMoveStart = 1;
+        public float scaleMoveTarget = 1;
         
         // Jump
         public MinMaxFloat jumpPower;
@@ -88,11 +98,9 @@ namespace OSK
         public int pointsCount = 10;
 
         public MinMaxFloat height;
-
         public MinMaxFloat timeMove;
         public MinMaxFloat delayMove;
-
-        public float scaleTarget = 1;
+         
         public System.Action OnCompleted;
 
         #endregion

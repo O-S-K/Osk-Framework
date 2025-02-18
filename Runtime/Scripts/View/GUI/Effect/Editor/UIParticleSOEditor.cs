@@ -1,12 +1,13 @@
 using UnityEngine;
 
 #if UNITY_EDITOR
+using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 
 namespace OSK
 {
     [CustomEditor(typeof(UIParticleSO))]
-    public class UIParticleSOEditor : Editor
+    public class UIParticleSOEditor : OdinEditor
     {
         private SerializedProperty _effectSettingsProperty;
 
@@ -41,11 +42,10 @@ namespace OSK
 
                 if (element.isExpanded)
                 {
-                    EditorGUILayout.BeginVertical("box"); // Bắt đầu khung bao quanh các thuộc tính của Effect Setting
-
+                    EditorGUILayout.BeginVertical("box"); 
                     EditorGUI.indentLevel++;
                     EditorGUILayout.PropertyField(element.FindPropertyRelative("name"));
-                    EditorGUILayout.PropertyField(element.FindPropertyRelative("icon"));
+                  //  EditorGUILayout.PropertyField(element.FindPropertyRelative("icon"));
                     EditorGUILayout.PropertyField(element.FindPropertyRelative("numberOfEffects"));
                     EditorGUILayout.PropertyField(element.FindPropertyRelative("isDrop"));
                     EditorGUI.indentLevel--;
@@ -61,16 +61,14 @@ namespace OSK
                         };
 
                         EditorGUILayout.LabelField("Drop Settings", titleStyle1);
-                        EditorGUILayout.BeginVertical("box"); // Tạo khung cho Drop Settings
+                        EditorGUILayout.BeginVertical("box"); 
                         DrawColoredBox(() =>
                         {
                             EditorGUILayout.PropertyField(element.FindPropertyRelative("sphereRadius"));
                             EditorGUILayout.PropertyField(element.FindPropertyRelative("delayDrop"));
                             EditorGUILayout.PropertyField(element.FindPropertyRelative("timeDrop"));
                             EditorGUILayout.PropertyField(element.FindPropertyRelative("typeAnimationDrop"));
-
-                            var typeAnimationDrop =
-                                (TypeAnimation)element.FindPropertyRelative("typeAnimationDrop").enumValueIndex;
+                            var typeAnimationDrop = (TypeAnimation)element.FindPropertyRelative("typeAnimationDrop").enumValueIndex;
                             if (typeAnimationDrop == TypeAnimation.Ease)
                             {
                                 EditorGUILayout.PropertyField(element.FindPropertyRelative("easeDrop"));
@@ -79,8 +77,16 @@ namespace OSK
                             {
                                 EditorGUILayout.PropertyField(element.FindPropertyRelative("curveDrop"));
                             }
+                            
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("isScaleDrop"));
+                            if (element.FindPropertyRelative("isScaleDrop").boolValue)
+                            {
+                                EditorGUILayout.PropertyField(element.FindPropertyRelative("scaleDropStart"));
+                                EditorGUILayout.PropertyField(element.FindPropertyRelative("scaleDropEnd"));
+                            }  
+                            
                         }, Color.green);
-                        EditorGUILayout.EndVertical(); // Kết thúc khung cho Drop Settings
+                        EditorGUILayout.EndVertical(); 
                     }
 
                     GUILayout.Space(10);
@@ -93,7 +99,7 @@ namespace OSK
 
                     // Move Section
                     EditorGUILayout.LabelField("Move Settings", titleStyle2);
-                    EditorGUILayout.BeginVertical("box"); // Tạo khung cho Move Settings
+                    EditorGUILayout.BeginVertical("box"); 
                     DrawColoredBox(() =>
                     {
                         EditorGUILayout.PropertyField(element.FindPropertyRelative("typeMove"));
@@ -139,9 +145,16 @@ namespace OSK
 
                         EditorGUILayout.PropertyField(element.FindPropertyRelative("timeMove"));
                         EditorGUILayout.PropertyField(element.FindPropertyRelative("delayMove"));
-                        EditorGUILayout.PropertyField(element.FindPropertyRelative("scaleTarget"));
+                        
+                        EditorGUILayout.PropertyField(element.FindPropertyRelative("isScaleMove"));
+                        if (element.FindPropertyRelative("isScaleMove").boolValue)
+                        {
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("scaleMoveStart"));
+                            EditorGUILayout.PropertyField(element.FindPropertyRelative("scaleMoveTarget"));
+                        } 
+                        
                     }, Color.cyan);
-                    EditorGUILayout.EndVertical(); // Kết thúc khung cho Move Settings
+                    EditorGUILayout.EndVertical(); 
 
                     GUILayout.Space(10);
 
@@ -151,7 +164,7 @@ namespace OSK
                         break;
                     }
 
-                    EditorGUILayout.EndVertical(); // Kết thúc khung bao quanh Effect Setting
+                    EditorGUILayout.EndVertical(); 
                 }
             }
 

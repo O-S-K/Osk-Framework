@@ -6,6 +6,17 @@ using System.Collections;
 
 namespace OSK
 {
+    public class ParticleSetup
+    {
+        public UIParticle.ETypeSpawn typeSpawn;
+        public string name;
+        public GameObject prefab;
+        public Transform from = null;
+        public Transform to = null;
+        public int num = -1;
+        public System.Action onCompleted = null;
+    }
+
     public class UIParticle : MonoBehaviour
     {
         private readonly Dictionary<string, Coroutine> _activeCoroutines = new Dictionary<string, Coroutine>();
@@ -24,7 +35,7 @@ namespace OSK
             WorldToWorld,
             WorldToWorld3D,
         }
- 
+
         public void Initialize()
         {
             _mainCamera = Camera.main;
@@ -51,9 +62,22 @@ namespace OSK
             }
         }
 
-        public void Spawn(ETypeSpawn typeSpawn, string name, Transform from, Transform to, int num = -1,
-            System.Action onCompleted = null)
+        public void Spawn(ParticleSetup particleSetup)
         {
+            Spawn(particleSetup.typeSpawn, particleSetup.name, particleSetup.prefab, particleSetup.from,
+                particleSetup.to, particleSetup.num,
+                particleSetup.onCompleted);
+        }
+
+        public void Spawn(ETypeSpawn typeSpawn, string name, GameObject effectPrefab, Transform from, Transform to,
+            int num = -1, System.Action onCompleted = null)
+        {
+            if(effectPrefab == null)
+            {
+                Logg.LogError("Effect prefab is null, please assign a prefab to spawn effect.");
+                return;
+            }
+            
             string key = $"{name}_{from.GetInstanceID()}_{to.GetInstanceID()}";
             if (_activeCoroutines.ContainsKey(key))
             {
@@ -61,11 +85,14 @@ namespace OSK
                 _activeCoroutines.Remove(key);
             }
 
-            Coroutine coroutine = StartCoroutine(SpawnCoroutine(typeSpawn, name, from, to, num, onCompleted));
+            Coroutine coroutine =
+                StartCoroutine(SpawnCoroutine(typeSpawn, name, effectPrefab, from, to, num, onCompleted));
             _activeCoroutines[key] = coroutine;
         }
 
-        private IEnumerator SpawnCoroutine(ETypeSpawn typeSpawn, string name, Transform from, Transform to, int num,
+
+        private IEnumerator SpawnCoroutine(ETypeSpawn typeSpawn, string name, GameObject prefab, Transform from,
+            Transform to, int num,
             System.Action onCompleted)
         {
             Vector3 fromPosition = from.position;
@@ -89,11 +116,12 @@ namespace OSK
                     break;
             }
 
-            SpawnEffect(is3D, name, fromPosition, toPosition, num, onCompleted);
+            SpawnEffect(is3D, name, prefab, fromPosition, toPosition, num, onCompleted);
             yield return null;
         }
 
-        private void SpawnEffect(bool is3D, string name, Vector3 from, Vector3 to, int num, System.Action onCompleted)
+        private void SpawnEffect(bool is3D, string name, GameObject prefab, Vector3 from, Vector3 to, int num,
+            System.Action onCompleted)
         {
             var effectSetting = _effectSettings.Find(x => x.name == name).Clone();
             effectSetting.pointSpawn = from;
@@ -105,12 +133,11 @@ namespace OSK
 
             if (gameObject.activeInHierarchy)
             {
-                 IESpawnEffect(is3D, effectSetting).Run();
+                IESpawnEffect(is3D, effectSetting, prefab).Run();
             }
         }
 
-    
-        private IEnumerator IESpawnEffect(bool is3D, EffectSetting effectSetting)
+        private IEnumerator IESpawnEffect(bool is3D, EffectSetting effectSetting, GameObject prefab)
         {
             var parent = _parentEffects.Find(x => x.name == effectSetting.name)?.transform;
             if (parent == null || !parent.gameObject.activeInHierarchy)
@@ -118,13 +145,16 @@ namespace OSK
 
             for (int i = 0; i < effectSetting.numberOfEffects; i++)
             {
-                 var effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, effectSetting.icon, _canvasTransform, 1);
+                var effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, prefab, _canvasTransform, 1);
                 if (effect.transform.parent != parent)
                     effect.transform.SetParent(parent);
-                
+
                 effect.transform.position = effectSetting.pointSpawn;
 
-                if (!is3D) effect.transform.localScale = Vector3.one;
+                if (!is3D)
+                {
+                    effect.transform.localScale = Vector3.one;
+                }
 
                 if (effectSetting.isDrop)
                 {
@@ -145,12 +175,19 @@ namespace OSK
         }
 
         private void DoDropEffect(GameObject effect, EffectSetting effectSetting)
-        { 
-            Tween tween = effect.transform
-                .DOMove(effectSetting.pointSpawn +
-                        Random.insideUnitSphere * effectSetting.sphereRadius, effectSetting.timeDrop.RandomValue)
-                .SetDelay( effectSetting.delayDrop.RandomValue);
+        {
+            float timeDrop = effectSetting.timeDrop.RandomValue;
+            Tween tween = effect.transform.DOMove(effectSetting.pointSpawn +
+                        Random.insideUnitSphere * effectSetting.sphereRadius, timeDrop)
+                .SetDelay(effectSetting.delayDrop.RandomValue);
 
+            if (effectSetting.isScaleDrop)
+            {
+                effect.transform.localScale = effectSetting.scaleDropStart * Vector3.one;
+                effect.transform.DOScale(effectSetting.scaleDropEnd, timeDrop)
+                    .SetDelay(effectSetting.delayDrop.RandomValue).SetEase(effectSetting.easeDrop);
+            }
+            
             if (tween != null)
             {
                 if (effectSetting.typeAnimationDrop == TypeAnimation.Ease)
@@ -166,7 +203,12 @@ namespace OSK
                     tween.SetEase(Ease.Linear);
                 }
 
-                tween.OnComplete(() => { DoMoveTarget(effect, effectSetting); });
+                
+                tween.OnComplete(() =>
+                {
+                    effect.transform.DOKill();
+                    DoMoveTarget(effect, effectSetting);
+                });
             }
         }
 
@@ -176,6 +218,13 @@ namespace OSK
             var timeMove = effectSetting.timeMove.RandomValue;
             var timeMoveDelay = effectSetting.delayMove.RandomValue;
 
+            if (effectSetting.isScaleMove)
+            {
+                effect.transform.localScale = effectSetting.scaleMoveStart * Vector3.one;
+                effect.transform.DOScale(effectSetting.scaleMoveTarget, timeMove)
+                    .SetDelay(timeMoveDelay).SetEase(effectSetting.easeMove);
+            }
+            
             switch (effectSetting.typeMove)
             {
                 case TypeMove.Straight:
@@ -241,13 +290,13 @@ namespace OSK
                     {
                         float t = (float)i / (effectSetting.pointsCount - 1);
                         Vector3 point = Vector3.Lerp(effectSetting.pointSpawn, effectSetting.pointTarget, t);
-                        point.y += Mathf.Sin(t * Mathf.PI * 2) * effectSetting.height.RandomValue;  
+                        point.y += Mathf.Sin(t * Mathf.PI * 2) * effectSetting.height.RandomValue;
                         path1[i] = point;
                     }
 
                     tween = effect.transform.DOPath(path1, timeMove, PathType.CatmullRom)
                         .SetDelay(timeMoveDelay);
-                    break; 
+                    break;
             }
 
             if (tween != null)
@@ -259,9 +308,11 @@ namespace OSK
                 else
                     tween.SetEase(Ease.Linear);
 
-                // effect.transform.DOScale(effectSetting.scaleTarget, timeMove)
-                //     .SetDelay(timeMoveDelay);
-                tween.OnComplete(() => { Main.Pool.Despawn(effect); });
+                tween.OnComplete(() =>
+                {
+                    effect.transform.DOKill();
+                    Main.Pool.Despawn(effect);
+                });
             }
         }
 
@@ -312,6 +363,7 @@ namespace OSK
                 uiWorldPosition = _uiCamera.ScreenToWorldPoint(screenPoint);
                 uiWorldPosition.z = 0;
             }
+
             return uiWorldPosition;
         }
     }
