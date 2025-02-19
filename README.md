@@ -40,9 +40,13 @@ The **OSK Framework** is a modular Unity framework designed to streamline game d
 ## **🚀 Quick Start**
 
 ### **1. Install Dependencies**
-- Required: **Odin Inspector**, **DOTween**  
-- Optional: **UIFeel**, **UIParticle**
+- Odin Inspector: https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041
+- DoTween: https://github.com/O-S-K/DOTween
+- Newtonsoft.json: com.unity.nuget.newtonsoft-json
 
+** Optional **
+- UIFeel: https://github.com/O-S-K/Osk-UIFeel
+ 
 ### **2. Initialize Framework**
 1. Go to **Window → OSK-Framework → CreateFramework** to set up the structure.  
 2. Use **Create Module** and **Create Config** to enable and configure modules.
