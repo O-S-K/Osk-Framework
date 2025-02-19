@@ -17,7 +17,7 @@ The **OSK Framework** is a modular Unity framework designed to streamline game d
 5. [**FSMManager**]: Manages Finite State Machines for state-driven behaviors.  
 6. [**PoolManager**]: Efficiently handles object pooling to improve memory usage and performance.  
 7. [**CommandManager**]: Supports command pattern for undoable actions and player input recording.  
-8. [**SceneManager**]: Manages smooth scene transitions and scene-specific logic.  
+8. [**DirectorManager**]: Manages smooth scene transitions and scene-specific logic.  
 9. [**ResourceManager**]: Handles resource loading, caching, and unloading.  
 10. [**StorageManager**]: Provides mechanisms for saving and loading persistent data.  
 11. [**DataManager**]: Manages runtime and persistent game data.  
@@ -33,6 +33,7 @@ The **OSK Framework** is a modular Unity framework designed to streamline game d
 21. [**BlackboardManager**]: Facilitates shared data storage for AI and gameplay logic.  
 22. [**ProcedureManager**]: Manages game procedures and workflows for structured gameplay logic.  
  
+
 
 ---
 
