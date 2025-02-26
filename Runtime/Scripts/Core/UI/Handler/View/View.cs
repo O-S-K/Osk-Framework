@@ -10,6 +10,7 @@ namespace OSK
         [EnumToggleButtons]
         public EViewType viewType = EViewType.Popup;
         public int depth;
+        private int _depth;
     
         [Space] 
         [ToggleLeft] public bool isAddToViewManager = true;
@@ -54,17 +55,18 @@ namespace OSK
                 Logg.LogError("RootUI is still null after initialization.");
             }
 
+            _depth = depth;
             SetDepth(depth);
             EventAfterInit?.Invoke();
         }
   
-        public void SetDepth(EViewType viewType, int order)
+        public void SetDepth(EViewType viewType, int depth)
         {
             this.viewType = viewType;
-            SetDepth(order);
+            SetDepth(depth);
         }
         
-        private void SetDepth(int order)
+        private void SetDepth(int depth)
         {
             /*var canvas = GetComponent<Canvas>();
             if (canvas != null)
@@ -84,7 +86,7 @@ namespace OSK
                 if (childPages.Count == 0)
                     return;
 
-                var insertIndex = _rootUI.FindInsertIndex(childPages, order);
+                var insertIndex = _rootUI.FindInsertIndex(childPages, depth);
                 if (insertIndex == childPages.Count) transform.SetAsLastSibling();
                 else transform.SetSiblingIndex(insertIndex);
 
@@ -99,6 +101,9 @@ namespace OSK
             _isShowing = true;
             EventBeforeOpened?.Invoke();
             gameObject.SetActive(true);
+            
+            if(_depth != depth)
+                SetDepth(depth);
 
             if (_uiTransition != null) 
                 _uiTransition.OpenTrans(() => EventAfterOpened?.Invoke());
