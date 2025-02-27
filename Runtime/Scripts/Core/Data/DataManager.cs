@@ -1,31 +1,28 @@
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace OSK
 {
     public class DataManager : GameFrameworkComponent
     {  
-        // Data store
-        [SerializeReference] [SerializeField]
-        private Dictionary<Type, object> k_DataStore = new Dictionary<Type, object>();
-        
+        [SerializeReference, SerializeField]
+        private Dictionary<Type, List<IData>> k_DataStore = new Dictionary<Type, List<IData>>();
+
         public override void OnInit() {}
 
-        
-        // Add data to the data store
-        public void Add<T>(T data)
+        // add data to the data store
+        public void Add<T>(T data) where T : class, IData
         {
             Type type = typeof(T);
             if (!k_DataStore.ContainsKey(type))
             {
                 Logg.Log($"Creating data store for type {type}.", Color.green);
-                k_DataStore[type] = new List<T>();
+                k_DataStore[type] = new List<IData>();
             }
 
-            // check if data is already in the list
-            List<T> list = (List<T>)k_DataStore[type];
+            List<IData> list = k_DataStore[type];
+
             if (!list.Contains(data))
             {
                 Logg.Log($"Adding data of type {type}.", Color.green);
@@ -37,90 +34,94 @@ namespace OSK
             }
         }
 
-        // Add data to the data store
-        public void Add<T>(List<T> dataList)
+        // add data to the data store
+        public void Add<T>(List<T> dataList) where T : class, IData
         {
             Type type = typeof(T);
             if (!k_DataStore.ContainsKey(type))
             {
-                k_DataStore[type] = new List<T>();
+                k_DataStore[type] = new List<IData>();
             }
 
-            Logg.Log($"Adding data of type {type}.", Color.green);
-            ((List<T>)k_DataStore[type]).AddRange(dataList);
+            Logg.Log($"Adding list of type {type}.", Color.green);
+            k_DataStore[type].AddRange(dataList);
         }
 
-        // Get all data of type T
-        public List<T> GetAll<T>()
+        // get all data of type T
+        public List<T> GetAll<T>() where T : class, IData
         {
             Type type = typeof(T);
             if (k_DataStore.TryGetValue(type, out var value))
             {
                 Logg.Log($"Data of type {type} found.", Color.green);
-                return (List<T>)value;
+                return value.ConvertAll(x => x as T);
             }
 
             Logg.LogWarning($"No data found of type {type}.");
             return new List<T>();
         }
 
-        public T Get<T>()
+        // get first data of type T
+        public T Get<T>() where T : class, IData
         {
             Type type = typeof(T);
-            if (k_DataStore.TryGetValue(type, out var value))
-            {
-                List<T> list = (List<T>)value;
-                if (list.Count > 0)
-                {
-                    Logg.Log($"Data of type {type} found.", Color.green);
-                    return list[0];
-                }
-
-                Logg.LogWarning($"No data found of type {type}.");
-            }
-
-            return default;
-        }
-
-        // Query data with a condition
-        public T Query<T>(Predicate<T> query)
-        {
-            Type type = typeof(T);
-            if (k_DataStore.TryGetValue(type, out var value))
+            if (k_DataStore.TryGetValue(type, out var value) && value.Count > 0)
             {
                 Logg.Log($"Data of type {type} found.", Color.green);
-                List<T> list = (List<T>)value;
-                return list.Find(query);
+                return value[0] as T;
             }
 
             Logg.LogWarning($"No data found of type {type}.");
-            return default;
+            return null;
+        }
+
+        // find data of type T
+        public T Query<T>(Predicate<T> query) where T : class, IData
+        {
+            Type type = typeof(T);
+            if (k_DataStore.TryGetValue(type, out var value))
+            {
+                Logg.Log($"Querying data of type {type}.", Color.green);
+                return value.ConvertAll(x => x as T).Find(query);
+            }
+
+            Logg.LogWarning($"No data found of type {type}.");
+            return null;
+        }
+
+        // take all data of type T
+        public List<T> QueriesAll<T>(Predicate<T> query) where T : class, IData
+        {
+            Type type = typeof(T);
+            if (k_DataStore.TryGetValue(type, out var value))
+            {
+                Logg.Log($"Querying all data of type {type}.", Color.green);
+                return value.ConvertAll(x => x as T).FindAll(query);
+            }
+
+            Logg.LogWarning($"No data found of type {type}.");
+            return new List<T>();
         }
         
-        public List<T> QueriesAll<T>(Predicate<T> query)
+        public void Remove<T>(T data) where T : class, IData
         {
             Type type = typeof(T);
             if (k_DataStore.TryGetValue(type, out var value))
             {
-                Logg.Log($"Data of type {type} found.", Color.green);
-                List<T> list = (List<T>)value;
-                return list.FindAll(query);
+                Logg.Log($"Removing data of type {type}.");
+                value.Remove(data);
             }
-
-            Logg.LogWarning($"No data found of type {type}.");
-            return new List<T>();
         }
 
-        // Remove data based on a query
-        public void Remove<T>(Predicate<T> query)
+        // remove data of type T
+        public void Remove<T>(Predicate<T> query) where T : class, IData
         {
             Type type = typeof(T);
             if (k_DataStore.TryGetValue(type, out var value))
             {
-                Logg.Log($"Data of type {type} found.");
-                List<T> list = (List<T>)value;
-                list.RemoveAll(query);
+                Logg.Log($"Removing data of type {type}.");
+                value.RemoveAll(x => query((T)x));
             }
-        } 
+        }
     }
 }
