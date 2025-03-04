@@ -4,13 +4,10 @@ using UnityEngine;
 
 namespace OSK
 {
-    public abstract class GameInit : GameFrameworkComponent
+    public  class GameInit : GameFrameworkComponent
     {
         public override void OnInit()
-        {
-            BindData();
-        }
-
-        public abstract void BindData();
+        { 
+        } 
     }
 }

@@ -27,6 +27,28 @@ namespace OSK
             if (_defaultHeaders.ContainsKey(key))
                 _defaultHeaders.Remove(key);
         }
+        
+        public void DownloadCSV(string url, System.Action<string> callback)
+        {
+            DownloadCoroutine(url, callback).Run();
+        }
+
+        private IEnumerator DownloadCoroutine(string url, System.Action<string> callback)
+        {
+            using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
+            {
+                yield return webRequest.SendWebRequest();
+                if (webRequest.result == UnityWebRequest.Result.Success)
+                {
+                    string csvData = Encoding.UTF8.GetString(webRequest.downloadHandler.data);
+                    callback(csvData);
+                }
+                else
+                {
+                    Logg.LogError($"⚠️ Error downloading CSV: {webRequest.error}");
+                }
+            }
+        }
 
         // GET request
         public void Get(string url, System.Action<string> onSuccess, System.Action<string> onError)
