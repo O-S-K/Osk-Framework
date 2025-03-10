@@ -62,22 +62,23 @@ namespace OSK
             }
         }
 
-        public void Spawn(ParticleSetup particleSetup)
+        public List<GameObject> Spawn(ParticleSetup particleSetup)
         {
-            Spawn(particleSetup.typeSpawn, particleSetup.name, particleSetup.prefab, particleSetup.from,
+           return Spawn(particleSetup.typeSpawn, particleSetup.name, particleSetup.prefab, particleSetup.from,
                 particleSetup.to, particleSetup.num,
                 particleSetup.onCompleted);
         }
 
-        public void Spawn(ETypeSpawn typeSpawn, string name, GameObject effectPrefab, Transform from, Transform to,
+        public List<GameObject> Spawn(ETypeSpawn typeSpawn, string name, GameObject effectPrefab, Transform from,
+            Transform to,
             int num = -1, System.Action onCompleted = null)
         {
-            if(effectPrefab == null)
+            if (effectPrefab == null)
             {
                 Logg.LogError("Effect prefab is null, please assign a prefab to spawn effect.");
-                return;
+                return null;
             }
-            
+
             string key = $"{name}_{from.GetInstanceID()}_{to.GetInstanceID()}";
             if (_activeCoroutines.ContainsKey(key))
             {
@@ -85,15 +86,15 @@ namespace OSK
                 _activeCoroutines.Remove(key);
             }
 
-            Coroutine coroutine =
-                StartCoroutine(SpawnCoroutine(typeSpawn, name, effectPrefab, from, to, num, onCompleted));
+            List<GameObject> spawnedObjects = new List<GameObject>();
+            Coroutine coroutine = StartCoroutine(SpawnCoroutine(typeSpawn, name, effectPrefab, from, to, num,
+                onCompleted, spawnedObjects));
             _activeCoroutines[key] = coroutine;
+            return spawnedObjects;
         }
 
-
         private IEnumerator SpawnCoroutine(ETypeSpawn typeSpawn, string name, GameObject prefab, Transform from,
-            Transform to, int num,
-            System.Action onCompleted)
+            Transform to, int num, System.Action onCompleted, List<GameObject> spawnedObjects)
         {
             Vector3 fromPosition = from.position;
             Vector3 toPosition = to.position;
@@ -116,54 +117,43 @@ namespace OSK
                     break;
             }
 
-            SpawnEffect(is3D, name, prefab, fromPosition, toPosition, num, onCompleted);
-            yield return null;
+            yield return IESpawnEffect(is3D, name, prefab, fromPosition, toPosition, num, onCompleted, spawnedObjects);
         }
 
-        private void SpawnEffect(bool is3D, string name, GameObject prefab, Vector3 from, Vector3 to, int num,
-            System.Action onCompleted)
+        private IEnumerator IESpawnEffect(bool is3D, string name, GameObject prefab, Vector3 from, Vector3 to, int num,
+            System.Action onCompleted, List<GameObject> spawnedObjects)
         {
-            var effectSetting = _effectSettings.Find(x => x.name == name).Clone();
+            var effectSetting = _effectSettings.Find(x => x.name == name)?.Clone();
+            if (effectSetting == null) yield break;
+
             effectSetting.pointSpawn = from;
             effectSetting.pointTarget = to;
-
             if (num > 0)
                 effectSetting.numberOfEffects = num;
             effectSetting.OnCompleted = onCompleted;
 
-            if (gameObject.activeInHierarchy)
-            {
-                IESpawnEffect(is3D, effectSetting, prefab).Run();
-            }
-        }
-
-        private IEnumerator IESpawnEffect(bool is3D, EffectSetting effectSetting, GameObject prefab)
-        {
             var parent = _parentEffects.Find(x => x.name == effectSetting.name)?.transform;
             if (parent == null || !parent.gameObject.activeInHierarchy)
                 yield break;
 
             for (int i = 0; i < effectSetting.numberOfEffects; i++)
             {
-                var effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, prefab, _canvasTransform, 1);
+                GameObject effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, prefab, _canvasTransform, 1) as GameObject;
+                if (effect == null) continue;
+
                 if (effect.transform.parent != parent)
                     effect.transform.SetParent(parent);
-
                 effect.transform.position = effectSetting.pointSpawn;
 
                 if (!is3D)
-                {
                     effect.transform.localScale = Vector3.one;
-                }
+
+                spawnedObjects.Add(effect);
 
                 if (effectSetting.isDrop)
-                {
                     DoDropEffect(effect, effectSetting);
-                }
                 else
-                {
                     DoMoveTarget(effect, effectSetting);
-                }
             }
 
             float totalTimeOnCompleted = effectSetting.timeDrop.TimeAverage +
@@ -178,7 +168,7 @@ namespace OSK
         {
             float timeDrop = effectSetting.timeDrop.RandomValue;
             Tween tween = effect.transform.DOMove(effectSetting.pointSpawn +
-                        Random.insideUnitSphere * effectSetting.sphereRadius, timeDrop)
+                                                  Random.insideUnitSphere * effectSetting.sphereRadius, timeDrop)
                 .SetDelay(effectSetting.delayDrop.RandomValue);
 
             if (effectSetting.isScaleDrop)
@@ -187,7 +177,7 @@ namespace OSK
                 effect.transform.DOScale(effectSetting.scaleDropEnd, timeDrop)
                     .SetDelay(effectSetting.delayDrop.RandomValue).SetEase(effectSetting.easeDrop);
             }
-            
+
             if (tween != null)
             {
                 if (effectSetting.typeAnimationDrop == TypeAnimation.Ease)
@@ -203,7 +193,7 @@ namespace OSK
                     tween.SetEase(Ease.Linear);
                 }
 
-                
+
                 tween.OnComplete(() =>
                 {
                     effect.transform.DOKill();
@@ -224,7 +214,7 @@ namespace OSK
                 effect.transform.DOScale(effectSetting.scaleMoveTarget, timeMove)
                     .SetDelay(timeMoveDelay).SetEase(effectSetting.easeMove);
             }
-            
+
             switch (effectSetting.typeMove)
             {
                 case TypeMove.Straight:
