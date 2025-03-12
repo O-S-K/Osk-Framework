@@ -25,16 +25,7 @@ namespace OSK
                 PrefabUtility.InstantiatePrefab(Resources.LoadAll<RootUI>("").First());
             }
         }
-        
-        [MenuItem("OSK-Framework/Create Console")]
-        public static void CreateConsoleOnScene()
-        {
-            if (FindObjectOfType<ConsoleTool>() == null)
-            {
-                PrefabUtility.InstantiatePrefab(Resources.LoadAll<ConsoleTool>("").First());
-            }
-        }
-
+          
         [MenuItem("OSK-Framework/Install Dependencies/Dotween")]
         public static void InstallDependenciesDotween()
         {
@@ -45,6 +36,12 @@ namespace OSK
         public static void InstallDependenciesUIFeel()
         {
             AddPackage("https://github.com/O-S-K/UIFeel.git");
+        }
+        
+        [MenuItem("OSK-Framework/Install Dependencies/TextMeshPro")]
+        public static void InstallDependenciesDevConsole()
+        {
+            AddPackage("https://github.com/O-S-K/Osk-DevConsole.git");
         }
 
         private static void AddPackage(string packageName)
