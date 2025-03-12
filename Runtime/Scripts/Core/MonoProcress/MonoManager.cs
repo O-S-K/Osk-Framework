@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
+using UnityEngine;
+using System.Collections;
 using Sirenix.OdinInspector;
+using System.Collections.Generic;
+using Sirenix.Utilities;
 
 namespace OSK
 {
@@ -15,9 +16,9 @@ namespace OSK
         internal event Action<bool> OnGamePause= null;
         internal event Action OnGameQuit = null;
 
-        [ShowInInspector] private readonly List<IEntity> tickProcesses = new List<IEntity>(1024);
-        [ShowInInspector] private readonly List<IEntity> fixedTickProcesses = new List<IEntity>(512);
-        [ShowInInspector] private readonly List<IEntity> lateTickProcesses = new List<IEntity>(256);
+        [ShowInInspector] private readonly List<IUpdate> tickProcesses = new List<IUpdate>(1024);
+        [ShowInInspector] private readonly List<IFixedUpdate> fixedTickProcesses = new List<IFixedUpdate>(512);
+        [ShowInInspector] private readonly List<ILateUpdate> lateTickProcesses = new List<ILateUpdate>(256);
 
         [ShowInInspector] public bool IsPause { get; private set; }
         [ShowInInspector] public float TimeScale { get; private set; }
@@ -28,6 +29,7 @@ namespace OSK
         {
             IsPause = false;
             TimeScale = 1f;
+            AutoRegisterAll();
         }
 
         public MonoManager SetTimeScale(float timeScale)
@@ -45,38 +47,40 @@ namespace OSK
 
         #endregion
 
-        #region Sub / UnSub For Update Procresses
-
-        public void AddTickProcess(IEntity tick)
+        #region Sub / UnSub 
+ 
+        private void AutoRegisterAll()
         {
-            tickProcesses.Add(tick);
+            foreach (var obj in FindObjectsOfType<MonoBehaviour>())
+            {
+                Register(obj);
+            }
         }
 
-        public void AddFixedTickProcess(IEntity fixedTick)
+        public void Register(object obj)
         {
-            fixedTickProcesses.Add(fixedTick);
+            if (obj?.GetType().GetCustomAttribute<AutoRegisterUpdateAttribute>() == null) return;
+
+            if (obj is IUpdate tick) tickProcesses.Add(tick);
+            else if (obj is IFixedUpdate fixedTick) fixedTickProcesses.Add(fixedTick);
+            else if (obj is ILateUpdate lateTick) lateTickProcesses.Add(lateTick);
+            else
+            {
+                Logg.LogError($"MonoManager.Register: {obj.GetType()} not implement IUpdate, IFixedUpdate, ILateUpdate");
+            }
         }
 
-        public void AddLateTickProcess(IEntity lateTick)
+        public void Unregister(object obj)
         {
-            lateTickProcesses.Add(lateTick);
+            if (obj is IUpdate tick) tickProcesses.Remove(tick);
+            else if (obj is IFixedUpdate fixedTick) fixedTickProcesses.Remove(fixedTick);
+            else if (obj is ILateUpdate lateTick) lateTickProcesses.Remove(lateTick);
+            else
+            {
+                Logg.LogError($"MonoManager.Unregister: {obj.GetType()} not implement IUpdate, IFixedUpdate, ILateUpdate");
+            }
         }
-
-        public void RemoveTickProcess(IEntity tick)
-        {
-            tickProcesses.Remove(tick);
-        }
-
-        public void RemoveFixedTickProcess(IEntity fixedTick)
-        {
-            fixedTickProcesses.Remove(fixedTick);
-        }
-
-        public void RemoveLateTickProcess(IEntity lateTick)
-        {
-            lateTickProcesses.Remove(lateTick);
-        }
-
+         
         public void RemoveAllTickProcess()
         {
             tickProcesses.Clear();
@@ -92,10 +96,7 @@ namespace OSK
         {
             if (IsPause) return;
 
-            for (int i = 0; i < tickProcesses.Count; i++)
-            {
-                tickProcesses[i]?.Tick();
-            }
+            foreach (var t in tickProcesses) t?.Tick();
 
             if (_isToMainThreadQueueEmpty) return;
             _localToMainThreads.Clear();
@@ -115,21 +116,13 @@ namespace OSK
         private void FixedUpdate()
         {
             if (IsPause) return;
-
-            for (int i = 0; i < fixedTickProcesses.Count; i++)
-            {
-                fixedTickProcesses[i]?.FixedTick();
-            }
+            foreach (var t in fixedTickProcesses) t?.FixedTick();
         }
 
         private void LateUpdate()
         {
             if (IsPause) return;
-
-            for (int i = 0; i < lateTickProcesses.Count; i++)
-            {
-                lateTickProcesses[i]?.LateTick();
-            }
+            foreach (var t in lateTickProcesses) t?.LateTick();
         }
 
         #endregion

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace OSK
 {
-    public class Entity : MonoBehaviour, IEntity
+    public class Entity : MonoBehaviour, IEntity 
     {
         public int ID { get; set; }
         public bool IsActive { get; set; }
@@ -37,19 +37,6 @@ namespace OSK
                 components.Remove(component);
                 Object.Destroy(component);
             }
-        }
-        
-
-        public virtual void Tick()
-        {
-        }
-
-        public virtual void FixedTick()
-        {
-        }
-
-        public virtual void LateTick()
-        {
         }
 
         public virtual void Show()

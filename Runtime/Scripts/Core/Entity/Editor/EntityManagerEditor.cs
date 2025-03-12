@@ -8,9 +8,9 @@ namespace OSK
     [CustomEditor(typeof(EntityManager))]
     public class EntityManagerEditor : Editor
     {
-        bool[] entityVisibility;
+        private bool[] entityVisibility;
 
-        void OnEnable()
+        private  void OnEnable()
         {
             var manager = (EntityManager)target;
             entityVisibility = new bool[manager.GetAll().Count];
