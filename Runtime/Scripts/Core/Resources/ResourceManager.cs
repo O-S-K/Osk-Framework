@@ -41,30 +41,6 @@ namespace OSK
             return resource;
         }
 
-        public T LoadSO<T>(string path, bool usePool = false) where T : ScriptableObject
-        {
-            if (k_ResourceCache.TryGetValue(path, out var value))
-            {
-                k_ReferenceCount[path]++;
-                return (T)value;
-            }
-
-            T resource = usePool
-                ? Main.Pool.Spawn("ResourcesManager", Resources.Load<T>(path), transform)
-                : Resources.Load<T>(path);
-            if (resource != null)
-            {
-                k_ResourceCache[path] = resource;
-                k_ReferenceCount[path] = 1;
-            }
-            else
-            {
-                Logg.LogError("Resource not found at path: " + path);
-            }
-
-            return resource;
-        }
-
         public T Spawn<T>(string path, bool usePool = false) where T : Object
         {
             T resource = Load<T>(path);

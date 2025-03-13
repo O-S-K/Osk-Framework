@@ -96,39 +96,31 @@ namespace OSK
             isPaused = false;
             isTimeOut = false;
             this.owner = owner;
+            OnStart?.Invoke();
             return this;
         }
 
         public void Pause()
         {
-            if (!isPaused)
-            {
-                OnPause?.Invoke();
-                isPaused = true;
-                pausedTime = useFixedUpdate ? fixedSeconds : frameSeconds;
-            }
+            if (isPaused) return;
+            
+            OnPause?.Invoke();
+            isPaused = true;
+            pausedTime = useFixedUpdate ? fixedSeconds : frameSeconds;
         }
 
         public void Resume()
         {
-            if (isPaused)
-            {
-                OnResume?.Invoke();
-                isPaused = false;
-                // Adjust interval to account for paused time
-                interval += (useFixedUpdate ? fixedSeconds : frameSeconds) - pausedTime;
-            }
+            if (!isPaused) return;
+            
+            OnResume?.Invoke();
+            isPaused = false;
+            // Adjust interval to account for paused time
+            interval += (useFixedUpdate ? fixedSeconds : frameSeconds) - pausedTime;
         }
 
-        internal void FixedUpdate()
-        {
-            HandleTimer(fixedSeconds, useFixedUpdate);
-        }
-
-        internal void Update()
-        {
-            HandleTimer(frameSeconds, useFixedUpdate);
-        }
+        internal void FixedUpdate() => HandleTimer(fixedSeconds, useFixedUpdate);
+        internal void Update() => HandleTimer(frameSeconds, useFixedUpdate);
 
         private void HandleTimer(float currentTime, bool isFixedUpdate)
         {
@@ -138,15 +130,8 @@ namespace OSK
                 return;
             }
 
-            if (isPaused)
-            {
-                return;
-            }
-
-            if (currentTime <= interval)
-            {
-                return;
-            }
+            if (isPaused) return;
+            if (currentTime <= interval) return;
 
             if (timePerSecond <= 0)
             {
@@ -169,11 +154,7 @@ namespace OSK
                 OnTick?.Invoke();
             }
 
-            if (count == 0)
-            {
-                //Logg.Log("Timer disposed.");
-                Dispose();
-            }
+            if (count == 0) Dispose();
         }
     }
 }

@@ -5,8 +5,6 @@ namespace OSK
 {
     public partial class UIManager
     {
-        #region Canvas
-
         public void SetCanvas(int sortOrder = 0, string sortingLayerName = "Default",
             RenderMode renderMode = RenderMode.ScreenSpaceOverlay, bool pixelPerfect = false,
             UnityEngine.Camera camera = null)
@@ -73,7 +71,5 @@ namespace OSK
             if (graphicRayCaster != null)
                 graphicRayCaster.ignoreReversedGraphics = false;
         }
-
-        #endregion
     }
 }

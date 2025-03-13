@@ -38,7 +38,7 @@ namespace OSK
             AddPackage("https://github.com/O-S-K/UIFeel.git");
         }
         
-        [MenuItem("OSK-Framework/Install Dependencies/TextMeshPro")]
+        [MenuItem("OSK-Framework/Install Dependencies/DevConsole")]
         public static void InstallDependenciesDevConsole()
         {
             AddPackage("https://github.com/O-S-K/Osk-DevConsole.git");

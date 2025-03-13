@@ -23,6 +23,8 @@ namespace OSK
         [ShowInInspector] public bool IsPause { get; private set; }
         [ShowInInspector] public float TimeScale { get; private set; }
 
+        [ShowInInspector] public float speed = 1f; 
+
         #region Set
 
         public override void OnInit()
@@ -32,6 +34,12 @@ namespace OSK
             AutoRegisterAll();
         }
 
+        public MonoManager SetSpeed(float speed = 1f)
+        {
+            this.speed = speed;
+            return this;
+        } 
+        
         public MonoManager SetTimeScale(float timeScale)
         {
             TimeScale = timeScale;
@@ -39,7 +47,7 @@ namespace OSK
             return this;
         }
 
-        public MonoManager SetPause(bool isPause, bool isSetTimeScale = true)
+        public MonoManager SetPause(bool isPause)
         {
             IsPause = isPause;
             return this;
@@ -53,14 +61,13 @@ namespace OSK
         {
             foreach (var obj in FindObjectsOfType<MonoBehaviour>())
             {
+                if (obj?.GetType().GetCustomAttribute<AutoRegisterUpdateAttribute>() == null) return;
                 Register(obj);
             }
         }
 
         public void Register(object obj)
         {
-            if (obj?.GetType().GetCustomAttribute<AutoRegisterUpdateAttribute>() == null) return;
-
             if (obj is IUpdate tick) tickProcesses.Add(tick);
             else if (obj is IFixedUpdate fixedTick) fixedTickProcesses.Add(fixedTick);
             else if (obj is ILateUpdate lateTick) lateTickProcesses.Add(lateTick);
@@ -94,9 +101,12 @@ namespace OSK
 
         private void Update()
         {
-            if (IsPause) return;
+            if (IsPause || speed == 0) return;
 
-            foreach (var t in tickProcesses) t?.Tick();
+            float deltaTime = Time.deltaTime * speed;
+    
+            foreach (var t in tickProcesses) 
+                t?.Tick(deltaTime);
 
             if (_isToMainThreadQueueEmpty) return;
             _localToMainThreads.Clear();
@@ -115,14 +125,20 @@ namespace OSK
 
         private void FixedUpdate()
         {
-            if (IsPause) return;
-            foreach (var t in fixedTickProcesses) t?.FixedTick();
+            if (IsPause || speed == 0) return;
+
+            float fixedDeltaTime = Time.fixedDeltaTime * speed;
+            foreach (var t in fixedTickProcesses) 
+                t?.FixedTick(fixedDeltaTime);
         }
 
         private void LateUpdate()
         {
-            if (IsPause) return;
-            foreach (var t in lateTickProcesses) t?.LateTick();
+            if (IsPause || speed == 0) return;
+
+            float deltaTime = Time.deltaTime * speed;
+            foreach (var t in lateTickProcesses) 
+                t?.LateTick(deltaTime);
         }
 
         #endregion
