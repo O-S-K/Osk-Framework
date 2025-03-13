@@ -9,7 +9,8 @@ namespace OSK
         Child,
         Parent,
         Scene,
-        Sibling
+        Sibling,
+        Resources,
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]

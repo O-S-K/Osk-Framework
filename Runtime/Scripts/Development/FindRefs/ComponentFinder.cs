@@ -55,6 +55,9 @@ namespace OSK
                         ? FindInSiblings(script.transform, findAttribute.type)
                         : script.transform.parent?.Find(findAttribute.name)?.gameObject;
                     break;
+                case EFindType.Resources:
+                    targetObject = FindInResources(findAttribute.name, findAttribute.type);
+                    break;
             }
 
             if (targetObject != null)
@@ -112,6 +115,25 @@ namespace OSK
             if (type != null)
             {
                 var obj = GameObject.FindObjectsOfType(type).FirstOrDefault();
+                if (obj != null)
+                    return (obj as Component)?.gameObject;
+            }
+
+            return null;
+        }
+        
+        private static GameObject FindInResources(string name, Type type)
+        {
+            if (!string.IsNullOrEmpty(name))
+            {
+                var obj = Resources.Load(name);
+                if (obj != null)
+                    return (obj as GameObject);
+            }
+
+            if (type != null)
+            {
+                var obj = Resources.FindObjectsOfTypeAll(type).FirstOrDefault();
                 if (obj != null)
                     return (obj as Component)?.gameObject;
             }
