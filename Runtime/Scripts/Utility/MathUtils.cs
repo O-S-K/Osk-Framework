@@ -35,8 +35,6 @@ namespace OSK
             float u = 1 - t;
             return u * u * p0 + 2 * u * t * p1 + t * t * p2;
         }
-        
-        
 
         public static Vector3 CalculateCubicBezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
         {
@@ -65,7 +63,6 @@ namespace OSK
             return p;
         }
         
-        
         public static Vector3[] GetCatmullRomCurve(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, int segments)
         {
             Vector3[] points = new Vector3[segments];
@@ -92,9 +89,9 @@ namespace OSK
             return result;
         }
 
-        public static string FloatToString(float value, int decim)
+        public static string FloatToString(float value, int deci)
         {
-            string _string = "F" + decim;
+            string _string = "F" + deci;
             return value.ToString(_string);
         }
 

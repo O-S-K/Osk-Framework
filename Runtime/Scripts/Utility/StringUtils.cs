@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace OSK
@@ -12,7 +11,6 @@ namespace OSK
         {
             return strValue.Split(new string[] { splitValue }, StringSplitOptions.None);
         }
-
         public static string[] SplitParams(string strValue)
         {
             return strValue.Split(new char[] { ',' }, StringSplitOptions.None);
@@ -21,23 +19,13 @@ namespace OSK
         public static List<int[]> GetNumbersFromString(string input)
         {
             List<int[]> resultList = new List<int[]>(); // List to store arrays
-
-            // Split input by comma to get individual parts
             string[] parts = input.Split(',');
 
-            // Iterate through each part
             foreach (string part in parts)
             {
-                // Clean part to remove non-numeric characters
                 string cleaned = System.Text.RegularExpressions.Regex.Replace(part, @"[^0-9]", "");
-
-                // Split cleaned part into number strings
                 string[] numberStrings = cleaned.Split('n', 'c');
-
-                // Create list to store numbers in this part
                 List<int> numbers = new List<int>();
-
-                // Convert number strings to integers and add to list
                 foreach (string numString in numberStrings)
                 {
                     if (int.TryParse(numString, out int number))
@@ -46,12 +34,9 @@ namespace OSK
                     }
                     else
                     {
-                        // Handle invalid number if needed
                         Console.WriteLine($"Cannot convert '{numString}' to integer.");
                     }
                 }
-
-                // Convert list of numbers to array and add to result list
                 resultList.Add(numbers.ToArray());
             }
 
@@ -66,18 +51,17 @@ namespace OSK
         //     return numbers;
         // }
 
-        public static string RandomString(string characters, int length)
+        public static string Shuffle(string characters, int length)
         {
             char[] stringChars = new char[length];
             for (int i = 0; i < length; i++)
             {
                 stringChars[i] = characters[UnityEngine.Random.Range(0, characters.Length)];
             }
-
             return new string(stringChars);
         }
         
-        public static string ShuffleString(string input)
+        public static string Shuffle(string input)
         {
             char[] characters = input.ToCharArray();
             for (int i = 0; i < characters.Length; i++)
@@ -87,44 +71,38 @@ namespace OSK
                 characters[i] = characters[randomIndex];
                 characters[randomIndex] = temp;
             }
-
             return new string(characters);
         }
 
-        public static int ConvertExcelToInt(string input)
+        public static int ConvertExcelToInt(string input, int numFail = 0)
         {
-            string cleanedInput = Regex.Replace(input.ToString(), @"[^\d.-]", "");
-
-            // Try to parse the cleaned string to a float first
+            string cleanedInput = Regex.Replace(input, @"[^\d.-]", "");
             if (float.TryParse(cleanedInput, out float floatResult))
             {
-                // Convert the float to an integer by rounding
                 return Mathf.RoundToInt(floatResult);
             }
             else
             {
                 Debug.LogWarning($"Unable to convert '{cleanedInput}' to a number.");
-                return -999; // Default value if conversion fails
+                return numFail; 
             }
         }
 
-        public static float ConvertExcelToFloat(string input)
+        public static float ConvertExcelToFloat(string input, int numFail = 0)
         {
-            string cleanedInput = Regex.Replace(input.ToString(), @"[^\d.-]", "");
+            string cleanedInput = Regex.Replace(input, @"[^\d.-]", "");
 
             // Try to parse the cleaned string to a float first
             if (float.TryParse(cleanedInput, out float floatResult))
             {
-                // Convert the float to an integer by rounding
                 return floatResult;
             }
             else
             {
                 Debug.LogWarning($"Unable to convert '{cleanedInput}' to a number.");
-                return -999; // Default value if conversion fails
+                return numFail; 
             }
         }
-
 
         public static string ShortenString(string input, int length)
         {

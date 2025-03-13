@@ -32,5 +32,12 @@ namespace OSK
         {
             return new Vector3(vector3.x + (x ?? 0), vector3.y + (y ?? 0), vector3.z + (z ?? 0));
         }
+        
+        
+        public static float Remap(this float value, float from1, float to1, float from2, float to2)
+        {
+            float v = (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+            return v;
+        }
     }
 }

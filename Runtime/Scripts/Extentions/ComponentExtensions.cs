@@ -10,36 +10,6 @@ namespace OSK
     {
         private static List<Component> componentCache = new List<Component>();
 
-        public static bool HasComponent<T>(this GameObject obj) where T : Component
-        {
-            return obj.GetComponent<T>() != null;
-        }
-
-        public static T GetComponent<T>(this GameObject obj) where T : Component
-        {
-            return obj.GetComponent<T>();
-        }
-
-        public static T[] GetAllComponent<T>(this GameObject obj) where T : Component
-        {
-            return obj.GetComponents<T>();
-        }
-
-        public static bool HasComponent<T>(this Component obj) where T : Component
-        {
-            return obj.GetComponent<T>() != null;
-        }
-
-        public static T GetComponent<T>(this Component obj) where T : Component
-        {
-            return obj.GetComponent<T>();
-        }
-
-        public static T[] GetAllComponent<T>(this Component obj) where T : Component
-        {
-            return obj.GetComponents<T>();
-        }
-        
         
         public static T GetOrAdd<T>(this GameObject gameObject) where T : Component
         {
@@ -154,7 +124,6 @@ namespace OSK
                 if (obj.transform is RectTransform) obj.transform.SetParent(parent, true);
                 else obj.transform.parent = parent;
             }
-
             return obj;
         }
 

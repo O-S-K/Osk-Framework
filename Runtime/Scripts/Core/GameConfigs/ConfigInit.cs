@@ -64,7 +64,7 @@ namespace OSK
         [Button]
         private void ShuffleEncryptKey()
         {
-            encryptKey = StringUtils.ShuffleString(encryptKey);
+            encryptKey = StringUtils.Shuffle(encryptKey);
             EditorUtility.SetDirty(this);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();

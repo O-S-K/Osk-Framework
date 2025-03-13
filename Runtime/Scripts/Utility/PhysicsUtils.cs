@@ -10,10 +10,7 @@ namespace OSK
             return layerMask == (layerMask | (1 << gameObject.layer));
 
             //example
-            //private void OnTriggerEnter(Collider otherCollider)
-            //{
-            //    // if we're not in the layer, return
-            //    if (!PhysicsHelper.IsInLayerMask(otherCollider.gameObject, _layersDetected)) { return; }
+            //    if (!PhysicsUtils.IsInLayerMask(otherCollider.gameObject, _layersDetected)) { return; }
             //}
         }
 

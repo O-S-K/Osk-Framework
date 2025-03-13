@@ -100,9 +100,18 @@ namespace OSK
                     closest = collection[i];
                 }
             }
-
             return closest;
         }
+        
+        
 
+        public static void RefreshList<T>(this List<T> list) where T : class
+        {
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                if (list[i] == null)
+                    list.RemoveAt(i);
+            }
+        }
     }
 }

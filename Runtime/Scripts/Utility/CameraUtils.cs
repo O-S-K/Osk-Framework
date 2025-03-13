@@ -4,25 +4,18 @@ namespace OSK
 {
     public class CameraUtils : MonoBehaviour
     {
-        public static float WorldWidth
+        public static float WorldWidth(Camera camera)
         {
-            get { return 2f * Camera.main.orthographicSize * Camera.main.aspect; }
+            return 2f * camera.orthographicSize * camera.aspect;
+        } 
+        public static float WorldHeight (Camera camera)
+        {
+            return 2f * camera.orthographicSize;
         }
 
-        public static float WorldHeight
-        {
-            get { return 2f * Camera.main.orthographicSize; }
-        }
-
-        public static float XScale
-        {
-            get { return (float)UnityEngine.Screen.width / 1080f; }
-        }
-
-        public static float YScale
-        {
-            get { return (float)UnityEngine.Screen.height / 1920f; }
-        }
+        public static float XScale => (float)UnityEngine.Screen.width / 1080f;
+        public static float YScale => (float)UnityEngine.Screen.height / 1920f;
+        
 
         private static Vector2 sizeCamera;
 
@@ -78,7 +71,6 @@ namespace OSK
         public static bool IsPointVisible(Camera self, Vector3 point)
         {
             Vector3 p = self.WorldToViewportPoint(point);
-
             return p.x >= 0.0f && p.x <= 1.0f && p.y >= 0.0f && p.y <= 1.0f;
         }
 
@@ -95,8 +87,8 @@ namespace OSK
 
         public static void FocusOn2D(Camera camera, GameObject target)
         {
-            camera.transform.position = new Vector3(target.transform.localPosition.x, target.transform.localPosition.y,
-                Camera.main.transform.position.z);
+            var t = target.transform.localPosition;
+            camera.transform.position = new Vector3(t.x, t.y, camera.transform.position.z);
         }
 
         public static Bounds GetBounds(Vector2 posCamera)
@@ -124,7 +116,6 @@ namespace OSK
                 if (plane.GetDistanceToPoint(point) < 0)
                     return false;
             }
-
             return true;
         }
     }

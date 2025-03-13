@@ -132,24 +132,20 @@ namespace OSK
             {
                 return canvas.worldCamera;
             }
-
             return null;
         }
-
-
+ 
         public static Canvas GetCanvas(Transform transform)
         {
             if (transform == null)
             {
                 return null;
             }
-
             Canvas canvas = transform.GetComponent<Canvas>();
             if (canvas != null)
             {
                 return canvas;
             }
-
             return GetCanvas(transform.parent);
         }
     }

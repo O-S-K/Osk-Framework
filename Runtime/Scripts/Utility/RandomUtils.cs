@@ -69,12 +69,10 @@ namespace OSK
             return val;
         }
 
-
         public static void InitSeed(int seed)
         {
             _random = new System.Random(seed);
         }
-
 
         public static int RandomSystem(int min, int max)
         {
@@ -96,8 +94,6 @@ namespace OSK
             get => RandomBool ? 1 : -1;
         }
 
-
-
         public static void RandomRange<T>(List<T> rangeToRandom, int startIndex = 0, int endIndex = -1)
         {
             if (rangeToRandom == null) return;
@@ -118,20 +114,7 @@ namespace OSK
             var random = new System.Random();
             return (float)random.NextDouble() * (maximum - minimum) + minimum;
         }
-
-        // public static void Shuffle<T>(this IList<T> list)
-        // {
-        //     var count = list.Count;
-        //     var last = count - 1;
-        //     for (var i = 0; i < last; ++i)
-        //     {
-        //         var r = UnityEngine.Random.Range(i, count);
-        //         var tmp = list[i];
-        //         list[i] = list[r];
-        //         list[r] = tmp;
-        //     }
-        // }
-        //
+ 
         public static void Shuffle<T>(List<T> list)
         {
             var rng = new System.Random();

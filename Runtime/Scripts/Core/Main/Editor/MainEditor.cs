@@ -95,6 +95,12 @@ namespace OSK
             main.configInit = configInit;
             main.mainModules = mainModules;
             
+            // Nếu object là prefab, ghi nhận thay đổi để tránh mất ref
+            if (PrefabUtility.IsPartOfPrefabInstance(main))
+            {
+                PrefabUtility.RecordPrefabInstancePropertyModifications(main);
+            }
+            EditorUtility.SetDirty(main);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
