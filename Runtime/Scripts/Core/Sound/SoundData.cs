@@ -31,6 +31,12 @@ namespace OSK
             }
             EditorAudioHelper.StopClip(audioClip);
         }
+        
+        public void SetVolume(float volume)
+        {
+            this.volume = volume;
+            EditorAudioHelper.SetVolume(audioClip, volume);
+        }
 
         public bool IsPlaying() => EditorAudioHelper.IsClipPlaying(audioClip);
 
@@ -43,7 +49,7 @@ namespace OSK
 
     public enum SoundType
     {
-        Music = 0,
-        SFX = 1
+        MUSIC = 0,
+        SFX = 1  
     }
 }

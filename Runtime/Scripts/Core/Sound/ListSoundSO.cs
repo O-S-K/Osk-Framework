@@ -7,11 +7,20 @@ namespace OSK
     [CreateAssetMenu(fileName = "ListSoundSO", menuName = "OSK/Sound/ListSoundSO")]
     public class ListSoundSO : ScriptableObject
     {
-        [SerializeField] private List<SoundData> _listSoundInfos = new List<SoundData>();
-        public List<SoundData> ListSoundInfos => _listSoundInfos;
+        [HideInInspector]
+        public string filePathSoundID = "Assets";
         
+        [Space]
+        [Title("Max Capacity")]
         public int maxCapacityMusic = 5;
         public int maxCapacitySFX = 25;
+        
+        [Space]
+        [Title("List Sound Infos")]
+        [TableList,SerializeField] 
+        private List<SoundData> _listSoundInfos = new List<SoundData>();
+        public List<SoundData> ListSoundInfos => _listSoundInfos;
+
 
 #if UNITY_EDITOR
         [Button]
@@ -38,7 +47,8 @@ namespace OSK
 
             for (int i = 0; i < _listSoundInfos.Count; i++)
             {
-                _listSoundInfos[i].id = _listSoundInfos[i].audioClip.name.ToString();
+                var name = _listSoundInfos[i].audioClip.name;
+                _listSoundInfos[i].id = name;
             }
 
             UnityEditor.EditorUtility.SetDirty(this);
@@ -62,18 +72,19 @@ namespace OSK
 
         private void OnValidate()
         {
-            // check unique audio clip name 
-
+            // check unique audio clip name in the list
             var audioClipNames = new List<string>();
             foreach (var soundInfo in _listSoundInfos)
             {
+                if(soundInfo.audioClip == null || string.IsNullOrEmpty(soundInfo.audioClip.name))
+                    continue;
                 if (audioClipNames.Contains(soundInfo.audioClip.name))
                 {
                     OSK.Logg.LogError(
                         $"Audio Clip Name {soundInfo.audioClip.name} exists in the list. Please remove it.");
                 }
                 else
-                {
+                { 
                     audioClipNames.Add(soundInfo.audioClip.name);
                 }
             }

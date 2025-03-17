@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -27,6 +28,7 @@ namespace OSK
 
         public bool IsMusic;
         public bool IsSoundSFX;
+        private Tweener _tweener;
 
  
         private AudioSource _soundObject;
@@ -91,7 +93,7 @@ namespace OSK
             Main.Pool.Despawn(audioSource);
         }
 
-        public void PlayAudioClip(AudioClip audioClip, float volume, bool loop, float playDelay, int priority,
+        public void PlayAudioClip(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority,
             float pitch, Transform transform, int minDistance = 1, int maxDistance = 500)
         {
             if (loop && !IsMusic || !IsSoundSFX)
@@ -115,7 +117,7 @@ namespace OSK
             });
         }
 
-        public void Play(string id, bool loop, float playDelay, int priority, float pitch, Transform transform,
+        public void Play(string id, VolumeFade volume, bool loop, float playDelay, int priority, float pitch, Transform transform,
             int minDistance = 1, int maxDistance = 500)
         {
             SoundData soundData = GetSoundInfo(id);
@@ -123,19 +125,19 @@ namespace OSK
             if (soundData == null)
             {
                 OSK.Logg.LogError("[Sound] There is no Sound Info with the given id: " + id);
-                return;
+                return ;
             }
 
-            if (soundData.type == SoundType.Music && !IsMusic || soundData.type == SoundType.SFX && !IsSoundSFX)
+            if (soundData.type == SoundType.MUSIC && !IsMusic || soundData.type == SoundType.SFX && !IsSoundSFX)
             {
-                return;
+                return ;
             }
 
             //  check capacity
-            if (soundData.type == SoundType.Music &&
-                _listMusicInfos.Count(s => s.SoundData.type == SoundType.Music) >= maxCapacityMusic)
+            if (soundData.type == SoundType.MUSIC &&
+                _listMusicInfos.Count(s => s.SoundData.type == SoundType.MUSIC) >= maxCapacityMusic)
             {
-                RemoveOldestSound(SoundType.Music);
+                RemoveOldestSound(SoundType.MUSIC);
             }
             else if (soundData.type == SoundType.SFX && _listMusicInfos.Count(s => s.SoundData.type == SoundType.SFX) >=
                      maxCapacitySoundEffects)
@@ -143,7 +145,7 @@ namespace OSK
                 RemoveOldestSound(SoundType.SFX);
             }
 
-            AudioSource audioSource = CreateAudioSource(id, soundData.audioClip, soundData.volume, loop, playDelay,
+            AudioSource audioSource = CreateAudioSource(id, soundData.audioClip, volume, loop, playDelay,
                 priority, pitch, transform, minDistance, maxDistance);
 
             PlayingSound playingSound = new PlayingSound();
@@ -176,7 +178,7 @@ namespace OSK
             return null;
         }
 
-        private AudioSource CreateAudioSource(string id, AudioClip audioClip, float volume, bool loop, float playDelay,
+        private AudioSource CreateAudioSource(string id, AudioClip audioClip, VolumeFade volume, bool loop, float playDelay,
             int priority, float pitch, Transform transform, int minDistance, int maxDistance)
         {
             var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, null);
@@ -198,7 +200,19 @@ namespace OSK
             audioSource.clip = audioClip;
             audioSource.loop = loop;
             audioSource.time = 0;
-            audioSource.volume = volume;
+
+            if (volume.duration > 0)
+            {
+                _tweener?.Kill();
+                _tweener = DOVirtual.Float(volume.init, volume.target, volume.duration, value =>
+                {
+                    audioSource.volume = value;
+                });
+            }
+            else
+            {
+                audioSource.volume = volume.target;
+            }
             audioSource.priority = priority;
             audioSource.pitch = pitch;
 

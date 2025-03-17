@@ -40,7 +40,7 @@ namespace OSK
                 {
                     foreach (var playingSound in soundManager.GetListMusicInfos)
                     {
-                        if (playingSound.SoundData.type == SoundType.Music) // Giả sử có SoundType
+                        if (playingSound.SoundData.type == SoundType.MUSIC) // Giả sử có SoundType
                         {
                             DrawSoundInfo(playingSound);
                         }
@@ -94,6 +94,9 @@ namespace OSK
                 ((SoundManager)target).GetListMusicInfos.Remove(playingSound);
                 ((SoundManager)target).GetListMusicInfos.RefreshList();
             }
+            
+            // volume slider
+            playingSound.AudioSource.volume = EditorGUILayout.Slider(playingSound.AudioSource.volume, 0f, 2f);
 
             EditorGUILayout.EndHorizontal();
         }

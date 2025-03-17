@@ -7,7 +7,7 @@ namespace OSK
         private string _id;
         private bool _loop = false;
         private float _playDelay = 0;
-        private float _volume = 1;
+        private VolumeFade _volume;
         private int _priority = 128;
         private float _pitch = 1;
         private int _minDistance = 1;
@@ -58,7 +58,7 @@ namespace OSK
             return this;
         }
 
-        public SoundBuilder SetVolume(float volume)
+        public SoundBuilder SetVolume(VolumeFade volume)
         {
             _volume = volume;
             return this;
@@ -76,7 +76,7 @@ namespace OSK
 #if UNITY_EDITOR
             Validate();
 #endif
-            Main.Sound.Play(_id, _loop, _playDelay, _priority, _pitch, _transform, _minDistance, _maxDistance);
+            Main.Sound.Play(_id,_volume, _loop, _playDelay, _priority, _pitch, _transform, _minDistance, _maxDistance);
             return this;
         }
 
