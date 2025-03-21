@@ -24,7 +24,9 @@ namespace OSK
             GUILayout.Label("Create New View", EditorStyles.boldLabel);
 
             scriptName = EditorGUILayout.TextField("Script Name", scriptName);
+            isAlerpView = EditorGUILayout.Toggle("Is Alert View", isAlerpView);
             isCreateShield = EditorGUILayout.Toggle("Create Shield", isCreateShield);
+            
 
             if (GUILayout.Button("Create View"))
             {
@@ -160,7 +162,7 @@ namespace OSK
 
         private static void CreateScriptFile(string path, string scriptName)
         {
-            string viewType = isAlerpView ? "AlertView" : "ViewUI";
+            string viewType = isAlerpView ? "AlertView" : "View";
             string scriptTemplate = $@"
 using UnityEngine;
 using OSK;
