@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using System.Reflection;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ namespace OSK
     public class DataManagerEditor : Editor
     {
         private DataManager _dataManager;
-        private Dictionary<System.Type, List<IData>> _dataStore;
-        private List<System.Type> _dataTypes;
+        private Dictionary<Type, List<IData>> _dataStore;
+        private List<Type> _dataTypes;
         private int _selectedTypeIndex = 0;
 
         private void OnEnable()
@@ -23,8 +24,8 @@ namespace OSK
             var dataField = typeof(DataManager).GetField("k_DataStore", BindingFlags.NonPublic | BindingFlags.Instance);
             if (dataField != null)
             {
-                _dataStore = dataField.GetValue(_dataManager) as Dictionary<System.Type, List<IData>>;
-                _dataTypes = _dataStore?.Keys.ToList() ?? new List<System.Type>();
+                _dataStore = dataField.GetValue(_dataManager) as Dictionary<Type, List<IData>>;
+                _dataTypes = _dataStore?.Keys.ToList() ?? new List<Type>();
             }
         }
 
@@ -61,7 +62,7 @@ namespace OSK
             }
         }
 
-        private void DisplayData(System.Type selectedType)
+        private void DisplayData(Type selectedType)
         {
             if (_dataStore.TryGetValue(selectedType, out var dataList) && dataList.Count > 0)
             {
@@ -94,3 +95,5 @@ namespace OSK
         }
     }
 }
+
+#endif
