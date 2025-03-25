@@ -32,19 +32,16 @@ namespace OSK
             if (HasScene(sceneName))
             {
                 Logg.Log("Scene already loaded: " + sceneName);
-                onLoadComplete?.Invoke(State.Failed);
             }
-            else
-            {
-                string scene = sceneName;
-                if (int.TryParse(sceneName, out int sceneIndex))
-                {
-                    scene = SceneManager.GetSceneByBuildIndex(sceneIndex).name;
-                }
 
-                SceneManager.LoadScene(scene, loadSceneMode);
-                onLoadComplete?.Invoke(State.Complete);
+            string scene = sceneName;
+            if (int.TryParse(sceneName, out int sceneIndex))
+            {
+                scene = SceneManager.GetSceneByBuildIndex(sceneIndex).name;
             }
+
+            SceneManager.LoadScene(scene, loadSceneMode);
+            onLoadComplete?.Invoke(State.Complete);
         }
 
         public void LoadSceneAsync(string sceneName, LoadSceneMode loadSceneMode, Action<State> onLoadComplete)
@@ -52,12 +49,8 @@ namespace OSK
             if (HasScene(sceneName))
             {
                 Logg.Log("Scene already loaded: " + sceneName);
-                onLoadComplete?.Invoke(State.Failed);
             }
-            else
-            {
-                LoadSceneAsyncCoroutine(sceneName, loadSceneMode, onLoadComplete).Run();
-            }
+            LoadSceneAsyncCoroutine(sceneName, loadSceneMode, onLoadComplete).Run();
         }
 
         public void UnloadScene(string sceneName, Action<State> onUnloadComplete)
@@ -65,29 +58,24 @@ namespace OSK
             UnloadSceneAsyncCoroutine(sceneName, onUnloadComplete).Run();
         }
 
-        public void LoadAllScenes()
+        public void LoadAllScenes(LoadSceneMode loadSceneMode)
         {
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 Scene scene = SceneManager.GetSceneAt(i);
                 if (!scene.isLoaded)
                 {
-                    SceneManager.LoadScene(scene.name);
+                    SceneManager.LoadScene(scene.name, loadSceneMode);
                 }
             }
-        }
+        } 
 
         public bool HasScene(string sceneName)
         {
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
-                Scene scene = SceneManager.GetSceneAt(i);
-                if (scene.name == sceneName)
-                {
-                    return true;
-                }
+                return SceneManager.GetSceneAt(i).name == sceneName;
             }
-
             return false;
         }
 
@@ -138,6 +126,12 @@ namespace OSK
             }
 
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene, loadSceneMode);
+            if (asyncLoad == null)
+            {
+                Logg.Log("Scene failed to load: " + sceneName);
+                onLoadComplete?.Invoke(State.Failed);
+                yield break;
+            }
             asyncLoad.allowSceneActivation = false;
 
             while (!asyncLoad.isDone)
@@ -168,10 +162,8 @@ namespace OSK
             {
                 scene = SceneManager.GetSceneByBuildIndex(sceneIndex).name;
             }
-
             AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(scene);
-
-            while (!asyncUnload.isDone)
+            while (asyncUnload != null && !asyncUnload.isDone)
             {
                 Logg.Log("Unloading progress: " + asyncUnload.progress);
                 yield return null;
