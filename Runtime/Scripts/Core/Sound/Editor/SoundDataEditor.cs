@@ -11,7 +11,7 @@ using Sirenix.OdinInspector.Editor;
 namespace OSK
 {
     [CustomEditor(typeof(ListSoundSO))]
-    public class SoundDataEditor : OdinEditor
+    public class SoundDataEditor : Editor
     {
         private bool showTable = true;
         private Dictionary<SoundType, bool> soundTypeFoldouts = new Dictionary<SoundType, bool>();
@@ -22,6 +22,15 @@ namespace OSK
             listSoundSo = (ListSoundSO)target;
             DrawDefaultInspector();
 
+            if (GUILayout.Button("Sort To Type"))
+            {
+                SortToType(listSoundSo);
+            } 
+            
+            if (GUILayout.Button("Set ID For Name Clip"))
+            {
+                SetIDForNameClip();
+            }
 
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField(
@@ -297,6 +306,52 @@ namespace OSK
 
             return false;
         }
+        
+        private void SortToType(ListSoundSO listSoundSo)
+        {
+            if (listSoundSo == null || listSoundSo.ListSoundInfos.Count == 0)
+            {
+                OSK.Logg.LogWarning("List Sound Infos is empty.");
+                return;
+            }
+
+            listSoundSo.ListSoundInfos.Sort((a, b) => a.type.CompareTo(b.type));
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+
+        private void SetIDForNameClip()
+        {
+            if (listSoundSo == null || listSoundSo.ListSoundInfos.Count == 0)
+            {
+                OSK.Logg.LogWarning("List Sound Infos is empty.");
+                return;
+            }
+
+            for (int i = 0; i < listSoundSo.ListSoundInfos.Count; i++)
+            {
+                var name = listSoundSo.ListSoundInfos[i].audioClip.name;
+                listSoundSo.ListSoundInfos[i].id = name;
+            }
+
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+        
+        public bool IsSoundExist(ListSoundSO listSoundSo, string soundName)
+        {
+            if (listSoundSo.ListSoundInfos == null || listSoundSo.ListSoundInfos.Count == 0)
+                return false;
+            
+            foreach (var soundInfo in listSoundSo.ListSoundInfos)
+            {
+                if (soundInfo.audioClip.name == soundName)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
     }
 }
 #endif
