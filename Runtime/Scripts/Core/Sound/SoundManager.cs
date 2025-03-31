@@ -33,18 +33,19 @@ namespace OSK
 
  
         private AudioSource _soundObject;
-        private Transform cameraTransform
+        private Transform _cameraTransform;
+        public Transform CameraTransform
         {
             get
             {
-                if (Camera.main == null)
+                if (_cameraTransform == null)
                 {
-                    OSK.Logg.LogError("Camera.main is null");
-                    return null;
+                    _cameraTransform = Camera.main.transform;
                 }
 
-                return Camera.main.transform;
+                return _cameraTransform;
             }
+            set => _cameraTransform = value;
         }
  
         public override void OnInit()
@@ -110,7 +111,9 @@ namespace OSK
 
             AudioSource audioSource = CreateAudioSource(audioClip.name, audioClip, volume, loop, playDelay, priority,
                 pitch, transform, minDistance, maxDistance);
-
+            if(!audioSource.gameObject.activeInHierarchy)
+                audioSource.gameObject.SetActive(true);
+            
             _listMusicInfos.Add(new PlayingSound
             {
                 AudioSource = audioSource,
@@ -148,6 +151,10 @@ namespace OSK
 
             AudioSource audioSource = CreateAudioSource(id, soundData.audioClip, volume, loop, playDelay,
                 priority, pitch, transform, minDistance, maxDistance);
+            if(!audioSource.gameObject.activeInHierarchy)
+                audioSource.gameObject.SetActive(true);
+            
+            //Logg.Log($"1AudioSource: {audioSource.name}, activeSelf: {audioSource.gameObject.activeSelf}, activeInHierarchy: {audioSource.gameObject.activeInHierarchy}");
 
             PlayingSound playingSound = new PlayingSound();
             playingSound.SoundData = soundData;
@@ -183,16 +190,12 @@ namespace OSK
             int priority, float pitch, Transform transform, int minDistance, int maxDistance)
         {
             var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, _parentGroup != null ? _parentGroup : null);
-            Logg.Log($"AudioSource: {audioSource.name}, activeSelf: {audioSource.gameObject.activeSelf}, activeInHierarchy: {audioSource.gameObject.activeInHierarchy}");
-
-            if (!audioSource.gameObject.activeInHierarchy)
-            {
-                audioSource.gameObject.SetActive(true);
-            }
+            //Logg.Log($"2AudioSource: {audioSource.name}, activeSelf: {audioSource.gameObject.activeSelf}, activeInHierarchy: {audioSource.gameObject.activeInHierarchy}");
+ 
             if (transform == null)
             {
                 audioSource.spatialBlend = 0;
-                audioSource.transform.position = cameraTransform.position;
+                audioSource.transform.position = CameraTransform.position;
             }
             else
             {

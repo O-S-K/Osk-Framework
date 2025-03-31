@@ -17,9 +17,7 @@ namespace OSK
 
         [ReadOnly, SerializeField] private string _currentSceneName = "";
 
-        public override void OnInit()
-        {
-        }
+        public override void OnInit() { }
 
         public void LoadSceneFake(string sceneName, bool loadSceneAsync, float timeCompleted,
             LoadSceneMode loadSceneMode, Action<State, float> onLoadComplete)
@@ -33,14 +31,9 @@ namespace OSK
             {
                 Logg.Log("Scene already loaded: " + sceneName);
             }
-
-            string scene = sceneName;
-            if (int.TryParse(sceneName, out int sceneIndex))
-            {
-                scene = SceneManager.GetSceneByBuildIndex(sceneIndex).name;
-            }
-
-            SceneManager.LoadScene(scene, loadSceneMode);
+            
+            Logg.Log("Loading scene: " + sceneName);
+            SceneManager.LoadScene(sceneName, loadSceneMode);
             onLoadComplete?.Invoke(State.Complete);
         }
 
@@ -77,6 +70,11 @@ namespace OSK
                 return SceneManager.GetSceneAt(i).name == sceneName;
             }
             return false;
+        }
+        
+        public void RestartScene(string sceneName, LoadSceneMode loadSceneMode = LoadSceneMode.Single)
+        {
+            SceneManager.LoadScene(sceneName, loadSceneMode);
         }
 
         private IEnumerator LoadSceneFakeTime(string sceneName, bool loadSceneAsync, float timeCompleted,
@@ -119,13 +117,7 @@ namespace OSK
         {
             onLoadComplete?.Invoke(State.Loading);
 
-            string scene = sceneName;
-            if (int.TryParse(sceneName, out int sceneIndex))
-            {
-                scene = SceneManager.GetSceneByBuildIndex(sceneIndex).name;
-            }
-
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(scene, loadSceneMode);
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName, loadSceneMode);
             if (asyncLoad == null)
             {
                 Logg.Log("Scene failed to load: " + sceneName);
