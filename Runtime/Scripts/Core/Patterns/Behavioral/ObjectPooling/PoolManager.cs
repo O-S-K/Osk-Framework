@@ -123,8 +123,10 @@ namespace OSK
                 return;
             }
             var groupObject = GetOrCreateGroup(group, parent);
-            var pool = new ObjectPool<Object>(() => InstantiatePrefab(prefab, groupObject.transform), size);
-            pool.Group = group;
+            var pool = new ObjectPool<Object>(()=> InstantiatePrefab(prefab, groupObject.transform), size)
+                {
+                    Group = group
+                };
 
             if (!k_GroupPrefabLookup.ContainsKey(group))
             {
