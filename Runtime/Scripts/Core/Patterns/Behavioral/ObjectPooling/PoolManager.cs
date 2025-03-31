@@ -60,15 +60,16 @@ namespace OSK
         public T Spawn<T>(string groupName, T prefab, Transform parent, Vector3 position, Quaternion rotation) where T : Object
         {
             var s = Spawn(groupName, prefab, parent, 1);
-            if (s is Component component)
+            switch (s)
             {
-                component.transform.position = position;
-                component.transform.rotation = rotation;
-            }
-            else if (s is GameObject go)
-            {
-                go.transform.position = position;
-                go.transform.rotation = rotation;
+                case Component component:
+                    component.transform.position = position;
+                    component.transform.rotation = rotation;
+                    break;
+                case GameObject go:
+                    go.transform.position = position;
+                    go.transform.rotation = rotation;
+                    break;
             }
 
             return s;
@@ -89,15 +90,16 @@ namespace OSK
 
             var pool = k_GroupPrefabLookup[groupName][prefab];
             var instance = pool.GetItem() as T;
-            if (instance is Component component)
+            switch (instance)
             {
-                component.gameObject.SetActive(true);
-                component.transform.SetParent(GetOrCreateGroup(groupName, parent).transform);
-            }
-            else if (instance is GameObject go)
-            {
-                go.SetActive(true);
-                go.transform.SetParent(GetOrCreateGroup(groupName, parent).transform);
+                case Component component:
+                    component.gameObject.SetActive(true);
+                    component.transform.SetParent(GetOrCreateGroup(groupName, parent).transform);
+                    break;
+                case GameObject go:
+                    go.SetActive(true);
+                    go.transform.SetParent(GetOrCreateGroup(groupName, parent).transform);
+                    break;
             }
 
             if (!k_InstanceLookup.TryAdd(instance, pool))

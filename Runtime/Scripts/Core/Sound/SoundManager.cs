@@ -183,6 +183,10 @@ namespace OSK
             int priority, float pitch, Transform transform, int minDistance, int maxDistance)
         {
             var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, _parentGroup != null ? _parentGroup : null);
+            if (!audioSource.gameObject.activeInHierarchy)
+            {
+                audioSource.gameObject.SetActive(true);
+            }
             if (transform == null)
             {
                 audioSource.spatialBlend = 0;
