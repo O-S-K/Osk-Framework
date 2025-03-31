@@ -231,8 +231,8 @@ namespace OSK
             {
                 if (playingSound.SoundData.type == type)
                 {
-                    playingSound.AudioSource.Pause();
                     playingSound.IsPaused = true;
+                    playingSound.AudioSource.Pause();
                 }
             }
         }
@@ -241,8 +241,8 @@ namespace OSK
         {
             foreach (var playingSound in _listMusicInfos)
             {
-                playingSound.AudioSource.UnPause();
                 playingSound.IsPaused = false;
+                playingSound.AudioSource.UnPause();
             }
         }
 
@@ -267,15 +267,15 @@ namespace OSK
             switch (type)
             {
                 case SoundType.MUSIC:
-                    IsMusic = isOn;
-                    if (IsMusic)
+                    IsEnableMusic = isOn;
+                    if (IsEnableMusic)
                         Resume(SoundType.MUSIC);
                     else
                         Pause(SoundType.MUSIC);
                     break;
                 case SoundType.SFX:
-                    IsSoundSFX = isOn;
-                    if (IsSoundSFX)
+                    IsEnableSoundSFX = isOn;
+                    if (IsEnableSoundSFX)
                         Resume(SoundType.SFX);
                     else
                         Pause(SoundType.SFX);
@@ -285,8 +285,8 @@ namespace OSK
 
         public void SetStatusAllSound(bool isOn)
         {
-            IsMusic = isOn;
-            IsSoundSFX = isOn;
+            IsEnableMusic = isOn;
+            IsEnableSoundSFX = isOn;
 
             if (!isOn)
             {

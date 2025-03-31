@@ -19,8 +19,8 @@ namespace OSK
             DrawDefaultInspector();
 
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("- Status Music : " + soundManager.IsMusic.ToString());
-            EditorGUILayout.LabelField("- Status SFX : " + soundManager.IsSoundSFX.ToString());
+            EditorGUILayout.LabelField("- Status Music : " + soundManager.IsEnableMusic.ToString());
+            EditorGUILayout.LabelField("- Status SFX : " + soundManager.IsEnableSoundSFX.ToString());
 
             // Play button
             if (GUILayout.Button("Select Data SO"))

@@ -26,8 +26,9 @@ namespace OSK
         [SerializeField] private int maxCapacityMusic = 5;
         [SerializeField] private int maxCapacitySoundEffects = 10;
 
-        public bool IsMusic;
-        public bool IsSoundSFX;
+        public bool IsEnableMusic = true;
+        public bool IsEnableSoundSFX = true;
+        
         private Tweener _tweener;
         private Transform _parentGroup;
 
@@ -98,7 +99,7 @@ namespace OSK
         public void PlayAudioClip(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority,
             float pitch, Transform transform, int minDistance = 1, int maxDistance = 500)
         {
-            if (loop && !IsMusic || !IsSoundSFX)
+            if (loop && !IsEnableMusic || !IsEnableSoundSFX)
             {
                 return;
             }
@@ -111,8 +112,6 @@ namespace OSK
 
             AudioSource audioSource = CreateAudioSource(audioClip.name, audioClip, volume, loop, playDelay, priority,
                 pitch, transform, minDistance, maxDistance);
-            if(!audioSource.gameObject.activeInHierarchy)
-                audioSource.gameObject.SetActive(true);
             
             _listMusicInfos.Add(new PlayingSound
             {
@@ -132,7 +131,7 @@ namespace OSK
                 return ;
             }
 
-            if (soundData.type == SoundType.MUSIC && !IsMusic || soundData.type == SoundType.SFX && !IsSoundSFX)
+            if (soundData.type == SoundType.MUSIC && !IsEnableMusic || soundData.type == SoundType.SFX && !IsEnableSoundSFX)
             {
                 return ;
             }
@@ -151,8 +150,6 @@ namespace OSK
 
             AudioSource audioSource = CreateAudioSource(id, soundData.audioClip, volume, loop, playDelay,
                 priority, pitch, transform, minDistance, maxDistance);
-            if(!audioSource.gameObject.activeInHierarchy)
-                audioSource.gameObject.SetActive(true);
             
             //Logg.Log($"1AudioSource: {audioSource.name}, activeSelf: {audioSource.gameObject.activeSelf}, activeInHierarchy: {audioSource.gameObject.activeInHierarchy}");
 
@@ -268,6 +265,31 @@ namespace OSK
                     Destroy(_parentGroup.GetComponent<DontDestroy>());
                 }
             }
+        }
+
+        public void LogStatus()
+        {
+            Logg.Log("SoundManager Status");
+            Logg.Log($"1.Main.Configs.init.data.listSoundSo: {Main.Configs.init.data.listSoundSo}");
+            Logg.Log($"2.KeyGroupPool.AudioSound: {KeyGroupPool.AudioSound}");
+            Logg.Log($"3.CameraTransform: {CameraTransform}");
+            Logg.Log($"4.ParentGroup: {_parentGroup}");
+
+            Logg.Log($"AudioListener: {AudioListener.pause}");
+            Logg.Log($"5.IsEnableMusic: {IsEnableMusic}");
+            Logg.Log($"6.IsEnableSoundSFX: {IsEnableSoundSFX}");
+
+            Logg.Log($"7.MaxCapacityMusic: {maxCapacityMusic}");
+            Logg.Log($"8.MaxCapacitySoundEffects: {maxCapacitySoundEffects}");
+            
+            Logg.Log($"9.ListSoundInfos: {_listSoundInfos.Count}");
+            Logg.Log($"10.ListMusicInfos: {_listMusicInfos.Count}");
+            
+            for (int i = 0; i < _listMusicInfos.Count; i++)
+            {
+               Logg.Log($"_listMusicInfos[{i}]: {_listMusicInfos[i].SoundData.id}");
+            }
+            Logg.Log("End SoundManager Status");
         }
     }
 }
