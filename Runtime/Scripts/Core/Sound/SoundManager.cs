@@ -183,7 +183,7 @@ namespace OSK
             int priority, float pitch, Transform transform, int minDistance, int maxDistance)
         {
             var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, _parentGroup != null ? _parentGroup : null);
-            Logg.Log($"activeSelf: {audioSource.gameObject.activeSelf}, activeInHierarchy: {audioSource.gameObject.activeInHierarchy}");
+            Logg.Log($"AudioSource: {audioSource.name}, activeSelf: {audioSource.gameObject.activeSelf}, activeInHierarchy: {audioSource.gameObject.activeInHierarchy}");
 
             if (!audioSource.gameObject.activeInHierarchy)
             {
