@@ -23,7 +23,7 @@ namespace OSK
 
         public Timer Create(GameObject owner)
         {
-            Timer newTimer = new Timer();
+            var newTimer = new Timer();
             newTimer.Start(owner);
 
             if (newTimer.useFixedUpdate)
@@ -55,7 +55,7 @@ namespace OSK
         /// </summary>
         public Timer CreateLoops(GameObject owner, bool useFixedUpdate)
         {
-            Timer newTimer = new Timer();
+            var newTimer = new Timer();
             newTimer.Start(owner).Loops(-1);
 
             if (useFixedUpdate)
@@ -67,7 +67,7 @@ namespace OSK
 
         public Timer CreateLoops(MonoBehaviour owner)
         {
-            Timer newTimer = new Timer();
+            var newTimer = new Timer();
             newTimer.Start(owner.gameObject).Loops(-1);
 
             _listFixedUpdateTimers.Add(newTimer);
@@ -81,7 +81,7 @@ namespace OSK
         {
             for (int i = _listUpdateTimers.Count - 1; i >= 0; i--)
             {
-                Timer timer = _listUpdateTimers[i];
+                var timer = _listUpdateTimers[i];
                 timer.Update();
 
                 // Remove the timer if it has been disposed
@@ -97,7 +97,7 @@ namespace OSK
         {
             for (int i = _listFixedUpdateTimers.Count - 1; i >= 0; i--)
             {
-                Timer timer = _listFixedUpdateTimers[i];
+                var timer = _listFixedUpdateTimers[i];
                 timer.FixedUpdate();
 
                 // Remove the timer if it has been disposed
@@ -117,12 +117,12 @@ namespace OSK
         [Button]
         public void PauseAllTimers()
         {
-            foreach (Timer timer in _listUpdateTimers)
+            foreach (var timer in _listUpdateTimers)
             {
                 timer.Pause();
             }
 
-            foreach (Timer timer in _listFixedUpdateTimers)
+            foreach (var timer in _listFixedUpdateTimers)
             {
                 timer.Pause();
             }
@@ -137,15 +137,8 @@ namespace OSK
         [Button]
         public void ResumeAllTimers()
         {
-            foreach (Timer timer in _listUpdateTimers)
-            {
-                timer.Resume();
-            }
-
-            foreach (Timer timer in _listFixedUpdateTimers)
-            {
-                timer.Resume();
-            }
+            foreach (var timer in _listUpdateTimers) timer.Resume();
+            foreach (var timer in _listFixedUpdateTimers) timer.Resume();
         }
 
 
@@ -174,18 +167,10 @@ namespace OSK
         [Button]
         public void ClearAllTimers()
         {
-            foreach (Timer timer in _listUpdateTimers)
-            {
-                timer.Dispose();
-            }
-
+            foreach (var timer in _listUpdateTimers) timer.Dispose();
             _listUpdateTimers.Clear();
 
-            foreach (Timer timer in _listFixedUpdateTimers)
-            {
-                timer.Dispose();
-            }
-
+            foreach (var timer in _listFixedUpdateTimers) timer.Dispose();
             _listFixedUpdateTimers.Clear();
         }
     }

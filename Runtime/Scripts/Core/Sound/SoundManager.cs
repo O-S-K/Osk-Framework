@@ -29,6 +29,7 @@ namespace OSK
         public bool IsMusic;
         public bool IsSoundSFX;
         private Tweener _tweener;
+        private Transform _parentGroup;
 
  
         private AudioSource _soundObject;
@@ -181,7 +182,7 @@ namespace OSK
         private AudioSource CreateAudioSource(string id, AudioClip audioClip, VolumeFade volume, bool loop, float playDelay,
             int priority, float pitch, Transform transform, int minDistance, int maxDistance)
         {
-            var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, null);
+            var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, _parentGroup != null ? _parentGroup : null);
             if (transform == null)
             {
                 audioSource.spatialBlend = 0;
@@ -238,6 +239,26 @@ namespace OSK
             }
 
             return audioSource;
+        }
+        
+        public void SetParentGroup(Transform parentGroup)
+        {
+            _parentGroup = parentGroup;
+        }
+        
+        public void SetGroupDontDestroyOnLoad(bool isDontDestroyOnLoad)
+        {
+            if (isDontDestroyOnLoad)
+            {
+                _parentGroup.gameObject.GetOrAdd<DontDestroy>().DontDesGOOnLoad();
+            }
+            else
+            {
+                if (_parentGroup != null && _parentGroup.GetComponent<DontDestroy>() != null)
+                {
+                    Destroy(_parentGroup.GetComponent<DontDestroy>());
+                }
+            }
         }
     }
 }
