@@ -187,8 +187,6 @@ namespace OSK
             int priority, float pitch, Transform transform, int minDistance, int maxDistance)
         {
             var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, _parentGroup != null ? _parentGroup : null);
-            //Logg.Log($"2AudioSource: {audioSource.name}, activeSelf: {audioSource.gameObject.activeSelf}, activeInHierarchy: {audioSource.gameObject.activeInHierarchy}");
- 
             if (transform == null)
             {
                 audioSource.spatialBlend = 0;
@@ -245,6 +243,11 @@ namespace OSK
             }
 
             return audioSource;
+        }
+        
+        public void SetCameraTransform(Transform cameraTransform)
+        { 
+            CameraTransform = cameraTransform;
         }
         
         public void SetParentGroup(Transform parentGroup)

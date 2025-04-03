@@ -35,7 +35,7 @@ namespace OSK
         public float target = 1;
         public float duration = 0; 
 
-        public VolumeFade(float init = 0, float target = 1, float duration = 0, float fadeIn = 0, float fadeOut = 0)
+        public VolumeFade(float init = 0, float target = 1, float duration = 0)
         {
             this.init = init;
             this.target = target;
@@ -45,7 +45,7 @@ namespace OSK
 
     public partial class SoundManager
     {
-        #region With Setup Data
+        #region With SoundSetup
 
         public void Play(SoundSetup soundSetup)
         {
@@ -56,7 +56,7 @@ namespace OSK
 
         #endregion
 
-        #region With ID
+        #region With 2D ID
 
         public void Play(string id)
         {
@@ -90,7 +90,7 @@ namespace OSK
 
         #endregion
 
-        #region With ID and Transform
+        #region With 3D ID and Transform
 
         public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance = 1, int maxDistance = 500)
         {

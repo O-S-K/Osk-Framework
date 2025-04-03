@@ -18,6 +18,17 @@ namespace OSK
         {
             GetWindow<CreateViewUIEditor>("Create View");
         }
+        
+
+        private void OnEnable()
+        {
+            scriptPath = EditorPrefs.GetString("ScriptPathView", "Assets/");
+        }
+
+        private void OnDisable()
+        {
+            EditorPrefs.SetString("ScriptPathView", scriptPath);
+        }
 
         private void OnGUI()
         {
@@ -26,12 +37,45 @@ namespace OSK
             scriptName = EditorGUILayout.TextField("Script Name", scriptName);
             isAlerpView = EditorGUILayout.Toggle("Is Alert View", isAlerpView);
             isCreateShield = EditorGUILayout.Toggle("Create Shield", isCreateShield);
-            
+
 
             if (GUILayout.Button("Create View"))
             {
                 CreateAndAttachView(scriptName);
             }
+
+
+            EditorGUILayout.Space(20);
+
+            EditorGUILayout.LabelField("Select Folder Path", EditorStyles.boldLabel);
+            EditorGUILayout.TextField("Folder Path", scriptPath);
+
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(10);
+            if (GUILayout.Button("Select Folder", GUILayout.Width(100)))
+            {
+                string path = EditorUtility.OpenFolderPanel("Select Folder", scriptPath, "");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    path = "Assets" + path.Replace(Application.dataPath, "");
+                    scriptPath = path;
+                    EditorPrefs.SetString("ScriptPathView", scriptPath); 
+                    EditorUtility.SetDirty(this);
+                }
+            }
+
+            if (GUILayout.Button("Open Folder", GUILayout.Width(100)))
+            { 
+                EditorUtility.RevealInFinder(scriptPath);
+            }
+
+            if (GUILayout.Button("Clear", GUILayout.Width(100)))
+            {
+                scriptPath = "Assets/";
+                EditorPrefs.SetString("ScriptPath", scriptPath);
+                EditorUtility.SetDirty(this);
+            }
+            EditorGUILayout.EndHorizontal();
         }
 
         private static void CreateAndAttachView(string scriptName)
@@ -42,10 +86,6 @@ namespace OSK
                 return;
             }
 
-            string folderPath = "Assets/ViewsCreator";
-            IOUtility.CreateDirectory(folderPath);
-
-            scriptPath = $"Assets/ViewsCreator/{scriptName}.cs";
             if (!File.Exists(scriptPath))
             {
                 CreateScriptFile(scriptPath, scriptName);
@@ -94,6 +134,7 @@ namespace OSK
                 {
                     CreateShield(view.transform);
                 }
+
                 CreateContainer(view);
                 Selection.activeGameObject = view;
             }

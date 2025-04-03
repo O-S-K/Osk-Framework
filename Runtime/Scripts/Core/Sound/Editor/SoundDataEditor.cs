@@ -15,7 +15,7 @@ namespace OSK
     {
         private bool showTable = true;
         private Dictionary<SoundType, bool> soundTypeFoldouts = new Dictionary<SoundType, bool>();
-        ListSoundSO listSoundSo;
+        private ListSoundSO listSoundSo;
 
         public override void OnInspectorGUI()
         {
