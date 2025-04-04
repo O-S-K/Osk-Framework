@@ -1,22 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace OSK
 {
     public class PoolManager : GameFrameworkComponent
     {
-        [SerializeReference] 
+        [SerializeReference]
         public Dictionary<string, Dictionary<Object, ObjectPool<Object>>> k_GroupPrefabLookup = new();
 
         [SerializeReference]
-        public Dictionary<Object, ObjectPool<Object>> k_InstanceLookup = new Dictionary<Object, ObjectPool<Object>>();
+        public Dictionary<Object, ObjectPool<Object>> k_InstanceLookup = new();
 
-        private Dictionary<string, GameObject> k_GroupObjects = new Dictionary<string, GameObject>();
-
-        public override void OnInit()
-        {
-        }
+        public override void OnInit() { }
 
         public void Preload(string groupName, Object prefab, Transform parent, int size)
         {
@@ -34,53 +29,43 @@ namespace OSK
             }
             return null;
         }
-        
+
         public T Spawn<T>(string groupName, T prefab, Transform parent = null) where T : Object
         {
             return Spawn(groupName, prefab, parent, Vector3.zero, Quaternion.identity);
         }
+
         public T Spawn<T>(string groupName, T prefab, Transform parent, Transform transform) where T : Object
         {
-            return Spawn(groupName, prefab, parent, transform.position, Quaternion.identity);
+            return Spawn(groupName, prefab, parent, transform.position, transform.rotation);
         }
 
-        public T Spawn<T>(string groupName, T prefab, Transform parent, Transform transform, Quaternion rotation)
-            where T : Object
-        {
-            return Spawn(groupName, prefab, parent, transform.position, rotation);
-        }
-
-        
-        public T Spawn<T>(string groupName, T prefab, Transform parent, Vector3 position)
-            where T : Object
+        public T Spawn<T>(string groupName, T prefab, Transform parent, Vector3 position) where T : Object
         {
             return Spawn(groupName, prefab, parent, position, Quaternion.identity);
         }
-        
+
         public T Spawn<T>(string groupName, T prefab, Transform parent, Vector3 position, Quaternion rotation) where T : Object
         {
-            var s = Spawn(groupName, prefab, parent, 1);
-            switch (s)
+            var instance = Spawn(groupName, prefab, parent, 1);
+            if (instance is Component component)
             {
-                case Component component:
-                    component.transform.position = position;
-                    component.transform.rotation = rotation;
-                    break;
-                case GameObject go:
-                    go.transform.position = position;
-                    go.transform.rotation = rotation;
-                    break;
+                component.transform.position = position;
+                component.transform.rotation = rotation;
             }
-
-            return s;
+            else if (instance is GameObject go)
+            {
+                go.transform.position = position;
+                go.transform.rotation = rotation;
+            }
+            return instance;
         }
 
         public T Spawn<T>(string groupName, T prefab, Transform parent, int size) where T : Object
         {
-            GetOrCreateGroup(groupName, parent);
             if (!IsGroupAndPrefabExist(groupName, prefab))
             {
-                if(size <= 0)
+                if (size <= 0)
                 {
                     Logg.LogError("Pool size must be greater than 0.");
                     return null;
@@ -90,15 +75,16 @@ namespace OSK
 
             var pool = k_GroupPrefabLookup[groupName][prefab];
             var instance = pool.GetItem() as T;
+
             switch (instance)
             {
                 case Component component:
                     component.gameObject.SetActive(true);
-                    component.transform.SetParent(GetOrCreateGroup(groupName, parent).transform);
+                    component.transform.SetParent(parent);
                     break;
                 case GameObject go:
                     go.SetActive(true);
-                    go.transform.SetParent(GetOrCreateGroup(groupName, parent).transform);
+                    go.transform.SetParent(parent);
                     break;
             }
 
@@ -115,18 +101,20 @@ namespace OSK
         {
             if (IsGroupAndPrefabExist(group, prefab))
             {
-                Logg.LogError( $"Pool for prefab '{prefab.name}' in group '{group}' has already been created.");
+                Logg.LogError($"Pool for prefab '{prefab.name}' in group '{group}' has already been created.");
+                return;
             }
-            if(size <= 0)
+
+            if (size <= 0)
             {
                 Logg.LogError("Pool size must be greater than 0.");
                 return;
             }
-            var groupObject = GetOrCreateGroup(group, parent);
-            var pool = new ObjectPool<Object>(()=> InstantiatePrefab(prefab, groupObject.transform), size)
-                {
-                    Group = group
-                };
+
+            var pool = new ObjectPool<Object>(() => InstantiatePrefab(prefab, parent), size)
+            {
+                Group = group
+            };
 
             if (!k_GroupPrefabLookup.ContainsKey(group))
             {
@@ -136,42 +124,17 @@ namespace OSK
             k_GroupPrefabLookup[group][prefab] = pool;
         }
 
-        public bool HasGroup(string groupName)
-        {
-            return k_GroupObjects.ContainsKey(groupName);
-        }
-        
         private Object InstantiatePrefab<T>(T prefab, Transform parent) where T : Object
         {
-            return prefab is GameObject gameObjectPrefab
-                ? Instantiate(gameObjectPrefab, parent)
-                : Instantiate((Component)(object)prefab, parent);
-        }
-
-        private GameObject GetOrCreateGroup(string groupName, Transform parent)
-        {
-            if (!k_GroupObjects.TryGetValue(groupName, out var groupObject))
-            {
-                groupObject = new GameObject(groupName);
-                
-                 if (groupObject.transform.parent != parent)
-                    groupObject.transform.SetParent(parent);
-                k_GroupObjects[groupName] = groupObject;
-            }
-            return groupObject;
-        }
-        
-        public void SetLocalScale(string groupName, Vector3 scale)
-        {
-            if(k_GroupObjects.TryGetValue(groupName, out var groupObject))
-            {
-                groupObject.transform.localScale = scale;
-            }
+            return prefab is GameObject go
+                ? Object.Instantiate(go, parent)
+                : Object.Instantiate((Component)(object)prefab, parent);
         }
 
         private bool IsGroupAndPrefabExist(string groupName, Object prefab)
         {
-            return k_GroupPrefabLookup.ContainsKey(groupName) && k_GroupPrefabLookup[groupName].ContainsKey(prefab);
+            return k_GroupPrefabLookup.ContainsKey(groupName) &&
+                   k_GroupPrefabLookup[groupName].ContainsKey(prefab);
         }
 
         public void Despawn(Object instance)
@@ -200,22 +163,31 @@ namespace OSK
         {
             if (k_GroupPrefabLookup.TryGetValue(groupName, out var prefabPools))
             {
-                foreach (var pool in prefabPools)
+                foreach (var pool in prefabPools.Values)
                 {
-                    DeactivateInstance(pool.Key);
-                    pool.Value.ReleaseItem(pool.Key);
-                }
+                    List<Object> toRemove = new();
+                    foreach (var pair in k_InstanceLookup)
+                    {
+                        if (pair.Value == pool)
+                        {
+                            DeactivateInstance(pair.Key);
+                            pool.ReleaseItem(pair.Key);
+                            toRemove.Add(pair.Key);
+                        }
+                    }
 
-                k_InstanceLookup.Clear();
+                    foreach (var obj in toRemove)
+                        k_InstanceLookup.Remove(obj);
+                }
             }
         }
 
         public void DespawnAllActive()
         {
-            foreach (var keyVal in k_InstanceLookup)
+            foreach (var kv in k_InstanceLookup)
             {
-                DeactivateInstance(keyVal.Key);
-                keyVal.Value.ReleaseItem(keyVal.Key);
+                DeactivateInstance(kv.Key);
+                kv.Value.ReleaseItem(kv.Key);
             }
 
             k_InstanceLookup.Clear();
@@ -224,34 +196,25 @@ namespace OSK
         private void DeactivateInstance(Object instance)
         {
             if (instance is Component component)
-            {
                 component.gameObject.SetActive(false);
-            }
             else if (instance is GameObject go)
-            {
                 go.SetActive(false);
-            }
         }
 
         public void DestroyGroup(string groupName)
         {
-            if (k_GroupObjects.TryGetValue(groupName, out var groupObject))
-            {
-                Destroy(groupObject);
-                k_GroupObjects.Remove(groupName);
-                k_GroupPrefabLookup.Remove(groupName);
-            }
+            k_GroupPrefabLookup.Remove(groupName);
+        }
+        
+        public bool HasGroup (string groupName)
+        {
+            return k_GroupPrefabLookup.ContainsKey(groupName);
         }
 
         public void DestroyAllGroups()
         {
-            foreach (var group in k_GroupObjects.Values)
-            {
-                Destroy(group);
-            }
-
             k_GroupPrefabLookup.Clear();
-            k_GroupObjects.Clear();
+            k_InstanceLookup.Clear();
         }
     }
 }
