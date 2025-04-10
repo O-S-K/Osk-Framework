@@ -132,12 +132,11 @@ namespace OSK
                     break;
 
                 case TransitionType.SlideUp:
-                    TargetRectTransform.position = new Vector2(0, -TargetRectTransform.rect.height);
+                    TargetRectTransform.anchoredPosition = new Vector2(0, -TargetRectTransform.rect.height);
                     tween = TargetRectTransform.DOAnchorPosY(0, _openingTweenSettings.time);
                     break;
-
                 case TransitionType.SlideDown:
-                    TargetRectTransform.position = new Vector2(0, TargetRectTransform.rect.height);
+                    TargetRectTransform.anchoredPosition = new Vector2(0, TargetRectTransform.rect.height);
                     tween = TargetRectTransform.DOAnchorPosY(0, _openingTweenSettings.time);
                     break;
                 case TransitionType.Animation:
