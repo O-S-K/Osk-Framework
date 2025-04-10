@@ -6,6 +6,7 @@ namespace OSK
     public class SoundSetup
     {
         public string id;
+        public float startTime = 0;
         public bool loop = false;
         public VolumeFade volume;
         public float playDelay = 0;
@@ -15,10 +16,12 @@ namespace OSK
         public int minDistance = 1;
         public int maxDistance = 500;
 
-        public SoundSetup(string id = "", bool loop = false, float playDelay = 0, int priority = 128, float pitch = 1,
+        public SoundSetup(string id = "", float startTime = 0, bool loop = false, float playDelay = 0,
+            int priority = 128, float pitch = 1,
             Transform transform = null, int minDistance = 1, int maxDistance = 500)
         {
             this.id = id;
+            this.startTime = startTime;
             this.loop = loop;
             this.playDelay = playDelay;
             this.priority = priority;
@@ -33,13 +36,13 @@ namespace OSK
     {
         public float init = 0;
         public float target = 1;
-        public float duration = 0; 
+        public float duration = 0;
 
         public VolumeFade(float init = 0, float target = 1, float duration = 0)
         {
             this.init = init;
             this.target = target;
-            this.duration = duration; 
+            this.duration = duration;
         }
     }
 
@@ -49,7 +52,8 @@ namespace OSK
 
         public void Play(SoundSetup soundSetup)
         {
-            Play(soundSetup.id, soundSetup.volume, soundSetup.loop, soundSetup.playDelay, soundSetup.priority,
+            Play(soundSetup.id, soundSetup.volume, soundSetup.startTime, soundSetup.loop, soundSetup.playDelay,
+                soundSetup.priority,
                 soundSetup.pitch,
                 soundSetup.transform, soundSetup.minDistance, soundSetup.maxDistance);
         }
@@ -60,56 +64,72 @@ namespace OSK
 
         public void Play(string id)
         {
-            Play(id, new VolumeFade { target = 1 }, false, 0, 128, 1, null);
+            Play(id, new VolumeFade { target = 1 }, 0, false, 0, 128, 1, null);
         }
 
         public void Play(string id, VolumeFade volume)
         {
-            Play(id, volume, false, 0, 128, 1, null);
+            Play(id, volume, 0, false, 0, 128, 1, null);
+        }
+        
+        public void Play(string id, float startTime, VolumeFade volume)
+        {
+            Play(id, volume, startTime, false, 0, 128, 1, null);
         }
 
         public void Play(string id, VolumeFade volume, bool loop)
         {
-            Play(id, volume, loop, 0, 128, 1, null);
+            Play(id, volume, 0, loop, 0, 128, 1, null);
         }
-  
+
         public void Play(string id, VolumeFade volume, bool loop, float playDelay)
         {
-            Play(id, volume, loop, playDelay, 128, 1, null);
+            Play(id, volume, 0, loop, playDelay, 128, 1, null);
         }
 
         public void Play(string id, VolumeFade volume, bool loop, float playDelay, int priority)
         {
-            Play(id, volume, loop, playDelay, priority, 1, null);
+            Play(id, volume, 0, loop, playDelay, priority, 1, null);
         }
 
         public void Play(string id, VolumeFade volume, bool loop, float playDelay, int priority, float pitch)
         {
-            Play(id, volume, loop, playDelay, priority, pitch, null);
+            Play(id, volume, 0, loop, playDelay, priority, pitch, null);
         }
 
         #endregion
 
         #region With 3D ID and Transform
 
-        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance = 1, int maxDistance = 500)
+        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance = 1,
+            int maxDistance = 500)
         {
-            Play(id, volume, false, 0, 128, 1, transform, minDistance, maxDistance);
-        }
-
-        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance, bool loop)
-        {
-            Play(id, volume, loop, 0, 128, 1, transform, minDistance, maxDistance);
-        }
-
-        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance, bool loop, float playDelay)
-        {
-            Play(id, volume, loop, playDelay, 128, 1, transform, minDistance, maxDistance);
+            Play(id, volume, 0, false, 0, 128, 1, transform, minDistance, maxDistance);
         }
         
-        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance, bool loop, float playDelay, float pitch)
+        public void Play3D(string id,float startTime,  VolumeFade volume, Transform transform, int minDistance = 1,
+            int maxDistance = 500)
         {
-            Play(id, volume, loop, playDelay, 128, pitch, transform, minDistance, maxDistance);
+            Play(id, volume, startTime, false, 0, 128, 1, transform, minDistance, maxDistance);
+        }
+
+
+        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance,
+            bool loop)
+        {
+            Play(id, volume, 0, loop, 0, 128, 1, transform, minDistance, maxDistance);
+        }
+
+        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance,
+            bool loop, float playDelay)
+        {
+            Play(id, volume, 0, loop, playDelay, 128, 1, transform, minDistance, maxDistance);
+        }
+
+        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance,
+            bool loop, float playDelay, float pitch)
+        {
+            Play(id, volume, 0, loop, playDelay, 128, pitch, transform, minDistance, maxDistance);
         }
 
         #endregion
@@ -118,58 +138,73 @@ namespace OSK
 
         public void Play(AudioClip audioClip)
         {
-            PlayAudioClip(audioClip, new VolumeFade{target = 1}, false, 0, 128, 1, null);
+            PlayAudioClip(audioClip, new VolumeFade { target = 1 }, 0, false, 0, 128, 1, null);
         }
 
         public void Play(AudioClip audioClip, VolumeFade volume)
         {
-            PlayAudioClip(audioClip, volume, false, 0, 128, 1, null);
+            PlayAudioClip(audioClip, volume, 0, false, 0, 128, 1, null);
         }
 
+        public void Play(AudioClip audioClip, float startTime, VolumeFade volume)
+        {
+            PlayAudioClip(audioClip, volume, startTime, false, 0, 128, 1, null);
+        }
+        
         public void Play(AudioClip audioClip, VolumeFade volume, bool loop)
         {
-            PlayAudioClip(audioClip, volume, loop, 0, 128, 1, null);
+            PlayAudioClip(audioClip, volume, 0, loop, 0, 128, 1, null);
         }
 
         public void Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay)
         {
-            PlayAudioClip(audioClip, volume, loop, playDelay, 128, 1, null);
+            PlayAudioClip(audioClip, volume, 0, loop, playDelay, 128, 1, null);
         }
 
         public void Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority)
         {
-            PlayAudioClip(audioClip, volume, loop, playDelay, priority, 1, null);
+            PlayAudioClip(audioClip, volume, 0, loop, playDelay, priority, 1, null);
         }
 
         public void Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority, float pitch)
         {
-            PlayAudioClip(audioClip, volume, loop, playDelay, priority, pitch, null);
+            PlayAudioClip(audioClip, volume, 0, loop, playDelay, priority, pitch, null);
         }
 
         public void Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority, float pitch,
             Transform transform)
         {
-            PlayAudioClip(audioClip, volume, loop, playDelay, priority, pitch, transform);
+            PlayAudioClip(audioClip, volume, 0, loop, playDelay, priority, pitch, transform);
         }
 
         #endregion
 
         #region With AudioClip and Transform
 
-        public void Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance = 1, int maxDistance = 500)
+        public void Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance = 1,
+            int maxDistance = 500)
         {
-            PlayAudioClip(audioClip, volume, false, 0, 128, 1, transform, minDistance, maxDistance);
+            PlayAudioClip(audioClip, volume, 0, false, 0, 128, 1, transform, minDistance, maxDistance);
+        }
+        
+        public void Play3D(AudioClip audioClip, float startTime, VolumeFade volume, Transform transform,
+            int minDistance = 1,
+            int maxDistance = 500)
+        {
+            PlayAudioClip(audioClip, volume, startTime, false, 0, 128, 1, transform, minDistance, maxDistance);
         }
 
-        public void Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance, int maxDistance, bool loop)
+        public void Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance,
+            int maxDistance, bool loop)
         {
-            PlayAudioClip(audioClip, volume, loop, 0, 128, 1, transform, minDistance, maxDistance);
+            PlayAudioClip(audioClip, volume, 0, loop, 0, 128, 1, transform, minDistance, maxDistance);
         }
 
-        public void Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance, int maxDistance, bool loop,
+        public void Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance,
+            int maxDistance, bool loop,
             float playDelay)
         {
-            PlayAudioClip(audioClip, volume, loop, playDelay, 128, 1, transform, minDistance, maxDistance);
+            PlayAudioClip(audioClip, volume, 0, loop, playDelay, 128, 1, transform, minDistance, maxDistance);
         }
 
         #endregion

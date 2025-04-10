@@ -122,12 +122,12 @@ namespace OSK
                     break;
 
                 case TransitionType.SlideRight:
-                    TargetRectTransform.position = new Vector2(-TargetRectTransform.rect.width, 0);
+                    TargetRectTransform.anchoredPosition = new Vector2(-TargetRectTransform.rect.width, 0);
                     tween = TargetRectTransform.DOAnchorPosX(0, _openingTweenSettings.time);
                     break;
 
                 case TransitionType.SlideLeft:
-                    TargetRectTransform.position = new Vector2(TargetRectTransform.rect.width, 0);
+                    TargetRectTransform.anchoredPosition = new Vector2(TargetRectTransform.rect.width, 0);
                     tween = TargetRectTransform.DOAnchorPosX(0, _openingTweenSettings.time);
                     break;
 

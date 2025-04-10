@@ -96,7 +96,7 @@ namespace OSK
             Main.Pool.Despawn(audioSource);
         }
 
-        public void PlayAudioClip(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority,
+        public void PlayAudioClip(AudioClip audioClip, VolumeFade volume,float startTime, bool loop, float playDelay, int priority,
             float pitch, Transform transform, int minDistance = 1, int maxDistance = 500)
         {
             if (loop && !IsEnableMusic || !IsEnableSoundSFX)
@@ -110,7 +110,7 @@ namespace OSK
                 RemoveOldestSound(SoundType.SFX);
             }
 
-            AudioSource audioSource = CreateAudioSource(audioClip.name, audioClip, volume, loop, playDelay, priority,
+            AudioSource audioSource = CreateAudioSource(audioClip.name, audioClip, startTime,volume, loop, playDelay, priority,
                 pitch, transform, minDistance, maxDistance);
             
             _listMusicInfos.Add(new PlayingSound
@@ -120,7 +120,7 @@ namespace OSK
             });
         }
 
-        public void Play(string id, VolumeFade volume, bool loop, float playDelay, int priority, float pitch, Transform transform,
+        public void Play(string id, VolumeFade volume,float startTime, bool loop, float playDelay, int priority, float pitch, Transform transform,
             int minDistance = 1, int maxDistance = 500)
         {
             SoundData soundData = GetSoundInfo(id);
@@ -148,7 +148,7 @@ namespace OSK
                 RemoveOldestSound(SoundType.SFX);
             }
 
-            AudioSource audioSource = CreateAudioSource(id, soundData.audioClip, volume, loop, playDelay,
+            AudioSource audioSource = CreateAudioSource(id, soundData.audioClip,startTime, volume, loop, playDelay,
                 priority, pitch, transform, minDistance, maxDistance);
             
             //Logg.Log($"1AudioSource: {audioSource.name}, activeSelf: {audioSource.gameObject.activeSelf}, activeInHierarchy: {audioSource.gameObject.activeInHierarchy}");
@@ -183,7 +183,7 @@ namespace OSK
             return null;
         }
 
-        private AudioSource CreateAudioSource(string id, AudioClip audioClip, VolumeFade volume, bool loop, float playDelay,
+        private AudioSource CreateAudioSource(string id, AudioClip audioClip,float startTime, VolumeFade volume, bool loop, float playDelay,
             int priority, float pitch, Transform transform, int minDistance, int maxDistance)
         {
             var audioSource = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, _parentGroup != null ? _parentGroup : null);
@@ -204,7 +204,12 @@ namespace OSK
             audioSource.name = id;
             audioSource.clip = audioClip;
             audioSource.loop = loop;
-            audioSource.time = 0;
+
+            if (startTime > 0)
+            {
+                audioSource.Stop();
+                audioSource.time = startTime;
+            }
 
             if (volume.duration > 0)
             {

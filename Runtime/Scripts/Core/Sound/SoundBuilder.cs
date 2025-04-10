@@ -5,8 +5,10 @@ namespace OSK
     public class SoundBuilder
     {
         private string _id;
+        private float _startTime = 0;
         private bool _loop = false;
         private float _playDelay = 0;
+        
         private VolumeFade _volume;
         private int _priority = 128;
         private float _pitch = 1;
@@ -23,6 +25,12 @@ namespace OSK
         public SoundBuilder SetId(string id)
         {
             _id = id;
+            return this;
+        }
+        
+        public SoundBuilder SetStartTime(float startTime)
+        {
+            _startTime = startTime;
             return this;
         }
 
@@ -76,7 +84,7 @@ namespace OSK
 #if UNITY_EDITOR
             Validate();
 #endif
-            Main.Sound.Play(_id,_volume, _loop, _playDelay, _priority, _pitch, _transform, _minDistance, _maxDistance);
+            Main.Sound.Play(_id,_volume, _startTime, _loop, _playDelay, _priority, _pitch, _transform, _minDistance, _maxDistance);
             return this;
         }
 
@@ -85,7 +93,7 @@ namespace OSK
 #if UNITY_EDITOR
             Validate();
 #endif
-            Main.Sound.PlayAudioClip(_audioClip, _volume, _loop, _playDelay, _priority, _pitch, _transform, _minDistance, _maxDistance);
+            Main.Sound.PlayAudioClip(_audioClip, _volume, _startTime, _loop, _playDelay, _priority, _pitch, _transform, _minDistance, _maxDistance);
             return this;
         }
 
