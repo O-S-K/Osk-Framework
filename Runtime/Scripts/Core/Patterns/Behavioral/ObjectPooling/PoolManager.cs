@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace OSK
@@ -8,10 +9,11 @@ namespace OSK
         [SerializeReference]
         public Dictionary<string, Dictionary<Object, ObjectPool<Object>>> k_GroupPrefabLookup = new();
 
-        [SerializeReference]
-        public Dictionary<Object, ObjectPool<Object>> k_InstanceLookup = new();
+        [SerializeReference] public Dictionary<Object, ObjectPool<Object>> k_InstanceLookup = new();
 
-        public override void OnInit() { }
+        public override void OnInit()
+        {
+        }
 
         public void Preload(string groupName, Object prefab, Transform parent, int size)
         {
@@ -27,6 +29,7 @@ namespace OSK
                     return pool.GetItem() as T;
                 }
             }
+
             return null;
         }
 
@@ -45,7 +48,8 @@ namespace OSK
             return Spawn(groupName, prefab, parent, position, Quaternion.identity);
         }
 
-        public T Spawn<T>(string groupName, T prefab, Transform parent, Vector3 position, Quaternion rotation) where T : Object
+        public T Spawn<T>(string groupName, T prefab, Transform parent, Vector3 position, Quaternion rotation)
+            where T : Object
         {
             var instance = Spawn(groupName, prefab, parent, 1);
             if (instance is Component component)
@@ -58,6 +62,7 @@ namespace OSK
                 go.transform.position = position;
                 go.transform.rotation = rotation;
             }
+
             return instance;
         }
 
@@ -70,11 +75,18 @@ namespace OSK
                     Logg.LogError("Pool size must be greater than 0.");
                     return null;
                 }
+
                 WarmPool(groupName, prefab, parent, size);
             }
 
             var pool = k_GroupPrefabLookup[groupName][prefab];
             var instance = pool.GetItem() as T;
+
+            if (instance == null)
+            {
+                Logg.LogError($"Object from pool is null or destroyed. Group: {groupName}, Prefab: {prefab.name}");
+                return null;
+            }
 
             switch (instance)
             {
@@ -111,11 +123,7 @@ namespace OSK
                 return;
             }
 
-            var pool = new ObjectPool<Object>(() => InstantiatePrefab(prefab, parent), size)
-            {
-                Group = group
-            };
-
+            var pool = new ObjectPool<Object>(() => InstantiatePrefab(prefab, parent), size);
             if (!k_GroupPrefabLookup.ContainsKey(group))
             {
                 k_GroupPrefabLookup[group] = new Dictionary<Object, ObjectPool<Object>>();
@@ -201,20 +209,51 @@ namespace OSK
                 go.SetActive(false);
         }
 
-        public void DestroyGroup(string groupName)
+        public void DestroyAllInGroup(string groupName)
         {
-            k_GroupPrefabLookup.Remove(groupName);
+            if (k_GroupPrefabLookup.TryGetValue(groupName, out var prefabPools))
+            {
+                foreach (var kvp in prefabPools.ToList()) // tạo bản sao để tránh modify khi foreach
+                {
+                    var pool = kvp.Value;
+                    pool.DestroyAndClean();
+                    pool.Clear();
+                }
+
+                k_GroupPrefabLookup.Remove(groupName);
+            }
         }
         
-        public bool HasGroup (string groupName)
+        
+         
+        public void DestroyAllGroups()
+        {
+            foreach (var prefabPools in k_GroupPrefabLookup.Values)
+            {
+                foreach (var pool in prefabPools.Values)
+                {
+                    pool.DestroyAndClean();
+                    pool.Clear();
+                }
+            }
+            k_GroupPrefabLookup.Clear();
+        }
+        
+        public void CleanAllDestroyedInPools()
+        {
+            foreach (var prefabPools in k_GroupPrefabLookup.Values)
+            {
+                foreach (var pool in prefabPools.Values)
+                {
+                    pool.DestroyAndClean();
+                }
+            }
+        }
+        
+        public bool HasGroup(string groupName)
         {
             return k_GroupPrefabLookup.ContainsKey(groupName);
         }
 
-        public void DestroyAllGroups()
-        {
-            k_GroupPrefabLookup.Clear();
-            k_InstanceLookup.Clear();
-        }
     }
 }

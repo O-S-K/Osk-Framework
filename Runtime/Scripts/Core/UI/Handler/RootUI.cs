@@ -71,8 +71,16 @@ namespace OSK
             }
 
 #if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(_canvas);
-            Logg.Log($"Setup Canvas IsPortrait {isPortrait} Completed");
+            if (UnityEditor.PrefabUtility.IsPartOfPrefabInstance(this))
+            {
+                UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(_canvas);
+                UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(_canvasScaler);
+
+                UnityEditor.EditorUtility.SetDirty(_canvas);
+                UnityEditor.EditorUtility.SetDirty(_canvasScaler);
+                UnityEditor.EditorUtility.SetDirty(gameObject);   
+                Debug.Log($"[SetupCanvas] IsPortrait: {isPortrait} => Saved to prefab instance");
+            }
 #endif
         }
 

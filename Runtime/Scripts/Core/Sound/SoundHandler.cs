@@ -397,7 +397,7 @@ namespace OSK
             }
 
             _listMusicInfos.Clear();
-            Main.Pool.DestroyGroup(KeyGroupPool.AudioSound);
+            Main.Pool.DestroyAllInGroup(KeyGroupPool.AudioSound);
         }
 
         #endregion

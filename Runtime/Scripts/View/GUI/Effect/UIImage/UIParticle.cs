@@ -320,13 +320,13 @@ namespace OSK
         {
             if (Main.Pool.HasGroup(nameEffect))
             {
-                Main.Pool.DestroyGroup(nameEffect);
+                Main.Pool.DestroyAllInGroup(nameEffect);
             }
         }
 
         public void DestroyAllEffects()
         {
-            Main.Pool.DestroyGroup(KeyGroupPool.UIEffect);
+            Main.Pool.DestroyAllInGroup(KeyGroupPool.UIEffect);
         }
 
         private Vector3 ConvertToUICameraSpace(Transform pointTarget)

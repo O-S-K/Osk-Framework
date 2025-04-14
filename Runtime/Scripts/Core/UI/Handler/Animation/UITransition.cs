@@ -62,13 +62,15 @@ namespace OSK
         [Space(10)] private CanvasGroup _canvasGroup;
         private RectTransform _rectTransform;
 
-
         [Button]
         public void AutoRefContent()
         {
-            if (transform.GetChild(0) != null)
+            if (transform.childCount > 0)
             {
-                contentUI = transform.GetChild(0).GetComponent<RectTransform>();
+                if(transform.Find("Container") != null)
+                    contentUI = transform.Find("Container").GetComponent<RectTransform>();
+                else
+                    contentUI = transform.GetChild(0).GetComponent<RectTransform>();
             }
         }
 

@@ -1,209 +1,138 @@
-#if UNITY_EDITOR
-using System.IO;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEditor;
+using System.IO;
+using System;
+using UnityEditor.SceneManagement;
 
 namespace OSK
 {
-    public class CreateViewUIEditor : EditorWindow
+    public class CreateViewEditorWindow : EditorWindow
     {
-        private string scriptName = "NewView";
-        private static bool isAlerpView = false;
-        private static bool isCreateShield = true;
-        private static string scriptPath;
+        private static string scriptName = "NewView";
+        private static EViewType viewType = EViewType.Popup;
+        private static int depth = 0;
+        private static bool isAlertView = false;
+        private static bool createShield = true;
+        private static string folderPath = "Assets/Scripts";
 
-        [MenuItem("OSK-Framework/UI/Create view")]
+        private static GameObject createdView;
+        private const string PREF_KEY = "CreateViewEditor_";
+
+        [MenuItem("OSK-Framework/UI/Create View")]
         public static void ShowWindow()
         {
-            GetWindow<CreateViewUIEditor>("Create View");
+            GetWindow<CreateViewEditorWindow>("Create View");
         }
-        
 
         private void OnEnable()
         {
-            scriptPath = EditorPrefs.GetString("ScriptPathView", "Assets/");
+            scriptName = EditorPrefs.GetString(PREF_KEY + "ScriptName", "NewView");
+            viewType = (EViewType)EditorPrefs.GetInt(PREF_KEY + "ViewType", 0);
+            depth = EditorPrefs.GetInt(PREF_KEY + "Depth", 0);
+            isAlertView = EditorPrefs.GetBool(PREF_KEY + "IsAlertView", false);
+            createShield = EditorPrefs.GetBool(PREF_KEY + "CreateShield", true);
+            folderPath = EditorPrefs.GetString(PREF_KEY + "FolderPath", "Assets/Scripts");
         }
 
         private void OnDisable()
         {
-            EditorPrefs.SetString("ScriptPathView", scriptPath);
+            EditorPrefs.SetString(PREF_KEY + "ScriptName", scriptName);
+            EditorPrefs.SetInt(PREF_KEY + "ViewType", (int)viewType);
+            EditorPrefs.SetInt(PREF_KEY + "Depth", depth);
+            EditorPrefs.SetBool(PREF_KEY + "IsAlertView", isAlertView);
+            EditorPrefs.SetBool(PREF_KEY + "CreateShield", createShield);
+            EditorPrefs.SetString(PREF_KEY + "FolderPath", folderPath);
         }
 
         private void OnGUI()
         {
             GUILayout.Label("Create New View", EditorStyles.boldLabel);
-
             scriptName = EditorGUILayout.TextField("Script Name", scriptName);
-            isAlerpView = EditorGUILayout.Toggle("Is Alert View", isAlerpView);
-            isCreateShield = EditorGUILayout.Toggle("Create Shield", isCreateShield);
+            viewType = (EViewType)EditorGUILayout.EnumPopup("View Type", viewType);
+            depth = EditorGUILayout.IntField("Depth", depth);
+            isAlertView = EditorGUILayout.Toggle("Is Alert View", isAlertView);
+            createShield = EditorGUILayout.Toggle("Create Shield", createShield);
 
+            EditorGUILayout.Space();
+            GUILayout.Label("Step-by-step Actions", EditorStyles.boldLabel);
 
-            if (GUILayout.Button("Create View"))
+            if (GUILayout.Button("1. Create Script"))
             {
-                CreateAndAttachView(scriptName);
+                CreateScriptOnly();
             }
 
-
-            EditorGUILayout.Space(20);
-
-            EditorGUILayout.LabelField("Select Folder Path", EditorStyles.boldLabel);
-            EditorGUILayout.TextField("Folder Path", scriptPath);
-
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.Space(10);
-            if (GUILayout.Button("Select Folder", GUILayout.Width(100)))
+            if (GUILayout.Button("2. Create View Prefab"))
             {
-                string path = EditorUtility.OpenFolderPanel("Select Folder", scriptPath, "");
-                if (!string.IsNullOrEmpty(path))
+                CreateViewPrefabOnly();
+            }
+
+            if (GUILayout.Button("3. Attach Script To View"))
+            {
+                TryAttachScript();
+            }
+
+            EditorGUILayout.Space();
+            GUILayout.Label("Select Folder Path", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            folderPath = EditorGUILayout.TextField("Folder Path", folderPath);
+            if (GUILayout.Button("Select Folder"))
+            {
+                string selected = EditorUtility.OpenFolderPanel("Select Folder", "Assets", "");
+                if (!string.IsNullOrEmpty(selected))
                 {
-                    path = "Assets" + path.Replace(Application.dataPath, "");
-                    scriptPath = path;
-                    EditorPrefs.SetString("ScriptPathView", scriptPath); 
-                    EditorUtility.SetDirty(this);
+                    if (selected.StartsWith(Application.dataPath))
+                    {
+                        folderPath = "Assets" + selected.Substring(Application.dataPath.Length);
+                    }
+                    else
+                    {
+                        Debug.LogError("Please select a folder inside the Assets folder.");
+                    }
                 }
             }
 
-            if (GUILayout.Button("Open Folder", GUILayout.Width(100)))
-            { 
-                EditorUtility.RevealInFinder(scriptPath);
+            if (GUILayout.Button("Open Folder"))
+            {
+                EditorUtility.RevealInFinder(folderPath);
             }
 
-            if (GUILayout.Button("Clear", GUILayout.Width(100)))
+            if (GUILayout.Button("Clear"))
             {
-                scriptPath = "Assets/";
-                EditorPrefs.SetString("ScriptPath", scriptPath);
-                EditorUtility.SetDirty(this);
+                folderPath = "";
             }
+
+            if (GUILayout.Button("Reset Settings"))
+            {
+                EditorPrefs.DeleteKey(PREF_KEY + "ScriptName");
+                EditorPrefs.DeleteKey(PREF_KEY + "ViewType");
+                EditorPrefs.DeleteKey(PREF_KEY + "Depth");
+                EditorPrefs.DeleteKey(PREF_KEY + "IsAlertView");
+                EditorPrefs.DeleteKey(PREF_KEY + "CreateShield");
+                EditorPrefs.DeleteKey(PREF_KEY + "FolderPath");
+
+                scriptName = "NewView";
+                viewType = EViewType.Popup;
+                depth = 0;
+                isAlertView = false;
+                createShield = true;
+                folderPath = "Assets/Scripts";
+
+                Repaint();
+            }
+
             EditorGUILayout.EndHorizontal();
         }
 
-        private static void CreateAndAttachView(string scriptName)
+        private void CreateScriptOnly()
         {
-            if (string.IsNullOrEmpty(scriptName))
+            string scriptPath = Path.Combine(folderPath, scriptName + ".cs");
+            if (File.Exists(scriptPath))
             {
-                EditorUtility.DisplayDialog("Error", "Script name cannot be empty.", "OK");
+                Debug.LogWarning("Script already exists.");
                 return;
             }
 
-            if (!File.Exists(scriptPath))
-            {
-                CreateScriptFile(scriptPath, scriptName);
-                AssetDatabase.ImportAsset(scriptPath, ImportAssetOptions.ForceUpdate);
-                AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
-            }
-
-            EditorApplication.update += WaitForCompilation;
-        }
-
-        private static void WaitForCompilation()
-        {
-            if (!EditorApplication.isCompiling)
-            {
-                EditorApplication.update -= WaitForCompilation;
-                Debug.Log("Compilation completed, proceeding to attach script.");
-                WaitForCompilationAndAttach();
-            }
-        }
-
-        private static void WaitForCompilationAndAttach()
-        {
-            MonoScript monoScript = AssetDatabase.LoadAssetAtPath<MonoScript>(scriptPath);
-            if (monoScript == null)
-            {
-                Debug.LogError($"Failed to load MonoScript at '{scriptPath}'.");
-                return;
-            }
-
-            System.Type scriptType = monoScript.GetClass();
-            if (scriptType == null)
-            {
-                Debug.LogError($"Failed to get class type for script. Check for compilation errors.");
-                return;
-            }
-
-            AttachScriptToGameObject(scriptType);
-        }
-
-        private static void AttachScriptToGameObject(System.Type scriptType)
-        {
-            GameObject view = CreateRootView(scriptType.Name, scriptType);
-            if (view != null)
-            {
-                if (isCreateShield)
-                {
-                    CreateShield(view.transform);
-                }
-
-                CreateContainer(view);
-                Selection.activeGameObject = view;
-            }
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            Debug.Log($"Created GameObject '{scriptType.Name}' with script '{scriptType.Name}' attached.");
-        }
-
-        private static GameObject CreateRootView(string scriptName, System.Type scriptType)
-        {
-            GameObject view = new GameObject(scriptName);
-            view.layer = LayerMask.NameToLayer("UI");
-            view.GetOrAdd<RectTransform>();
-            view.GetOrAdd<CanvasRenderer>();
-            view.AddComponent(scriptType);
-
-            Transform parent = FindObjectOfType<RootUI>()?.GetViewContainer?.transform;
-            view.transform.parent = parent;
-
-            RectTransform rectTransform = view.GetComponent<RectTransform>();
-            rectTransform.localPosition = Vector3.zero;
-            rectTransform.localScale = Vector3.one;
-            rectTransform.sizeDelta = Vector2.zero;
-            rectTransform.anchorMin = Vector2.zero;
-            rectTransform.anchorMax = Vector2.one;
-            rectTransform.pivot = new Vector2(0.5f, 0.5f);
-            return view;
-        }
-
-        private static void CreateContainer(GameObject view)
-        {
-            GameObject container = new GameObject("Container");
-            container.layer = LayerMask.NameToLayer("UI");
-            container.transform.SetParent(view.transform);
-            container.transform.localPosition = Vector3.zero;
-            container.transform.localScale = Vector3.one;
-
-            RectTransform containerRect = container.GetOrAdd<RectTransform>();
-            containerRect.sizeDelta = Vector2.zero;
-            containerRect.anchorMin = Vector2.zero;
-            containerRect.anchorMax = Vector2.one;
-            containerRect.pivot = new Vector2(0.5f, 0.5f);
-        }
-
-        public static void CreateShield(Transform parent)
-        {
-            GameObject shield = new GameObject("Shield");
-            shield.layer = LayerMask.NameToLayer("UI");
-            Image image = shield.AddComponent<Image>();
-            image.color = new Color(0, 0, 0, 0.9f);
-
-            Transform t = shield.transform;
-            t.SetParent(parent);
-            t.SetSiblingIndex(0);
-            t.localScale = Vector3.one;
-            t.localPosition = new Vector3(t.localPosition.x, t.localPosition.y, 0);
-
-            RectTransform rt = t.GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.offsetMax = new Vector2(5, 5);
-            rt.offsetMin = new Vector2(-5, -5);
-        }
-
-        private static void CreateScriptFile(string path, string scriptName)
-        {
-            string viewType = isAlerpView ? "AlertView" : "View";
+            string viewType = isAlertView ? "AlertView" : "View";
             string scriptTemplate = $@"
 using UnityEngine;
 using OSK;
@@ -213,7 +142,7 @@ public class {scriptName} : {viewType}
     public override void Initialize(RootUI rootUI)
     {{
         base.Initialize(rootUI);
-    }} 
+    }}
 
     public override void Open(object[] data = null)
     {{
@@ -225,9 +154,133 @@ public class {scriptName} : {viewType}
         base.Hide();
     }}
 }}";
-            File.WriteAllText(path, scriptTemplate);
-            Debug.Log($"Script '{scriptName}' created at '{path}'.");
+
+            Directory.CreateDirectory(folderPath); // đảm bảo folder tồn tại
+            File.WriteAllText(scriptPath, scriptTemplate);
+            AssetDatabase.ImportAsset(scriptPath);
+            AssetDatabase.Refresh();
+
+            Debug.Log($"Created script at: {scriptPath}");
+        }
+
+        private void CreateViewPrefabOnly()
+        {
+            Transform parent = FindObjectOfType<RootUI>()?.GetViewContainer?.transform;
+            createdView = CreateGORectTransform(scriptName, parent);
+            if (createShield)
+            {
+                CreateShield(createdView);
+            }
+
+            CreateContainer(createdView);
+
+
+            Selection.activeGameObject = createdView;
+            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            Debug.Log("Created view GameObject in scene.");
+        }
+
+        private void TryAttachScript()
+        {
+            if (createdView == null)
+            {
+                Debug.LogError("View GameObject not created yet.");
+                return;
+            }
+
+            string scriptAssetPath = Path.Combine(folderPath, scriptName + ".cs").Replace("\\", "/");
+            MonoScript monoScript = AssetDatabase.LoadAssetAtPath<MonoScript>(scriptAssetPath);
+            if (monoScript == null)
+            {
+                Debug.LogError("Script not found. Try refreshing or check path.");
+                return;
+            }
+
+            Type scriptType = monoScript.GetClass();
+            if (scriptType == null)
+            {
+                Debug.LogWarning("Script not compiled yet. Will retry after compile.");
+                EditorApplication.update += WaitForCompilation;
+                return;
+            }
+
+            AttachScriptToView(scriptType);
+        }
+
+        private static void WaitForCompilation()
+        {
+            if (EditorApplication.isCompiling)
+                return;
+
+            EditorApplication.update -= WaitForCompilation;
+
+            string scriptPath = Path.Combine(folderPath, scriptName + ".cs").Replace("\\", "/");
+            MonoScript monoScript = AssetDatabase.LoadAssetAtPath<MonoScript>(scriptPath);
+            if (monoScript == null)
+            {
+                Debug.LogError($"Failed to load script at {scriptPath}");
+                return;
+            }
+
+            Type scriptType = monoScript.GetClass();
+            if (scriptType == null)
+            {
+                Debug.LogError("Failed to get script class after compilation.");
+                return;
+            }
+
+            AttachScriptToView(scriptType);
+        }
+
+        private static void AttachScriptToView(Type type)
+        {
+            if (createdView == null)
+            {
+                Debug.LogError("No view to attach script to.");
+                return;
+            }
+
+            if (createdView.GetComponent(type) == null)
+            {
+                createdView.AddComponent(type);
+                createdView.GetComponent<View>().viewType = viewType;
+                createdView.GetComponent<View>().depth = depth;
+                Debug.Log("Script attached to view.");
+            }
+            else
+            {
+                Debug.Log("Script already attached.");
+            }
+        }
+
+        private static void CreateContainer(GameObject view)
+        {
+            CreateGORectTransform("Container", view.transform);
+        }
+
+        private static void CreateShield(GameObject view)
+        {
+            var shield = CreateGORectTransform("Shield", view.transform);
+            UnityEngine.UI.Image img = shield.GetOrAdd<UnityEngine.UI.Image>();
+            img.color = new Color(0, 0, 0, 0.9f);
+        }
+
+        private static GameObject CreateGORectTransform(string name, Transform parent)
+        {
+            GameObject go = new GameObject(name);
+            go.layer = LayerMask.NameToLayer("UI");
+            RectTransform shield = go.AddComponent<RectTransform>();
+            shield.gameObject.AddComponent<CanvasRenderer>();
+            shield.SetParent(parent, false);
+            shield.transform.SetAsFirstSibling();
+            shield.pivot = new Vector2(0.5f, 0.5f);
+            shield.localPosition = Vector3.zero;
+            shield.localScale = Vector3.one;
+            shield.sizeDelta = Vector2.zero;
+            shield.anchorMin = Vector2.zero;
+            shield.anchorMax = Vector2.one;
+            shield.pivot = new Vector2(0.5f, 0.5f);
+            return go;
         }
     }
 }
-#endif

@@ -58,6 +58,8 @@ namespace OSK
             if (views.Count == 0) return;
             foreach (var view in views)
             {
+                if(view == null)
+                    continue;
                 EditorGUILayout.LabelField(view.name);
             }
         }
@@ -141,6 +143,9 @@ namespace OSK
             foreach (var _view in views)
             {
                 EditorGUILayout.BeginHorizontal();
+                
+                if(_view == null)
+                    continue;
                 EditorGUILayout.LabelField(_view.name, GUILayout.Width(400));
 
                 bool isVisible = uiManager.Get(_view).IsShowing;

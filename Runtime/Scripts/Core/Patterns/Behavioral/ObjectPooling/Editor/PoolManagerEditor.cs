@@ -41,8 +41,7 @@ namespace OSK
         private void DisplayGroupedPools()
         {
             // Dictionary to hold prefab counts grouped by their respective groups
-            Dictionary<string, Dictionary<string, int>> groupPrefabCounts =
-                new Dictionary<string, Dictionary<string, int>>();
+            Dictionary<string, Dictionary<string, int>> groupPrefabCounts = new Dictionary<string, Dictionary<string, int>>();
 
             // Gather prefab counts by group and name
             foreach (var groupEntry in poolManager.k_GroupPrefabLookup)
@@ -94,7 +93,7 @@ namespace OSK
                     // Add "Clean" button
                     if (GUILayout.Button("Clean", GUILayout.Width(60)))
                     {
-                        poolManager.DestroyGroup(groupName);
+                        poolManager.DestroyAllInGroup(groupName);
                     }
 
                     EditorGUILayout.EndHorizontal(); // End horizontal layout
