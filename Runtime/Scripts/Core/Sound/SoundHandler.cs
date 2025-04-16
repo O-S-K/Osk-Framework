@@ -6,6 +6,7 @@ namespace OSK
     public class SoundSetup
     {
         public string id;
+        public AudioClip audioClip = null;
         public float startTime = 0;
         public bool loop = false;
         public VolumeFade volume;
@@ -48,11 +49,18 @@ namespace OSK
 
     public partial class SoundManager
     {
-        #region With SoundSetup
-
-        public void Play(SoundSetup soundSetup)
+        #region With SoundSetup         
+        public AudioSource Play(SoundSetup soundSetup)
         {
-            Play(soundSetup.id, soundSetup.volume, soundSetup.startTime, soundSetup.loop, soundSetup.playDelay,
+            return Play(soundSetup.id, soundSetup.volume, soundSetup.startTime, soundSetup.loop, soundSetup.playDelay,
+                soundSetup.priority,
+                soundSetup.pitch,
+                soundSetup.transform, soundSetup.minDistance, soundSetup.maxDistance);
+        }
+        
+        public AudioSource Play3D(SoundSetup soundSetup)
+        {
+            return PlayAudioClip(soundSetup.audioClip, soundSetup.volume, soundSetup.startTime, soundSetup.loop, soundSetup.playDelay,
                 soundSetup.priority,
                 soundSetup.pitch,
                 soundSetup.transform, soundSetup.minDistance, soundSetup.maxDistance);
@@ -62,149 +70,149 @@ namespace OSK
 
         #region With 2D ID
 
-        public void Play(string id)
+        public AudioSource Play(string id)
         {
-            Play(id, new VolumeFade { target = 1 }, 0, false, 0, 128, 1, null);
+           return Play(id, new VolumeFade { target = 1 }, 0, false, 0, 128, 1, null);
         }
 
-        public void Play(string id, VolumeFade volume)
+        public AudioSource Play(string id, VolumeFade volume)
         {
-            Play(id, volume, 0, false, 0, 128, 1, null);
+           return Play(id, volume, 0, false, 0, 128, 1, null);
         }
         
-        public void Play(string id, float startTime, VolumeFade volume)
+        public AudioSource Play(string id, float startTime, VolumeFade volume)
         {
-            Play(id, volume, startTime, false, 0, 128, 1, null);
+           return Play(id, volume, startTime, false, 0, 128, 1, null);
         }
 
-        public void Play(string id, VolumeFade volume, bool loop)
+        public AudioSource Play(string id, VolumeFade volume, bool loop)
         {
-            Play(id, volume, 0, loop, 0, 128, 1, null);
+           return Play(id, volume, 0, loop, 0, 128, 1, null);
         }
 
-        public void Play(string id, VolumeFade volume, bool loop, float playDelay)
+        public AudioSource Play(string id, VolumeFade volume, bool loop, float playDelay)
         {
-            Play(id, volume, 0, loop, playDelay, 128, 1, null);
+           return Play(id, volume, 0, loop, playDelay, 128, 1, null);
         }
 
-        public void Play(string id, VolumeFade volume, bool loop, float playDelay, int priority)
+        public AudioSource Play(string id, VolumeFade volume, bool loop, float playDelay, int priority)
         {
-            Play(id, volume, 0, loop, playDelay, priority, 1, null);
+           return Play(id, volume, 0, loop, playDelay, priority, 1, null);
         }
 
-        public void Play(string id, VolumeFade volume, bool loop, float playDelay, int priority, float pitch)
+        public AudioSource Play(string id, VolumeFade volume, bool loop, float playDelay, int priority, float pitch)
         {
-            Play(id, volume, 0, loop, playDelay, priority, pitch, null);
+           return Play(id, volume, 0, loop, playDelay, priority, pitch, null);
         }
 
         #endregion
 
         #region With 3D ID and Transform
 
-        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance = 1,
+        public AudioSource Play3D(string id, VolumeFade volume, Transform transform, int minDistance = 1,
             int maxDistance = 500)
         {
-            Play(id, volume, 0, false, 0, 128, 1, transform, minDistance, maxDistance);
+           return Play(id, volume, 0, false, 0, 128, 1, transform, minDistance, maxDistance);
         }
         
-        public void Play3D(string id,float startTime,  VolumeFade volume, Transform transform, int minDistance = 1,
+        public AudioSource Play3D(string id,float startTime,  VolumeFade volume, Transform transform, int minDistance = 1,
             int maxDistance = 500)
         {
-            Play(id, volume, startTime, false, 0, 128, 1, transform, minDistance, maxDistance);
+           return Play(id, volume, startTime, false, 0, 128, 1, transform, minDistance, maxDistance);
         }
 
 
-        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance,
+        public AudioSource Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance,
             bool loop)
         {
-            Play(id, volume, 0, loop, 0, 128, 1, transform, minDistance, maxDistance);
+           return Play(id, volume, 0, loop, 0, 128, 1, transform, minDistance, maxDistance);
         }
 
-        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance,
+        public AudioSource Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance,
             bool loop, float playDelay)
         {
-            Play(id, volume, 0, loop, playDelay, 128, 1, transform, minDistance, maxDistance);
+           return Play(id, volume, 0, loop, playDelay, 128, 1, transform, minDistance, maxDistance);
         }
 
-        public void Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance,
+        public AudioSource Play3D(string id, VolumeFade volume, Transform transform, int minDistance, int maxDistance,
             bool loop, float playDelay, float pitch)
         {
-            Play(id, volume, 0, loop, playDelay, 128, pitch, transform, minDistance, maxDistance);
+           return Play(id, volume, 0, loop, playDelay, 128, pitch, transform, minDistance, maxDistance);
         }
 
         #endregion
 
         #region With AudioClip
 
-        public void Play(AudioClip audioClip)
+        public AudioSource Play(AudioClip audioClip)
         {
-            PlayAudioClip(audioClip, new VolumeFade { target = 1 }, 0, false, 0, 128, 1, null);
+           return PlayAudioClip(audioClip, new VolumeFade { target = 1 }, 0, false, 0, 128, 1, null);
         }
 
-        public void Play(AudioClip audioClip, VolumeFade volume)
+        public AudioSource Play(AudioClip audioClip, VolumeFade volume)
         {
-            PlayAudioClip(audioClip, volume, 0, false, 0, 128, 1, null);
+           return PlayAudioClip(audioClip, volume, 0, false, 0, 128, 1, null);
         }
 
-        public void Play(AudioClip audioClip, float startTime, VolumeFade volume)
+        public AudioSource Play(AudioClip audioClip, float startTime, VolumeFade volume)
         {
-            PlayAudioClip(audioClip, volume, startTime, false, 0, 128, 1, null);
+            return PlayAudioClip(audioClip, volume, startTime, false, 0, 128, 1, null);
         }
         
-        public void Play(AudioClip audioClip, VolumeFade volume, bool loop)
+        public AudioSource Play(AudioClip audioClip, VolumeFade volume, bool loop)
         {
-            PlayAudioClip(audioClip, volume, 0, loop, 0, 128, 1, null);
+            return PlayAudioClip(audioClip, volume, 0, loop, 0, 128, 1, null);
         }
 
-        public void Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay)
+        public AudioSource Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay)
         {
-            PlayAudioClip(audioClip, volume, 0, loop, playDelay, 128, 1, null);
+            return PlayAudioClip(audioClip, volume, 0, loop, playDelay, 128, 1, null);
         }
 
-        public void Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority)
+        public AudioSource Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority)
         {
-            PlayAudioClip(audioClip, volume, 0, loop, playDelay, priority, 1, null);
+            return PlayAudioClip(audioClip, volume, 0, loop, playDelay, priority, 1, null);
         }
 
-        public void Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority, float pitch)
+        public AudioSource Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority, float pitch)
         {
-            PlayAudioClip(audioClip, volume, 0, loop, playDelay, priority, pitch, null);
+            return PlayAudioClip(audioClip, volume, 0, loop, playDelay, priority, pitch, null);
         }
 
-        public void Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority, float pitch,
+        public AudioSource Play(AudioClip audioClip, VolumeFade volume, bool loop, float playDelay, int priority, float pitch,
             Transform transform)
         {
-            PlayAudioClip(audioClip, volume, 0, loop, playDelay, priority, pitch, transform);
+           return PlayAudioClip(audioClip, volume, 0, loop, playDelay, priority, pitch, transform);
         }
 
         #endregion
 
         #region With AudioClip and Transform
 
-        public void Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance = 1,
+        public AudioSource Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance = 1,
             int maxDistance = 500)
         {
-            PlayAudioClip(audioClip, volume, 0, false, 0, 128, 1, transform, minDistance, maxDistance);
+            return  PlayAudioClip(audioClip, volume, 0, false, 0, 128, 1, transform, minDistance, maxDistance);
         }
         
-        public void Play3D(AudioClip audioClip, float startTime, VolumeFade volume, Transform transform,
+        public AudioSource Play3D(AudioClip audioClip, float startTime, VolumeFade volume, Transform transform,
             int minDistance = 1,
             int maxDistance = 500)
         {
-            PlayAudioClip(audioClip, volume, startTime, false, 0, 128, 1, transform, minDistance, maxDistance);
+            return  PlayAudioClip(audioClip, volume, startTime, false, 0, 128, 1, transform, minDistance, maxDistance);
         }
 
-        public void Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance,
+        public AudioSource Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance,
             int maxDistance, bool loop)
         {
-            PlayAudioClip(audioClip, volume, 0, loop, 0, 128, 1, transform, minDistance, maxDistance);
+            return  PlayAudioClip(audioClip, volume, 0, loop, 0, 128, 1, transform, minDistance, maxDistance);
         }
 
-        public void Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance,
+        public AudioSource Play3D(AudioClip audioClip, VolumeFade volume, Transform transform, int minDistance,
             int maxDistance, bool loop,
             float playDelay)
         {
-            PlayAudioClip(audioClip, volume, 0, loop, playDelay, 128, 1, transform, minDistance, maxDistance);
+            return  PlayAudioClip(audioClip, volume, 0, loop, playDelay, 128, 1, transform, minDistance, maxDistance);
         }
 
         #endregion
@@ -365,6 +373,32 @@ namespace OSK
             DOVirtual.Float(volumeStart, volumeEnd, duration, value => { volume = value; });
             return volume;
         }
+        
+        public AudioClip GetAudioClipInSO(string id)
+        {
+            foreach (var t in _listSoundInfos)
+            {
+                if (t.id == id) return t.audioClip;
+            }
+            return null;
+        }
+        public AudioClip GetAudioClipInSO(AudioClip audioClip)
+        {
+            foreach (var t in _listSoundInfos)
+            {
+                if (t.audioClip == audioClip) return t.audioClip;
+            }
+            return null;
+        }
+        
+        public AudioClip GetAudioClipOnScene(string id)
+        {
+            foreach (var t in _listMusicInfos)
+            {
+                if (t.SoundData.id == id) return t.AudioSource.clip;
+            }
+            return null;
+        }
 
         #endregion
 
@@ -388,14 +422,12 @@ namespace OSK
             }
         }
 
-
         public void DestroyAll()
         {
-            foreach (var playingSound in _listMusicInfos)
+            for (int i = _listMusicInfos.Count - 1; i >= 0; i--)
             {
-                Destroy(playingSound.AudioSource.gameObject);
+                Destroy(_listMusicInfos[i].AudioSource);
             }
-
             _listMusicInfos.Clear();
             Main.Pool.DestroyAllInGroup(KeyGroupPool.AudioSound);
         }

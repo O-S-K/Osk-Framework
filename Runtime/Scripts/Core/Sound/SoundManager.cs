@@ -96,12 +96,12 @@ namespace OSK
             Main.Pool.Despawn(audioSource);
         }
 
-        public void PlayAudioClip(AudioClip audioClip, VolumeFade volume,float startTime, bool loop, float playDelay, int priority,
+        public AudioSource PlayAudioClip(AudioClip audioClip, VolumeFade volume,float startTime, bool loop, float playDelay, int priority,
             float pitch, Transform transform, int minDistance = 1, int maxDistance = 500)
         {
             if (loop && !IsEnableMusic || !IsEnableSoundSFX)
             {
-                return;
+                return null;
             }
 
             //  check capacity
@@ -118,9 +118,10 @@ namespace OSK
                 AudioSource = audioSource,
                 SoundData = new SoundData { audioClip = audioClip }
             });
+            return audioSource;
         }
 
-        public void Play(string id, VolumeFade volume,float startTime, bool loop, float playDelay, int priority, float pitch, Transform transform,
+        public AudioSource Play(string id, VolumeFade volume,float startTime, bool loop, float playDelay, int priority, float pitch, Transform transform,
             int minDistance = 1, int maxDistance = 500)
         {
             SoundData soundData = GetSoundInfo(id);
@@ -128,12 +129,12 @@ namespace OSK
             if (soundData == null)
             {
                 OSK.Logg.LogError("[Sound] There is no Sound Info with the given id: " + id);
-                return ;
+                return null;
             }
 
             if (soundData.type == SoundType.MUSIC && !IsEnableMusic || soundData.type == SoundType.SFX && !IsEnableSoundSFX)
             {
-                return ;
+                return null;
             }
 
             //  check capacity
@@ -157,6 +158,7 @@ namespace OSK
             playingSound.SoundData = soundData;
             playingSound.AudioSource = audioSource;
             _listMusicInfos.Add(playingSound);
+            return audioSource;
         }
 
         private void RemoveOldestSound(SoundType soundType)
@@ -170,7 +172,7 @@ namespace OSK
             }
         }
 
-        private SoundData GetSoundInfo(string id)
+        public SoundData GetSoundInfo(string id)
         {
             for (int i = 0; i < _listSoundInfos.Count; i++)
             {
