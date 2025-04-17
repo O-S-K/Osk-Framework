@@ -195,7 +195,7 @@ namespace OSK
             if (transform == null)
             {
                 source.spatialBlend = 0; 
-                source.transform.position = CameraTransform.position;
+                //source.transform.position = CameraTransform.position;
             }
             else
             {
