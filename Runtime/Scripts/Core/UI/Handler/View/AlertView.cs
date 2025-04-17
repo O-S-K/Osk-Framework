@@ -20,6 +20,7 @@ namespace OSK
         public GameObject message;
         public Button okButton;
         public Button cancelButton;
+        public float timeHide;
 
         public void SetData(AlertSetup setup)
         {
@@ -47,6 +48,7 @@ namespace OSK
                 Logg.LogError("AlertView: title No Text or TMP_Text component found on message object.");
             }
         }
+        
 
         private void SetMessage(string _message)
         {
@@ -100,6 +102,7 @@ namespace OSK
         {
             if (time <= 0)
                 return;
+            timeHide = time;
             this.DoDelay(time, OnClose);
         }
 
