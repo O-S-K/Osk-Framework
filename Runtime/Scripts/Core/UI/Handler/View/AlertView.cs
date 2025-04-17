@@ -1,4 +1,6 @@
 using System;
+using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace OSK
@@ -14,8 +16,8 @@ namespace OSK
     
     public class AlertView : OSK.View
     {
-        public TMPro.TMP_Text title;
-        public TMPro.TMP_Text message;
+        public GameObject title;
+        public GameObject message;
         public Button okButton;
         public Button cancelButton;
 
@@ -28,29 +30,47 @@ namespace OSK
             SetTimeHide(setup.timeHide);
         } 
 
-        private void SetTile(string title)
+        private void SetTile(string _title)
         {
-            if (string.IsNullOrEmpty(title))
+            if (string.IsNullOrEmpty(_title))
                 return;
-            this.title.text = title;
+            if (title.GetComponent<TMP_Text>())
+            {
+                title.GetComponent<TMP_Text>().text = _title;
+            }
+            else if (title.GetComponent<Text>())
+            {
+                title.GetComponent<Text>().text = _title;
+            }
+            else
+            {
+                Logg.LogError("AlertView: title No Text or TMP_Text component found on message object.");
+            }
         }
 
-        private void SetMessage(string message)
+        private void SetMessage(string _message)
         {
-            if (string.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty(_message))
                 return;
-            this.message.text = message;
+            if (message.GetComponent<TMP_Text>())
+            {
+                message.GetComponent<TMP_Text>().text = _message;
+            }
+            else if (title.GetComponent<Text>())
+            {
+                message.GetComponent<Text>().text = _message;
+            }
+            else
+            {
+                Logg.LogError("AlertView: Message No Text or TMP_Text component found on message object.");
+            }
         }
 
         private void SetOkButton(Action onOk)
         {
             if (onOk == null)
             {
-                if (okButton != null)
-                {
-                    okButton.gameObject.SetActive(false);
-                }
-
+                okButton?.gameObject.SetActive(false);
                 return;
             }
 
@@ -65,11 +85,7 @@ namespace OSK
         {
             if (onCancel == null)
             {
-                if (cancelButton != null)
-                {
-                    cancelButton.gameObject.SetActive(false);
-                }
-
+                cancelButton?.gameObject.SetActive(false);
                 return;
             }
 
@@ -80,19 +96,18 @@ namespace OSK
             });
         }
 
-        public void SetTimeHide(float time)
+        public virtual void SetTimeHide(float time)
         {
             if (time <= 0)
                 return;
             this.DoDelay(time, OnClose);
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
-            okButton.onClick.RemoveAllListeners();
-            cancelButton.onClick.RemoveAllListeners();
+            okButton?.onClick.RemoveAllListeners();
+            cancelButton?.onClick.RemoveAllListeners();
         }
-
 
         public virtual void OnClose()
         {
