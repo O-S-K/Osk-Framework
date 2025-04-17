@@ -56,7 +56,7 @@ namespace OSK
             {
                 message.GetComponent<TMP_Text>().text = _message;
             }
-            else if (title.GetComponent<Text>())
+            else if (message.GetComponent<Text>())
             {
                 message.GetComponent<Text>().text = _message;
             }
