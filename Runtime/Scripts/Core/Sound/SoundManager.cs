@@ -216,15 +216,33 @@ namespace OSK
 
         
         public void SetCameraTransform(Transform cam) => CameraTransform = cam;
-        public void SetParentGroup(Transform group) => _parentGroup = group;
-        public void SetGroupDontDestroyOnLoad(bool value)
+        public void SetParentGroup(Transform group, bool setDontDestroy)
         {
-            if (_parentGroup == null) return;
+            _parentGroup = group;
+            SetGroupDontDestroyOnLoad(setDontDestroy);
+        }
 
-            if (value)
-                _parentGroup.gameObject.GetOrAdd<DontDestroy>().DontDesGOOnLoad();
-            else if (_parentGroup.GetComponent<DontDestroy>() != null)
-                Destroy(_parentGroup.GetComponent<DontDestroy>());
+        public void SetGroupDontDestroyOnLoad(bool enable)
+        {
+            if (_parentGroup == null)
+            {
+                OSK.Logg.LogError("ParentGroup Sound is null. Please set it before calling this method.");
+                return;
+            }
+
+            var existing = _parentGroup.GetComponent<DontDestroy>();
+
+            if (enable)
+            {
+                if (existing == null)
+                    existing = _parentGroup.gameObject.AddComponent<DontDestroy>();
+                existing.DontDesGOOnLoad();
+            }
+            else
+            {
+                if (existing != null)
+                    UnityEngine.Object.Destroy(existing);
+            }
         }
 
         public void LogStatus()
