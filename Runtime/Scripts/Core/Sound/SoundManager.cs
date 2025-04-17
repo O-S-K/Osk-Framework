@@ -180,13 +180,21 @@ namespace OSK
             source.pitch = pitch;
             source.minDistance = minDist;
             source.maxDistance = maxDist;
-
-            source.spatialBlend = target == null ? 0 : 1;
-            source.transform.position = target == null ? CameraTransform.position : target.position;
-
+            
             if (startTime > 0) source.time = startTime;
 
-            volume ??= new VolumeFade(1, 1, 0);
+            if (transform == null)
+            {
+                source.spatialBlend = 0; 
+                source.transform.position = CameraTransform.position;
+            }
+            else
+            {
+                source.spatialBlend = 1;
+                source.transform.position = transform.position;
+            } 
+
+            volume ??= new VolumeFade(1);
             if (volume.duration > 0)
             {
                 _tweener?.Kill();
