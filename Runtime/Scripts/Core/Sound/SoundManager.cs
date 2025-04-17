@@ -168,14 +168,23 @@ namespace OSK
  
 
         private AudioSource CreateAudioSource(string id, AudioClip clip, float startTime, VolumeFade volume, bool loop, float delay,
-            int priority, float pitch, Transform target, int minDist, int maxDist)
+            int priority, float pitch, Transform transform, int minDist, int maxDist)
         {
             var source = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, _parentGroup);
             source.Stop();
-            source.playOnAwake = false;
             source.name = id;
             source.clip = clip;
             source.loop = loop;
+            
+            volume ??= new VolumeFade(1);
+            if (volume.duration > 0)
+            {
+                _tweener?.Kill();
+                _tweener = DOVirtual.Float(volume.init, volume.target, volume.duration, v => source.volume = v);
+            }
+            else source.volume = volume.target;
+
+            
             source.priority = priority;
             source.pitch = pitch;
             source.minDistance = minDist;
@@ -194,14 +203,6 @@ namespace OSK
                 source.transform.position = transform.position;
             } 
 
-            volume ??= new VolumeFade(1);
-            if (volume.duration > 0)
-            {
-                _tweener?.Kill();
-                _tweener = DOVirtual.Float(volume.init, volume.target, volume.duration, v => source.volume = v);
-            }
-            else source.volume = volume.target;
-            
             /*source.outputAudioMixerGroup = data.mixerGroup;
             source.mute = data.mute;
             source.bypassEffects = data.bypassEffects;
