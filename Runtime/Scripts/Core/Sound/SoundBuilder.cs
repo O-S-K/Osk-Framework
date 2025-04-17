@@ -4,19 +4,22 @@ namespace OSK
 {
     public class SoundBuilder
     {
-        private string _id;
+        private string _id = "";
+        private AudioClip _audioClip = null;
+        private SoundType _audioType = SoundType.SFX;
+
         private float _startTime = 0;
         private bool _loop = false;
         private float _playDelay = 0;
         
-        private VolumeFade _volume;
+        private Transform _transform = null;
+        private VolumeFade _volume = new VolumeFade(1, 1, 0);
+        
         private int _priority = 128;
         private float _pitch = 1;
         private int _minDistance = 1;
         private int _maxDistance = 500;
 
-        private Transform _transform = null;
-        private AudioClip _audioClip = null;
 
         public SoundBuilder()
         {
@@ -28,6 +31,18 @@ namespace OSK
             return this;
         }
         
+        public SoundBuilder SetClip(AudioClip audioClip)
+        {
+            _audioClip = audioClip;
+            return this;
+        }
+        
+        public SoundBuilder SetAudioType(SoundType audioType)
+        {
+            _audioType = audioType;
+            return this;
+        }
+         
         public SoundBuilder SetStartTime(float startTime)
         {
             _startTime = startTime;
@@ -72,13 +87,6 @@ namespace OSK
             return this;
         }
 
-
-        public SoundBuilder SetAudioClip(AudioClip audioClip)
-        {
-            _audioClip = audioClip;
-            return this;
-        }
-
         public SoundBuilder PlayWithID()
         {
 #if UNITY_EDITOR
@@ -93,10 +101,11 @@ namespace OSK
 #if UNITY_EDITOR
             Validate();
 #endif
-            Main.Sound.PlayAudioClip(_audioClip, _volume, _startTime, _loop, _playDelay, _priority, _pitch, _transform, _minDistance, _maxDistance);
+            Main.Sound.PlayAudioClip(_audioClip, _audioType, _volume, _startTime, _loop, _playDelay, _priority, _pitch, _transform, _minDistance, _maxDistance);
             return this;
         }
 
+#if UNITY_EDITOR
         private void Validate()
         {
             if (string.IsNullOrEmpty(_id) && _audioClip == null)
@@ -120,5 +129,6 @@ namespace OSK
                 }
             }
         }
+#endif
     }
 }

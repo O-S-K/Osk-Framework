@@ -49,7 +49,9 @@ namespace OSK
 
     public enum SoundType
     {
-        MUSIC = 0,
-        SFX = 1  
+        MUSIC = 0,    // Background music
+        SFX = 1,      // Sound effects
+        //AMBIENCE = 2, // Ambience sounds
+        //VOICE = 3,   // Voice lines
     }
 }

@@ -40,7 +40,7 @@ namespace OSK
                 {
                     foreach (var playingSound in soundManager.GetListMusicInfos)
                     {
-                        if (playingSound.SoundData.type == SoundType.MUSIC) // Giả sử có SoundType
+                        if (playingSound.SoundData.type == SoundType.MUSIC) 
                         {
                             DrawSoundInfo(playingSound);
                         }
@@ -53,12 +53,12 @@ namespace OSK
                 {
                     foreach (var playingSound in soundManager.GetListMusicInfos)
                     {
-                        if (playingSound.SoundData.type == SoundType.SFX) // Giả sử có SoundType
+                        if (playingSound.SoundData.type == SoundType.SFX) 
                         {
                             DrawSoundInfo(playingSound);
                         }
                     }
-                }
+                } 
             }
             else
             {
