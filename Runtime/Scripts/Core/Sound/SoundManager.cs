@@ -151,7 +151,6 @@ namespace OSK
 
             if (delay > 0)
             {
-                StartCoroutine(TimeUtils.DoDelay(delay, PlayNow));
                 var coroutine = StartCoroutine(TimeUtils.DoDelay(delay, PlayNow));
                 _playingCoroutines[data.id] = coroutine;
             }
