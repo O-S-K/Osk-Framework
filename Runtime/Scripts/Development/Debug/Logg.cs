@@ -7,7 +7,7 @@ namespace OSK
     public class Logg
     {
         private static bool _isLogEnabled = true; 
-        public void SetLogEnabled(bool value) => _isLogEnabled = value;
+        public static void SetLogEnabled(bool value) => _isLogEnabled = value;
 
         // Test time
         public static void StartTest(PerforInfo info) => info.StartTest(info.label);
@@ -55,7 +55,7 @@ namespace OSK
         }
 
         // Log object
-        public static void LogObject(object obj)
+        public static void LogSerializeObject(object obj)
         {
             if (!_isLogEnabled)
                 return;

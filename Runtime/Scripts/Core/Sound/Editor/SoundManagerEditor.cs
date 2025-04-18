@@ -34,6 +34,10 @@ namespace OSK
             if (soundManager.GetListSoundInfos != null &&
                 (soundManager.GetListMusicInfos != null && soundManager.GetListMusicInfos.Count > 0))
             {
+                EditorGUILayout.LabelField("Total Sounds Playing: " + soundManager.GetListMusicInfos.Count.ToString());
+                EditorGUILayout.LabelField("Total Sound Delay: " + soundManager.GetPlayingCoroutines.Count.ToString());
+                EditorGUILayout.Space();
+
                 // dropdown menu to select sound type
                 showMusic = EditorGUILayout.Foldout(showMusic, "Music");
                 if (showMusic)
@@ -64,6 +68,7 @@ namespace OSK
             {
                 EditorGUILayout.LabelField("No sounds are currently playing.");
             }
+            
         }
 
         //  Draw sound info

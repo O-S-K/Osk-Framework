@@ -146,7 +146,8 @@ namespace OSK
                 Main.Pool.Despawn(_listMusicInfos[i].AudioSource);
                 _listMusicInfos.RemoveAt(i);
                 i--;
-            }
+            } 
+            StopAllPendingAudios();
         }
 
         public void Stop(string id)
@@ -161,6 +162,7 @@ namespace OSK
                     i--;
                 }
             }
+            StopPendingAudio(id);
         }
 
         public void Stop(AudioClip clip)
@@ -175,6 +177,7 @@ namespace OSK
                     i--;
                 }
             }
+            StopPendingAudio(clip.name);
         }
 
 
@@ -190,6 +193,26 @@ namespace OSK
                     i--;
                 }
             }
+
+            StopPendingAudio(type.ToString());
+        }
+        
+        public void StopPendingAudio(string clipId)
+        {
+            if (_playingCoroutines.TryGetValue(clipId, out var coroutine))
+            {
+                StopCoroutine(coroutine);
+                _playingCoroutines.Remove(clipId);
+            }
+        }
+        
+        public void StopAllPendingAudios()
+        {
+            foreach (var coroutine in _playingCoroutines.Values)
+            {
+                StopCoroutine(coroutine);
+            }
+            _playingCoroutines.Clear();
         }
 
 
@@ -355,6 +378,7 @@ namespace OSK
         public void Despawn(AudioSource audioSource, float delay = 0)
         {
             DespawnAudioSource(audioSource, delay).Run();
+            StopPendingAudio(audioSource.clip.name);
         }
 
         public void DespawnMusicID(string id, float delay = 0)
@@ -376,11 +400,12 @@ namespace OSK
             {
                 Destroy(_listMusicInfos[i].AudioSource);
             }
+            StopAllPendingAudios();
 
             _listMusicInfos.Clear();
+            _playingCoroutines.Clear();
             Main.Pool.DestroyAllInGroup(KeyGroupPool.AudioSound);
         }
-
         #endregion
     }
 }

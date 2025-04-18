@@ -11,9 +11,11 @@ namespace OSK
     {
         [ShowInInspector] private List<SoundData> _listSoundInfos = new List<SoundData>();
         [ShowInInspector] private List<PlayingSound> _listMusicInfos = new List<PlayingSound>();
+        private Dictionary<string, Coroutine> _playingCoroutines = new Dictionary<string, Coroutine>();
 
         public List<SoundData> GetListSoundInfos => _listSoundInfos;
         public List<PlayingSound> GetListMusicInfos => _listMusicInfos;
+        public Dictionary<string, Coroutine> GetPlayingCoroutines => _playingCoroutines;
 
         [SerializeField] private int maxCapacityMusic = 5;
         [SerializeField] private int maxCapacitySoundEffects = 10;
@@ -109,7 +111,11 @@ namespace OSK
                 _listMusicInfos.Add(new PlayingSound { AudioSource = source, SoundData = new SoundData {id = clip.name, audioClip = clip, type =  soundType} });
             }
 
-            if (delay > 0) this.DoDelay(delay, PlayNow);
+            if (delay > 0)
+            {
+                var coroutine = StartCoroutine(TimeUtils.DoDelay(delay, PlayNow));
+                _playingCoroutines[clip.name] = coroutine;
+            }
             else PlayNow();
 
             return _listMusicInfos.LastOrDefault()?.AudioSource;
@@ -143,7 +149,12 @@ namespace OSK
                 _listMusicInfos.Add(new PlayingSound { AudioSource = source, SoundData = data });
             }
 
-            if (delay > 0) this.DoDelay(delay, PlayNow);
+            if (delay > 0)
+            {
+                StartCoroutine(TimeUtils.DoDelay(delay, PlayNow));
+                var coroutine = StartCoroutine(TimeUtils.DoDelay(delay, PlayNow));
+                _playingCoroutines[data.id] = coroutine;
+            }
             else PlayNow();
 
             return _listMusicInfos.LastOrDefault()?.AudioSource;

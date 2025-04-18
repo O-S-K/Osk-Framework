@@ -14,6 +14,11 @@ namespace OSK
         {
             _behaviour.StartCoroutine(unscaleTime ? DoTaskUnscale(task, delay) : DoTask(task, delay));
         }
+        
+        public static IEnumerator DoDelay(float delay, Task task, bool unscaleTime = false)
+        {
+            yield return unscaleTime ? DoTaskUnscale(task, delay) : DoTask(task, delay);
+        }
 
         private static IEnumerator DoTask(Task task, float delay)
         {
