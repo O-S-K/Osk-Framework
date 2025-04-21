@@ -10,6 +10,8 @@ namespace OSK
         public SoundType type = SoundType.SFX;
         
         [Range(0, 1)] public float volume = 1;
+        public string group = "Default";
+
 
 #if UNITY_EDITOR
         public void Play()

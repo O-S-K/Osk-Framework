@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 
 namespace OSK
@@ -13,9 +14,16 @@ namespace OSK
     [CustomEditor(typeof(ListSoundSO))]
     public class SoundDataEditor : Editor
     {
-        private bool showTable = true;
-        private Dictionary<SoundType, bool> soundTypeFoldouts = new Dictionary<SoundType, bool>();
+        private Dictionary<string, Dictionary<SoundType, bool>> soundTypeFoldoutsPerGroup = new Dictionary<string, Dictionary<SoundType, bool>>();
+        private Dictionary<string, bool> groupFoldouts = new Dictionary<string, bool>();
+        
+        [ListDrawerSettings(Expanded = true, DraggableItems = false, ShowIndexLabels = true)]
+        private static List<string> groupNames = new List<string>() { "Music", "UI"};
+        
         private ListSoundSO listSoundSo;
+
+        private bool showTable = true;
+        private bool showGroupNames = true;
 
         public override void OnInspectorGUI()
         {
@@ -25,8 +33,8 @@ namespace OSK
             if (GUILayout.Button("Sort To Type"))
             {
                 SortToType(listSoundSo);
-            } 
-            
+            }
+
             if (GUILayout.Button("Set ID For Name Clip"))
             {
                 SetIDForNameClip();
@@ -39,90 +47,145 @@ namespace OSK
             showTable = EditorGUILayout.Foldout(showTable, "Show Sound Info Table");
             if (!showTable) return;
 
-            foreach (SoundType type in System.Enum.GetValues(typeof(SoundType)))
+            GUILayout.Space(10);
+            showGroupNames = EditorGUILayout.Foldout(showGroupNames, "Show Group Names");
+            if (showGroupNames)
             {
-                if (!soundTypeFoldouts.ContainsKey(type))
-                    soundTypeFoldouts[type] = true;
+                DrawGroupNames();
+            }
 
-                EditorGUILayout.Space(20);
-                soundTypeFoldouts[type] = EditorGUILayout.Foldout(soundTypeFoldouts[type], type.ToString() + " Sounds");
+            if (groupNames == null || groupNames.Count == 0)
+            {
+                groupNames?.Add("Default");
+            }
 
-                if (soundTypeFoldouts[type])
+            var groups = listSoundSo.ListSoundInfos
+                .Select(x => string.IsNullOrEmpty(x.group) ? "Default" : x.group)
+                .Distinct()
+                .OrderBy(x => x);
+
+            
+            EditorGUILayout.Space(20);
+            EditorGUILayout.TextArea("Sound Groups", EditorStyles.boldLabel);
+            
+            EditorGUI.indentLevel++;
+            foreach (var group in groups)
+            {
+                if (!groupFoldouts.ContainsKey(group))
+                    groupFoldouts[group] = true;
+
+                if (!soundTypeFoldoutsPerGroup.ContainsKey(group))
+                    soundTypeFoldoutsPerGroup[group] = new Dictionary<SoundType, bool>();
+
+                EditorGUI.indentLevel += 1;
+                groupFoldouts[group] = EditorGUILayout.Foldout(groupFoldouts[group], $"Group: {group}");
+                EditorGUI.indentLevel -= 1;
+
+
+                if (!groupFoldouts[group]) continue;
+
+                DrawTableHeaders();
+
+                foreach (SoundType type in System.Enum.GetValues(typeof(SoundType)))
                 {
-                    DrawTableHeaders();
-                    EditorGUILayout.Space();
+                    // Kiểm tra có SoundType này trong group không
+                    if (!listSoundSo.ListSoundInfos.Any(x => x.type == type && x.group == group))
+                        continue;
+
+                    if (!soundTypeFoldoutsPerGroup[group].ContainsKey(type))
+                        soundTypeFoldoutsPerGroup[group][type] = true;
+
+                    EditorGUI.indentLevel += 2;
+                    soundTypeFoldoutsPerGroup[group][type] = EditorGUILayout.Foldout(soundTypeFoldoutsPerGroup[group][type], type.ToString());
+
+                    if (!soundTypeFoldoutsPerGroup[group][type]) continue;
 
                     for (int i = 0; i < listSoundSo.ListSoundInfos.Count; i++)
                     {
                         SoundData soundData = listSoundSo.ListSoundInfos[i];
 
-                        if (soundData.type == type)
+                        if (soundData.type != type || soundData.group != group)
+                            continue;
+
+                        DrawRowBorder();
+                        EditorGUILayout.BeginHorizontal();
+
+                        // AudioClip
+                        AudioClip newAudioClip = (AudioClip)EditorGUILayout.ObjectField(soundData.audioClip,
+                            typeof(AudioClip), false, GUILayout.Width(150));
+                        if (newAudioClip != soundData.audioClip)
                         {
-                            DrawRowBorder();
-                            EditorGUILayout.BeginHorizontal();
-
-                            AudioClip newAudioClip = (AudioClip)EditorGUILayout.ObjectField(soundData.audioClip,
-                                typeof(AudioClip), false, GUILayout.Width(150));
-                            if (newAudioClip != soundData.audioClip)
+                            if (IsDuplicateAudioClip(listSoundSo, newAudioClip))
                             {
-                                if (IsDuplicateAudioClip(listSoundSo, newAudioClip))
-                                {
-                                    Logg.LogError(
-                                        $"AudioClip {newAudioClip.name} already exists in the list. Cannot add duplicate.");
-                                }
-                                else
-                                {
-                                    soundData.audioClip = newAudioClip;
-                                }
+                                Debug.LogError(
+                                    $"AudioClip {newAudioClip.name} already exists in the list. Cannot add duplicate.");
                             }
-                            soundData.UpdateId();
-
-                            // type dropdown
-                            soundData.type = (SoundType)EditorGUILayout.EnumPopup(soundData.type, GUILayout.Width(75));
-
-                            // volume slider
-                            GUILayout.Label(EditorGUIUtility.IconContent("d_AudioSource Icon"), GUILayout.Width(20), GUILayout.Height(20));
-                            float newVolume = GUILayout.HorizontalSlider(soundData.volume, 0f, 1f, GUILayout.Width(50));
-    
-                            if (Mathf.Abs(newVolume - soundData.volume) > 0.01f) 
+                            else
                             {
-                                soundData.volume = newVolume;
-                                soundData.SetVolume(newVolume);
+                                soundData.audioClip = newAudioClip;
                             }
-                            GUILayout.Label(soundData.volume.ToString("F2"), GUILayout.Width(30)); // Hiển thị giá trị volume
-
-
-                            GUI.enabled = soundData.audioClip != null && !soundData.IsPlaying();
-                            GUI.color = soundData.IsPlaying() ? Color.green : Color.white;
-                            
-                            if (GUILayout.Button("Play", GUILayout.Width(50)))
-                            {
-                                soundData.Play();
-                            }
-                            GUI.color = Color.white;
-
-
-                            GUI.enabled = soundData.audioClip != null && soundData.IsPlaying();
-                            if (GUILayout.Button("Stop", GUILayout.Width(50)))
-                            {
-                                soundData.Stop();
-                            }
-
-                            GUI.enabled = true;
-                            if (GUILayout.Button("Remove", GUILayout.Width(60)))
-                            {
-                                listSoundSo.ListSoundInfos.RemoveAt(i);
-                                i--;
-                                continue;
-                            }
-
-                            EditorGUILayout.EndHorizontal();
                         }
-                    }
 
+                        soundData.UpdateId(); 
+                        int currentGroupIndex =  groupNames.IndexOf(soundData.group);
+                        if (currentGroupIndex == -1)
+                        {
+                            currentGroupIndex = 0;
+                            soundData.group = groupNames[0];
+                        }
+                        // Group Dropdown
+                        int newGroupIndex = EditorGUILayout.Popup(currentGroupIndex, groupNames.ToArray(),
+                            GUILayout.Width(100));
+                        if (newGroupIndex != currentGroupIndex)
+                        {
+                            soundData.group = groupNames[newGroupIndex]; 
+                        }
+
+                        // Type Dropdown
+                        soundData.type = (SoundType)EditorGUILayout.EnumPopup(soundData.type, GUILayout.Width(110));
+
+                        // Volume Slider
+                        GUILayout.Label(EditorGUIUtility.IconContent("d_AudioSource Icon"), GUILayout.Width(20),
+                            GUILayout.Height(20));
+                        float newVolume = GUILayout.HorizontalSlider(soundData.volume, 0f, 1f, GUILayout.Width(50));
+
+                        if (Mathf.Abs(newVolume - soundData.volume) > 0.01f)
+                        {
+                            soundData.volume = newVolume;
+                            soundData.SetVolume(newVolume);
+                        }
+
+                        GUILayout.Label(soundData.volume.ToString("F2"), GUILayout.Width(30));
+
+                        // Play Button
+                        GUI.enabled = soundData.audioClip != null && !soundData.IsPlaying();
+                        GUI.color = soundData.IsPlaying() ? Color.green : Color.white;
+
+                        if (GUILayout.Button("Play", GUILayout.Width(50)))
+                            soundData.Play();
+
+                        GUI.color = Color.white;
+
+                        // Stop Button
+                        GUI.enabled = soundData.audioClip != null && soundData.IsPlaying();
+                        if (GUILayout.Button("Stop", GUILayout.Width(50)))
+                            soundData.Stop();
+
+                        // Remove
+                        GUI.enabled = true;
+                        if (GUILayout.Button("Remove", GUILayout.Width(60)))
+                        {
+                            listSoundSo.ListSoundInfos.RemoveAt(i);
+                            i--;
+                            continue;
+                        }
+                        EditorGUILayout.EndHorizontal();
+                    }
+                    EditorGUI.indentLevel -= 2;
                     DrawRowBorder();
                 }
             }
+            EditorGUI.indentLevel--;
 
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
@@ -135,8 +198,8 @@ namespace OSK
 
             EditorGUILayout.Space();
             EditorGUILayout.EndHorizontal();
-            
-            
+
+
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("Select Folder Path", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
@@ -152,14 +215,16 @@ namespace OSK
                     EditorUtility.SetDirty(listSoundSo);
                 }
             }
+
             if (GUILayout.Button("Open Folder", GUILayout.Width(100)))
             {
                 string path = listSoundSo.filePathSoundID;
                 path = path.Replace("/SoundID.cs", "");
                 EditorUtility.RevealInFinder(path);
             }
+
             EditorGUILayout.EndHorizontal();
-            
+
 
             EditorGUILayout.Space();
             if (GUILayout.Button("Generate Enum ID"))
@@ -179,6 +244,7 @@ namespace OSK
                 EditorUtility.SetDirty(target);
             }
         }
+         
 
         private void GenerateEnum(string enumName, List<string> names)
         {
@@ -263,6 +329,34 @@ namespace OSK
 
             AssetDatabase.Refresh();
         }
+        
+        void DrawGroupNames()
+        { 
+            for (int i = 0; i < groupNames.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                string newName = EditorGUILayout.TextField($"Group {i + 1}", groupNames[i]);
+                if (groupNames != null && newName != groupNames[i])
+                {
+                    groupNames[i] = newName;
+                }
+
+                if (GUILayout.Button("-", GUILayout.Width(25)))
+                {
+                    groupNames.RemoveAt(i);
+                    i--; 
+                    continue;
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
+            if (GUILayout.Button("Add Group"))
+            {
+                groupNames.Add("NewGroup");
+            }
+        }
 
         private void DrawRowBorder()
         {
@@ -272,11 +366,14 @@ namespace OSK
 
         private void DrawTableHeaders()
         {
-            EditorGUILayout.BeginHorizontal();
+            EditorGUI.indentLevel += 1;
+            EditorGUILayout.BeginHorizontal(); 
             DrawTableCell("Audio Clip", 150, true);
-            EditorGUILayout.LabelField("Type", GUILayout.Width(75));
-            EditorGUILayout.LabelField("Actions", GUILayout.Width(200));
+            EditorGUILayout.LabelField("Group", GUILayout.Width(100));
+            EditorGUILayout.LabelField("Type", GUILayout.Width(250));
+            EditorGUILayout.LabelField("Actions", GUILayout.Width(250));
             EditorGUILayout.EndHorizontal();
+            EditorGUI.indentLevel -= 1;
             DrawRowBorder();
         }
 
@@ -306,7 +403,7 @@ namespace OSK
 
             return false;
         }
-        
+
         private void SortToType(ListSoundSO listSoundSo)
         {
             if (listSoundSo == null || listSoundSo.ListSoundInfos.Count == 0)
@@ -335,12 +432,12 @@ namespace OSK
 
             UnityEditor.EditorUtility.SetDirty(this);
         }
-        
+
         public bool IsSoundExist(ListSoundSO listSoundSo, string soundName)
         {
             if (listSoundSo.ListSoundInfos == null || listSoundSo.ListSoundInfos.Count == 0)
                 return false;
-            
+
             foreach (var soundInfo in listSoundSo.ListSoundInfos)
             {
                 if (soundInfo.audioClip.name == soundName)
@@ -351,7 +448,6 @@ namespace OSK
 
             return false;
         }
-
     }
 }
 #endif
