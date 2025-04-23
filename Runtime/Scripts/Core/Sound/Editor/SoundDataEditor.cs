@@ -94,9 +94,10 @@ namespace OSK
 
                     if (!soundTypeFoldoutsPerGroup[group].ContainsKey(type))
                         soundTypeFoldoutsPerGroup[group][type] = true;
-
+ 
                     EditorGUI.indentLevel += 2;
                     soundTypeFoldoutsPerGroup[group][type] = EditorGUILayout.Foldout(soundTypeFoldoutsPerGroup[group][type], type.ToString());
+                    EditorGUI.indentLevel -= 2;
 
                     if (!soundTypeFoldoutsPerGroup[group][type]) continue;
 
@@ -107,6 +108,7 @@ namespace OSK
                         if (soundData.type != type || soundData.group != group)
                             continue;
 
+                        EditorGUI.indentLevel += 2;
                         DrawRowBorder();
                         EditorGUILayout.BeginHorizontal();
 
@@ -180,15 +182,16 @@ namespace OSK
                             continue;
                         }
                         EditorGUILayout.EndHorizontal();
-                    }
-                    EditorGUI.indentLevel -= 2;
+                        EditorGUI.indentLevel -= 2;
+                    } 
+
                     DrawRowBorder();
                 }
             }
             EditorGUI.indentLevel--;
 
             EditorGUILayout.Space();
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginHorizontal(); 
 
             EditorGUILayout.Space(50);
             if (GUILayout.Button("Add New Sound Info", GUILayout.Width(200)))
@@ -197,12 +200,12 @@ namespace OSK
             }
 
             EditorGUILayout.Space();
-            EditorGUILayout.EndHorizontal();
-
+            EditorGUILayout.EndHorizontal();  
 
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("Select Folder Path", EditorStyles.boldLabel);
-            EditorGUILayout.BeginHorizontal();
+
+            EditorGUILayout.BeginHorizontal();  
             EditorGUILayout.TextField("Folder Path", listSoundSo.filePathSoundID);
 
             if (GUILayout.Button("Select Folder", GUILayout.Width(100)))
@@ -223,7 +226,7 @@ namespace OSK
                 EditorUtility.RevealInFinder(path);
             }
 
-            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndHorizontal();  
 
 
             EditorGUILayout.Space();
@@ -253,15 +256,11 @@ namespace OSK
                 Debug.LogWarning("No sound names provided!");
                 return;
             }
-            /*
-            sbExtensions.AppendLine("public static class SoundIDExtensions");
-            sbExtensions.AppendLine("{");
-            sbExtensions.AppendLine($"    public static implicit operator string({enumName} soundID) => soundID.ToString();");
-            sbExtensions.AppendLine("}");
-            sbExtensions.AppendLine(); // Dòng trống*/
 
             string filePath = listSoundSo.filePathSoundID;
             StringBuilder sbExtensions = new StringBuilder();
+            sbExtensions.AppendLine(); 
+
             StringBuilder sbEnum = new StringBuilder();
             sbEnum.AppendLine($"public enum {enumName}");
             sbEnum.AppendLine("{");
@@ -275,62 +274,21 @@ namespace OSK
 
             sbEnum.AppendLine("}");
 
-            if (!File.Exists(filePath))
+            if (File.Exists(filePath))
             {
                 File.WriteAllText(filePath, sbExtensions.ToString() + sbEnum.ToString());
-                Debug.Log($"Created Enum '{enumName}' at {filePath}");
+                Debug.Log($"Updated Enum '{enumName}' at {filePath}");
             }
             else
             {
-                string oldContent = File.ReadAllText(filePath);
-                bool hasExtensions = oldContent.Contains("public static class SoundIDExtensions");
-
-                string pattern = @"public\s+enum\s+" + enumName + @"\s*\{([\s\S]*?)\}";
-                Match match = Regex.Match(oldContent, pattern);
-
-                if (match.Success)
-                {
-                    string existingValues = match.Groups[1].Value;
-                    HashSet<string> existingEnumSet = new HashSet<string>(
-                        Regex.Matches(existingValues, @"\s*(\w+),").Select(m => m.Groups[1].Value)
-                    );
-
-                    foreach (string name in uniqueNames)
-                    {
-                        existingEnumSet.Add(name);
-                    }
-
-                    StringBuilder newEnumContent = new StringBuilder();
-                    newEnumContent.AppendLine($"public enum {enumName}");
-                    newEnumContent.AppendLine("{");
-                    foreach (string value in existingEnumSet)
-                    {
-                        newEnumContent.AppendLine($"    {value},");
-                    }
-
-                    newEnumContent.AppendLine("}");
-
-                    string updatedContent = Regex.Replace(oldContent, pattern, newEnumContent.ToString());
-
-                    if (!hasExtensions)
-                    {
-                        updatedContent = sbExtensions.ToString() + updatedContent;
-                    }
-
-                    File.WriteAllText(filePath, updatedContent);
-                    Debug.Log($"Updated Enum '{enumName}' at {filePath}");
-                }
-                else
-                {
-                    Debug.LogWarning("Enum structure not found in file, overwriting...");
-                    File.WriteAllText(filePath, sbExtensions.ToString() + sbEnum.ToString());
-                }
+                File.WriteAllText(filePath, sbExtensions.ToString() + sbEnum.ToString());
+                Debug.Log($"Created Enum '{enumName}' at {filePath}");
             }
 
             AssetDatabase.Refresh();
         }
         
-        void DrawGroupNames()
+        private void DrawGroupNames()
         { 
             for (int i = 0; i < groupNames.Count; i++)
             {

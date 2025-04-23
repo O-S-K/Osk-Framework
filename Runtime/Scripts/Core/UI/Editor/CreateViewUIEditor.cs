@@ -19,7 +19,7 @@ namespace OSK
         private static GameObject createdView;
         private const string PREF_KEY = "CreateViewEditor_";
 
-        [MenuItem("OSK-Framework/UI/Create View")]
+        [MenuItem("OSK-Framework/Tools/UI/Create View")]
         public static void ShowWindow()
         {
             GetWindow<CreateViewEditorWindow>("Create View");
