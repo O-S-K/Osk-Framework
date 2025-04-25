@@ -397,7 +397,7 @@ namespace OSK
                 return;
 
             var curView = _viewHistory.Pop();
-            curView.Hide();
+            //curView.Hide();
 
             if (hidePrevView)
                 OpenPrevious();
