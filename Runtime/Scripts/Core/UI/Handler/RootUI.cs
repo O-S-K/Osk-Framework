@@ -224,6 +224,7 @@ namespace OSK
 
             if (view.IsShowing && checkShowing)
             {
+                Logg.Log($"[View] Opened view: {view.name}");
                 return view;
             }
 
@@ -397,7 +398,7 @@ namespace OSK
                 return;
 
             var curView = _viewHistory.Pop();
-            //curView.Hide();
+            curView.Hide();
 
             if (hidePrevView)
                 OpenPrevious();

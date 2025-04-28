@@ -116,7 +116,8 @@ namespace OSK
 
             _isShowing = false;
             EventBeforeClosed?.Invoke();
-
+            Logg.Log($"Hide {gameObject.name} {_isShowing}");
+            
             if (_uiTransition != null) 
                 _uiTransition.CloseTrans(FinalizeHide);
             else FinalizeHide();
@@ -157,14 +158,13 @@ namespace OSK
             gameObject.SetActive(false);
             EventAfterClosed?.Invoke();
 
-            if (isRemoveOnHide) _rootUI.Delete(this);
-            else _rootUI.RemovePopup(this);
+            if (isRemoveOnHide) 
+                _rootUI.Delete(this); 
         }
 
         private void FinalizeImmediateClose()
         {
-            gameObject.SetActive(false);
-            _rootUI.RemovePopup(this);
+            gameObject.SetActive(false); 
         }
 
         public void Delete()

@@ -61,9 +61,9 @@ namespace OSK
             return RootUI.TryOpen<T>(data, isHidePrevPopup);
         }
 
-        public void Open(View view, object[] data = null, bool isHidePrevPopup = false)
+        public void Open(View view, object[] data = null, bool isHidePrevPopup = false, bool checkShowing = true)
         {
-            RootUI.Open(view, data, isHidePrevPopup);
+            RootUI.Open(view, data, isHidePrevPopup, checkShowing);
         }
 
         public AlertView OpenAlert<T>(AlertSetup setup) where T : AlertView
