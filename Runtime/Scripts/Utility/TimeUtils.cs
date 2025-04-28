@@ -7,29 +7,29 @@ namespace OSK
 {
     public static class TimeUtils
     {
-        private static float secPerYear;
-        public delegate void Task();
+        private static float secPerYear;      
 
-        public static void DoDelay(this MonoBehaviour _behaviour, float delay, Task task, bool unscaleTime = false)
+        public static void DoDelay(this MonoBehaviour _behaviour, float delay, System.Action task, bool unscaleTime = false)
         {
             _behaviour.StartCoroutine(unscaleTime ? DoTaskUnscale(task, delay) : DoTask(task, delay));
         }
         
-        public static IEnumerator DoDelay(float delay, Task task, bool unscaleTime = false)
+        public static IEnumerator DoDelay(float delay, System.Action task, bool unscaleTime = false)
         {
             yield return unscaleTime ? DoTaskUnscale(task, delay) : DoTask(task, delay);
         }
 
-        private static IEnumerator DoTask(Task task, float delay)
+        private static IEnumerator DoTask(System.Action task, float delay)
         {
             yield return new WaitForSeconds(delay);
-            task();
+            task?.Invoke();
+
         }
 
-        private static IEnumerator DoTaskUnscale(Task task, float delay)
+        private static IEnumerator DoTaskUnscale(System.Action task, float delay)
         {
             yield return new WaitForSecondsRealtime(delay);
-            task();
+            task?.Invoke();
         }
 
         public static double SystemTimeInMilliseconds
