@@ -113,7 +113,7 @@ namespace OSK
 
             if (delay > 0)
             {
-                var coroutine = StartCoroutine(TimeUtils.DoDelay(delay, PlayNow));
+                var coroutine = this.DoDelay(delay, PlayNow);
                 _playingCoroutines[clip.name] = coroutine;
             }
             else PlayNow();
@@ -151,7 +151,7 @@ namespace OSK
 
             if (delay > 0)
             {
-                var coroutine = StartCoroutine(TimeUtils.DoDelay(delay, PlayNow));
+                var coroutine = this.DoDelay(delay, PlayNow);
                 _playingCoroutines[data.id] = coroutine;
             }
             else PlayNow();

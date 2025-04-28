@@ -9,21 +9,15 @@ namespace OSK
     {
         private static float secPerYear;      
 
-        public static void DoDelay(this MonoBehaviour _behaviour, float delay, System.Action task, bool unscaleTime = false)
+        public static Coroutine DoDelay(this MonoBehaviour behaviour, float delay, System.Action task, bool unscaleTime = false)
         {
-            _behaviour.StartCoroutine(unscaleTime ? DoTaskUnscale(task, delay) : DoTask(task, delay));
-        }
-        
-        public static IEnumerator DoDelay(float delay, System.Action task, bool unscaleTime = false)
-        {
-            yield return unscaleTime ? DoTaskUnscale(task, delay) : DoTask(task, delay);
+            return behaviour.StartCoroutine(unscaleTime ? DoTaskUnscale(task, delay) : DoTask(task, delay));
         }
 
         private static IEnumerator DoTask(System.Action task, float delay)
         {
             yield return new WaitForSeconds(delay);
             task?.Invoke();
-
         }
 
         private static IEnumerator DoTaskUnscale(System.Action task, float delay)
