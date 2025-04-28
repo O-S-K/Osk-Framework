@@ -199,20 +199,26 @@ namespace OSK
         
         public void StopPendingAudio(string clipId)
         {
-            if (_playingCoroutines.TryGetValue(clipId, out var coroutine))
+            if (_playingTweens.TryGetValue(clipId, out var tween))
             {
-                StopCoroutine(coroutine);
-                _playingCoroutines.Remove(clipId);
+                if (tween.IsActive())
+                {
+                    tween.Kill();
+                } // Kill tween
+                _playingTweens.Remove(clipId);
             }
         }
-        
+
         public void StopAllPendingAudios()
         {
-            foreach (var coroutine in _playingCoroutines.Values)
+            foreach (var tween in _playingTweens.Values)
             {
-                StopCoroutine(coroutine);
+                if (tween.IsActive())
+                {
+                    tween.Kill();
+                } // Kill all tweens
             }
-            _playingCoroutines.Clear();
+            _playingTweens.Clear();
         }
 
 
@@ -403,7 +409,7 @@ namespace OSK
             StopAllPendingAudios();
 
             _listMusicInfos.Clear();
-            _playingCoroutines.Clear();
+            _playingTweens.Clear();
             Main.Pool.DestroyAllInGroup(KeyGroupPool.AudioSound);
         }
         #endregion

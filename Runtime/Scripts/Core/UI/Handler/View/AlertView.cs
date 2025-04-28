@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -103,7 +104,7 @@ namespace OSK
             if (time <= 0)
                 return;
             timeHide = time;
-            this.DoDelay(time, OnClose);
+            DOVirtual.DelayedCall(time, OnClose);
         }
 
         protected virtual void OnDisable()

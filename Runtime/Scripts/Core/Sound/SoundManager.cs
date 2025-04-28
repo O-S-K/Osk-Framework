@@ -11,11 +11,11 @@ namespace OSK
     {
         [ShowInInspector] private List<SoundData> _listSoundInfos = new List<SoundData>();
         [ShowInInspector] private List<PlayingSound> _listMusicInfos = new List<PlayingSound>();
-        private Dictionary<string, Coroutine> _playingCoroutines = new Dictionary<string, Coroutine>();
+        private Dictionary<string, Tween> _playingTweens = new Dictionary<string, Tween>();
 
         public List<SoundData> GetListSoundInfos => _listSoundInfos;
         public List<PlayingSound> GetListMusicInfos => _listMusicInfos;
-        public Dictionary<string, Coroutine> GetPlayingCoroutines => _playingCoroutines;
+        public Dictionary<string, Tween> GetPlayingTweens => _playingTweens;
 
         [SerializeField] private int maxCapacityMusic = 5;
         [SerializeField] private int maxCapacitySoundEffects = 10;
@@ -112,9 +112,9 @@ namespace OSK
             }
 
             if (delay > 0)
-            {
-                var coroutine = this.DoDelay(delay, PlayNow);
-                _playingCoroutines[clip.name] = coroutine;
+            { 
+                var tween = DOVirtual.DelayedCall(delay, PlayNow, ignoreTimeScale: false);
+                _playingTweens[clip.name] = tween;
             }
             else PlayNow();
 
@@ -151,11 +151,10 @@ namespace OSK
 
             if (delay > 0)
             {
-                var coroutine = this.DoDelay(delay, PlayNow);
-                _playingCoroutines[data.id] = coroutine;
+                var tween = DOVirtual.DelayedCall(delay, PlayNow, ignoreTimeScale: false);
+                _playingTweens[data.id] = tween;
             }
-            else PlayNow();
-
+            else PlayNow(); 
             return _listMusicInfos.LastOrDefault()?.AudioSource;
         }
 

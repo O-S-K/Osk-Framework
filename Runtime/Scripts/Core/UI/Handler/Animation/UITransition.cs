@@ -210,7 +210,7 @@ namespace OSK
                 if (tweenSettings.animationClip != null)
                 {
                     float clipLength = tweenSettings.animationClip.clip.length;
-                    this.DoDelay(clipLength, () => { onComplete?.Invoke(); });
+                    DOVirtual.DelayedCall(clipLength, () => { onComplete?.Invoke(); });
                 }
             }
             else

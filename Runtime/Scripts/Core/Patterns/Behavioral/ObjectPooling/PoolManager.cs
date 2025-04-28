@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 
 namespace OSK
@@ -161,7 +162,7 @@ namespace OSK
 
         public void Despawn(Object instance, float delay, bool unscaleTime = false)
         {
-            this.DoDelay(delay, () =>
+            DOVirtual.DelayedCall(delay, () =>
             {
                 if (instance != null) Despawn(instance);
             }, unscaleTime);
