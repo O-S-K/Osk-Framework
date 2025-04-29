@@ -140,11 +140,11 @@ namespace OSK
 
         public void StopAll()
         {
-            for (int i = 0; i < _listMusicInfos.Count; i++)
+            for (int i = 0; i < _listSoundPlayings.Count; i++)
             {
-                _listMusicInfos[i].AudioSource.Stop();
-                Main.Pool.Despawn(_listMusicInfos[i].AudioSource);
-                _listMusicInfos.RemoveAt(i);
+                _listSoundPlayings[i].AudioSource.Stop();
+                Main.Pool.Despawn(_listSoundPlayings[i].AudioSource);
+                _listSoundPlayings.RemoveAt(i);
                 i--;
             } 
             StopAllPendingAudios();
@@ -152,13 +152,13 @@ namespace OSK
 
         public void Stop(string id)
         {
-            for (int i = 0; i < _listMusicInfos.Count; i++)
+            for (int i = 0; i < _listSoundPlayings.Count; i++)
             {
-                if (_listMusicInfos[i].SoundData.id == id)
+                if (_listSoundPlayings[i].SoundData.id == id)
                 {
-                    _listMusicInfos[i].AudioSource.Stop();
-                    Main.Pool.Despawn(_listMusicInfos[i].AudioSource);
-                    _listMusicInfos.RemoveAt(i);
+                    _listSoundPlayings[i].AudioSource.Stop();
+                    Main.Pool.Despawn(_listSoundPlayings[i].AudioSource);
+                    _listSoundPlayings.RemoveAt(i);
                     i--;
                 }
             }
@@ -167,13 +167,13 @@ namespace OSK
 
         public void Stop(AudioClip clip)
         {
-            for (int i = 0; i < _listMusicInfos.Count; i++)
+            for (int i = 0; i < _listSoundPlayings.Count; i++)
             {
-                if (_listMusicInfos[i].AudioSource.clip == clip)
+                if (_listSoundPlayings[i].AudioSource.clip == clip)
                 {
-                    _listMusicInfos[i].AudioSource.Stop();
-                    Main.Pool.Despawn(_listMusicInfos[i].AudioSource);
-                    _listMusicInfos.RemoveAt(i);
+                    _listSoundPlayings[i].AudioSource.Stop();
+                    Main.Pool.Despawn(_listSoundPlayings[i].AudioSource);
+                    _listSoundPlayings.RemoveAt(i);
                     i--;
                 }
             }
@@ -183,13 +183,13 @@ namespace OSK
 
         public void Stop(SoundType type)
         {
-            for (int i = 0; i < _listMusicInfos.Count; i++)
+            for (int i = 0; i < _listSoundPlayings.Count; i++)
             {
-                if (_listMusicInfos[i].SoundData.type == type)
+                if (_listSoundPlayings[i].SoundData.type == type)
                 {
-                    _listMusicInfos[i].AudioSource.Stop();
-                    Main.Pool.Despawn(_listMusicInfos[i].AudioSource);
-                    _listMusicInfos.RemoveAt(i);
+                    _listSoundPlayings[i].AudioSource.Stop();
+                    Main.Pool.Despawn(_listSoundPlayings[i].AudioSource);
+                    _listSoundPlayings.RemoveAt(i);
                     i--;
                 }
             }
@@ -224,7 +224,7 @@ namespace OSK
 
         public void PauseAll()
         {
-            foreach (var playingSound in _listMusicInfos)
+            foreach (var playingSound in _listSoundPlayings)
             {
                 playingSound.AudioSource.Pause();
                 playingSound.IsPaused = true;
@@ -233,7 +233,7 @@ namespace OSK
 
         public void Pause(SoundType type)
         {
-            foreach (var playingSound in _listMusicInfos)
+            foreach (var playingSound in _listSoundPlayings)
             {
                 if (playingSound.SoundData.type == type)
                 {
@@ -245,7 +245,7 @@ namespace OSK
 
         public void ResumeAll()
         {
-            foreach (var playingSound in _listMusicInfos)
+            foreach (var playingSound in _listSoundPlayings)
             {
                 playingSound.IsPaused = false;
                 playingSound.AudioSource.UnPause();
@@ -254,7 +254,7 @@ namespace OSK
 
         public void Resume(SoundType type)
         {
-            foreach (var playingSound in _listMusicInfos)
+            foreach (var playingSound in _listSoundPlayings)
             {
                 if (playingSound.SoundData.type == type)
                 {
@@ -270,8 +270,8 @@ namespace OSK
 
         public void SetMixerGroup(AudioMixerGroup mixerGroup)
         {
-            if (_listMusicInfos == null || _listMusicInfos.Count == 0) return;
-            foreach (var playing in _listMusicInfos.Where(playing => playing.AudioSource != null))
+            if (_listSoundPlayings == null || _listSoundPlayings.Count == 0) return;
+            foreach (var playing in _listSoundPlayings.Where(playing => playing.AudioSource != null))
             {
                 playing.AudioSource.outputAudioMixerGroup = mixerGroup;
             }
@@ -316,26 +316,27 @@ namespace OSK
 
         public void SetAllVolume(float volume)
         {
-            if (_listSoundInfos == null || _listSoundInfos.Count == 0)
-                return;
-            for (int i = 0; i < _listSoundInfos.Count; i++)
+            MusicVolume = volume;
+            SFXVolume = volume;
+
+            foreach (var s in _listSoundPlayings)
             {
-                _listSoundInfos[i].volume = volume;
-                return;
+                float multiplier = s.SoundData.type == SoundType.MUSIC ? MusicVolume : SFXVolume;
+                s.AudioSource.volume = s.RawVolume * multiplier;
             }
         }
 
         public void SetAllVolume(SoundType type, float volume)
         {
-            if (_listSoundInfos == null || _listSoundInfos.Count == 0)
-                return;
+            if (type == SoundType.MUSIC) MusicVolume = volume;
+            else if (type == SoundType.SFX) SFXVolume = volume;
 
-            foreach (var s in _listSoundInfos)
+            foreach (var s in _listSoundPlayings)
             {
-                if (s.type == type)
+                if (s.SoundData.type == type)
                 {
-                    s.volume = volume;
-                    return;
+                    float multiplier = type == SoundType.MUSIC ? MusicVolume : SFXVolume;
+                    s.AudioSource.volume = s.RawVolume * multiplier;
                 }
             }
         }
@@ -349,7 +350,7 @@ namespace OSK
 
         public AudioClip GetAudioClipInSO(string id)
         {
-            foreach (var t in _listSoundInfos)
+            foreach (var t in _listSoundData)
             {
                 if (t.id == id) return t.audioClip;
             }
@@ -359,7 +360,7 @@ namespace OSK
 
         public AudioClip GetAudioClipInSO(AudioClip audioClip)
         {
-            foreach (var t in _listSoundInfos)
+            foreach (var t in _listSoundData)
             {
                 if (t.audioClip == audioClip) return t.audioClip;
             }
@@ -369,7 +370,7 @@ namespace OSK
 
         public AudioClip GetAudioClipOnScene(string id)
         {
-            foreach (var t in _listMusicInfos)
+            foreach (var t in _listSoundPlayings)
             {
                 if (t.SoundData.id == id) return t.AudioSource.clip;
             }
@@ -389,12 +390,12 @@ namespace OSK
 
         public void DespawnMusicID(string id, float delay = 0)
         {
-            for (int i = 0; i < _listMusicInfos.Count; i++)
+            for (int i = 0; i < _listSoundPlayings.Count; i++)
             {
-                if (_listMusicInfos[i].SoundData.id == id)
+                if (_listSoundPlayings[i].SoundData.id == id)
                 {
-                    DespawnAudioSource(_listMusicInfos[i].AudioSource, delay).Run();
-                    _listMusicInfos.RemoveAt(i);
+                    DespawnAudioSource(_listSoundPlayings[i].AudioSource, delay).Run();
+                    _listSoundPlayings.RemoveAt(i);
                     i--;
                 }
             }
@@ -402,13 +403,13 @@ namespace OSK
 
         public void DestroyAll()
         {
-            for (int i = _listMusicInfos.Count - 1; i >= 0; i--)
+            for (int i = _listSoundPlayings.Count - 1; i >= 0; i--)
             {
-                Destroy(_listMusicInfos[i].AudioSource);
+                Destroy(_listSoundPlayings[i].AudioSource);
             }
             StopAllPendingAudios();
 
-            _listMusicInfos.Clear();
+            _listSoundPlayings.Clear();
             _playingTweens.Clear();
             Main.Pool.DestroyAllInGroup(KeyGroupPool.AudioSound);
         }

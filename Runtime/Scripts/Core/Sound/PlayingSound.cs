@@ -8,5 +8,6 @@ namespace OSK
         public AudioSource AudioSource = null;
         public bool IsPaused = false;
         public bool IsPlaying => AudioSource.isPlaying;
+        public float RawVolume = 1f;
     }
 }

@@ -31,10 +31,10 @@ namespace OSK
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Playing Sounds", EditorStyles.boldLabel, GUILayout.Width(400));
 
-            if (soundManager.GetListSoundInfos != null &&
-                (soundManager.GetListMusicInfos != null && soundManager.GetListMusicInfos.Count > 0))
+            if (soundManager.GetListSoundData != null &&
+                (soundManager.GetListSoundPlayings != null && soundManager.GetListSoundPlayings.Count > 0))
             {
-                EditorGUILayout.LabelField("Total Sounds Playing: " + soundManager.GetListMusicInfos.Count.ToString());
+                EditorGUILayout.LabelField("Total Sounds Playing: " + soundManager.GetListSoundPlayings.Count.ToString());
                 EditorGUILayout.LabelField("Total Sound Delay: " + soundManager.GetPlayingTweens.Count.ToString());
                 EditorGUILayout.Space();
 
@@ -42,7 +42,7 @@ namespace OSK
                 showMusic = EditorGUILayout.Foldout(showMusic, "Music");
                 if (showMusic)
                 {
-                    foreach (var playingSound in soundManager.GetListMusicInfos)
+                    foreach (var playingSound in soundManager.GetListSoundPlayings)
                     {
                         if (playingSound.SoundData.type == SoundType.MUSIC) 
                         {
@@ -55,7 +55,7 @@ namespace OSK
                 showSFX = EditorGUILayout.Foldout(showSFX, "SFX");
                 if (showSFX)
                 {
-                    foreach (var playingSound in soundManager.GetListMusicInfos)
+                    foreach (var playingSound in soundManager.GetListSoundPlayings)
                     {
                         if (playingSound.SoundData.type == SoundType.SFX) 
                         {
@@ -96,8 +96,8 @@ namespace OSK
             {
                 playingSound.AudioSource.Stop();
                 DestroyImmediate(playingSound.AudioSource.gameObject);
-                ((SoundManager)target).GetListMusicInfos.Remove(playingSound);
-                ((SoundManager)target).GetListMusicInfos.RefreshList();
+                ((SoundManager)target).GetListSoundPlayings.Remove(playingSound);
+                ((SoundManager)target).GetListSoundPlayings.RefreshList();
             }
             
             // volume slider
