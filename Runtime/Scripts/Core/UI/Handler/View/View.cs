@@ -131,7 +131,7 @@ namespace OSK
             else FinalizeImmediateClose();
         }
 
-        private bool IsViewContainerInitialized()
+        protected bool IsViewContainerInitialized()
         {
             if (_rootUI == null)
             {
@@ -142,18 +142,17 @@ namespace OSK
             return true;
         }
 
-        private bool IsAlreadyShowing()
+        protected bool IsAlreadyShowing()
         {
             if (_isShowing)
             {
                 Logg.LogWarning("View is already showing");
                 return true;
-            }
-
+            } 
             return false;
         }
 
-        private void FinalizeHide()
+        protected void FinalizeHide()
         {
             gameObject.SetActive(false);
             EventAfterClosed?.Invoke();
@@ -162,12 +161,12 @@ namespace OSK
                 _rootUI.Delete(this); 
         }
 
-        private void FinalizeImmediateClose()
+        protected void FinalizeImmediateClose()
         {
             gameObject.SetActive(false); 
         }
 
-        public void Delete()
+        public virtual void Delete()
         {
             _rootUI.Delete(this);
         }

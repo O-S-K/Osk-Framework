@@ -14,70 +14,77 @@ namespace OSK
         public static void StopTest(PerforInfo info) => info.StopTest();
 
         // Log
-        public static void Log(object log, Color color = default)
+        public static void Log(object log, Color color = default, bool isLog = true)
         {
             if (!_isLogEnabled)
                 return;
 
-            Debug.Log($"[OSK] {log}".Color(color));
-        }
+            if (isLog)
+                Debug.Log($"[OSK] {log}".Color(color));
+        } 
 
         // Log warning
-        public static void LogWarning(string log)
+        public static void LogWarning(string log,bool isLog = true)
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log($"[OSK] Warning {log}".Color(Color.yellow));
-        }
+            if (isLog)
+                Debug.Log($"[OSK] {log}".Color(Color.yellow));
+        } 
 
         // Log format
-        public static void LogFormat(string format, params object[] args)
+        public static void LogFormat(string format,bool isLog = true, params object[] args)
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log($"[OSK] {string.Format(format, args)}".Color(Color.green));
+            if (isLog)
+                Debug.Log($"[OSK] {string.Format(format, args)}".Color(Color.green));
         }
 
         // Log error
-        public static void LogError(string log)
+        public static void LogError(string log,bool isLog = true)
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log($"[OSK] Error {log}".Color(Color.red));
-        }
+            if (isLog)
+                Debug.Log($"[OSK] Error {log}".Color(Color.red));
+        } 
 
         // Log exception
-        public static void LogException(Exception ex)
+        public static void LogException(Exception ex,bool isLog = true)
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log($"[OSK] Exception {ex.Message}".Color(Color.red));
-        }
+            if (isLog)
+                Debug.Log($"[OSK] Exception {ex.Message}".Color(Color.red));
+        } 
 
         // Log object
-        public static void LogSerializeObject(object obj)
+        public static void LogSerializeObject(object obj,bool isLog = true)
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log($"[OSK] " + Newtonsoft.Json.JsonConvert.SerializeObject(obj));
-        }
-
+            if (isLog)
+                Debug.Log($"[OSK] " + Newtonsoft.Json.JsonConvert.SerializeObject(obj));
+        } 
+        
         // Log format time
-        public static void LogFormatTime(string format, params object[] args)
+        public static void LogFormatTime(string format,bool isLog = true, params object[] args)
         {
             if (!_isLogEnabled)
                 return;
-            Debug.Log($"[OSK] {string.Format(format, args)}".Color(Color.green));
+            if (isLog)
+                Debug.Log($"[OSK] {string.Format(format, args)}".Color(Color.green));
         }
 
-        public static void CheckNullRef(bool isNull, string name)
+        public static void CheckNullRef(bool isNull, string name,bool isLog = true)
         {
             if (!_isLogEnabled)
                 return;
 
-            if (isNull)
+            if (isNull && isLog)
             {
-                Logg.LogError($"Null Reference: {name}");
+                LogError($"Null Reference: {name}");
             }
         } 
     }
