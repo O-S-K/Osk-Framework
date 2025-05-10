@@ -393,7 +393,7 @@ namespace OSK
 
         public void HideIgnore<T>() where T : View
         {
-            foreach (var view in _listCacheView)
+            foreach (var view in _listCacheView.ToList())
             {
                 if (view == null)
                 {
@@ -417,7 +417,7 @@ namespace OSK
 
         public void HideIgnore<T>(T[] viewsToKeep) where T : View
         {
-            foreach (var view in _listCacheView)
+            foreach (var view in _listCacheView.ToList())
             {
                 if (view == null)
                 {
