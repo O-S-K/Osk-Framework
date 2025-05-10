@@ -52,7 +52,7 @@ namespace OSK
 
             if (_rootUI == null)
             {
-                Logg.LogError("RootUI is still null after initialization.");
+                Logg.LogError("[View] RootUI is still null after initialization.");
             }
 
             _depth = depth;
@@ -82,7 +82,7 @@ namespace OSK
             }
             else*/
             {
-                var childPages = _rootUI.GetSortedChildPages(_rootUI.GetViewContainer);
+                var childPages = _rootUI.GetSortedChildPages(_rootUI.ViewContainer);
                 if (childPages.Count == 0)
                     return;
 
@@ -116,7 +116,7 @@ namespace OSK
 
             _isShowing = false;
             EventBeforeClosed?.Invoke();
-            Logg.Log($"Hide {gameObject.name} {_isShowing}");
+            Logg.Log($"[View] Hide {gameObject.name} is showing {_isShowing}");
             
             if (_uiTransition != null) 
                 _uiTransition.CloseTrans(FinalizeHide);
@@ -135,7 +135,7 @@ namespace OSK
         {
             if (_rootUI == null)
             {
-                Logg.LogError("View Manager is null. Ensure that the View has been initialized before calling Open.");
+                Logg.LogError("[View] View Manager is null. Ensure that the View has been initialized before calling Open.");
                 return false;
             }
 
@@ -146,7 +146,7 @@ namespace OSK
         {
             if (_isShowing)
             {
-                Logg.LogWarning("View is already showing");
+                Logg.LogWarning("[View] View is already showing");
                 return true;
             } 
             return false;

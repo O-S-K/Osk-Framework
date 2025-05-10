@@ -39,8 +39,8 @@ namespace OSK
         public void Initialize()
         {
             _mainCamera = Camera.main;
-            _uiCamera = Main.UI.GetCanvas.worldCamera;
-            _canvasTransform = Main.UI.GetCanvas.transform;
+            _uiCamera = Main.UI.Canvas.worldCamera;
+            _canvasTransform = Main.UI.Canvas.transform;
 
             _effectSettings = Main.Configs.init.data.uiParticleSO.EffectSettings.ToList();
             if (_effectSettings.Count == 0)
@@ -332,7 +332,7 @@ namespace OSK
         private Vector3 ConvertToUICameraSpace(Transform pointTarget)
         {
             Vector3 uiWorldPosition;
-            if (Main.UI.GetCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            if (Main.UI.Canvas.renderMode == RenderMode.ScreenSpaceOverlay)
             {
                 if (pointTarget is RectTransform rectTarget)
                 {

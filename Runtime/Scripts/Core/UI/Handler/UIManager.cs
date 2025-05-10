@@ -9,8 +9,8 @@ namespace OSK
     {
         [ReadOnly, SerializeField] private RootUI _rootUI;
         public UIParticle UIParticle => _rootUI.Particle;
-        public Canvas GetCanvas => _rootUI.GetCanvas;
-        public Camera GetUICamera => _rootUI.GetUICamera;
+        public Canvas Canvas => _rootUI.Canvas;
+        public Camera UICamera => _rootUI.UICamera;
 
         public RootUI RootUI
         {
@@ -35,25 +35,25 @@ namespace OSK
  
         #region Views
 
-        public T Spawn<T>(string path, object[] data = null, bool isCache = true, bool isHidePrevPopup = false)
+        public T Spawn<T>(string path, object[] data = null, bool cache = true, bool hidePrevView = false)
             where T : View
         {
-            return RootUI.Spawn<T>(path, data, isCache, isHidePrevPopup);
+            return RootUI.Spawn<T>(path, data, cache, hidePrevView);
         }
 
-        public T SpawnCache<T>(T view, object[] data = null, bool isHidePrevPopup = false) where T : View
+        public T SpawnCache<T>(T view, object[] data = null, bool hidePrevView = false) where T : View
         {
-            return RootUI.Spawn(view, data, isHidePrevPopup);
+            return RootUI.Spawn(view, data, hidePrevView);
         }
 
-        public T Open<T>(object[] data = null, bool isHidePrevPopup = false) where T : View
+        public T Open<T>(object[] data = null, bool hidePrevView = false) where T : View
         {
-            return RootUI.Open<T>(data, isHidePrevPopup);
+            return RootUI.Open<T>(data, hidePrevView);
         }
 
-        public void OpenPrevious()
+        public View OpenPrevious(bool hidePrevView = false)
         {
-            RootUI.OpenPrevious();
+           return RootUI.OpenPrevious( isHidePrevPopup: hidePrevView);
         }
 
         public T TryOpen<T>(object[] data = null, bool isHidePrevPopup = false) where T : View
@@ -61,9 +61,9 @@ namespace OSK
             return RootUI.TryOpen<T>(data, isHidePrevPopup);
         }
 
-        public void Open(View view, object[] data = null, bool isHidePrevPopup = false, bool checkShowing = true)
+        public void Open(View view, object[] data = null, bool hidePrevView = false, bool checkShowing = true)
         {
-            RootUI.Open(view, data, isHidePrevPopup, checkShowing);
+            RootUI.Open(view, data, hidePrevView, checkShowing);
         }
 
         public AlertView OpenAlert<T>(AlertSetup setup) where T : AlertView

@@ -38,10 +38,10 @@ namespace OSK
         public static Vector3 FlexPosition(Transform pointTarget, Camera camUI)
         {
             Vector3 worldPosition;
-            if (Main.UI.GetCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            if (Main.UI.Canvas.renderMode == RenderMode.ScreenSpaceOverlay)
             {
                 RectTransformUtility.ScreenPointToWorldPointInRectangle(pointTarget.GetRectTransform(),
-                    pointTarget.position, Main.UI.GetCanvas.worldCamera, out worldPosition);
+                    pointTarget.position, Main.UI.Canvas.worldCamera, out worldPosition);
             }
             else
             { 
@@ -55,7 +55,7 @@ namespace OSK
         public static Vector3 ConvertToUICameraSpace(Transform pointTarget, Camera mainCamera, Camera uiCamera)
         {
             Vector3 uiWorldPosition;
-            if (Main.UI.GetCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            if (Main.UI.Canvas.renderMode == RenderMode.ScreenSpaceOverlay)
             {
                 RectTransformUtility.ScreenPointToWorldPointInRectangle(pointTarget.GetRectTransform(),
                     pointTarget.position, uiCamera, out uiWorldPosition);

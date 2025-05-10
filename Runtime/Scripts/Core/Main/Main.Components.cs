@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
@@ -39,73 +40,97 @@ namespace OSK
         public MainModules mainModules;
         public ConfigInit configInit;
         public bool isDestroyingOnLoad = false;
+        public bool isLogInit = false;
 
         private void Awake()
         {
             if (isDestroyingOnLoad)
                 DontDestroyOnLoad(gameObject);
-            InitModules();
-            InitDataComponents();
+
+            InitModules(); 
+            InitDataComponents(); 
         }
+
         public void InitModules()
         {
-            foreach (ModuleType module in Enum.GetValues(typeof(ModuleType)))
+            foreach (ModuleType moduleType in Enum.GetValues(typeof(ModuleType)))
             {
-                if (module != ModuleType.None && (mainModules.Modules & module) != 0)
-                {
-                    string moduleName = module.ToString();
+                if (moduleType == ModuleType.None || (mainModules.Modules & moduleType) == 0) continue;
 
-                    GameObject newObject = new GameObject(moduleName);
-                    newObject.transform.SetParent(transform);
-                    var componentType = mainModules.GetComponentType(moduleName);
-                    if (componentType != null)
-                    {
-                        var _module = newObject.AddComponent(componentType) as GameFrameworkComponent;
-                        if (_module is MonoManager manager) Mono = manager;
-                        else if (_module is ServiceLocatorManager locator) Service = locator;
-                        else if (_module is ObserverManager observer) Observer = observer;
-                        else if (_module is EventBusManager eventBus) Event = eventBus;
-                        else if (_module is FSMManager fsm) Fsm = fsm;
-                        else if (_module is PoolManager pool) Pool = pool;
-                        else if (_module is CommandManager command) Command = command;
-                        else if (_module is DirectorManager scene) Director = scene;
-                        else if (_module is ResourceManager res) Res = res;
-                        else if (_module is StorageManager save) Storage = save;
-                        else if (_module is DataManager data) Data = data;
-                        else if (_module is NetworkManager network) Network = network;
-                        else if (_module is WebRequestManager webRequest) WebRequest = webRequest;
-                        else if (_module is GameConfigsManager configs) Configs = configs;
-                        else if (_module is UIManager ui) UI = ui;
-                        else if (_module is SoundManager sound) Sound = sound;
-                        else if (_module is LocalizationManager localization) Localization = localization;
-                        else if (_module is EntityManager entity) Entity = entity;
-                        else if (_module is TimeManager time) Time = time;
-                        else if (_module is NativeManager native) Native = native;
-                        else if (_module is BlackboardManager blackboard) Blackboard = blackboard; 
-                        else if (_module is ProcedureManager procedure) Procedure = procedure;
-                        else if (_module is GameInit gameInit) GameInit = gameInit;
-                        else
-                        {
-                            Logg.LogError($"Module {_module} not found");
-                        }
-                    }
-                    else
-                    {
-                        Logg.LogError($"Module {moduleName} not found");
-                    }
+                var newObject = new GameObject(moduleType.ToString());
+                newObject.transform.SetParent(transform);
+                var componentType = mainModules.GetComponentType(moduleType.ToString());
+                if (componentType != null)
+                {
+                    var module = newObject.AddComponent(componentType) as GameFrameworkComponent;
+                    AssignModuleInstance(module); 
+                     Logg.Log($"[Main] Module {moduleType} initialized.", Color.green, isLogInit);
+                }
+                else
+                {
+                    Logg.LogError($"[Main] Module {moduleType} not found in MainModules.");
                 }
             }
         }
+
+        private void AssignModuleInstance(GameFrameworkComponent module)
+        {
+            if (module is MonoManager manager) Mono = manager;
+            else if (module is ServiceLocatorManager locator) Service = locator;
+            else if (module is ObserverManager observer) Observer = observer;
+            else if (module is EventBusManager eventBus) Event = eventBus;
+            else if (module is FSMManager fsm) Fsm = fsm;
+            else if (module is PoolManager pool) Pool = pool;
+            else if (module is CommandManager command) Command = command;
+            else if (module is DirectorManager scene) Director = scene;
+            else if (module is ResourceManager res) Res = res;
+            else if (module is StorageManager save) Storage = save;
+            else if (module is DataManager data) Data = data;
+            else if (module is NetworkManager network) Network = network;
+            else if (module is WebRequestManager webRequest) WebRequest = webRequest;
+            else if (module is GameConfigsManager configs) Configs = configs;
+            else if (module is UIManager ui) UI = ui;
+            else if (module is SoundManager sound) Sound = sound;
+            else if (module is LocalizationManager localization) Localization = localization;
+            else if (module is EntityManager entity) Entity = entity;
+            else if (module is TimeManager time) Time = time;
+            else if (module is NativeManager native) Native = native;
+            else if (module is BlackboardManager blackboard) Blackboard = blackboard;
+            else if (module is ProcedureManager procedure) Procedure = procedure;
+            else if (module is GameInit gameInit) GameInit = gameInit;
+            else Logg.LogError($"[AssignModuleToField] Unknown module type: {module}");
+        }
+
         private void InitDataComponents()
         {
             var current = SGameFrameworkComponents.First;
             while (current != null)
             {
-                current.Value.OnInit();
+                try
+                {
+                    current.Value.OnInit();
+                }
+                catch (Exception e)
+                {
+                    Logg.LogError($"[InitData] Failed to initialize data component: {e.Message}");
+                }
+
                 current = current.Next;
             }
 
-            OSK.Logg.Log("Init Data Components Done!");
+            Logg.Log("[InitData] Init Data Components Done!", Color.green, isLogInit);
+        }
+
+        private void OnDestroy()
+        {
+            if (isDestroyingOnLoad) return;
+
+            var current = SGameFrameworkComponents.First;
+            while (current != null)
+            {
+                current.Value.OnDestroy();
+                current = current.Next;
+            }
         }
     }
 }

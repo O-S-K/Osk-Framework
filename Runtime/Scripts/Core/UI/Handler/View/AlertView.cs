@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace OSK
 {
+    [System.Serializable]
     public class AlertSetup
     {
         public string title = "";
@@ -17,14 +18,24 @@ namespace OSK
     
     public class AlertView : OSK.View
     {
+        /// Title of the alert.
         public GameObject title;
+        /// Message of the alert.
         public GameObject message;
+        /// Buttons of the alert.
         public Button okButton;
+        /// Cancel button of the alert.
         public Button cancelButton;
-        public float timeHide;
+        /// Time to hide the alert.
+        public float timeHide = 0;
 
         public void SetData(AlertSetup setup)
         {
+            if(setup == null)
+            {
+                Logg.LogError("AlertView: setup is null.");
+                return;
+            }
             SetTile(setup.title);
             SetMessage(setup.message);
             SetOkButton(setup.onOk);
@@ -34,38 +45,30 @@ namespace OSK
 
         private void SetTile(string _title)
         {
-            if (string.IsNullOrEmpty(_title))
-                return;
-            if (title.GetComponent<TMP_Text>())
-            {
-                title.GetComponent<TMP_Text>().text = _title;
-            }
-            else if (title.GetComponent<Text>())
-            {
-                title.GetComponent<Text>().text = _title;
-            }
-            else
-            {
-                Logg.LogError("AlertView: title No Text or TMP_Text component found on message object.");
-            }
+            SetTextComponent(title, _title, "Title");
         }
         
-
         private void SetMessage(string _message)
         {
-            if (string.IsNullOrEmpty(_message))
+            SetTextComponent(message, _message, "Message");
+        }
+        
+        private void SetTextComponent(GameObject target, string text, string errorContext)
+        {
+            if (string.IsNullOrEmpty(text) || target == null)
                 return;
-            if (message.GetComponent<TMP_Text>())
+
+            if (target.TryGetComponent<TMP_Text>(out var tmp))
             {
-                message.GetComponent<TMP_Text>().text = _message;
+                tmp.text = text;
             }
-            else if (message.GetComponent<Text>())
+            else if (target.TryGetComponent<Text>(out var legacyText))
             {
-                message.GetComponent<Text>().text = _message;
+                legacyText.text = text;
             }
             else
             {
-                Logg.LogError("AlertView: Message No Text or TMP_Text component found on message object.");
+                Logg.LogError($"[AlertView] {errorContext}: No Text or TMP_Text component found.");
             }
         }
 
@@ -112,9 +115,16 @@ namespace OSK
             okButton?.onClick.RemoveAllListeners();
             cancelButton?.onClick.RemoveAllListeners();
         }
+        
+        protected virtual void OnDestroy()
+        {
+            okButton?.onClick.RemoveAllListeners();
+            cancelButton?.onClick.RemoveAllListeners();
+        }
 
         public virtual void OnClose()
         {
+            Logg.Log("AlertView: OnClose called. Time hide left " + timeHide);
             Destroy(gameObject);
         }
     }

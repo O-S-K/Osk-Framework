@@ -56,11 +56,19 @@ namespace OSK
         {
             var views = uiManager.ListViewHistory.ToList();
             if (views.Count == 0) return;
-            foreach (var view in views)
+            for (int i = 0; i < views.Count; i++)
             {
-                if(view == null)
+                var _view = views[i];
+                if (_view == null)
                     continue;
-                EditorGUILayout.LabelField(view.name);
+                try
+                {
+                    EditorGUILayout.LabelField($"{i}: " + _view.name, GUILayout.Width(400));
+                }
+                catch (System.Exception ex)
+                {
+                    Debug.LogWarning($"Error displaying view: {ex.Message}");
+                }
             }
         }
 
@@ -139,36 +147,46 @@ namespace OSK
             if (!Application.isPlaying)
                 return;
 
-            List<View> views = uiManager.GetAll(true);
-            foreach (var _view in views)
+            List<View> views = uiManager.GetAll(true).Where(v => v != null && !v.Equals(null)).ToList();
+
+            for (int i = 0; i < views.Count; i++)
             {
-                EditorGUILayout.BeginHorizontal();
-                
-                if(_view == null)
+                var _view = views[i];
+                if (_view == null)
                     continue;
-                EditorGUILayout.LabelField(_view.name, GUILayout.Width(400));
 
-                bool isVisible = uiManager.Get(_view).IsShowing;
-
-                GUI.enabled = !isVisible;
-                if (GUILayout.Button("Open"))
+                try
                 {
-                    uiManager.Open(_view, null, true);
-                }
+                    EditorGUILayout.BeginHorizontal();
 
-                GUI.enabled = isVisible;
-                if (GUILayout.Button("Hide"))
+                    EditorGUILayout.LabelField($"{i}: " + _view.name, GUILayout.Width(400));
+
+                    bool isVisible = uiManager.Get(_view).IsShowing;
+
+                    GUI.enabled = !isVisible;
+                    if (GUILayout.Button("Open"))
+                    {
+                        uiManager.Open(_view, null, true);
+                    }
+
+                    GUI.enabled = isVisible;
+                    if (GUILayout.Button("Hide"))
+                    {
+                        uiManager.Hide(_view);
+                    }
+
+                    if (GUILayout.Button("Delete"))
+                    {
+                        uiManager.Delete(_view);
+                    }
+
+                    GUI.enabled = true;
+                    EditorGUILayout.EndHorizontal();
+                }
+                catch (System.Exception ex)
                 {
-                    uiManager.Hide(_view);
+                    Debug.LogWarning($"Error displaying view: {ex.Message}");
                 }
-
-                if (GUILayout.Button("Delete"))
-                {
-                    uiManager.Delete(_view);
-                }
-
-                GUI.enabled = true;
-                EditorGUILayout.EndHorizontal();
             }
         }
     }
