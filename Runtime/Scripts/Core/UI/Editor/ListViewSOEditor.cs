@@ -3,20 +3,22 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
 
 namespace OSK
 {
     [CustomEditor(typeof(ListViewSO))]
-    public class ListViewSOEditor : Editor
+    public class ListViewSOEditor : OdinEditor
     {
         private Dictionary<EViewType, bool> viewTypeFoldouts = new Dictionary<EViewType, bool>();
         private ListViewSO listViewSO = null;
         private List<View> listViews = null;
-
+   
         private void OnEnable() => listViewSO = (ListViewSO)target;
 
         public override void OnInspectorGUI()
-        {
+        { 
             DrawDefaultInspector();
             EditorGUILayout.Space(10);
 

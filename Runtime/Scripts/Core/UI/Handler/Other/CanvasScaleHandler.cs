@@ -17,9 +17,30 @@ namespace OSK
         }
 
         public void SetupCanvasScaleForRatio()
+        { 
+            RootUI.CanvasScaler.matchWidthOrHeight = RatioCanvasScale() > 0.65f ? 1 : 0;
+        }
+        
+        public float RatioCanvasScale()
         {
-            float newRatio = (float)Screen.width / Screen.height;
-            RootUI.CanvasScaler.matchWidthOrHeight = newRatio > 0.65f ? 1 : 0;
+           return (float)Screen.width / Screen.height;
+        }
+        
+        public  bool IsIpad()
+        {
+#if (UNITY_IOS || UNITY_IPHONE) && !UNITY_EDITOR
+            if (UnityEngine.iOS.Device.generation.ToString().Contains("iPad"))
+                return true;
+#endif
+
+            float w = Screen.width;
+            float h = Screen.height;
+
+            // Normalize to portrait
+            if (w > h) (w, h) = (h, w);
+
+            // Aspect ratio check (iPad thường ~ 4:3 → ~1.33)
+            return (h / w) < 1.65f;
         }
 
         public void SetCanvasScaler(

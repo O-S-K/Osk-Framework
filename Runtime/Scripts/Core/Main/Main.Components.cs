@@ -37,10 +37,17 @@ namespace OSK
         public static GameInit GameInit { get; private set; }
 
         // Modules
+        [PropertyTooltip("Main modules to be initialized.")]
+        [Required, InlineEditor(Expanded = true)]
         public MainModules mainModules;
+        
+        [PropertyTooltip("Configuration for initialization.")]
+        [Required, InlineEditor(Expanded = true)]
         public ConfigInit configInit;
+        
         public bool isDestroyingOnLoad = false;
         public bool isLogInit = false;
+
 
         private void Awake()
         {

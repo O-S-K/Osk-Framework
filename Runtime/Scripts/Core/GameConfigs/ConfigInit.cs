@@ -8,6 +8,13 @@ namespace OSK
     [CreateAssetMenu(fileName = "ConfigInit", menuName = "OSK/Configs/ConfigInit", order = 0)]
     public class ConfigInit : ScriptableObject
     {
+        [TextArea]
+        [SerializeField, ReadOnly]
+        private string tooltip = "This is the configuration for the game. " +
+                                 "It contains all the settings and data that are used in the game. " +
+                                 "You can modify this file to change the game settings.";
+        
+        [Header("Game Settings")]
         public int targetFrameRate = 60;
         public int vSyncCount = 0;
         public bool logTest = true;
@@ -16,7 +23,9 @@ namespace OSK
         public string appstoreID = "";
 
         public string encryptKey = "b14ca5898a4e4133bbce2ea2315a1916";
-
+        
+        [Space]
+        [Header("Game Configs")]
         public DataConfigs data;
         public SettingConfigs setting;
         public PathConfigs path;
@@ -85,7 +94,7 @@ namespace OSK
 
     [System.Serializable]
     public class DataConfigs
-    {
+    { 
         public ListViewSO listViewS0;
         public ListSoundSO listSoundSo;
         public UIParticleSO uiParticleSO;

@@ -22,15 +22,19 @@ namespace OSK
         public List<View> ListCacheView => _listCacheView;
         public List<View> ListViewInit => _listViewInit;
 
-
-        [SerializeField] private Camera _uiCamera;
-        [SerializeField] private Canvas _canvas;
-        [SerializeField] private CanvasScaler _canvasScaler;
+        [Space]
+        [Title("References")]
+        [Required] [SerializeField] private Camera _uiCamera;
+        [Required] [SerializeField] private Canvas _canvas;
+        [Required] [SerializeField] private CanvasScaler _canvasScaler;
         [SerializeField] private UIParticle _uiParticle;
         [SerializeField] private Transform _viewContainer;
 
+        [Space]
+        [Title("Settings")]
         [SerializeField] private bool isPortrait = true;
         [SerializeField] private bool dontDestroyOnLoad = true;
+        [SerializeField] private bool isUpdateRatioScaler = true;
         [SerializeField] private bool enableLog = true;
 
 
@@ -42,16 +46,12 @@ namespace OSK
 
         public bool IsPortrait => isPortrait;
         public bool EnableLog => enableLog;
-
-
-        private void Awake()
+         
+        public void Initialize()
         {
             if (dontDestroyOnLoad)
                 DontDestroyOnLoad(gameObject);
-        }
-
-        public void Initialize()
-        {
+            
             var data = Main.Configs.init.data;
             if (data.listViewS0 != null)
             {
@@ -61,6 +61,25 @@ namespace OSK
             if (data.uiParticleSO != null)
             {
                 _uiParticle.Initialize();
+            }
+
+            if (isUpdateRatioScaler)
+            {
+                // check if the screen is in portrait mode
+                Main.UI.SetupCanvasScaleForRatio();
+                float newRatio = Main.UI.RatioCanvasScale();
+
+                if (Main.UI.IsIpad())
+                {
+                    Logg.Log($"[RootUI] iPad mode detected. Ratio: {newRatio}", isLog: enableLog);
+                }
+                else
+                {
+                    if (newRatio > 0.65f)
+                        Logg.Log($"[RootUI] Landscape mode detected. Ratio: {newRatio}", isLog: enableLog);
+                    else
+                        Logg.Log($"[RootUI] Portrait mode detected. Ratio: {newRatio}", isLog: enableLog);
+                }
             }
         }
 
@@ -298,8 +317,7 @@ namespace OSK
             }
 
             var view = SpawnAlert(viewPrefab);
-            view.Open();
-            view.SetData(setup);
+            view.Open(new object[] { setup });
             Logg.Log($"[View] Opened view: {view.name}", isLog: enableLog);
             return view;
         }
@@ -345,7 +363,11 @@ namespace OSK
         public View Get(View view)
         {
             var _view = GetAll(true).Find(x => x == view);
-            if (_view != null) return _view;
+            if (_view != null)
+            {
+                Logg.Log($"[View] Found view: {_view.name} is showing {_view.IsShowing}", isLog: enableLog);
+                return _view;
+            }
 
             Logg.LogError($"[View] Can't find view: {view.name}", isLog: enableLog);
             return null;
@@ -353,11 +375,15 @@ namespace OSK
 
         public List<View> GetAll(bool isInitOnScene)
         {
-            if (isInitOnScene)
+            if (isInitOnScene) // check if the view is already initialized
                 return _listCacheView;
 
             var views = _listViewInit.FindAll(x => x.isInitOnScene);
-            if (views.Count > 0) return views;
+            if (views.Count > 0)
+            {
+                Logg.Log($"[View] Found {views.Count} views", isLog: enableLog);
+                return views;
+            }
 
             Logg.LogError($"[View] Can't find any view", isLog: enableLog);
             return null;
@@ -527,8 +553,8 @@ namespace OSK
 
             Logg.Log($"[View] Delete view: {view.name}", isLog: enableLog);
             _listCacheView.Remove(view);
-            Destroy(view.gameObject);
             action?.Invoke();
+            Destroy(view.gameObject);
         }
 
         #endregion

@@ -34,7 +34,7 @@ namespace OSK
 
         [Space(10)] [Title("Setup Modules")]
         [ReadOnly]
-        public string title = "Select the modules you want to enable in the game.";
+        public string title = "Select the modules you want to enable use in the game.";
 
         [Button]
         private void EnableAllModule()

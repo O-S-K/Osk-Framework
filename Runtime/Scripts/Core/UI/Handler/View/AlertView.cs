@@ -18,22 +18,20 @@ namespace OSK
     
     public class AlertView : OSK.View
     {
-        /// Title of the alert.
-        public GameObject title;
-        /// Message of the alert.
-        public GameObject message;
-        /// Buttons of the alert.
+        public GameObject title; /// Title of the alert (require text in component).
+        public GameObject message;  /// Message of the alert (require text in component).
+        
         public Button okButton;
-        /// Cancel button of the alert.
         public Button cancelButton;
-        /// Time to hide the alert.
         public float timeHide = 0;
-
-        public void SetData(AlertSetup setup)
+ 
+        protected override void SetData(object[] data)
         {
+            base.SetData(data);
+            var setup = data[0] as AlertSetup;
             if(setup == null)
             {
-                Logg.LogError("AlertView: setup is null.");
+                Logg.LogError("AlertView: setup is null. if override this method, remove base.SetData(setup).");
                 return;
             }
             SetTile(setup.title);
@@ -41,19 +39,12 @@ namespace OSK
             SetOkButton(setup.onOk);
             SetCancelButton(setup.onCancel);
             SetTimeHide(setup.timeHide);
-        } 
+        }
 
-        private void SetTile(string _title)
-        {
-            SetTextComponent(title, _title, "Title");
-        }
-        
-        private void SetMessage(string _message)
-        {
-            SetTextComponent(message, _message, "Message");
-        }
-        
-        private void SetTextComponent(GameObject target, string text, string errorContext)
+         
+        protected virtual void SetTile(string _title) =>  SetTextComponent(title, _title, "Title");
+        protected virtual  void SetMessage(string _message) => SetTextComponent(message, _message, "Message");
+        protected virtual  void SetTextComponent(GameObject target, string text, string errorContext)
         {
             if (string.IsNullOrEmpty(text) || target == null)
                 return;
@@ -72,7 +63,7 @@ namespace OSK
             }
         }
 
-        private void SetOkButton(Action onOk)
+        protected virtual  void SetOkButton(Action onOk)
         {
             if (onOk == null)
             {
@@ -87,7 +78,7 @@ namespace OSK
             });
         }
 
-        private void SetCancelButton(Action onCancel)
+        protected virtual  void SetCancelButton(Action onCancel)
         {
             if (onCancel == null)
             {

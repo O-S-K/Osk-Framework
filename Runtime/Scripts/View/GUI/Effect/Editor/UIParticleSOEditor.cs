@@ -19,6 +19,7 @@ namespace OSK
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+            base.OnInspectorGUI();
 
             GUIStyle titleStyle0 = new GUIStyle(EditorStyles.boldLabel)
             {

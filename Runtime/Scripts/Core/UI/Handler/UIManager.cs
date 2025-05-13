@@ -61,9 +61,9 @@ namespace OSK
             return RootUI.TryOpen<T>(data, isHidePrevPopup);
         }
 
-        public void Open(View view, object[] data = null, bool hidePrevView = false, bool checkShowing = true)
+        public void Open(View view, object[] data = null, bool hidePrevView = false)
         {
-            RootUI.Open(view, data, hidePrevView, checkShowing);
+            RootUI.Open(view, data, hidePrevView);
         }
 
         public AlertView OpenAlert<T>(AlertSetup setup) where T : AlertView
@@ -100,24 +100,7 @@ namespace OSK
         public T Get<T>(bool isInitOnScene = true) where T : View
         {
             return RootUI.Get<T>(isInitOnScene);
-        }
-
-        public T GetOrOpen<T>(object[] data = null, bool hidePrevView = false) where T : View
-        {
-            var view = RootUI.Get<T>();
-            if (view == null)
-            {
-                if (!view.IsShowing)
-                    view = Open<T>(data, hidePrevView);
-            }
-            else
-            {
-                if (!view.IsShowing)
-                    view.Open(data);
-            }
-
-            return view;
-        }
+        } 
 
         public bool IsShowing(View view)
         {

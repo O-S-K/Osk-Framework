@@ -187,7 +187,8 @@ namespace OSK
         public static string GetColorHtml(this string str, Color color)
         {
             string htmlColor = ColorUtility.ToHtmlStringRGBA(color);
-            return $"<color=#{htmlColor}>{str}</color>";
+            string result = "<color=#" + htmlColor + ">" + str + "</color>";
+            return result;
         }
     }
 }

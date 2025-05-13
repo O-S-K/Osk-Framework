@@ -1,11 +1,12 @@
 #if UNITY_EDITOR
+using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
 namespace OSK
 {
     [CustomEditor(typeof(Main))]
-    public class MainEditor : Editor
+    public class MainEditor : OdinEditor
     {
         private Main main;
 

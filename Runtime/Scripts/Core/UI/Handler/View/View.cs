@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Sirenix.OdinInspector;
@@ -6,6 +8,22 @@ namespace OSK
 {
     public class View : MonoBehaviour
     {
+        [Header("Datas")]
+        [ShowInInspector, ReadOnly]
+        private object[] data;
+        public object[] Data
+        {
+            get => data;
+            set
+            {
+                data = value;
+                string details = string.Join(", ", data.Select(d =>
+                    d == null ? "null" : $"{d.GetType().Name}({d})"));
+                Debug.Log($"[DebugData] {GetType().Name} received data: [{details}]");
+            }
+        }
+        
+        
         [Header("Settings")]
         [EnumToggleButtons]
         public EViewType viewType = EViewType.Popup;
@@ -96,8 +114,14 @@ namespace OSK
 
         public virtual void Open(object[] data = null)
         {
-            if (!IsViewContainerInitialized() || IsAlreadyShowing()) return;
+            if (!IsViewContainerInitialized()) return;
+            if (IsAlreadyShowing())
+            {
+                SetData(data);
+                return;
+            }
 
+            SetData(data);
             _isShowing = true;
             EventBeforeOpened?.Invoke();
             gameObject.SetActive(true);
@@ -109,7 +133,57 @@ namespace OSK
                 _uiTransition.OpenTrans(() => EventAfterOpened?.Invoke());
             else EventAfterOpened?.Invoke();
         }
-                  
+        
+        // example: SetData(new object[]{1,2,3,4,5});
+        protected virtual void SetData(object[] data = null)
+        {
+            if (data == null || data.Length == 0)
+            {
+                Logg.Log($"[SetData] No data passed to {GetType().Name}");
+                return;
+            }
+
+            this.data = data;
+
+#if UNITY_EDITOR
+            // log data in editor
+            var sb = new System.Text.StringBuilder();
+            string htmlColorHead = ColorUtils.LimeGreen.ToHex();
+            string htmlColorChill = ColorUtils.Chartreuse.ToHex();
+            
+            sb.AppendLine($"<color={htmlColorHead}>[SetData] [{GetType().Name}] received {data.Length} parameters, click to expand:</color>");
+            for (int i = 0; i < data.Length; i++)
+            {
+                object param = data[i];
+                if (param == null)
+                {
+                    sb.AppendLine($"<color={htmlColorChill}>  - [{i}] (null): null</color>");
+                    continue;
+                }
+
+                System.Type type = param.GetType();
+                string typeName = type.Name;
+
+                if (param is IEnumerable enumerable && type != typeof(string))
+                {
+                    sb.AppendLine($"<color={htmlColorChill}>  - ({typeName}):</color>");
+                    int index = 0;
+                    foreach (var item in enumerable)
+                    {
+                        string itemStr = item?.ToString() ?? "null";
+                        sb.AppendLine($"<color={htmlColorChill}>       • [{index++}] {itemStr}</color>");
+                    }
+                }
+                else
+                {
+                    string valueStr = param.ToString();
+                    sb.AppendLine($"<color={htmlColorChill}>  - [{i}] ({typeName}): {valueStr}</color>");
+                }
+            }
+            Debug.Log(sb.ToString());
+#endif
+        }
+
         public virtual void Hide()
         {
             if (!_isShowing) return;
