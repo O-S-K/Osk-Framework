@@ -119,7 +119,7 @@ namespace OSK
                         {
                             if (IsDuplicateAudioClip(listSoundSo, newAudioClip))
                             {
-                                Debug.LogError(
+                                Logg.LogError(
                                     $"AudioClip {newAudioClip.name} already exists in the list. Cannot add duplicate.");
                             }
                             else
@@ -253,7 +253,7 @@ namespace OSK
         {
             if (names.Count == 0)
             {
-                Debug.LogWarning("No sound names provided!");
+                Logg.LogWarning("No sound names provided!");
                 return;
             }
 
@@ -277,12 +277,12 @@ namespace OSK
             if (File.Exists(filePath))
             {
                 File.WriteAllText(filePath, sbExtensions.ToString() + sbEnum.ToString());
-                Debug.Log($"Updated Enum '{enumName}' at {filePath}");
+                Logg.Log($"Updated Enum '{enumName}' at {filePath}");
             }
             else
             {
                 File.WriteAllText(filePath, sbExtensions.ToString() + sbEnum.ToString());
-                Debug.Log($"Created Enum '{enumName}' at {filePath}");
+                Logg.Log($"Created Enum '{enumName}' at {filePath}");
             }
 
             AssetDatabase.Refresh();

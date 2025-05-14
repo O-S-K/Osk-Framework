@@ -18,7 +18,7 @@ namespace OSK
         {
             if (audioClip == null)
             {
-                Debug.LogWarning("AudioClip is null.");
+                Logg.LogWarning("AudioClip is null.");
                 return;
             }
             EditorAudioHelper.PlayClip(audioClip);
@@ -28,7 +28,7 @@ namespace OSK
         {
             if (audioClip == null)
             {
-                Debug.LogWarning("AudioClip is null.");
+                Logg.LogWarning("AudioClip is null.");
                 return;
             }
             EditorAudioHelper.StopClip(audioClip);

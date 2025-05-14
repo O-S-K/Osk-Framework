@@ -313,8 +313,7 @@ namespace OSK
             {
                 Logg.Log($"_listMusicInfos[{i}]: {_listSoundPlayings[i].SoundData.id}");
             }
-
-            Debug.Log($"11. RunInBackground: {Application.runInBackground}");
+ 
             Logg.Log("End SoundManager Status");
         }
     }

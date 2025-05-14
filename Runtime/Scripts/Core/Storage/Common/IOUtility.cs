@@ -7,7 +7,7 @@ namespace OSK
 {
     public static class IOUtility
     {
-        public static string streamingAssetsPath
+        public static string StreamingAssetsPath
         {
             get
             {

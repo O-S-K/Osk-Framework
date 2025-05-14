@@ -67,7 +67,7 @@ namespace OSK
                 }
                 catch (System.Exception ex)
                 {
-                    Debug.LogWarning($"Error displaying view: {ex.Message}");
+                    Logg.LogWarning($"Error displaying view: {ex.Message}");
                 }
             }
         }
@@ -185,7 +185,7 @@ namespace OSK
                 }
                 catch (System.Exception ex)
                 {
-                    Debug.LogWarning($"Error displaying view: {ex.Message}");
+                    Logg.LogWarning($"Error displaying view: {ex.Message}");
                 }
             }
         }

@@ -19,7 +19,7 @@ namespace OSK
                 data = value;
                 string details = string.Join(", ", data.Select(d =>
                     d == null ? "null" : $"{d.GetType().Name}({d})"));
-                Debug.Log($"[DebugData] {GetType().Name} received data: [{details}]");
+                Logg.Log($"[DebugData] {GetType().Name} received data: [{details}]");
             }
         }
         

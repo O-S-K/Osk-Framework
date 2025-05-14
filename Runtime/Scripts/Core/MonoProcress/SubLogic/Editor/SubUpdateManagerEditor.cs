@@ -12,30 +12,28 @@ namespace OSK
        
         private void OnEnable()
         {
-            Debug.Log($"[Editor] Checking target: {target?.GetType().Name}");
+            Logg.Log($"[Editor] Checking target: {target?.GetType().Name}");
 
             if (target is IHasSubUpdateContainer hasContainer)
             {
                 containerObject = hasContainer;
-                Debug.Log($"[Editor] ✅ Found SubUpdateContainer in {target.GetType().Name}");
+                Logg.Log($"[Editor] ✅ Found SubUpdateContainer in {target.GetType().Name}");
             }
             else
             {
-                Debug.Log($"[Editor] ❌ {target.GetType().Name} does NOT implement IHasSubUpdateContainer");
+                Logg.Log($"[Editor] ❌ {target.GetType().Name} does NOT implement IHasSubUpdateContainer");
             }
             
             EditorApplication.delayCall += () =>
             {
-                Debug.Log("Force refresh Editor...");
+                Logg.Log("Force refresh Editor...");
                 Repaint(); 
             };
         }
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
-            Debug.Log("OnInspectorGUI");
+            base.OnInspectorGUI(); 
             if (containerObject == null) return;
 
             SubUpdateContainer container = containerObject.GetSubUpdateContainer();

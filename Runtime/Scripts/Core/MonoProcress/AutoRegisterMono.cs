@@ -20,17 +20,17 @@ namespace OSK
       {
           public void Tick()
           {
-              Debug.Log("Player Update");
+              Logg.Log("Player Update");
           }
 
           public void FixedTick()
           {
-              Debug.Log("Player Fixed Update");
+              Logg.Log("Player Fixed Update");
           }
 
           public void LateTick()
           {
-              Debug.Log("Player Late Update");
+              Logg.Log("Player Late Update");
           }
       } 
      */
