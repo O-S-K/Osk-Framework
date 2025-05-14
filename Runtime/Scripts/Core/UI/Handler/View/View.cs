@@ -51,10 +51,34 @@ namespace OSK
         [ShowIf(nameof(isShowEvent))] public UnityEvent EventBeforeClosed;
         [ShowIf(nameof(isShowEvent))] public UnityEvent EventAfterClosed;
         
+          protected IReferenceHolder _referenceHolder;
+                public IReferenceHolder ReferenceHolder
+                {
+                    get
+                    {
+                        if (_referenceHolder == null)
+                            _referenceHolder = GetComponent<IReferenceHolder>();
+                        return _referenceHolder;
+                    }
+                }
+        
         [Button]
         public void AddUITransition()
         {
             _uiTransition = gameObject.GetOrAdd<UITransition>();
+        }
+        
+        [Button]
+        public void AddBindRef()
+        {
+            if (GetComponent<IReferenceHolder>() != null)
+            {
+                Debug.LogWarning("ReferenceHolder already exists.");
+                return;
+            }
+       
+            gameObject.AddComponent<MonoReferenceHolder>();
+            Debug.Log("ReferenceHolder added.");
         }
         
 
@@ -67,6 +91,8 @@ namespace OSK
 
             _uiTransition = GetComponent<UITransition>();
             _uiTransition?.Initialize();
+            _referenceHolder = GetComponent<IReferenceHolder>();
+            
 
             if (_rootUI == null)
             {
@@ -76,6 +102,12 @@ namespace OSK
             _depth = depth;
             SetDepth(depth);
             EventAfterInit?.Invoke();
+        }
+        
+        public void IterateRefs(System.Action<string, object> func) => _referenceHolder.Foreach(func);
+        public T GetRef<T>(string name, bool isTry = false) where T : Object
+        {
+            return _referenceHolder.GetRef<T>(name, isTry);
         }
   
         public void SetDepth(EViewType viewType, int depth)

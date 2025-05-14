@@ -2,7 +2,8 @@
 
 The **OSK Framework** is a modular Unity framework designed to streamline game development. It provides tools to manage game systems like events, localization, sound, and more, ensuring high performance, scalability, and maintainability.
 
-**version 2.0
+**version 2.1.0
+- Add auto bind Refs UI
 
 ---
 
