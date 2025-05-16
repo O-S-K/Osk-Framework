@@ -28,6 +28,8 @@ namespace OSK
             // Set the clip and play
             _editorAudioSource.clip = clip;
             _editorAudioSource.Play();
+            
+            Debug.Log($"Playing clip: {clip.name} + pitch: {_editorAudioSource.pitch} + volume: {_editorAudioSource.volume}");
         }
 
         public static void StopClip(AudioClip clip)
@@ -59,6 +61,19 @@ namespace OSK
             // Set the volume
             if(_editorAudioSource != null)
                _editorAudioSource.volume = volume;
+        }
+        
+        public static void SetPitch(AudioClip clip, float pitch)
+        {
+            if (clip == null)
+            {
+                Debug.LogWarning("AudioClip is null.");
+                return;
+            }
+
+            // Set the pitch
+            if(_editorAudioSource != null)
+               _editorAudioSource.pitch = pitch;
         }
     }
 }

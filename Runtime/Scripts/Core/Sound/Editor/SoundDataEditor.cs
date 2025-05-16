@@ -14,12 +14,14 @@ namespace OSK
     [CustomEditor(typeof(ListSoundSO))]
     public class SoundDataEditor : Editor
     {
-        private Dictionary<string, Dictionary<SoundType, bool>> soundTypeFoldoutsPerGroup = new Dictionary<string, Dictionary<SoundType, bool>>();
+        private Dictionary<string, Dictionary<SoundType, bool>> soundTypeFoldoutsPerGroup =
+            new Dictionary<string, Dictionary<SoundType, bool>>();
+
         private Dictionary<string, bool> groupFoldouts = new Dictionary<string, bool>();
-        
+
         [ListDrawerSettings(Expanded = true, DraggableItems = false, ShowIndexLabels = true)]
-        private static List<string> groupNames = new List<string>() { "Music", "UI"};
-        
+        private static List<string> groupNames = new List<string>() { "Music", "UI" };
+
         private ListSoundSO listSoundSo;
 
         private bool showTable = true;
@@ -64,10 +66,10 @@ namespace OSK
                 .Distinct()
                 .OrderBy(x => x);
 
-            
+
             EditorGUILayout.Space(20);
             EditorGUILayout.TextArea("Sound Groups", EditorStyles.boldLabel);
-            
+
             EditorGUI.indentLevel++;
             foreach (var group in groups)
             {
@@ -94,9 +96,10 @@ namespace OSK
 
                     if (!soundTypeFoldoutsPerGroup[group].ContainsKey(type))
                         soundTypeFoldoutsPerGroup[group][type] = true;
- 
+
                     EditorGUI.indentLevel += 2;
-                    soundTypeFoldoutsPerGroup[group][type] = EditorGUILayout.Foldout(soundTypeFoldoutsPerGroup[group][type], type.ToString());
+                    soundTypeFoldoutsPerGroup[group][type] =
+                        EditorGUILayout.Foldout(soundTypeFoldoutsPerGroup[group][type], type.ToString());
                     EditorGUI.indentLevel -= 2;
 
                     if (!soundTypeFoldoutsPerGroup[group][type]) continue;
@@ -128,22 +131,24 @@ namespace OSK
                             }
                         }
 
-                        soundData.UpdateId(); 
-                        int currentGroupIndex =  groupNames.IndexOf(soundData.group);
+                        soundData.UpdateId();
+                        int currentGroupIndex = groupNames.IndexOf(soundData.group);
                         if (currentGroupIndex == -1)
                         {
                             currentGroupIndex = 0;
                             soundData.group = groupNames[0];
                         }
+
                         // Group Dropdown
                         int newGroupIndex = EditorGUILayout.Popup(currentGroupIndex, groupNames.ToArray(),
                             GUILayout.Width(100));
                         if (newGroupIndex != currentGroupIndex)
                         {
-                            soundData.group = groupNames[newGroupIndex]; 
+                            soundData.group = groupNames[newGroupIndex];
                         }
 
                         // Type Dropdown
+                        GUILayout.Space(-30);
                         soundData.type = (SoundType)EditorGUILayout.EnumPopup(soundData.type, GUILayout.Width(110));
 
                         // Volume Slider
@@ -157,14 +162,52 @@ namespace OSK
                             soundData.SetVolume(newVolume);
                         }
 
-                        GUILayout.Label(soundData.volume.ToString("F2"), GUILayout.Width(30));
+                        GUILayout.Label(soundData.volume.ToString("F1"), GUILayout.Width(25));
+
+                   
+                        float oldMin = soundData.pitch.min;
+                        float oldMax = soundData.pitch.max;
+
+                        GUILayout.Space(-40);
+                        // Pitch Slider
+                        Rect sliderRect = GUILayoutUtility.GetRect(100, 20, GUILayout.ExpandWidth(false));
+                        float newMin = oldMin;
+                        float newMax = oldMax;
+                        
+                        EditorGUI.MinMaxSlider(sliderRect, ref newMin, ref newMax, 0.1f, 2.0f);
+
+                        string minStr = newMin.ToString("F1");
+                        string maxStr = newMax.ToString("F1");
+
+                        GUILayout.Space(-40);
+                        minStr = EditorGUILayout.DelayedTextField(minStr, GUILayout.Width(70));
+                        GUILayout.Space(-40);
+                        maxStr = EditorGUILayout.DelayedTextField(maxStr, GUILayout.Width(70));
+
+                        if (float.TryParse(minStr, out float parsedMin))
+                        {
+                            newMin = Mathf.Clamp(Mathf.Round(parsedMin * 10f) / 10f, 0.1f, newMax);
+                        }
+
+                        if (float.TryParse(maxStr, out float parsedMax))
+                        {
+                            newMax = Mathf.Clamp(Mathf.Round(parsedMax * 10f) / 10f, newMin, 2.0f);
+                        }
+
+                        if (Mathf.Abs(newMin - oldMin) > 0.01f || Mathf.Abs(newMax - oldMax) > 0.01f)
+                        {
+                            var newPitch = new MinMaxFloat(newMin, newMax); 
+                            soundData.pitch = newPitch;                     
+                            soundData.SetPitch(newPitch); 
+                        }
 
                         // Play Button
+                        GUILayout.Space(30);
                         GUI.enabled = soundData.audioClip != null && !soundData.IsPlaying();
                         GUI.color = soundData.IsPlaying() ? Color.green : Color.white;
 
                         if (GUILayout.Button("Play", GUILayout.Width(50)))
-                            soundData.Play();
+                            soundData.Play(soundData.pitch);
 
                         GUI.color = Color.white;
 
@@ -181,17 +224,19 @@ namespace OSK
                             i--;
                             continue;
                         }
+
                         EditorGUILayout.EndHorizontal();
                         EditorGUI.indentLevel -= 2;
-                    } 
+                    }
 
                     DrawRowBorder();
                 }
             }
+
             EditorGUI.indentLevel--;
 
             EditorGUILayout.Space();
-            EditorGUILayout.BeginHorizontal(); 
+            EditorGUILayout.BeginHorizontal();
 
             EditorGUILayout.Space(50);
             if (GUILayout.Button("Add New Sound Info", GUILayout.Width(200)))
@@ -200,12 +245,12 @@ namespace OSK
             }
 
             EditorGUILayout.Space();
-            EditorGUILayout.EndHorizontal();  
+            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space(20);
             EditorGUILayout.LabelField("Select Folder Path", EditorStyles.boldLabel);
 
-            EditorGUILayout.BeginHorizontal();  
+            EditorGUILayout.BeginHorizontal();
             EditorGUILayout.TextField("Folder Path", listSoundSo.filePathSoundID);
 
             if (GUILayout.Button("Select Folder", GUILayout.Width(100)))
@@ -226,7 +271,7 @@ namespace OSK
                 EditorUtility.RevealInFinder(path);
             }
 
-            EditorGUILayout.EndHorizontal();  
+            EditorGUILayout.EndHorizontal();
 
 
             EditorGUILayout.Space();
@@ -247,7 +292,7 @@ namespace OSK
                 EditorUtility.SetDirty(target);
             }
         }
-         
+
 
         private void GenerateEnum(string enumName, List<string> names)
         {
@@ -259,7 +304,7 @@ namespace OSK
 
             string filePath = listSoundSo.filePathSoundID;
             StringBuilder sbExtensions = new StringBuilder();
-            sbExtensions.AppendLine(); 
+            sbExtensions.AppendLine();
 
             StringBuilder sbEnum = new StringBuilder();
             sbEnum.AppendLine($"public enum {enumName}");
@@ -287,9 +332,9 @@ namespace OSK
 
             AssetDatabase.Refresh();
         }
-        
+
         private void DrawGroupNames()
-        { 
+        {
             for (int i = 0; i < groupNames.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
@@ -303,7 +348,7 @@ namespace OSK
                 if (GUILayout.Button("-", GUILayout.Width(25)))
                 {
                     groupNames.RemoveAt(i);
-                    i--; 
+                    i--;
                     continue;
                 }
 
@@ -325,11 +370,30 @@ namespace OSK
         private void DrawTableHeaders()
         {
             EditorGUI.indentLevel += 1;
-            EditorGUILayout.BeginHorizontal(); 
-            DrawTableCell("Audio Clip", 150, true);
+            EditorGUILayout.BeginHorizontal();
+            DrawTableCell("    Audio Clip", 165, true);
             EditorGUILayout.LabelField("Group", GUILayout.Width(100));
-            EditorGUILayout.LabelField("Type", GUILayout.Width(250));
-            EditorGUILayout.LabelField("Actions", GUILayout.Width(250));
+
+            GUILayout.Space(-30);
+            EditorGUILayout.LabelField("Type", GUILayout.Width(70));
+            EditorGUILayout.LabelField("Volume", GUILayout.Width(95));
+
+            GUILayout.Space(5);
+            EditorGUILayout.LabelField("Pitch", GUILayout.Width(75));
+
+            GUILayout.Space(-10);
+            EditorGUILayout.LabelField("Min", GUILayout.Width(75));
+            GUILayout.Space(-50);
+            EditorGUILayout.LabelField("Max", GUILayout.Width(75));
+
+
+            GUILayout.Space(-20);
+            EditorGUILayout.LabelField("Play", GUILayout.Width(75));
+            GUILayout.Space(-30);
+            EditorGUILayout.LabelField("Stop", GUILayout.Width(75));
+            GUILayout.Space(-20);
+            EditorGUILayout.LabelField("Remove", GUILayout.Width(100));
+
             EditorGUILayout.EndHorizontal();
             EditorGUI.indentLevel -= 1;
             DrawRowBorder();

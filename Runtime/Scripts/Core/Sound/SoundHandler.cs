@@ -23,7 +23,7 @@ namespace OSK
         [FoldoutGroup("Advanced", expanded: false)]
         [LabelText("VolumeFade")]
         [LabelWidth(100)]
-        public VolumeFade volumeFade = VolumeFade.Default;
+        public VolumeFade volumeFade = null;
 
         [FoldoutGroup("Advanced")]
         [PropertyTooltip("Higher = more important")]
@@ -31,8 +31,8 @@ namespace OSK
         [LabelWidth(100)]
         public int priority = 128;
 
-        [FoldoutGroup("Advanced")] [Range(0.1f, 3f)] [LabelWidth(100)]
-        public float pitch = 1;
+        [FoldoutGroup("Advanced")] [Range(0.1f, 2f)] [LabelWidth(100)]
+        public MinMaxFloat pitch = null;
 
         [FoldoutGroup("Advanced")] [PropertyRange(0, 10)] [LabelWidth(100)]
         public float playDelay = 0;
@@ -48,7 +48,7 @@ namespace OSK
 
         public SoundSetup(string id = "", AudioClip audioClip = null, SoundType type = SoundType.SFX,
             float startTime = 0, bool loop = false, VolumeFade volume = null, float playDelay = 0, int priority = 128,
-            float pitch = 1, Transform transform = null, int minDistance = 1, int maxDistance = 500)
+            MinMaxFloat pitch = default, Transform transform = null, int minDistance = 1, int maxDistance = 500)
         {
             this.id = id;
             this.audioClip = audioClip;
@@ -71,10 +71,10 @@ namespace OSK
             type = SoundType.SFX;
             startTime = 0;
             loop = false;
-            volumeFade = VolumeFade.Default;
+            volumeFade = null; // = null get value in SoundSO
             playDelay = 0;
             priority = 128;
-            pitch = 1;
+            pitch =  null; // = null get value in SoundSO
             transform = null;
             minDistance = 1;
             maxDistance = 500;
@@ -91,15 +91,13 @@ namespace OSK
         [LabelWidth(100)] [Min(0)] public float target = 1;
         [HorizontalGroup("Volume")]
         [LabelWidth(100)] [Min(0)] public float duration = 0;
-
+        
         public VolumeFade(float init = 0, float target = 1, float duration = 0)
         {
             this.init = init;
             this.target = target;
             this.duration = duration;
         }
-
-        public static VolumeFade Default => new VolumeFade(0, 1, 0);
     }
 
     public partial class SoundManager

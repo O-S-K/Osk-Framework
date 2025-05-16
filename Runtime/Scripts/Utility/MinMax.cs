@@ -17,6 +17,17 @@ namespace OSK
             this.min = min;
             this.max = max;
         }
+        public MinMaxFloat(float min, float max, bool randomize)
+        {
+            this.min = min;
+            this.max = max;
+
+            if (randomize)
+            {
+                this.min = Random.Range(min, max);
+                this.max = Random.Range(min, max);
+            }
+        }
 
         public float Clamp(float value)
         {

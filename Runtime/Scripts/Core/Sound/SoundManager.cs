@@ -16,7 +16,8 @@ namespace OSK
         public List<SoundData> GetListSoundData => _listSoundData;
         public List<PlayingSound> GetListSoundPlayings => _listSoundPlayings;
         public Dictionary<string, Tween> GetPlayingTweens => _playingTweens;
-
+        
+ 
         [SerializeField] private int maxCapacityMusic = 5;
         [SerializeField] private int maxCapacitySoundEffects = 10;
 
@@ -104,7 +105,7 @@ namespace OSK
 
         public AudioSource PlayAudioClip(AudioClip clip, SoundType soundType = SoundType.SFX, VolumeFade volume = null,
             float startTime = 0,
-            bool loop = false, float delay = 0, int priority = 128, float pitch = 1,
+            bool loop = false, float delay = 0, int priority = 128, MinMaxFloat pitch = null,
             Transform target = null, int minDistance = 1, int maxDistance = 500)
         {
             if ((loop && !IsEnableMusic) || !IsEnableSoundSFX) return null;
@@ -112,7 +113,17 @@ namespace OSK
 
             void PlayNow()
             {
-                var source = CreateAudioSource(clip.name, clip,soundType, startTime, volume, loop,
+                if (volume == null)
+                {
+                    var v = _listSoundData.FirstOrDefault(s => s.audioClip == clip).volume;
+                    volume = new VolumeFade(target: v);
+                }
+                
+                if(pitch == null)
+                    pitch =  _listSoundData.FirstOrDefault(s => s.audioClip == clip).pitch;
+                
+
+                var source = CreateAudioSource(clip.name, clip, soundType, startTime, volume, loop,
                     priority, pitch, target, minDistance, maxDistance);
             }
 
@@ -127,7 +138,7 @@ namespace OSK
         }
 
         public AudioSource Play(string id, VolumeFade volume = null, float startTime = 0,
-            bool loop = false, float delay = 0, int priority = 128, float pitch = 1,
+            bool loop = false, float delay = 0, int priority = 128, MinMaxFloat pitch = default,
             Transform target = null, int minDistance = 1, int maxDistance = 500)
         {
             if (!IsEnableMusic && !IsEnableSoundSFX) return null;
@@ -151,9 +162,17 @@ namespace OSK
 
             void PlayNow()
             {
-                var source = CreateAudioSource(id, data.audioClip,data.type , startTime, volume, loop, priority, pitch, target,
+                if (volume == null)
+                {
+                    var v = _listSoundData.FirstOrDefault(s => s.id == id).volume;
+                    volume = new VolumeFade(target: v);
+                }
+                
+                pitch ??= _listSoundData.FirstOrDefault(s => s.id == id).pitch;
+                
+                var source = CreateAudioSource(id, data.audioClip, data.type, startTime, volume, loop, priority, pitch,
+                    target,
                     minDistance, maxDistance);
-
             }
 
             if (delay > 0)
@@ -186,15 +205,20 @@ namespace OSK
 
         private AudioSource CreateAudioSource(string id, AudioClip clip, SoundType soundType, float startTime,
             VolumeFade volume, bool loop,
-            int priority, float pitch, Transform transform, int minDist, int maxDist)
+            int priority, MinMaxFloat pitch, Transform transform, int minDist, int maxDist)
         {
             var source = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, _parentGroup);
             source.Stop();
             source.name = id;
             source.clip = clip;
             source.loop = loop;
+            pitch ??= new MinMaxFloat(1, 1);
 
-            var playing = new PlayingSound { AudioSource = source, SoundData = new SoundData { id = clip.name, audioClip = clip, type = soundType } };
+            var playing = new PlayingSound
+            {
+                AudioSource = source,
+                SoundData = new SoundData { id = clip.name, audioClip = clip, type = soundType, pitch = pitch }
+            };
             float volumeMultiplier = soundType == SoundType.MUSIC ? MusicVolume : SFXVolume;
             volume ??= new VolumeFade(1);
             float finalTargetVolume = volume.target;
@@ -206,10 +230,7 @@ namespace OSK
                 {
                     playing.RawVolume = v;
                     source.volume = v * volumeMultiplier;
-                }).OnUpdate(() =>
-                {
-                    source.volume = playing.RawVolume * volumeMultiplier;
-                });
+                }).OnUpdate(() => { source.volume = playing.RawVolume * volumeMultiplier; });
             }
             else
             {
@@ -217,9 +238,8 @@ namespace OSK
                 source.volume = finalTargetVolume * volumeMultiplier;
             }
 
-
+            source.pitch = playing.SoundData.pitch.RandomValue;
             source.priority = priority;
-            source.pitch = pitch;
             source.minDistance = minDist;
             source.maxDistance = maxDist;
 
@@ -313,7 +333,7 @@ namespace OSK
             {
                 Logg.Log($"_listMusicInfos[{i}]: {_listSoundPlayings[i].SoundData.id}");
             }
- 
+
             Logg.Log("End SoundManager Status");
         }
     }

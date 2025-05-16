@@ -10,19 +10,26 @@ namespace OSK
         public SoundType type = SoundType.SFX;
         
         [Range(0, 1)] public float volume = 1;
+        public MinMaxFloat pitch =  new MinMaxFloat(1, 1);
         public string group = "Default";
 
 
 #if UNITY_EDITOR
-        public void Play()
+        public void Play(MinMaxFloat pitch)
         {
             if (audioClip == null)
             {
                 Logg.LogWarning("AudioClip is null.");
                 return;
             }
+            
+            if (pitch != null)
+            {
+                SetPitch(pitch);
+            }
+            
             EditorAudioHelper.PlayClip(audioClip);
-        }
+        } 
 
         public void Stop()
         {
@@ -39,6 +46,12 @@ namespace OSK
             this.volume = volume;
             EditorAudioHelper.SetVolume(audioClip, volume);
         }
+        
+        public void SetPitch(MinMaxFloat  pitch)
+        {
+            this.pitch = pitch;
+            EditorAudioHelper.SetPitch(audioClip, pitch.RandomValue);
+        } 
 
         public bool IsPlaying() => EditorAudioHelper.IsClipPlaying(audioClip);
 
