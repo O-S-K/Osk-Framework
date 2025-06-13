@@ -196,7 +196,7 @@ namespace OSK
 
         public View Open(View view, object[] data = null, bool hidePrevView = false, bool checkShowing = true)
         {
-            var _view = _listCacheView.FirstOrDefault(v => v == view);
+            var _view = _listCacheView.FirstOrDefault(v => v.GetType() == typeof(View)) as View;
             if (hidePrevView && _viewHistory.Count > 0)
             {
                 var prevView = _viewHistory.Peek();
@@ -205,7 +205,7 @@ namespace OSK
 
             if (_view == null)
             {
-                var viewPrefab = _listViewInit.FirstOrDefault(v => v == view);
+                var viewPrefab = _listViewInit.FirstOrDefault(v => v.GetType() == typeof(View)) as View;
                 if (viewPrefab == null)
                 {
                     Logg.LogError($"[View] Can't find view prefab for type: {view.GetType().Name}", isLog: enableLog);
@@ -228,8 +228,8 @@ namespace OSK
         }
 
         public T Open<T>(object[] data = null, bool hidePrevView = false, bool checkShowing = true) where T : View
-        {
-            var _view = _listCacheView.FirstOrDefault(v => v is T && v != null) as T;
+        { 
+            var _view = _listCacheView.FirstOrDefault(v => v.GetType() == typeof(T)) as T;
             if (hidePrevView && _viewHistory.Count > 0)
             {
                 var prevView = _viewHistory.Peek();
@@ -238,7 +238,7 @@ namespace OSK
 
             if (_view == null)
             {
-                var viewPrefab = _listViewInit.FirstOrDefault(v => v is T && v !) as T;
+                var viewPrefab = _listViewInit.FirstOrDefault(v => v.GetType() == typeof(T)) as T;
                 if (viewPrefab == null)
                 {
                     Logg.LogError($"[View] Can't find view prefab for type: {typeof(T).Name}", isLog: enableLog);
@@ -309,7 +309,7 @@ namespace OSK
         /// </summary>
         public AlertView OpenAlert<T>(AlertSetup setup) where T : AlertView
         {
-            var viewPrefab = _listViewInit.FirstOrDefault(v => v is T) as T;
+            var viewPrefab = _listViewInit.FirstOrDefault(v => v.GetType() == typeof(T)) as T;
             if (viewPrefab == null)
             {
                 Logg.LogError($"[View] Can't find view prefab for type: {typeof(T).Name}", isLog: enableLog);
