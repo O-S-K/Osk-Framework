@@ -36,7 +36,7 @@ namespace OSK
         }
 
         public override void OnInspectorGUI()
-        {
+        {             
             EditorGUILayout.BeginHorizontal();
             this.ShowSearchTool();
             EditorGUILayout.EndHorizontal();
@@ -61,6 +61,8 @@ namespace OSK
             scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Height(200));
             textCodeGeneration = GUILayout.TextField(textCodeGeneration, GUILayout.Height(100));
             GUILayout.EndScrollView();
+            
+            base.OnInspectorGUI();
         }
 
         protected virtual void OnShowInspectorGUI()
