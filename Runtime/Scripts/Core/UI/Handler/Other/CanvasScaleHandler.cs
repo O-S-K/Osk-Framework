@@ -18,13 +18,28 @@ namespace OSK
 
         public void SetupCanvasScaleForRatio()
         { 
-            RootUI.CanvasScaler.matchWidthOrHeight = RatioCanvasScale() > 0.65f ? 1 : 0;
+            if (RootUI?.CanvasScaler == null)
+            {
+                Logg.LogWarning("CanvasScaler  is not set up in the RootUI. Please ensure it is assigned.");
+                return;
+            }
+
+            float ratio = (float)Screen.width / Screen.height;
+            if (IsIpad())
+            {
+                // For iPad, use MatchWidthOrHeight = 0 to maintain aspect ratio
+                RootUI.CanvasScaler.matchWidthOrHeight = 0f;
+            }
+            else
+            {
+                // For other devices, use MatchWidthOrHeight = 1 if the aspect ratio is wider than 0.65f
+                RootUI.CanvasScaler.matchWidthOrHeight = ratio > 0.65f ? 1 : 0;
+            }
+            
+            string log = Mathf.Approximately(RootUI.CanvasScaler.matchWidthOrHeight, 1f) ? "1 (Match Width)" : "0 (Match Height)";
+            Logg.Log($"Ratio: {ratio}. IsPad {IsIpad()} matchWidthOrHeight: {log}", Color.green);
         }
-        
-        public float RatioCanvasScale()
-        {
-           return (float)Screen.width / Screen.height;
-        }
+         
         
         public  bool IsIpad()
         {

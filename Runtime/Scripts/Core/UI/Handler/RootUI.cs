@@ -22,17 +22,17 @@ namespace OSK
         public List<View> ListCacheView => _listCacheView;
         public List<View> ListViewInit => _listViewInit;
 
-        [Space]
-        [Title("References")]
-        [Required] [SerializeField] private Camera _uiCamera;
+        [Space] [Title("References")] [Required] [SerializeField]
+        private Camera _uiCamera;
+
         [Required] [SerializeField] private Canvas _canvas;
         [Required] [SerializeField] private CanvasScaler _canvasScaler;
         [SerializeField] private UIParticle _uiParticle;
         [SerializeField] private Transform _viewContainer;
 
-        [Space]
-        [Title("Settings")]
-        [SerializeField] private bool isPortrait = true;
+        [Space] [Title("Settings")] [SerializeField]
+        private bool isPortrait = true;
+
         [SerializeField] private bool dontDestroyOnLoad = true;
         [SerializeField] private bool isUpdateRatioScaler = true;
         [SerializeField] private bool enableLog = true;
@@ -46,12 +46,12 @@ namespace OSK
 
         public bool IsPortrait => isPortrait;
         public bool EnableLog => enableLog;
-         
+
         public void Initialize()
         {
             if (dontDestroyOnLoad)
                 DontDestroyOnLoad(gameObject);
-            
+
             var data = Main.Configs.init.data;
             if (data.listViewS0 != null)
             {
@@ -67,19 +67,6 @@ namespace OSK
             {
                 // check if the screen is in portrait mode
                 Main.UI.SetupCanvasScaleForRatio();
-                float newRatio = Main.UI.RatioCanvasScale();
-
-                if (Main.UI.IsIpad())
-                {
-                    Logg.Log($"[RootUI] iPad mode detected. Ratio: {newRatio}", isLog: enableLog);
-                }
-                else
-                {
-                    if (newRatio > 0.65f)
-                        Logg.Log($"[RootUI] Landscape mode detected. Ratio: {newRatio}", isLog: enableLog);
-                    else
-                        Logg.Log($"[RootUI] Portrait mode detected. Ratio: {newRatio}", isLog: enableLog);
-                }
             }
         }
 
@@ -228,7 +215,7 @@ namespace OSK
         }
 
         public T Open<T>(object[] data = null, bool hidePrevView = false, bool checkShowing = true) where T : View
-        { 
+        {
             var _view = _listCacheView.FirstOrDefault(v => v.GetType() == typeof(T)) as T;
             if (hidePrevView && _viewHistory.Count > 0)
             {

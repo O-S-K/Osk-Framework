@@ -19,24 +19,25 @@ namespace OSK
     {
         private BaseReferenceHolder m_RefHolder;
         private ReorderableList m_ReorderLst;
-        [SerializeField] 
-        private string searchName = "";
+        [SerializeField] private string searchName = "";
         private HashSet<RefData> m_SearchMatchedData = new HashSet<RefData>();
         private string textCodeGeneration = "";
         private Vector2 scrollPosition;
 
         protected virtual void OnEnable()
         {
-            m_RefHolder = this.target as BaseReferenceHolder;
-            this.m_ReorderLst = new ReorderableList(this.serializedObject, this.serializedObject.FindProperty("DataRefs"));
-            this.m_ReorderLst.drawElementCallback = new ReorderableList.ElementCallbackDelegate(this.DrawChild);
-            this.m_ReorderLst.onAddCallback = new ReorderableList.AddCallbackDelegate(this.AddButton);
-            this.m_ReorderLst.drawHeaderCallback = new ReorderableList.HeaderCallbackDelegate(this.DrawHeader);
-            this.m_ReorderLst.onRemoveCallback = new ReorderableList.RemoveCallbackDelegate(this.RemoveButton);
+            m_RefHolder = target as BaseReferenceHolder;
+            m_ReorderLst = new ReorderableList(serializedObject, serializedObject.FindProperty("DataRefs"))
+                {
+                    drawElementCallback = DrawChild,
+                    onAddCallback = AddButton,
+                    drawHeaderCallback = DrawHeader,
+                    onRemoveCallback = RemoveButton
+                };
         }
 
         public override void OnInspectorGUI()
-        {             
+        {
             EditorGUILayout.BeginHorizontal();
             this.ShowSearchTool();
             EditorGUILayout.EndHorizontal();
@@ -61,7 +62,7 @@ namespace OSK
             scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Height(200));
             textCodeGeneration = GUILayout.TextField(textCodeGeneration, GUILayout.Height(100));
             GUILayout.EndScrollView();
-            
+
             base.OnInspectorGUI();
         }
 
@@ -99,11 +100,40 @@ namespace OSK
 
             StringBuilder codeBuilder = new StringBuilder();
 
-            foreach (var data in refHolder.DataRefs)
+            /*foreach (var data in refHolder.DataRefs)
             {
 //                Debug.Log("Data: " + data.name + ", Type: " + data.TypeName);
                 codeBuilder.AppendLine(
                     $"public {data.TypeName} {FormatName(data.name, data.TypeName)} => GetRef<{data.TypeName}>(\"{data.name}\");");
+            }*/
+
+            foreach (var data in refHolder.DataRefs)
+            { 
+                string bindObject = null;
+                if (data.bindObj is BindObjectMono)
+                {
+                    var baseType = data.bindObj.GetType();
+                    if (baseType.IsGenericType && baseType.GetGenericTypeDefinition() == typeof(BindObjectMono))
+                    {
+                        var genericArgument = baseType.GetGenericArguments()[0];
+                        bindObject = genericArgument.Name;
+                    }
+                    else
+                    {
+                        bindObject = baseType.Name;
+                    }
+                    
+                    string fieldName = FormatName(data.name, bindObject, true, true);
+                    codeBuilder.AppendLine($"private {bindObject} {fieldName} => GetRef<{bindObject}>(\"{data.name}\");");
+                }
+                else
+                {
+                    bindObject = data.bindObj.GetType().Name;
+                    
+                    string fieldName = FormatName(data.name, bindObject, true, false);
+                    codeBuilder.AppendLine($"private {bindObject} {fieldName} => GetRef<{bindObject}>(\"{data.name}\");");
+                }
+
             }
 
             string generatedCode = codeBuilder.ToString();
@@ -111,7 +141,7 @@ namespace OSK
             textCodeGeneration = generatedCode;
         }
 
-        private string FormatName(string input, string typeComponent, bool isLower = true)
+        private string FormatName(string input, string typeComponent, bool isLower = true, bool isMonoScript = false)
         {
             if (string.IsNullOrEmpty(input)) return input;
 
@@ -125,22 +155,26 @@ namespace OSK
             {
                 input = input.Substring(0, input.Length - suffix.Length);
             }
-            
+
             // Ensure the first character is lowercase
             if (isLower && input.Length > 0)
             {
                 input = char.ToLower(input[0]) + input.Substring(1);
             }
 
-            // Check if the input already ends with the type component (e.g., "Button", "Text")
-            if (!input.EndsWith(typeComponent, StringComparison.OrdinalIgnoreCase))
+            if (!isMonoScript)
             {
-                // Append the type component if it doesn't exist already
-                input += NameType((EComponentType)Enum.Parse(typeof(EComponentType), typeComponent));
+                // Check if the input already ends with the type component (e.g., "Button", "Text")
+                if (!input.EndsWith(typeComponent, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Append the type component if it doesn't exist already
+                    input += NameType((EComponentType)Enum.Parse(typeof(EComponentType), typeComponent));
+                }
             }
 
             return input;
-        } 
+        }
+
         private string NameType(EComponentType type)
         {
             switch (type)
@@ -183,11 +217,11 @@ namespace OSK
                     return "";
                 case EComponentType.GameObject:
                     return "GameObject";
-                default: 
+                default:
                     return nameof(EComponentType);
             }
         }
-        
+
         private string GetSuffixFromType(string typeName)
         {
             switch (typeName)
@@ -315,8 +349,8 @@ namespace OSK
             r.height = 16f;
             Rect[] rects = this.GetRects(r);
             GUI.color = Color.white;
-          
-            
+
+
             bool isDuplicate = CheckDuplicateName(data.name, index);
             if (isDuplicate)
             {
@@ -326,14 +360,15 @@ namespace OSK
             {
                 GUI.color = Color.white; // Default color for non-duplicates
             }
+
             if (m_SearchMatchedData.Contains(data))
                 GUI.color = Color.yellow;
-            
-            
-            if (!GUI.Button(rects[0], index.ToString()));
-                
+
+
+            if (!GUI.Button(rects[0], index.ToString())) ;
+
             rects[1].width += 10;
-            data.name = EditorGUI.TextField(rects[1],  data.name);
+            data.name = EditorGUI.TextField(rects[1], data.name);
             if (GUI.Button(rects[2], "→") && (Object)data.GetGameObject() != (Object)null)
             {
                 data.GetGameObject().name = FormatName(data.name, data.TypeName, false);
@@ -382,6 +417,7 @@ namespace OSK
                     return true; // Duplicate found
                 }
             }
+
             return false; // No duplicates
         }
 
@@ -452,7 +488,7 @@ namespace OSK
 
         private void ShowAutoImport()
         {
-            GUILayout.Label("Drag object to here",  EditorStyles.boldLabel,GUILayout.Width(200f));
+            GUILayout.Label("Drag object to here", EditorStyles.boldLabel, GUILayout.Width(200f));
             GameObject go = EditorGUILayout.ObjectField((Object)null, typeof(GameObject), true, new GUILayoutOption[1]
             {
                 GUILayout.Height(50f)
@@ -475,7 +511,7 @@ namespace OSK
             UnityEditor.EditorUtility.SetDirty(go);
             this.serializedObject.ApplyModifiedProperties();
         }
-        
+
         protected void ShowSaveAll()
         {
             if (!GUILayout.Button("Save All"))
@@ -489,9 +525,9 @@ namespace OSK
                     this.serializedObject.ApplyModifiedProperties();
                 }
             }
-            
+
             EditorUtility.SetDirty(m_RefHolder.gameObject);
-            EditorUtility.SetDirty(m_RefHolder); 
+            EditorUtility.SetDirty(m_RefHolder);
         }
 
         private void ShowAutoRename()
@@ -527,7 +563,8 @@ namespace OSK
             {
                 for (int index2 = 0; index2 < this.m_RefHolder.DataRefs.Count; ++index2)
                 {
-                    if (index1 != index2 && this.m_RefHolder.DataRefs[index1].name == this.m_RefHolder.DataRefs[index2].name)
+                    if (index1 != index2 &&
+                        this.m_RefHolder.DataRefs[index1].name == this.m_RefHolder.DataRefs[index2].name)
                         this.m_RefHolder.DataRefs[index1].hasVal = true;
                 }
             }
@@ -617,7 +654,8 @@ namespace OSK
                 case 1:
                     if (i == 0)
                         break;
-                    (m_RefHolder.DataRefs[i], m_RefHolder.DataRefs[i - 1]) = (m_RefHolder.DataRefs[i - 1], m_RefHolder.DataRefs[i]);
+                    (m_RefHolder.DataRefs[i], m_RefHolder.DataRefs[i - 1]) =
+                        (m_RefHolder.DataRefs[i - 1], m_RefHolder.DataRefs[i]);
                     break;
                 case 2:
                     if (i != m_RefHolder.DataRefs.Count - 1)

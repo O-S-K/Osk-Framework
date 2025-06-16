@@ -9,7 +9,7 @@ namespace OSK
         private Dictionary<string, UnityEngine.Object> objectRefs = new Dictionary<string, UnityEngine.Object>();
         private Dictionary<string, object> valueRefs = new Dictionary<string, object>();
         public List<RefData> DataRefs = new List<RefData>();
-        private bool hasInit;
+        protected bool hasInit;
 
         public void Foreach(Action<string, object> deal)
         {
@@ -38,9 +38,9 @@ namespace OSK
             return valueRefs.TryGetValue(name, out var obj) ? (Color)obj : Color.white;
         }
 
-        private void Awake() => this.CheckInit();
+        protected virtual void Awake() => this.CheckInit();
 
-        private void CheckInit()
+        protected void CheckInit()
         {
             if (hasInit)
                 return;
@@ -60,7 +60,7 @@ namespace OSK
             }
         }
 
-        public void OnDestroy()
+        public virtual void OnDestroy()
         {
             if (Application.isPlaying)
                 DataRefs = null;
