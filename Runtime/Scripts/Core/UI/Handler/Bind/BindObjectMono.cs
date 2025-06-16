@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace OSK
@@ -5,7 +6,7 @@ namespace OSK
     /// Inherit this script to get auto refs in MonoReferenceHolder
     public class BindObjectMono : MonoBehaviour
     {
-        [SerializeReference]
+        [ReadOnly, SerializeField]
         protected IReferenceHolder referenceHolder;
         public IReferenceHolder ReferenceHolder
         {

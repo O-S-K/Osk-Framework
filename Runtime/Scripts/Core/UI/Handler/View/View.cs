@@ -60,7 +60,8 @@ namespace OSK
         [ShowIf(nameof(isShowEvent))] public UnityEvent EventBeforeClosed;
         [ShowIf(nameof(isShowEvent))] public UnityEvent EventAfterClosed;
 
-        [SerializeReference] protected IReferenceHolder referenceHolder;
+        [ReadOnly, SerializeField]
+        protected IReferenceHolder referenceHolder;
 
         public IReferenceHolder ReferenceHolder
         {
