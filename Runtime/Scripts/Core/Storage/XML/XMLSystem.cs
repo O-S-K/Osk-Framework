@@ -70,16 +70,7 @@ namespace OSK
 
         public void Delete(string fileName)
         {
-            string path = IOUtility.GetPath(fileName + ".xml");
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-                Logg.Log($"[Delete File Success]: {fileName}.xml");
-            }
-            else
-            {
-                Logg.LogError($"[Delete File Error]: {fileName}.xml NOT found");
-            }
+            IOUtility.DeleteFile(fileName + ".xml");
         }
 
         public T Query<T>(string fileName, bool condition)

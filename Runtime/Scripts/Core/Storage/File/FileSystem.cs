@@ -75,7 +75,6 @@ namespace OSK
         public void Delete(string fileName)
         {
             IOUtility.DeleteFile(fileName + ".dat");
-            OSK.Logg.Log($"[Delete File Success]: {fileName}.dat");
         }
         
         public T Query<T>(string fileName, bool condition)

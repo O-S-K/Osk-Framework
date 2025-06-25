@@ -26,15 +26,18 @@ namespace OSK
             return File.Exists(path);
         }
 
-        public static bool DeleteFile(string path)
+        public static void DeleteFile(string fileName)
         {
+            string path = IOUtility.GetPath(fileName);
             if (File.Exists(path))
             {
                 File.Delete(path);
-                return true;
+                Logg.Log($"[Delete File Success]: {fileName}");
             }
-
-            return false;
+            else
+            {
+                Logg.LogError($"[Delete File Error]: {fileName} NOT found");
+            }
         }
 
         public static bool IsDirectoryExists(string path)
@@ -72,7 +75,6 @@ namespace OSK
             {
                 Directory.CreateDirectory(directory);
             }
-
             return Path.Combine(directory, $"{fileName}");
         }
 

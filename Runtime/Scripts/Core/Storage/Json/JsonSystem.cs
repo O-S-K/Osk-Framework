@@ -106,8 +106,7 @@ namespace OSK
         public void Delete(string fileName)
         {
             IOUtility.DeleteFile(fileName + ".json");
-            Logg.Log($"[Delete File Success]: {fileName + ".json"}");
-        }
+         }
         
         public T Query<T>(string fileName, bool condition)
         {

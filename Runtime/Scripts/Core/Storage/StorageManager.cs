@@ -13,6 +13,7 @@ namespace OSK
 
         /// <summary>
         ///  Save data to file, T is the file system type, U is the data type
+        ///  Example: Save<JsonSystem, PlayerData>("playerData.json", playerData);
         /// </summary> 
         public void Save<T, U>(string fileName, U data)
         {
@@ -34,6 +35,7 @@ namespace OSK
 
         /// <summary>
         ///  Load data from file, T is the file system type, U is the data type
+        ///  Example: Load<JsonSystem, PlayerData>("playerData.json");
         /// </summary>
         public U Load<T, U>(string fileName)
         {
@@ -42,7 +44,6 @@ namespace OSK
             {
                 return fileSystem.Load<U>(fileName, isEncrypt);
             }
-
             return default(U);
         }
 
@@ -56,20 +57,22 @@ namespace OSK
             {
                 return fileSystem.Query<U>(fileName, condition);
             }
-
             return default(U);
         }
 
         /// <summary>
         ///  Delete file, T is the file system type
+        ///  Example: Delete<JsonSystem>("playerData.json");
         /// </summary>
-        public void Delete(string fileName)
+        public void Delete<T>(string fileName)
         {
-            _json.Delete(fileName);
-            _file.Delete(fileName);
-            _xml.Delete(fileName);
+            IFile fileSystem = GetFileSystem<T>();
+            if (fileSystem != null)
+            {
+                fileSystem.Delete(fileName);
+            }
         }
-
+          
         private IFile GetFileSystem<T>()
         {
             if (typeof(T) == typeof(JsonSystem))
