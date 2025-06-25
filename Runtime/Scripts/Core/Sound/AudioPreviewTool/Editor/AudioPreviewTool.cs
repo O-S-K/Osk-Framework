@@ -1,4 +1,5 @@
-﻿//
+﻿#if UNITY_EDITOR
+//
 // Copyright (c) 2023 Warped Imagination. All rights reserved. 
 //
 
@@ -188,3 +189,4 @@ namespace WarpedImagination.AudioPreviewTool
 
     }
 }
+#endif
