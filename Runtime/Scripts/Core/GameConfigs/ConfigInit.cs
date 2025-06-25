@@ -5,8 +5,8 @@ using UnityEditor;
 
 namespace OSK
 {
-    [CreateAssetMenu(fileName = "ConfigInit", menuName = "OSK/Configs/ConfigInit", order = 0)]
-    public class ConfigInit : ScriptableObject
+    [System.Serializable]
+    public class ConfigInit 
     {
         [TextArea]
         [SerializeField, ReadOnly]
@@ -16,69 +16,18 @@ namespace OSK
         
         [Header("Game Settings")]
         public int targetFrameRate = 60;
-        public int vSyncCount = 0;
         public bool logTest = true;
 
         public string packageName = "";
         public string appstoreID = "";
-
-        public string encryptKey = "b14ca5898a4e4133bbce2ea2315a1916";
-        
+         
         [Space]
         [Header("Game Configs")]
         public DataConfigs data;
-        public SettingConfigs setting;
-        public PathConfigs path;
-
-#if UNITY_EDITOR
-
-        [Button]
-        public void CreateConfig()
-        {
-            ListViewSO listViewS0 = CreateInstance<ListViewSO>();
-            ListSoundSO listSoundSo = CreateInstance<ListSoundSO>();
-            UIParticleSO uiParticleSO = CreateInstance<UIParticleSO>();
-
-
-            string path = "Assets/OSK/Resources/Configs";
-            if (!AssetDatabase.IsValidFolder(path))
-            {
-                AssetDatabase.CreateFolder("Assets/OSK/Resources", "Configs");
-            }
-
-            IOUtility.CreateDirectory(path);
-            if (data.listSoundSo == null)
-            {
-                AssetDatabase.CreateAsset(listSoundSo, $"{path}/ListSoundSO.asset");
-                data.listSoundSo = listSoundSo;
-            }
-
-            if (data.listViewS0 == null)
-            {
-                AssetDatabase.CreateAsset(listViewS0, $"{path}/ListViewSO.asset");
-                data.listViewS0 = listViewS0;
-            }
-
-            if (data.uiParticleSO == null)
-            {
-                AssetDatabase.CreateAsset(uiParticleSO, $"{path}/UIParticleSO.asset");
-                data.uiParticleSO = uiParticleSO;
-            }
-
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-        }
-
-        [Button]
-        private void ShuffleEncryptKey()
-        {
-            encryptKey = StringUtils.Shuffle(encryptKey);
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-        }
-#endif
+        //public SettingConfigs setting;
+        public PathConfigs path; 
+        
+        
     }
 
 

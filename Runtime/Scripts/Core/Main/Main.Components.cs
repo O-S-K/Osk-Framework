@@ -1,8 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace OSK
@@ -36,26 +32,20 @@ namespace OSK
         public static ProcedureManager Procedure { get; private set; }
         public static GameInit GameInit { get; private set; }
 
-        // Modules
-        [PropertyTooltip("Main modules to be initialized.")]
-        [Required, InlineEditor(Expanded = true)]
-        public MainModules mainModules;
-        
-        [PropertyTooltip("Configuration for initialization.")]
-        [Required, InlineEditor(Expanded = true)]
         public ConfigInit configInit;
-        
+        public MainModules mainModules;
+
         public bool isDestroyingOnLoad = false;
         public bool isLogInit = false;
-
 
         private void Awake()
         {
             if (isDestroyingOnLoad)
                 DontDestroyOnLoad(gameObject);
 
-            InitModules(); 
-            InitDataComponents(); 
+            InitModules();
+            InitDataComponents();
+            InitConfigs();
         }
 
         public void InitModules()
@@ -70,8 +60,8 @@ namespace OSK
                 if (componentType != null)
                 {
                     var module = newObject.AddComponent(componentType) as GameFrameworkComponent;
-                    AssignModuleInstance(module); 
-                     Logg.Log($"[Main] Module {moduleType} initialized.", Color.green, isLogInit);
+                    AssignModuleInstance(module);
+                    Logg.Log($"[Main] Module {moduleType} initialized.", Color.green, isLogInit);
                 }
                 else
                 {
@@ -126,6 +116,18 @@ namespace OSK
             }
 
             Logg.Log("[InitData] Init Data Components Done!", Color.green, isLogInit);
+        }
+
+        private void InitConfigs()
+        {
+            if (configInit == null)
+            {
+                Logg.LogError("[InitConfigs] ConfigInit is not set.");
+                return;
+            }
+
+            Application.targetFrameRate = configInit.targetFrameRate;
+            Logg.Log("[InitConfigs] Configs initialized successfully.", Color.green, isLogInit);
         }
 
         private void OnDestroy()

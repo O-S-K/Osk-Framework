@@ -17,12 +17,14 @@ namespace OSK
         public List<PlayingSound> GetListSoundPlayings => _listSoundPlayings;
         public Dictionary<string, Tween> GetPlayingTweens => _playingTweens;
         
- 
+        [InfoBox("⚠️ Warning: Use maxCapacityMusic / maxCapacitySoundEffects to limit the number of music and sound effects playing at the same time.", InfoMessageType.Warning)]
         [SerializeField] private int maxCapacityMusic = 5;
         [SerializeField] private int maxCapacitySoundEffects = 10;
 
+        [InfoBox("⚠️ Warning: Use IsEnableMusic / IsEnableSoundSFX OR MusicVolume / SFXVolume. Don't use both.", InfoMessageType.Warning)]
         public bool IsEnableMusic = true;
         public bool IsEnableSoundSFX = true;
+        
         public float MusicVolume = 1;
         public float SFXVolume = 1;
 
@@ -53,11 +55,10 @@ namespace OSK
 
         public override void OnInit()
         {
-            if (Main.Configs.init == null || Main.Configs.init.data == null ||
-                Main.Configs.init.data.listSoundSo == null)
+            if (Main.Instance.configInit.data.listSoundSo == null)
                 return;
 
-            _listSoundData = Main.Configs.init.data.listSoundSo.ListSoundInfos;
+            _listSoundData = Main.Instance.configInit.data.listSoundSo.ListSoundInfos;
             if (_listSoundData == null || _listSoundData.Count == 0)
             {
                 OSK.Logg.LogError("SoundInfos is empty");
@@ -68,8 +69,8 @@ namespace OSK
             _soundObject.transform.parent = transform;
             _listSoundPlayings = new List<PlayingSound>();
 
-            maxCapacityMusic = Main.Configs.init.data.listSoundSo.maxCapacityMusic;
-            maxCapacitySoundEffects = Main.Configs.init.data.listSoundSo.maxCapacitySFX;
+            maxCapacityMusic = Main.Instance.configInit.data.listSoundSo.maxCapacityMusic;
+            maxCapacitySoundEffects = Main.Instance.configInit.data.listSoundSo.maxCapacitySFX;
         }
 
 #if UNITY_EDITOR
@@ -207,7 +208,7 @@ namespace OSK
             VolumeFade volume, bool loop,
             int priority, MinMaxFloat pitch, Transform transform, int minDist, int maxDist)
         {
-            var source = Main.Pool.Spawn(KeyGroupPool.AudioSound, _soundObject, _parentGroup);
+            var source = Main.Pool.Spawn(KeyGroupPool.KEY_AUDIO_SOUND, _soundObject, _parentGroup);
             source.Stop();
             source.name = id;
             source.clip = clip;
@@ -314,8 +315,8 @@ namespace OSK
         public void LogStatus()
         {
             Logg.Log("SoundManager Status");
-            Logg.Log($"1.Main.Configs.init.data.listSoundSo: {Main.Configs.init.data.listSoundSo}");
-            Logg.Log($"2.KeyGroupPool.AudioSound: {KeyGroupPool.AudioSound}");
+            Logg.Log($"1.Main.Configs.init.data.listSoundSo: {Main.Instance.configInit.data.listSoundSo}");
+            Logg.Log($"2.KeyGroupPool.AudioSound: {KeyGroupPool.KEY_AUDIO_SOUND}");
             Logg.Log($"3.CameraTransform: {CameraTransform}");
             Logg.Log($"4.ParentGroup: {_parentGroup}");
 

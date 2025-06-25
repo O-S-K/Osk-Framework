@@ -5,7 +5,7 @@ namespace OSK
 {
     public class GameConfigsManager : GameFrameworkComponent
     {
-        public ConfigInit init {get; private set;}
+        private ConfigInit init;
          
         public string VersionApp => Application.version;
 

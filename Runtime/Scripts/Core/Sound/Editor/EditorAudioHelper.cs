@@ -1,4 +1,6 @@
 #if UNITY_EDITOR
+using DG.Tweening;
+using UnityEditor;
 using UnityEngine;
 
 namespace OSK
@@ -7,6 +9,7 @@ namespace OSK
     public static class EditorAudioHelper
     {
         private static AudioSource _editorAudioSource;
+        private static GameObject audioObject;
 
         public static void PlayClip(AudioClip clip)
         {
@@ -17,10 +20,10 @@ namespace OSK
             }
 
             // Create an AudioSource if it doesn't exist
-            _editorAudioSource = GameObject.FindObjectOfType<AudioSource>();
+            _editorAudioSource = Object.FindObjectOfType<AudioSource>();
             if (_editorAudioSource == null)
             {
-                GameObject audioObject = new GameObject("EditorAudioSource");
+                 audioObject = new GameObject("EditorAudioSourceTest");
                 //audioObject.hideFlags = HideFlags.HideAndDontSave;
                 _editorAudioSource = audioObject.GetOrAdd<AudioSource>();
             }
@@ -28,7 +31,25 @@ namespace OSK
             // Set the clip and play
             _editorAudioSource.clip = clip;
             _editorAudioSource.Play();
-            
+          
+            float playTime = (float)EditorApplication.timeSinceStartup;
+            float duration = clip.length;
+
+            EditorApplication.update += CheckPlaybackDone;
+
+            void CheckPlaybackDone()
+            {
+                if ((float)EditorApplication.timeSinceStartup - playTime >= duration)
+                {
+                    EditorApplication.update -= CheckPlaybackDone;
+
+                    if (audioObject != null)
+                    {
+                        GameObject.DestroyImmediate(audioObject);
+                        audioObject = null;
+                    }
+                }
+            }
             Debug.Log($"Playing clip: {clip.name} + pitch: {_editorAudioSource.pitch} + volume: {_editorAudioSource.volume}");
         }
 
@@ -42,6 +63,10 @@ namespace OSK
 
             // Stop the clip
             _editorAudioSource.Stop();
+            if (audioObject)
+            {
+                GameObject.DestroyImmediate(audioObject.gameObject);
+            }
         }
 
         // Check if a specific clip is currently playing

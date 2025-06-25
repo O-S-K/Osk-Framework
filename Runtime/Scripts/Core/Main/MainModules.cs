@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace OSK
 {
-    [CreateAssetMenu(fileName = "MainModules", menuName = "OSK/MainModules")]
-    public class MainModules : ScriptableObject
+    [System.Serializable]
+    public class MainModules 
     {
         private Dictionary<string, Type> componentTypeCache = new Dictionary<string, Type>();
 
@@ -18,8 +18,8 @@ namespace OSK
 
         public System.Type GetComponentType(string moduleName)
         {
-            if (componentTypeCache.ContainsKey(moduleName))
-                return componentTypeCache[moduleName];
+            if (componentTypeCache.TryGetValue(moduleName, out var type))
+                return type;
 
             string fullTypeName = "OSK." + moduleName;
 

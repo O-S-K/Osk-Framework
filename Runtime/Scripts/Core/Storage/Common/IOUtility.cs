@@ -7,6 +7,8 @@ namespace OSK
 {
     public static class IOUtility
     {
+        public static string encryptKey = "b14ca5898a4e4133bbce2ea2315a1916";
+        
         public static string StreamingAssetsPath
         {
             get

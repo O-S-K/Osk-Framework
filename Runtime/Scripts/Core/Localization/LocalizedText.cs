@@ -34,12 +34,12 @@ namespace OSK
                 UpdateText();
             }
              
-            Main.Observer.Add("UpdateLanguage", UpdateText);
+            Main.Observer.Add(KeyObserver.KEY_UPDATE_LANGUAGE, UpdateText);
         }
 
         private void OnDestroy()
         {
-            Main.Observer.Remove("UpdateLanguage", UpdateText);
+            Main.Observer.Remove(KeyObserver.KEY_UPDATE_LANGUAGE, UpdateText);
         }
 
         private void OnEnable()
@@ -84,7 +84,7 @@ namespace OSK
 
         private string CheckKeyOnFile()
         {
-            var path = FindObjectOfType<GameConfigsManager>().init.path.pathLoadFileCsv;
+            var path = FindObjectOfType<Main>().configInit.path.pathLoadFileCsv;
             var textAsset = Resources.Load<TextAsset>(path);
             if (textAsset == null)
             {

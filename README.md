@@ -6,6 +6,10 @@ The **OSK Framework** is a modular Unity framework designed to streamline game d
 - Add auto bind Refs UI
 - Add set get value default SoundDataSO
 
+**version 2.3.0
+- Remove SO Config and Module create on Main
+- Fixbug sound, ui
+
 ---
 
 ## **🌟 Key Features**

@@ -12,7 +12,10 @@ namespace OSK
         
         [Space]
         [Title("Max Capacity")]
+        [Tooltip("Max capacity music when play, If you want to add more sound, please increase this value.")]
         public int maxCapacityMusic = 5;
+        
+        [Tooltip("Max capacity SFX when play, If you want to add more sound, please increase this value.")]
         public int maxCapacitySFX = 25;
         
         [Space]

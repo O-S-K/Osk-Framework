@@ -69,6 +69,8 @@ namespace OSK
 
             EditorGUILayout.Space(20);
             EditorGUILayout.TextArea("Sound Groups", EditorStyles.boldLabel);
+            EditorGUILayout.TextArea("⚠️ Please enable sound in scene game to test play sound.", EditorStyles.wordWrappedLabel);
+
 
             EditorGUI.indentLevel++;
             foreach (var group in groups)
@@ -246,14 +248,55 @@ namespace OSK
 
             EditorGUILayout.Space();
             EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Load All sounds In Path", EditorStyles.boldLabel);
+            EditorGUILayout.TextArea("This will load type .wav, .mp3, .ogg in the selected folder and add them to the list.", EditorStyles.wordWrappedLabel);
+            
+            if (GUILayout.Button("Load Folder Sounds", GUILayout.Width(150)))
+            {
+                string path = EditorUtility.OpenFolderPanel("Select Folder", "Assets", "");
+                if (!string.IsNullOrEmpty(path))
+                {
+                    path = "Assets" + path.Replace(Application.dataPath, "");
+                    var supportedExtensions = new[] { ".wav", ".mp3", ".ogg" };
+
+                    var audioClips = Directory.GetFiles(path, "*", SearchOption.AllDirectories)
+                        .Where(file => supportedExtensions.Contains(Path.GetExtension(file).ToLower()))
+                        .Select(file => AssetDatabase.LoadAssetAtPath<AudioClip>(file.Replace("\\", "/")))
+                        .Where(clip => clip != null)
+                        .ToList();
+
+                    foreach (var clip in audioClips)
+                    {
+                        if (!IsSoundExist(listSoundSo, clip.name))
+                        {
+                            listSoundSo.ListSoundInfos.Add(new SoundData
+                            {
+                                audioClip = clip,
+                                id = clip.name,
+                                group = "Default",
+                                type = SoundType.SFX,
+                                volume = 1f,
+                                pitch = new MinMaxFloat(1f, 1f)
+                            });
+                        }
+                    }
+
+                    EditorUtility.SetDirty(listSoundSo);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                }
+            }
 
             EditorGUILayout.Space(20);
-            EditorGUILayout.LabelField("Select Folder Path", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Gen enum SoundID", EditorStyles.boldLabel);
+            EditorGUILayout.TextArea("This will generate an enum with all sound IDs in the selected folder.", EditorStyles.wordWrappedLabel);
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.TextField("Folder Path", listSoundSo.filePathSoundID);
+            EditorGUILayout.TextField("Folder Enum Path", listSoundSo.filePathSoundID);
 
-            if (GUILayout.Button("Select Folder", GUILayout.Width(100)))
+            if (GUILayout.Button("Select Folder Gen", GUILayout.Width(100)))
             {
                 string path = EditorUtility.OpenFolderPanel("Select Folder", listSoundSo.filePathSoundID, "");
                 if (!string.IsNullOrEmpty(path))

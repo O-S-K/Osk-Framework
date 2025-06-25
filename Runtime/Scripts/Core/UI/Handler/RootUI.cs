@@ -52,7 +52,7 @@ namespace OSK
             if (dontDestroyOnLoad)
                 DontDestroyOnLoad(gameObject);
 
-            var data = Main.Configs.init.data;
+            var data = Main.Instance.configInit.data;
             if (data.listViewS0 != null)
             {
                 Preload();
@@ -105,7 +105,7 @@ namespace OSK
 
         private void Preload()
         {
-            var listUIPopupSo = Main.Configs.init.data.listViewS0.Views;
+            var listUIPopupSo = Main.Instance.configInit.data.listViewS0.Views;
             if (listUIPopupSo == null)
             {
                 Logg.LogError("[View] is null", isLog: enableLog);

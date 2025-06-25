@@ -42,7 +42,7 @@ namespace OSK
             _uiCamera = Main.UI.Canvas.worldCamera;
             _canvasTransform = Main.UI.Canvas.transform;
 
-            _effectSettings = Main.Configs.init.data.uiParticleSO.EffectSettings.ToList();
+            _effectSettings = Main.Instance.configInit.data.uiParticleSO.EffectSettings.ToList();
             if (_effectSettings.Count == 0)
                 return;
 
@@ -138,7 +138,7 @@ namespace OSK
 
             for (int i = 0; i < effectSetting.numberOfEffects; i++)
             {
-                GameObject effect = Main.Pool.Spawn(KeyGroupPool.UIEffect, prefab, _canvasTransform, 1) as GameObject;
+                GameObject effect = Main.Pool.Spawn(KeyGroupPool.KEY_UI_EFFECT, prefab, _canvasTransform, 1) as GameObject;
                 if (effect == null) continue;
 
                 if (effect.transform.parent != parent)
@@ -326,7 +326,7 @@ namespace OSK
 
         public void DestroyAllEffects()
         {
-            Main.Pool.DestroyAllInGroup(KeyGroupPool.UIEffect);
+            Main.Pool.DestroyAllInGroup(KeyGroupPool.KEY_UI_EFFECT);
         }
 
         private Vector3 ConvertToUICameraSpace(Transform pointTarget)

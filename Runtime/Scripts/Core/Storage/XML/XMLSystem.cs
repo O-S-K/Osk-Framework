@@ -22,7 +22,7 @@ namespace OSK
 
                     if (isEncrypt)
                     {
-                        xmlBytes = FileSecurity.Encrypt(xmlBytes, Main.Configs.init.encryptKey);
+                        xmlBytes = FileSecurity.Encrypt(xmlBytes, IOUtility.encryptKey);
                     }
 
                     File.WriteAllBytes(path, xmlBytes);
@@ -51,7 +51,7 @@ namespace OSK
                 byte[] fileBytes = File.ReadAllBytes(path);
                 if (isDecrypt)
                 {
-                    fileBytes = FileSecurity.Decrypt(fileBytes, Main.Configs.init.encryptKey);
+                    fileBytes = FileSecurity.Decrypt(fileBytes, IOUtility.encryptKey);
                 }
 
                 using (MemoryStream memoryStream = new MemoryStream(fileBytes))
