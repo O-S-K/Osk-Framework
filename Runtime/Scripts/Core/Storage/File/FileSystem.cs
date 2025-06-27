@@ -46,7 +46,7 @@ namespace OSK
                 var path = IOUtility.GetPath(fileName + ".dat");
                 if (!File.Exists(path))
                 {
-                    OSK.Logg.LogError($"[Load File Error]: {fileName + ".dat"} NOT found");
+                    OSK.Logg.LogError($"[Load File Error]: {fileName + ".dat"} NOT found at {path}");
                     return default;
                 }
 
@@ -62,6 +62,8 @@ namespace OSK
                     int dataLength = reader.ReadInt32();
                     byte[] jsonBytes = reader.ReadBytes(dataLength);
                     string json = Encoding.UTF8.GetString(jsonBytes);
+                    
+                    OSK.Logg.Log($"[Load File Success]: {fileName + ".dat"} \n{path}", Color.green);
                     return JsonConvert.DeserializeObject<T>(json);
                 }
             }

@@ -8,20 +8,6 @@ namespace OSK
     public static class IOUtility
     {
         public static string encryptKey = "b14ca5898a4e4133bbce2ea2315a1916";
-        
-        public static string StreamingAssetsPath
-        {
-            get
-            {
-#if UNITY_ANDROID
-                return "jar:file://" + Application.dataPath + "!/assets";
-#elif UNITY_IOS
-                return "file://" + Application.streamingAssetsPath;
-#else
-                return Application.streamingAssetsPath;
-#endif
-            }
-        }
 
         public static bool IsFileExists(string path)
         {
@@ -73,24 +59,27 @@ namespace OSK
         public static string GetPath(string fileName)
         {
             string directory = Application.persistentDataPath;
+
             if (!Directory.Exists(directory))
-            {
                 Directory.CreateDirectory(directory);
-            }
-            return Path.Combine(directory, $"{fileName}");
+
+            // Sanitize file name
+            fileName = Path.GetFileName(fileName); // Xóa hết thư mục gắn kèm (nếu có)
+            return Path.Combine(directory, fileName);
         }
 
         public static string FilePath(string name)
         {
-            var filePath = Path.Combine(Application.streamingAssetsPath, $"{name}");
-            if (!File.Exists(filePath))
+            if (string.IsNullOrEmpty(name))
             {
-                filePath = Path.Combine(Application.persistentDataPath, $"{name}");
+                Debug.LogError("[FilePath] Invalid file name!");
+                return null;
             }
-            return filePath;
+
+            name = Path.GetFileName(name); // Remove invalid path parts
+            return Path.Combine(Application.persistentDataPath, name);
         }
-        
-        
+
         public static List<string> GetAll(string fileName)
         {
             List<string> allFiles = new List<string>();

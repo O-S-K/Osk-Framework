@@ -53,10 +53,10 @@ namespace OSK
 
         public T Load<T>(string fileName, bool ableEncrypt = false)
         {
-            var filePath = IOUtility.FilePath(fileName + ".json");
-            if (!File.Exists(filePath))
+            var path = IOUtility.FilePath(fileName + ".json");
+            if (!File.Exists(path))
             {
-                OSK.Logg.LogError($"[Load File Error]: {fileName + ".json"} NOT found");
+                OSK.Logg.LogError($"[Load File Error]: {fileName + ".json"} NOT found at {path}");
                 return default;
             }
             try
@@ -64,12 +64,12 @@ namespace OSK
                 string loadJson;
                 if (ableEncrypt)
                 {
-                    var loadBytes = Obfuscator.Decrypt(File.ReadAllBytes(filePath), IOUtility.encryptKey);
+                    var loadBytes = Obfuscator.Decrypt(File.ReadAllBytes(path), IOUtility.encryptKey);
                     loadJson = Encoding.UTF8.GetString(loadBytes);
                 }
                 else
                 {
-                    loadJson = File.ReadAllText(filePath);
+                    loadJson = File.ReadAllText(path);
                 }
 
                 if (!IsValidJson(loadJson))
@@ -80,7 +80,7 @@ namespace OSK
 
                 // Deserialize JSON to object
                 T data = JsonConvert.DeserializeObject<T>(loadJson);
-                OSK.Logg.Log($"[Load File Success]: {fileName + ".json"} \n {filePath}", Color.green);
+                OSK.Logg.Log($"[Load File Success]: {fileName + ".json"} \n {path}", Color.green);
                 return data;
             }
             catch (System.Exception ex)
