@@ -17,15 +17,30 @@ Chinese (Tiếng Trung): zh
 using System;
 using System.Collections;
 using SimpleJSON;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace OSK
 {
-	public class GoogleTranslate : SingletonMono<GoogleTranslate>
+	public class GoogleTranslate : MonoBehaviour
 	{
+		public static GoogleTranslate Instance
+		{
+			get
+			{
+				if (_instance == null)
+				{
+					var go = new GameObject("GoogleTranslate");
+					_instance = go.AddComponent<GoogleTranslate>();
+				}
 
+				return _instance;
+			}
+		}
+		private static GoogleTranslate _instance;
+		
+		
 		//example: TranslateText("en","ko","I'm a real gangster.", (success, translatedText) => { if (success) { Debug.Log(translatedText); } });
-
 		public void TranslateText(string sourceLanguage, string targetLanguage, string sourceText,
 			Action<bool, string> callback)
 		{
