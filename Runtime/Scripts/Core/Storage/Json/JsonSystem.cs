@@ -62,47 +62,47 @@ namespace OSK
             try
             {
                 string loadJson;
+
                 if (ableEncrypt)
                 {
-                    var loadBytes = Obfuscator.Decrypt(File.ReadAllBytes(path), IOUtility.encryptKey);
-                    loadJson = Encoding.UTF8.GetString(loadBytes);
+                    byte[] encryptedBytes = File.ReadAllBytes(path);
+                    if (encryptedBytes.Length == 0)
+                    {
+                        OSK.Logg.LogError($"[Load File Error]: {fileName}.json is empty or corrupt");
+                        return default;
+                    }
+
+                    byte[] decryptedBytes = Obfuscator.Decrypt(encryptedBytes, IOUtility.encryptKey);
+                    loadJson = Encoding.UTF8.GetString(decryptedBytes);
                 }
                 else
                 {
                     loadJson = File.ReadAllText(path);
                 }
 
-                if (!IsValidJson(loadJson))
+                if (string.IsNullOrWhiteSpace(loadJson))
                 {
-                    OSK.Logg.LogError($"[Load File Error]: {fileName + ".json"} contains invalid JSON");
+                    OSK.Logg.LogError($"[Load File Error]: {fileName}.json is empty");
                     return default;
                 }
 
-                // Deserialize JSON to object
                 T data = JsonConvert.DeserializeObject<T>(loadJson);
-                OSK.Logg.Log($"[Load File Success]: {fileName + ".json"} \n {path}", Color.green);
+                if (data == null)
+                {
+                    OSK.Logg.LogError($"[Load File Error]: {fileName}.json deserialized to null");
+                    return default;
+                }
+
+                OSK.Logg.Log($"[Load File Success]: {fileName}.json\n{path}", Color.green);
                 return data;
             }
             catch (System.Exception ex)
             {
-                OSK.Logg.LogError($"[Load File Exception]: {fileName + ".json"}  {ex.Message}");
+                OSK.Logg.LogError($"[Load File Exception]: {fileName}.json\n{ex.Message}");
                 return default;
             }
         }
-
-        private bool IsValidJson(string json)
-        {
-            try
-            {
-                JsonConvert.DeserializeObject<object>(json);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
+ 
         public void Delete(string fileName)
         {
             IOUtility.DeleteFile(fileName + ".json");
