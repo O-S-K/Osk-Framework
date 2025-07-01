@@ -10,6 +10,8 @@ namespace OSK
     {
         // Todo: Call For Mobile Devices
         // onApplicationPause() => SaveJson
+        public static bool IsFormatDecimals = true;
+        public static int DecimalPlaces = 4;
 
         public void Save<T>(string fileName, T data, bool ableEncrypt = false)
         {
@@ -17,7 +19,8 @@ namespace OSK
             try
             {
                 string saveJson = JsonConvert.SerializeObject(data, Formatting.Indented);
-                saveJson = FormatJsonDecimals(saveJson, 4);
+                if (IsFormatDecimals)
+                    saveJson = FormatJsonDecimals(saveJson, DecimalPlaces);
 
                 if (ableEncrypt)
                 {
@@ -28,6 +31,7 @@ namespace OSK
                 {
                     File.WriteAllText(filePath, saveJson);
                 }
+
                 RefreshEditor();
 
                 OSK.Logg.Log($"[Save File Success]: {fileName + ".json"} \n {filePath}", Color.green);
@@ -40,11 +44,13 @@ namespace OSK
 
         private string FormatJsonDecimals(string json, int decimalPlaces)
         {
-            return Regex.Replace(json, @"\d+\.\d+", 
+            var dataRegex = Regex.Replace(json, @"\d+\.\d+",
                 match => double.TryParse(match.Value, System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture, out double number) 
-                    ? number.ToString("F" + decimalPlaces, System.Globalization.CultureInfo.InvariantCulture) 
+                    System.Globalization.CultureInfo.InvariantCulture, out double number)
+                    ? number.ToString("F" + decimalPlaces, System.Globalization.CultureInfo.InvariantCulture)
                     : match.Value);
+            OSK.Logg.Log($"[Format Json Decimals]: {dataRegex}", Color.yellow);
+            return dataRegex;
         }
 
         public T Load<T>(string fileName, bool ableEncrypt = false)
@@ -55,6 +61,7 @@ namespace OSK
                 OSK.Logg.LogError($"[Load File Error]: {fileName + ".json"} NOT found at {path}");
                 return default;
             }
+
             try
             {
                 string loadJson;
@@ -98,18 +105,19 @@ namespace OSK
                 return default;
             }
         }
- 
+
         public void Delete(string fileName)
         {
             IOUtility.DeleteFile(fileName + ".json");
-         }
-        
+        }
+
         public T Query<T>(string fileName, bool condition)
         {
             if (condition)
             {
                 return Load<T>(fileName);
             }
+
             return default;
         }
 
