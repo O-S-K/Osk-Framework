@@ -120,29 +120,38 @@ namespace OSK
 
             k_Instances[type] = instance;
 
-            if (type.GetCustomAttribute<GlobalSingletonAttribute>() != null)
+            if (type.GetCustomAttribute<GlobalSingletonAttribute>() is { } globalAttr)
             {
-                UnityEngine.Object.DontDestroyOnLoad(instance.gameObject);
-                Logg.Log($"[SingletonRegistry] Registered GlobalSingleton: {type.Name}");
+                if (globalAttr.IsDontDestroyOnLoad)
+                {
+                    UnityEngine.Object.DontDestroyOnLoad(instance.gameObject);
+                }
+
+                Debug.Log($"[SingletonRegistry] Registered GlobalSingleton: {type.Name} | AutoInit: {globalAttr.AutoInitialize} | DontDestroy: {globalAttr.IsDontDestroyOnLoad}");
             }
             else if (type.GetCustomAttribute<SceneSingletonAttribute>() is SceneSingletonAttribute sceneAttr)
             {
-                var currentScene = SceneManager.GetActiveScene().name;
-                if (sceneAttr.AllowedScenes is { Length: > 0 })
+                string currentScene = SceneManager.GetActiveScene().name;
+
+                if (sceneAttr.AllowedScenes != null && sceneAttr.AllowedScenes.Length > 0)
                 {
-                    if (!sceneAttr.AllowedScenes.Contains(currentScene))
+                    if (!System.Linq.Enumerable.Contains(sceneAttr.AllowedScenes, currentScene))
                     {
-                        Logg.LogError(
-                            $"[SingletonRegistry] SceneSingleton {type.Name} is not allowed in scene '{currentScene}'. " +
-                            $"Allowed: {string.Join(", ", sceneAttr.AllowedScenes)}");
+                        Debug.LogError($"[SingletonRegistry] SceneSingleton {type.Name} is not allowed in scene '{currentScene}'. Allowed: {string.Join(", ", sceneAttr.AllowedScenes)}");
                     }
                 }
 
-                Logg.Log($"[SingletonRegistry] Registered SceneSingleton: {type.Name} (Scene: {currentScene})");
+                if (sceneAttr.IsDontDestroyOnLoad)
+                {
+                    UnityEngine.Object.DontDestroyOnLoad(instance.gameObject);
+                }
+
+                Debug.Log($"[SingletonRegistry] Registered SceneSingleton: {type.Name} | Scene: {currentScene} | AutoInit: {sceneAttr.AutoInitialize} | DontDestroy: {sceneAttr.IsDontDestroyOnLoad}");
             }
+
             else
             {
-                Logg.Log($"[SingletonRegistry] Registered SceneSingleton: {type.Name}");
+                Debug.Log($"[SingletonRegistry] Registered Singleton: {type.Name} (No specific attribute)");
             }
         }
         
