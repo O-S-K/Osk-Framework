@@ -40,15 +40,11 @@ namespace OSK
 
         private string FormatJsonDecimals(string json, int decimalPlaces)
         {
-            return Regex.Replace(json, @"\d+\.\d+", match =>
-            {
-                if (double.TryParse(match.Value, out double number))
-                {
-                    return System.Math.Round(number, decimalPlaces).ToString("F" + decimalPlaces);
-                }
-
-                return match.Value;
-            });
+            return Regex.Replace(json, @"\d+\.\d+", 
+                match => double.TryParse(match.Value, System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out double number) 
+                    ? number.ToString("F" + decimalPlaces, System.Globalization.CultureInfo.InvariantCulture) 
+                    : match.Value);
         }
 
         public T Load<T>(string fileName, bool ableEncrypt = false)

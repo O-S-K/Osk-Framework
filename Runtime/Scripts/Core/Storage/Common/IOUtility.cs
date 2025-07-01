@@ -35,13 +35,10 @@ namespace OSK
 
         public static bool CreateDirectory(string path)
         {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-                return true;
-            }
+            if (Directory.Exists(path)) return false;
+            Directory.CreateDirectory(path);
+            return true;
 
-            return false;
         }
 
         public static bool DeleteDirectory(string path)
