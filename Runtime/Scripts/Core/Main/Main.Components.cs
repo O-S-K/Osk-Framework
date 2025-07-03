@@ -38,7 +38,7 @@ namespace OSK
         public bool isDestroyingOnLoad = false;
         public bool isLogInit = false;
 
-        private void Awake()
+        protected void Awake()
         {
             if (isDestroyingOnLoad)
                 DontDestroyOnLoad(gameObject);
